@@ -1,0 +1,70 @@
+# Example Configuration - Microscopy Analysis
+# Real-world example: PLL-aCD3 activation (12min timepoint, fixed cells)
+
+# Path to the PowerPoint presentation (relative or absolute)
+presentation: "presentations/Effects_of_Activation_Fixed_Cells.pptx"
+
+# Template slide to copy (0-based index)
+# Slide 2 in PowerPoint UI = index 1
+template_slide: 1
+
+# Slides to preserve (not delete) - 0-based indices
+# Default: [0, template_slide]
+preserve_slides: [0, 1]  # Keeps title slide (1) and template slide (2)
+
+# Auto-detect image position from the first image in the template slide
+# Set to false to manually specify position below
+auto_position: true
+
+# Manual position (only used if auto_position is false)
+# Uncomment and set values if you want to override auto-detection
+# position:
+#   left: 0.14      # inches from left edge
+#   top: 0.96       # inches from top edge
+#   width: 5.43     # image width in inches
+#   height: 2.72    # image height in inches
+
+# Base directory containing all images
+base_dir: "J:/FF/vim_data/results_fixed_cells_no_treatment/results_compilation_PLL_aCD3_12min_20260209/grid_panels"
+
+# List of image filenames (each creates a new slide)
+# Images are processed in the order listed
+images:
+  # Nuclear morphology metrics
+  - nuc_aspect_ratio_grid.tif
+  - nuc_resized_solidity_grid.tif
+  - nuc_SA_mesh_grid.tif
+  - nuc_volume_mesh_grid.tif
+
+  # Actin metrics
+  - actin_deform_ratio_grid.tif
+  - actin_MFI_around_cent_2um_grid.tif
+  - actin_frac_around_cent_2um_grid.tif
+
+  # Centrosome metrics
+  - centrosome_center_z_rel_bottom_actin_plane_grid.tif
+  - nuc_cent_closest_dist_grid.tif
+  - chull_mean_D_cent_ratio_grid.tif
+  - centrosome_dist_deepest_real_avg_periphery_ratio_grid.tif
+  - concavity_index_around_cent_grid.tif
+
+  # Deformation metrics
+  - avg_normal_angle_adaptive_region_growth_grid.tif
+  - chull_max_D_grid.tif
+  - deepest_invag_fraction_chull_volume_grid.tif
+  - deepest_region_periph_ratio_025um_grid.tif
+
+  # Vimentin metrics
+  - vim_frac_in_nuc_convex_hull_grid.tif
+  - vim_enrichment_within_half_um_nuc_2_um_cent_grid.tif
+  - vim_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio_grid.tif
+  - VCRAI_0_2um_grid.tif
+  - vim_frac_around_cent_2um_grid.tif
+  - vim_MFI_around_cent_2um_grid.tif
+  - vim_ratio_above_below_0_5um_grid.tif
+
+# Notes:
+# - Images are organized by metric category for clarity
+# - Use forward slashes (/) in paths, even on Windows
+# - All images must exist in base_dir or will be skipped with an error
+# - Images are processed in the order listed

@@ -1,8 +1,7 @@
-# Example Configuration for PPT Batch Image Inserter
-# This file demonstrates how to configure batch image insertion
+# Example Configuration - Basic Usage
+# This demonstrates a simple batch image insertion workflow
 
-# Path to the PowerPoint presentation
-# Can be absolute or relative to where you run the script
+# Path to the PowerPoint presentation (relative or absolute)
 presentation: "presentations/my_presentation.pptx"
 
 # Template slide to copy (0-based index)
@@ -10,9 +9,8 @@ presentation: "presentations/my_presentation.pptx"
 template_slide: 1
 
 # Slides to preserve (not delete) - 0-based indices
-# Default: [0, template_slide] (keeps title slide and template)
-# Example: [0, 1, 2] to keep slides 1, 2, and 3
-preserve_slides: [0, 1]
+# Default: [0, template_slide]
+preserve_slides: [0, 1]  # Keeps title slide (1) and template slide (2)
 
 # Auto-detect image position from the first image in the template slide
 # Set to false to manually specify position below
@@ -27,12 +25,9 @@ auto_position: true
 #   height: 6.0    # image height in inches
 
 # Base directory containing all images
-# All image paths below are relative to this directory
 base_dir: "data/images"
 
 # List of image filenames (each creates a new slide)
-# Images are processed in the order listed
-# The first image should already be in your template slide (slide 2)
 images:
   - metric_001_baseline.png
   - metric_002_treatment_a.png
@@ -42,7 +37,5 @@ images:
 
 # Notes:
 # - Use forward slashes (/) in paths, even on Windows
-# - Or use double backslashes (\\) on Windows: "C:\\Users\\Name\\Data"
-# - All images must exist in base_dir or the script will skip them with an error
+# - All images must exist in base_dir or will be skipped with an error
 # - Images are processed in the order listed
-# - Add or remove filenames as needed
