@@ -2,7 +2,7 @@
 
 A Python toolkit for batch-inserting images into PowerPoint presentations. Designed for researchers who need to create presentation decks with large numbers of analysis plots following a consistent template.
 
-**Note**: The batch processing workflow currently supports **one image per slide**. Each slide is created from the template with a single image replacement.
+**Note**: The batch processing workflow currently supports **one image per slide**. Each slide is created from the template with a single image replacement, and metadata (filename, path) is automatically tracked.
 
 ## Quick Start
 
@@ -18,7 +18,7 @@ conda create -n ppt_inserter python=3.9
 conda activate ppt_inserter
 
 # Install dependencies
-pip install python-pptx pyyaml
+pip install -r requirements.txt
 ```
 
 ### Basic Usage
@@ -48,6 +48,9 @@ pip install python-pptx pyyaml
 - Python 3.9+
 - PowerPoint files (.pptx format)
 - Images in common formats (PNG, JPG, TIFF, GIF, BMP)
+- **Windows OS** (tested only on Windows; may work on other platforms but not guaranteed)
+
+**Important**: Close your PowerPoint file before running the script. The script needs exclusive access to modify the file.
 
 ## Key Features
 
