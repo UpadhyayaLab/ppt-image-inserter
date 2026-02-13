@@ -23,20 +23,13 @@ pip install python-pptx pyyaml
 
 ### Basic Usage
 
-1. **Create a YAML config** (`config.yaml`):
-   ```yaml
-   presentation: "presentations/my_presentation.pptx"
-   template_slide: 1  # Slide 2 in PowerPoint = index 1
-   auto_position: true
-   base_dir: "data/analysis/plots"
-
-   images:
-     - nuc_aspect_ratio_grid.tif
-     - actin_deform_ratio_grid.tif
-     - centrosome_center_z_grid.tif
+1. **Copy and edit the example config** (from `examples/example_config.yaml`):
+   ```bash
+   cp examples/example_config.yaml config.yaml
+   # Edit config.yaml with your presentation path, image directory, and image list
    ```
 
-2. **Run the batch script** (see `examples/batch_insert_images.py`):
+2. **Run the batch script**:
    ```bash
    python examples/batch_insert_images.py config.yaml
    ```
