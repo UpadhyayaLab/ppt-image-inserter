@@ -1,0 +1,43 @@
+# Example Configuration for PPT Batch Image Inserter
+# This file demonstrates how to configure batch image insertion
+
+# Path to the PowerPoint presentation
+# Can be absolute or relative to where you run the script
+presentation: "presentations/my_presentation.pptx"
+
+# Template slide to copy (0-based index)
+# Slide 2 in PowerPoint UI = index 1
+template_slide: 1
+
+# Auto-detect image position from the first image in the template slide
+# Set to false to manually specify position below
+auto_position: true
+
+# Manual position (only used if auto_position is false)
+# Uncomment and set values if you want to override auto-detection
+# position:
+#   left: 0.5      # inches from left edge
+#   top: 1.0       # inches from top edge
+#   width: 8.0     # image width in inches
+#   height: 6.0    # image height in inches
+
+# Base directory containing all images
+# All image paths below are relative to this directory
+base_dir: "data/images"
+
+# List of image filenames (each creates a new slide)
+# Images are processed in the order listed
+# The first image should already be in your template slide (slide 2)
+images:
+  - metric_001_baseline.png
+  - metric_002_treatment_a.png
+  - metric_003_treatment_b.png
+  - metric_004_comparison.png
+  - metric_005_statistical_analysis.png
+
+# Notes:
+# - Use forward slashes (/) in paths, even on Windows
+# - Or use double backslashes (\\) on Windows: "C:\\Users\\Name\\Data"
+# - All images must exist in base_dir or the script will skip them with an error
+# - Images are processed in the order listed
+# - Add or remove filenames as needed
