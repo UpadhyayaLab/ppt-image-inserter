@@ -9,6 +9,11 @@ presentation: "presentations/my_presentation.pptx"
 # Slide 2 in PowerPoint UI = index 1
 template_slide: 1
 
+# Slides to preserve (not delete) - 0-based indices
+# Default: [0, template_slide] (keeps title slide and template)
+# Example: [0, 1, 2] to keep slides 1, 2, and 3
+preserve_slides: [0, 1]
+
 # Auto-detect image position from the first image in the template slide
 # Set to false to manually specify position below
 auto_position: true

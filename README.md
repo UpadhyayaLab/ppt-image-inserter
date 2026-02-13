@@ -62,7 +62,7 @@ pip install python-pptx pyyaml
 - Specify the template slide index in your config file (0-indexed)
 - The first image position determines where all new images go
 - One image per slide in batch mode
-- Your script controls which slides are preserved (e.g., title slide)
+- Use `preserve_slides` in config to specify which slides to keep (default: title slide and template)
 
 ### File Organization
 ```

@@ -38,28 +38,39 @@ def main(config_path):
     images = config['images']
     template_slide_index = config.get('template_slide', 1)
 
+    # Get preserve_slides, default to [0, template_slide] if not specified
+    preserve_slides = config.get('preserve_slides', [0, template_slide_index])
+
+    # Ensure template_slide is in preserve_slides if not explicitly excluded
+    if template_slide_index not in preserve_slides:
+        print(f"Warning: template_slide {template_slide_index} not in preserve_slides")
+
     print(f"PowerPoint file: {ppt_file}")
     print(f"Base directory: {base_dir}")
     print(f"Template slide: {template_slide_index + 1} (index {template_slide_index})")
+    print(f"Preserve slides: {[idx + 1 for idx in preserve_slides]} (indices {preserve_slides})")
     print(f"Images to process: {len(images)}")
 
-    # Step 1: Delete old slides (keep title and template)
+    # Step 1: Delete old slides (except preserved ones)
     print("\nStep 1: Deleting old slides...")
     print("=" * 70)
 
     prs = Presentation(ppt_file)
     total_slides = len(prs.slides)
-    slides_to_delete = total_slides - 2  # Keep slides 1 and 2
 
-    if slides_to_delete > 0:
-        for slide_idx in reversed(range(2, total_slides)):
+    # Collect slides to delete (all except preserved)
+    slides_to_delete = [idx for idx in range(total_slides) if idx not in preserve_slides]
+
+    if slides_to_delete:
+        # Delete in reverse order to maintain indices
+        for slide_idx in reversed(slides_to_delete):
             print(f"Deleting slide {slide_idx + 1}...")
             delete_slide(ppt_file, slide_idx)
-        print(f"Deleted {slides_to_delete} slide(s)")
+        print(f"Deleted {len(slides_to_delete)} slide(s)")
     else:
         print("No slides to delete")
 
-    print("\n[SUCCESS] Slides 1-2 remain.\n")
+    print(f"\n[SUCCESS] Preserved slides: {[idx + 1 for idx in preserve_slides]}\n")
 
     # Step 2: Create new slides from images
     print("Step 2: Creating slides from images...")

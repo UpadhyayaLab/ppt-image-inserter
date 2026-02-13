@@ -12,6 +12,10 @@ presentation: "presentations/experiment_results.pptx"
 # Slide 2 in PowerPoint UI = index 1
 template_slide: 1
 
+# Slides to preserve (not delete) - 0-based indices
+# Default: [0, template_slide] (keeps title slide and template)
+preserve_slides: [0, 1]
+
 # Auto-detect position from the first image in the template slide
 auto_position: true
 
@@ -41,6 +45,7 @@ images:
 |-------|------|----------|-------------|
 | `presentation` | string | Yes | Path to PowerPoint file (relative or absolute) |
 | `template_slide` | integer | Yes | Index of slide to use as template (0-based) |
+| `preserve_slides` | list | No | Slide indices to preserve (default: [0, template_slide]) |
 | `auto_position` | boolean | No | Auto-detect image position from template (default: true) |
 | `position` | object | No | Manual position settings (left, top, width, height in inches) |
 | `base_dir` | string | Yes | Base directory for image paths |
