@@ -2,7 +2,7 @@
 
 A Python toolkit for programmatically inserting images into PowerPoint presentations at scale. Perfect for researchers, data scientists, and anyone who needs to create presentation decks with dozens or hundreds of images following a consistent template.
 
-## 🎯 What It Does
+## What It Does
 
 - **Batch insert images** into PowerPoint slides using YAML configuration files
 - **Template-based slide creation** - copy a template slide and replace images automatically
@@ -11,27 +11,29 @@ A Python toolkit for programmatically inserting images into PowerPoint presentat
 - **Metadata tracking** - embeds source paths and labels in slides
 - **Backup system** - automatic timestamped backups before modifications
 
-## 🔬 Use Cases
+**Note**: The batch processing workflow currently supports **one image per slide**. Each slide is created from the template with a single image replacement.
+
+## Use Cases
 
 - **Scientific data visualization**: Generate presentation decks with hundreds of analysis plots
 - **Report automation**: Create standardized reports with consistent formatting
 - **A/B testing presentations**: Quickly swap images across multiple slides
 - **Educational materials**: Batch-create slide decks from image sets
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Python 3.7+
 - PowerPoint files (.pptx format)
 - Images in supported formats (TIF, PNG, JPG, etc.)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/ppt-batch-image-inserter.git
-   cd ppt-batch-image-inserter
+   git clone https://github.com/UpadhyayaLab/ppt-image-inserter.git
+   cd ppt-image-inserter
    ```
 
 2. **Create a conda/mamba environment:**
@@ -95,7 +97,7 @@ A Python toolkit for programmatically inserting images into PowerPoint presentat
        )
    ```
 
-#### Option 2: Direct API Usage
+#### Option 2: Direct Function Usage
 
 ```python
 from ppt_image_inserter import insert_image, copy_slide_replace_image
@@ -122,7 +124,7 @@ copy_slide_replace_image(
 )
 ```
 
-## 📖 Detailed Usage
+## Detailed Usage
 
 ### Configuration File Format
 
@@ -170,7 +172,7 @@ images:
 | `base_dir` | string | Yes | Base directory for image paths |
 | `images` | list | Yes | List of image filenames to insert |
 
-### API Reference
+### Function Reference
 
 #### Core Functions
 
@@ -343,12 +345,13 @@ for metric in metrics:
     )
 ```
 
-## 🎨 Best Practices
+## Best Practices
 
 ### 1. Template Slide Design
 
 - **Create a template slide (slide 2)** with your desired layout, formatting, and a placeholder image
 - **Position matters**: The first image in your template determines where all new images will be placed
+- **One image per slide**: The batch process replaces the template image with one new image per slide
 - **Keep it simple**: Avoid complex layouts that might not work well with batch processing
 
 ### 2. Image Organization
@@ -398,7 +401,7 @@ The tool creates automatic backups, but also:
 - **Use git**: Track changes to scripts and configs
 - **Test on copies**: Test new scripts on a copy of your presentation first
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -439,56 +442,28 @@ The tool creates automatic backups, but also:
 3. Use SSD storage for better I/O performance
 4. Close other applications to free up memory
 
-## 🤝 Contributing
-
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-### Development Setup
-
-```bash
-# Clone the repo
-git clone https://github.com/yourusername/ppt-batch-image-inserter.git
-cd ppt-batch-image-inserter
-
-# Create development environment
-mamba create -n ppt_dev python=3.9 pytest black flake8
-mamba activate ppt_dev
-
-# Install in editable mode
-pip install -e .
-```
-
-### Running Tests
-
-```bash
-pytest tests/
-```
-
-## 📄 License
+## License
 
 MIT License - see [LICENSE](LICENSE) for details
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with [python-pptx](https://python-pptx.readthedocs.io/)
 - Developed for biological microscopy data analysis workflows
-- Thanks to all contributors and users!
 
-## 📞 Support
+## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/ppt-batch-image-inserter/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/ppt-batch-image-inserter/discussions)
+- **Issues**: [GitHub Issues](https://github.com/UpadhyayaLab/ppt-image-inserter/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/UpadhyayaLab/ppt-image-inserter/discussions)
 
-## 🗺️ Roadmap
+## Future Features
 
-- [ ] Add support for multiple images per slide
-- [ ] GUI for config file generation
-- [ ] Support for video/animation insertion
-- [ ] Template gallery with common layouts
-- [ ] Performance optimizations for large batches
-- [ ] Integration with Jupyter notebooks
-- [ ] Cloud storage support (S3, Google Drive)
+- Multiple images per slide support
+- GUI for config file generation
+- Performance optimizations for large batches
+- Integration with Jupyter notebooks
+- Template gallery with common layouts
 
 ---
 
-**Made with ❤️ for researchers who have better things to do than manually insert hundreds of images into PowerPoint**
+**Made for researchers who have better things to do than manually insert hundreds of images into PowerPoint**
