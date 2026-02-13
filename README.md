@@ -34,18 +34,16 @@ pip install python-pptx pyyaml
    python examples/batch_insert_images.py config.yaml
    ```
 
-That's it! Your PowerPoint now has slides with all your analysis plots.
-
 ## How It Works
 
-1. **Template slide**: Create slide 2 with your desired layout and one placeholder image
-2. **Config file**: List all images you want to insert
-3. **Batch process**: Script copies slide 2 for each image, replacing the placeholder
+1. **Template slide**: Create a slide with your desired layout and one placeholder image. Specify which slide to use as the template in your config (0-indexed: slide 2 in PowerPoint = index 1)
+2. **Config file**: List all images you want to insert and which slides to preserve
+3. **Batch process**: Script copies the template slide for each image, replacing the placeholder
 4. **Result**: Presentation with consistent formatting across all slides
 
 ## Prerequisites
 
-- Python 3.7+
+- Python 3.9+
 - PowerPoint files (.pptx format)
 - Images in common formats (PNG, JPG, TIFF, GIF, BMP)
 
@@ -53,16 +51,18 @@ That's it! Your PowerPoint now has slides with all your analysis plots.
 
 - **Auto-detect positions** - Automatically detects image position from template
 - **Template-based** - Consistent formatting across all slides
-- **Metadata tracking** - Stores image paths and filenames
+- **Metadata tracking** - Displays image filenames on slides and stores paths in notes
 - **Automatic backups** - Creates timestamped backups before modifications
 - **Config-driven** - YAML configuration for easy batch processing
 
 ## Best Practices
 
 ### Template Design
-- Create slide 2 with desired layout and one placeholder image
+- Create a template slide with your desired layout and one placeholder image
+- Specify the template slide index in your config file (0-indexed)
 - The first image position determines where all new images go
 - One image per slide in batch mode
+- Your script controls which slides are preserved (e.g., title slide)
 
 ### File Organization
 ```
@@ -94,15 +94,10 @@ project/
 - Verify filenames match exactly (case-sensitive)
 - Use forward slashes `/` in paths
 
-**Presentation corrupted?**
+**Presentation corrupted or slides lost**
 - Check backup files in `PPT/.backups/`
 - Don't modify PPT in PowerPoint while script runs
 - Verify write permissions
-
-**Slow with many images?**
-- Normal for PowerPoint files (complex XML)
-- Process in batches of 50-100 slides
-- Use SSD storage for better performance
 
 ## Documentation
 
@@ -118,8 +113,6 @@ project/
 ## Future Features
 
 - Multiple images per slide support
-- GUI for config file generation
-- Performance optimizations for large batches
 - Template gallery with common layouts
 
 ## License
