@@ -34,8 +34,6 @@ pip install -r requirements.txt
    python examples/batch_insert_images.py config.yaml
    ```
 
-**Note:** The same `batch_insert_images.py` script works with any config file. No need to create separate scripts for different datasets - just pass different config files as arguments.
-
 ## How It Works
 
 1. **Template slide**: Create a slide with your desired layout and one placeholder image. Specify which slide to use as the template in your config (0-indexed: slide 2 in PowerPoint = index 1)
@@ -48,17 +46,16 @@ pip install -r requirements.txt
 - Python 3.9+
 - PowerPoint files (.pptx format)
 - Images in common formats (PNG, JPG, TIFF, GIF, BMP)
-- **Windows OS** (tested only on Windows; may work on other platforms but not guaranteed)
+- Windows OS
 
 **Important**: Close your PowerPoint file before running the script. The script needs exclusive access to modify the file.
 
 ## Key Features
 
-- **Auto-detect positions** - Automatically detects image position from template
 - **Template-based** - Consistent formatting across all slides
+- **Config-driven** - YAML configuration for easy batch processing
 - **Metadata tracking** - Displays image filenames on slides and stores paths in notes
 - **Automatic backups** - Creates timestamped backups before modifications
-- **Config-driven** - YAML configuration for easy batch processing
 
 ## Best Practices
 
@@ -82,17 +79,7 @@ project/
         └── ...
 ```
 
-### Configuration
-- Use descriptive config names: `config_experiment_2024.yaml`
-- Version control configs (not .pptx files)
-- Use relative paths for portability
-
 ## Troubleshooting
-
-**Images in wrong position?**
-- Check `auto_position: true` is set
-- Ensure template slide has exactly one image
-- Verify template image is positioned correctly
 
 **File not found errors?**
 - Check `base_dir` path is correct
@@ -108,7 +95,6 @@ project/
 
 - [Detailed Usage Guide](docs/DETAILED_USAGE.md) - Complete function reference and examples
 - [Examples](examples/) - Sample configs and scripts
-- [CLAUDE.md](CLAUDE.md) - Instructions for Claude Code instances
 
 ## Support
 
@@ -119,12 +105,3 @@ project/
 
 - Multiple images per slide support
 - Template gallery with common layouts
-
-## License
-
-MIT License - see [LICENSE](LICENSE)
-
-## Acknowledgments
-
-- Built with [python-pptx](https://python-pptx.readthedocs.io/)
-- Developed for biological microscopy data analysis workflows
