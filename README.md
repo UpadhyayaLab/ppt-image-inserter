@@ -34,6 +34,8 @@ pip install python-pptx pyyaml
    python examples/batch_insert_images.py config.yaml
    ```
 
+**Note:** The same `batch_insert_images.py` script works with any config file. No need to create separate scripts for different datasets - just pass different config files as arguments.
+
 ## How It Works
 
 1. **Template slide**: Create a slide with your desired layout and one placeholder image. Specify which slide to use as the template in your config (0-indexed: slide 2 in PowerPoint = index 1)
