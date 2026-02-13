@@ -147,12 +147,7 @@ def delete_slide(ppt_path: str, slide_index: int, backup_base: str = 'PPT/backup
         )
 
     # Create backup before deletion
-    print(f"[INFO] Creating backup before deletion...")
     backups = backup_presentation(ppt_path, backup_base=backup_base)
-    if backups:
-        print(f"[BACKUP] Created backups in: {', '.join(backups.keys())}")
-
-    print(f"[INFO] Deleting slide at index {slide_index} (slide {slide_index + 1} in PowerPoint UI)")
 
     # Delete the slide using XML manipulation
     # Drop the relationship and remove from slide list
@@ -162,4 +157,3 @@ def delete_slide(ppt_path: str, slide_index: int, backup_base: str = 'PPT/backup
 
     # Save the presentation
     prs.save(ppt_path)
-    print(f"[SUCCESS] Deleted slide at index {slide_index}")

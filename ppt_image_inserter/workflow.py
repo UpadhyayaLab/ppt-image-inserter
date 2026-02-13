@@ -74,30 +74,21 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
 
     # Auto-detect position if not specified
     if position is None:
-        print(f"Auto-detecting image position from slide {source_slide_index}...")
         position = get_image_position(ppt_path, source_slide_index, image_index=0)
-        print(f"Detected position: left={position['left']:.2f}\", top={position['top']:.2f}\", "
-              f"width={position['width']:.2f}\", height={position['height']:.2f}\"")
 
     # Duplicate the source slide
-    print(f"Duplicating slide {source_slide_index}...")
     new_slide = duplicate_slide(prs, source_slide_index)
 
     # Get the new slide's index (it's added at the end)
     new_slide_index = len(prs.slides) - 1
 
     # Remove all pictures from the new slide
-    print(f"Removing pictures from duplicated slide...")
     num_removed = remove_pictures_from_slide(new_slide)
-    print(f"Removed {num_removed} picture(s)")
 
     # Remove all text (including placeholders) from the new slide
-    print(f"Removing all text from duplicated slide...")
     num_text_removed = remove_all_text_from_slide(new_slide)
-    print(f"Removed {num_text_removed} text element(s)")
 
     # Insert the new image at the specified position
-    print(f"Inserting {os.path.basename(new_image_path)}...")
     picture = new_slide.shapes.add_picture(
         new_image_path,
         Inches(position['left']),
@@ -112,7 +103,6 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         try:
             picture._element._nvXxPr.cNvPr.set("descr", new_image_path)  # Full path
             picture._element._nvXxPr.cNvPr.set("title", os.path.basename(new_image_path))  # Filename
-            print(f"Stored metadata: {new_image_path}")
         except Exception as e:
             print(f"[WARNING] Could not store metadata: {e}")
 
@@ -138,15 +128,11 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
                 paragraph.font.size = Pt(8)  # 8pt font
                 paragraph.font.name = 'Arial'
 
-            print(f"Added text label: {filename}")
         except Exception as e:
             print(f"[WARNING] Could not add text label: {e}")
 
     # Save the presentation
-    print(f"Saving presentation...")
     prs.save(ppt_path)
-
-    print(f"[SUCCESS] Created slide {new_slide_index} (slide {new_slide_index + 1} in PowerPoint UI)")
 
     return new_slide_index
 

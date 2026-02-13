@@ -2,7 +2,7 @@
 # Real-world example: PLL-aCD3 activation (12min timepoint, fixed cells)
 
 # Path to the PowerPoint presentation (relative or absolute)
-presentation: "presentations/Effects_of_Activation_Fixed_Cells.pptx"
+presentation: "K:/FF/Code/Scripts/Frank/utility/Claude/PPT_editing/PPT/Effects of Activation, Fixed Cells, 12 min_2slide_template.pptx"
 
 # Template slide to copy (0-based index)
 # Slide 2 in PowerPoint UI = index 1
@@ -15,6 +15,10 @@ preserve_slides: [0, 1]  # Keeps title slide (1) and template slide (2)
 # Backup directory for automatic backups (optional)
 # Default: PPT/backups
 # backup_dir: "custom/backup/location"
+
+# Optional: Specify output path to preserve template
+# If omitted, presentation is modified in-place (with automatic backups)
+output_path: "K:/FF/Code/Scripts/Frank/utility/Claude/PPT_editing/PPT/Effects of Activation, Fixed Cells, 12 min.pptx"
 
 # Auto-detect image position from the first image in the template slide
 # Set to false to manually specify position below
