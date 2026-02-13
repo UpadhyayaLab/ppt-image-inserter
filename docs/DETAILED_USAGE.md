@@ -104,20 +104,20 @@ copy_slide_replace_image(
 **Returns:** Index of the newly created slide
 
 #### `delete_slide()`
-Delete a slide from the presentation.
+Delete a slide from the presentation. **Note:** Backups are automatically created before deletion.
 
 ```python
 delete_slide(
     ppt_path: str,
-    slide_index: int,
-    backup: bool = True
+    slide_index: int
 ) -> None
 ```
 
 **Parameters:**
 - `ppt_path`: Path to the PowerPoint file
 - `slide_index`: Index of slide to delete (0-based)
-- `backup`: Whether to create backup before deletion (default: True)
+
+**Note:** This function automatically creates timestamped backups before deleting the slide.
 
 #### `list_slides()`
 Get information about all slides in a presentation.
@@ -128,6 +128,52 @@ list_slides(ppt_path: str) -> list
 
 **Returns:** List of slide information dictionaries
 
+#### `insert_image_preserve_aspect()`
+Insert an image while preserving its aspect ratio. Specify either width or height, and the other dimension will be calculated automatically.
+
+```python
+insert_image_preserve_aspect(
+    ppt_path: str,
+    slide_index: int,
+    image_path: str,
+    left: float,
+    top: float,
+    width: float = None,
+    height: float = None
+) -> None
+```
+
+**Parameters:**
+- `ppt_path`: Path to the PowerPoint file
+- `slide_index`: Index of the slide (0-based)
+- `image_path`: Path to the image file
+- `left`: Distance from left edge in inches
+- `top`: Distance from top edge in inches
+- `width`: Image width in inches (height will be calculated). Optional.
+- `height`: Image height in inches (width will be calculated). Optional.
+
+**Note:** Specify exactly one of `width` or `height` to preserve aspect ratio.
+
+#### `replace_image_on_existing_slide()`
+Replace the image on an existing slide with a new one. Auto-detects position from the current image.
+
+```python
+replace_image_on_existing_slide(
+    ppt_path: str,
+    slide_index: int,
+    new_image_path: str,
+    store_metadata: bool = True,
+    add_label: bool = True
+) -> None
+```
+
+**Parameters:**
+- `ppt_path`: Path to the PowerPoint file
+- `slide_index`: Index of the slide to update (0-based)
+- `new_image_path`: Path to the new image to insert
+- `store_metadata`: If True, stores image path in alt text (default: True)
+- `add_label`: If True, adds visible text label showing filename (default: True)
+
 ### Utility Functions
 
 #### `cm_to_inches()`
@@ -135,6 +181,133 @@ Convert centimeters to inches.
 
 ```python
 cm_to_inches(cm: float) -> float
+```
+
+#### `get_image_position()`
+Extract position and size information from an image on a slide. Useful for auto-detecting template image parameters.
+
+```python
+get_image_position(
+    ppt_path: str,
+    slide_index: int,
+    image_index: int = 0
+) -> dict
+```
+
+**Parameters:**
+- `ppt_path`: Path to the PowerPoint file
+- `slide_index`: Slide number (0-based index)
+- `image_index`: Which image to inspect if multiple exist (default: 0)
+
+**Returns:** Dictionary with keys `'left'`, `'top'`, `'width'`, `'height'` (all in inches)
+
+**Example:**
+```python
+>>> pos = get_image_position('presentation.pptx', 1, 0)
+>>> print(pos)
+{'left': 0.14, 'top': 0.96, 'width': 5.43, 'height': 2.72}
+```
+
+### Slide Manipulation Functions
+
+#### `duplicate_slide()`
+Duplicate a slide by creating a new slide and copying all shapes. Internal helper function used by batch workflows.
+
+```python
+duplicate_slide(prs: Presentation, slide_index: int) -> Slide
+```
+
+**Parameters:**
+- `prs`: The Presentation object (not a file path - this is a lower-level function)
+- `slide_index`: Index of the slide to duplicate (0-based)
+
+**Returns:** The newly created slide object
+
+**Note:** This is a lower-level function. Most users should use `copy_slide_replace_image()` instead.
+
+#### `remove_pictures_from_slide()`
+Remove all picture shapes from a slide. Uses XML manipulation.
+
+```python
+remove_pictures_from_slide(slide: Slide) -> int
+```
+
+**Parameters:**
+- `slide`: The slide to remove pictures from (Slide object, not index)
+
+**Returns:** Number of pictures removed
+
+**Note:** Changes are only saved when you call `prs.save()`.
+
+#### `remove_all_text_from_slide()`
+Remove ALL text boxes and placeholders from a slide. This includes both regular text boxes AND placeholders (title, body, etc.).
+
+```python
+remove_all_text_from_slide(slide: Slide) -> int
+```
+
+**Parameters:**
+- `slide`: The slide to remove text from (Slide object, not index)
+
+**Returns:** Number of text elements removed
+
+### Backup and Metadata Functions
+
+#### `backup_presentation()`
+Create backups in multiple time-interval categories. Implements a smart backup strategy that maintains ONE backup per time interval category.
+
+```python
+backup_presentation(
+    ppt_path: str,
+    backup_base: str = 'PPT/backups'
+) -> dict
+```
+
+**Parameters:**
+- `ppt_path`: Path to the PowerPoint file to backup
+- `backup_base`: Base directory for backups (default: 'PPT/backups')
+
+**Returns:** Dictionary mapping category names to backup file paths for backups created
+
+**Backup Categories:**
+- `'latest'`: Always creates a backup (0 seconds threshold)
+- `'5min'`: Creates backup if >5 minutes since last backup in this category
+- `'10min'`: Creates backup if >10 minutes since last backup
+- `'30min'`: Creates backup if >30 minutes since last backup
+- `'hourly'`: Creates backup if >1 hour since last backup
+
+**Example:**
+```python
+>>> backups = backup_presentation('presentation.pptx')
+>>> print(f"Created backups: {list(backups.keys())}")
+Created backups: ['latest', '5min', '10min']
+```
+
+#### `extract_image_metadata()`
+Extract image source metadata from all slides in a presentation. Retrieves metadata stored in alt text fields.
+
+```python
+extract_image_metadata(ppt_path: str) -> list
+```
+
+**Parameters:**
+- `ppt_path`: Path to the PowerPoint file
+
+**Returns:** List of dictionaries, each containing:
+- `slide_index` (int): 0-based slide index
+- `slide_number` (int): 1-based slide number (UI numbering)
+- `original_path` (str): Original image path from alt text (or None)
+- `filename` (str): Image filename
+- `position` (dict): Position/size dict with 'left', 'top', 'width', 'height'
+
+**Example:**
+```python
+>>> metadata = extract_image_metadata('presentation.pptx')
+>>> for entry in metadata:
+...     print(f"Slide {entry['slide_number']}: {entry['filename']}")
+...     print(f"  Path: {entry['original_path']}")
+Slide 2: nuc_aspect_ratio_grid.tif
+  Path: J:/FF/data/plots/nuc_aspect_ratio_grid.tif
 ```
 
 ## Workflow Example: Microscopy Analysis

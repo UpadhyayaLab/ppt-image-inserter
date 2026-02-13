@@ -101,7 +101,7 @@ project/
 
 **Presentation corrupted or slides lost**
 - Check backup files in `PPT/.backups/`
-- Don't modify PPT in PowerPoint while script runs
+- **Close PowerPoint before running the script** - file must not be open
 - Verify write permissions
 
 ## Documentation

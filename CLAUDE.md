@@ -17,20 +17,46 @@ This is a Python toolkit for programmatically inserting images into PowerPoint p
 
 ## Architecture
 
-### Core Module: `ppt_image_inserter.py`
+### Package Structure: `ppt_image_inserter/`
 
-This is the main library that other projects can import. It should remain:
+The package is organized into modular components. All functions can be imported directly from the package:
+
+```python
+from ppt_image_inserter import insert_image, copy_slide_replace_image
+```
+
+**Core Principles:**
 - **General-purpose**: No experiment-specific logic
 - **Well-documented**: Clear docstrings for all public functions
 - **Backwards-compatible**: Don't break existing APIs without good reason
 - **Standalone**: Minimal external dependencies (just python-pptx, PyYAML)
 
-**Key Functions:**
-- `insert_image()` - Insert image at exact position on existing slide
-- `copy_slide_replace_image()` - Duplicate template slide, replace image (auto-detect position)
-- `delete_slide()` - Delete slide with automatic backup
-- `list_slides()` - Get slide information
-- `cm_to_inches()` - Unit conversion utility
+**Module Organization:**
+
+- **`core.py`** - Basic image insertion functions
+  - `insert_image()` - Insert image at exact position on existing slide
+  - `insert_image_preserve_aspect()` - Insert image with aspect ratio preserved
+  - `list_slides()` - Get slide information
+
+- **`position.py`** - Position and unit conversion utilities
+  - `get_image_position()` - Extract position from template image (auto-detection)
+  - `cm_to_inches()` - Unit conversion utility
+
+- **`slide_utils.py`** - Slide manipulation utilities
+  - `duplicate_slide()` - Copy a slide
+  - `remove_pictures_from_slide()` - Remove all pictures from slide
+  - `remove_all_text_from_slide()` - Remove all text elements
+  - `delete_slide()` - Delete slide with automatic backup
+
+- **`workflow.py`** - High-level workflow functions
+  - `copy_slide_replace_image()` - Main workflow for batch processing (duplicate template, replace image)
+  - `replace_image_on_existing_slide()` - Update existing slide with new image
+
+- **`backup.py`** - Backup system
+  - `backup_presentation()` - Create timestamped backups with multiple time intervals
+
+- **`metadata.py`** - Metadata extraction
+  - `extract_image_metadata()` - Extract image source info from all slides
 
 ### User-Facing Components
 
