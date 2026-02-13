@@ -13,7 +13,7 @@ This is a Python toolkit for programmatically inserting images into PowerPoint p
   - Avoid Unix-specific commands (e.g., `/dev/null` redirects)
 - **Python**: 3.7+
 - **Main dependency**: `python-pptx`
-- **Package manager**: conda/mamba (recommended) or pip
+- **Package manager**: conda/conda (recommended) or pip
 
 ## Architecture
 

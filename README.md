@@ -1,6 +1,6 @@
 # PPT Batch Image Inserter
 
-A Python toolkit for batch-inserting images into PowerPoint presentations. Designed for researchers who need to create presentation decks with dozens or hundreds of analysis plots following a consistent template.
+A Python toolkit for batch-inserting images into PowerPoint presentations. Designed for researchers who need to create presentation decks with large numbers of analysis plots following a consistent template.
 
 **Note**: The batch processing workflow currently supports **one image per slide**. Each slide is created from the template with a single image replacement.
 
@@ -14,8 +14,8 @@ git clone https://github.com/UpadhyayaLab/ppt-image-inserter.git
 cd ppt-image-inserter
 
 # Create environment
-mamba create -n ppt_inserter python=3.9
-mamba activate ppt_inserter
+conda create -n ppt_inserter python=3.9
+conda activate ppt_inserter
 
 # Install dependencies
 pip install python-pptx pyyaml
@@ -54,7 +54,7 @@ That's it! Your PowerPoint now has slides with all your analysis plots.
 
 - Python 3.7+
 - PowerPoint files (.pptx format)
-- Images in supported formats (TIF, PNG, JPG, etc.)
+- Images in common formats (PNG, JPG, TIFF, GIF, BMP)
 
 ## Key Features
 
@@ -137,7 +137,3 @@ MIT License - see [LICENSE](LICENSE)
 
 - Built with [python-pptx](https://python-pptx.readthedocs.io/)
 - Developed for biological microscopy data analysis workflows
-
----
-
-**Made for researchers who have better things to do than manually insert hundreds of images into PowerPoint**
