@@ -116,13 +116,14 @@ def remove_all_text_from_slide(slide):
     return text_removed
 
 
-def delete_slide(ppt_path: str, slide_index: int) -> None:
+def delete_slide(ppt_path: str, slide_index: int, backup_base: str = 'PPT/backups') -> None:
     """
     Delete a slide from the presentation using XML manipulation.
 
     Args:
         ppt_path (str): Path to the PowerPoint file
         slide_index (int): Slide index to delete (0-based, so slide 1 = index 0)
+        backup_base (str): Base directory for backups (default: 'PPT/backups')
 
     Raises:
         FileNotFoundError: If PowerPoint file doesn't exist
@@ -130,6 +131,7 @@ def delete_slide(ppt_path: str, slide_index: int) -> None:
 
     Example:
         >>> delete_slide('presentation.pptx', 3)  # Deletes slide 4 in PowerPoint UI
+        >>> delete_slide('presentation.pptx', 3, backup_base='custom/backups')  # Custom backup location
     """
     # Validate input file
     if not os.path.exists(ppt_path):
@@ -146,7 +148,7 @@ def delete_slide(ppt_path: str, slide_index: int) -> None:
 
     # Create backup before deletion
     print(f"[INFO] Creating backup before deletion...")
-    backups = backup_presentation(ppt_path)
+    backups = backup_presentation(ppt_path, backup_base=backup_base)
     if backups:
         print(f"[BACKUP] Created backups in: {', '.join(backups.keys())}")
 

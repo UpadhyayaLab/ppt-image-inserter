@@ -12,6 +12,10 @@ template_slide: 1
 # Default: [0, template_slide]
 preserve_slides: [0, 1]  # Keeps title slide (1) and template slide (2)
 
+# Backup directory for automatic backups (optional)
+# Default: PPT/backups
+# backup_dir: "custom/backup/location"
+
 # Auto-detect image position from the first image in the template slide
 # Set to false to manually specify position below
 auto_position: true

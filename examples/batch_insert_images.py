@@ -41,6 +41,9 @@ def main(config_path):
     # Get preserve_slides, default to [0, template_slide] if not specified
     preserve_slides = config.get('preserve_slides', [0, template_slide_index])
 
+    # Get backup directory, default to 'PPT/backups' if not specified
+    backup_dir = config.get('backup_dir', 'PPT/backups')
+
     # Ensure template_slide is in preserve_slides if not explicitly excluded
     if template_slide_index not in preserve_slides:
         print(f"Warning: template_slide {template_slide_index} not in preserve_slides")
@@ -65,7 +68,7 @@ def main(config_path):
         # Delete in reverse order to maintain indices
         for slide_idx in reversed(slides_to_delete):
             print(f"Deleting slide {slide_idx + 1}...")
-            delete_slide(ppt_file, slide_idx)
+            delete_slide(ppt_file, slide_idx, backup_base=backup_dir)
         print(f"Deleted {len(slides_to_delete)} slide(s)")
     else:
         print("No slides to delete")

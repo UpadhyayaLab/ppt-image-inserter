@@ -23,9 +23,14 @@ pip install -r requirements.txt
 
 ### Basic Usage
 
-1. **Copy and edit the example config** (from `examples/example_config.yaml`):
+1. **Copy and edit the example config**:
    ```bash
+   # Basic example
    cp examples/example_config.yaml config.yaml
+
+   # Or use the scientific microscopy example
+   cp examples/example_config_PLL_aCD3_vim_fixed_cells.yaml config.yaml
+
    # Edit config.yaml with your presentation path, image directory, and image list
    ```
 
@@ -62,7 +67,7 @@ pip install -r requirements.txt
 ### Template Design
 - Create a template slide with your desired layout and one placeholder image
 - Specify the template slide index in your config file (0-indexed)
-- The first image position determines where all new images go
+- This image's position is auto-detected and used for all new slides
 - One image per slide in batch mode
 - Use `preserve_slides` in config to specify which slides to keep (default: title slide and template)
 
@@ -87,7 +92,7 @@ project/
 - Use forward slashes `/` in paths
 
 **Presentation corrupted or slides lost**
-- Check backup files in `PPT/.backups/`
+- Check backup files in `PPT/backups/`
 - **Close PowerPoint before running the script** - file must not be open
 - Verify write permissions
 
@@ -100,8 +105,3 @@ project/
 
 - **Issues**: [GitHub Issues](https://github.com/UpadhyayaLab/ppt-image-inserter/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/UpadhyayaLab/ppt-image-inserter/discussions)
-
-## Future Features
-
-- Multiple images per slide support
-- Template gallery with common layouts

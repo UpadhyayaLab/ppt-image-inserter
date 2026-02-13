@@ -16,6 +16,10 @@ template_slide: 1
 # Default: [0, template_slide] (keeps title slide and template)
 preserve_slides: [0, 1]
 
+# Backup directory for automatic backups (optional)
+# Default: PPT/backups
+# backup_dir: "custom/backup/location"
+
 # Auto-detect position from the first image in the template slide
 auto_position: true
 
@@ -46,6 +50,7 @@ images:
 | `presentation` | string | Yes | Path to PowerPoint file (relative or absolute) |
 | `template_slide` | integer | Yes | Index of slide to use as template (0-based) |
 | `preserve_slides` | list | No | Slide indices to preserve (default: [0, template_slide]) |
+| `backup_dir` | string | No | Backup directory path (default: PPT/backups) |
 | `auto_position` | boolean | No | Auto-detect image position from template (default: true) |
 | `position` | object | No | Manual position settings (left, top, width, height in inches) |
 | `base_dir` | string | Yes | Base directory for image paths |
@@ -109,13 +114,15 @@ Delete a slide from the presentation. **Note:** Backups are automatically create
 ```python
 delete_slide(
     ppt_path: str,
-    slide_index: int
+    slide_index: int,
+    backup_base: str = 'PPT/backups'
 ) -> None
 ```
 
 **Parameters:**
 - `ppt_path`: Path to the PowerPoint file
 - `slide_index`: Index of slide to delete (0-based)
+- `backup_base`: Base directory for backups (default: 'PPT/backups')
 
 **Note:** This function automatically creates timestamped backups before deleting the slide.
 
