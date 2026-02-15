@@ -9,11 +9,37 @@ This is a Python toolkit for programmatically inserting images into PowerPoint p
 ## Platform & Environment
 
 - **Platform**: Cross-platform (Windows, macOS, Linux)
-  - Note: Most users are on Windows
-  - Avoid Unix-specific commands (e.g., `/dev/null` redirects)
-- **Python**: 3.7+
-- **Main dependency**: `python-pptx`
-- **Package manager**: conda/conda (recommended) or pip
+  - **Note**: Primarily tested on Windows. Most users are on Windows.
+  - Avoid Unix-specific commands in user-facing code
+  - **Use forward slashes in paths** (works on all platforms including Windows)
+- **Python**: 3.9+ (recommended)
+- **Main dependencies**: `python-pptx`, `PyYAML`
+- **Package manager**: conda (recommended) or pip
+
+## Setup & Running
+
+### Installation
+
+```bash
+# Clone and navigate
+git clone https://github.com/UpadhyayaLab/ppt-image-inserter.git
+cd ppt-image-inserter
+
+# Create environment
+conda create -n ppt_inserter python=3.9
+conda activate ppt_inserter
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Running the Batch Script
+
+```bash
+python examples/batch_insert_images.py config.yaml
+```
+
+**CRITICAL**: The PowerPoint file must be closed before running the script. The script needs exclusive file access to modify the presentation.
 
 ## Architecture
 
@@ -63,6 +89,61 @@ from ppt_image_inserter import insert_image, copy_slide_replace_image
 1. **Config files (YAML)**: Define presentation path, template slide, image list
 2. **Scripts**: User-written Python scripts that use the core module
 3. **Examples**: Template configs and scripts in `examples/`
+
+### YAML Configuration Structure
+
+Since you'll frequently help users create and modify configs, here's the structure:
+
+**Minimal working config:**
+```yaml
+presentation: "path/to/presentation.pptx"
+template_slide: 1                    # 0-based index (slide 2 in PowerPoint UI)
+preserve_slides: [0, 1]              # Keep title slide (0) and template slide (1)
+base_dir: "path/to/images"
+images:
+  - image1.png                       # Single image = one slide
+  - [image2.png, image3.png]         # Two images = one slide (multi-image feature)
+  - image4.png                       # Single image = one slide
+```
+
+**All available fields:**
+```yaml
+# Required fields
+presentation: "presentations/my_presentation.pptx"
+template_slide: 1
+base_dir: "data/images"
+images:
+  - plot1.png
+  - plot2.png
+
+# Optional fields
+preserve_slides: [0, 1]              # Default: [0, template_slide]
+backup_dir: "custom/backup/location" # Default: "PPT/backups"
+output_path: "output/new.pptx"       # Template preservation mode (see below)
+auto_position: true                   # Default: true (auto-detect from template image)
+
+# Manual position override (only used if auto_position is false)
+position:
+  left: 0.5      # inches from left edge
+  top: 1.0       # inches from top edge
+  width: 8.0     # image width in inches
+  height: 6.0    # image height in inches
+```
+
+**Template Preservation Mode:**
+
+Use `output_path` to create a new presentation instead of modifying the original:
+
+```yaml
+presentation: "templates/template.pptx"  # Source template (unchanged)
+output_path: "output/my_results.pptx"    # New file to create
+# ... rest of config
+```
+
+This copies the template to `output_path` before processing, leaving the original untouched. Useful for:
+- Reusable templates
+- Generating multiple variants from one template
+- Preserving original presentation files
 
 ## Important Constraints
 
@@ -120,137 +201,44 @@ from ppt_image_inserter import insert_image, copy_slide_replace_image
 - **Example-driven**: Show concrete examples, not just API docs
 - **Beginner-friendly**: Assume users know Python basics but not python-pptx
 
-## Common User Workflows
+### When Adding Features
 
-### Workflow 1: Scientific Data Visualization
-
-**Scenario**: Researcher has 50 analysis plots from an experiment, needs them in a presentation
-
-**User approach**:
-1. Creates PowerPoint with title slide and template slide
-2. Manually places one image in template slide (slide 2) at desired position
-3. Creates YAML config listing all 50 images
-4. Runs script to delete old slides and regenerate from config
-5. Tweaks template, re-runs script until satisfied
-
-**Claude's role**:
-- Help create/modify YAML configs
-- Write/debug batch processing scripts
-- Troubleshoot image position issues
-- Optimize performance for large batches
-
-### Workflow 2: Report Automation
-
-**Scenario**: Weekly/monthly reports with updated charts
-
-**User approach**:
-1. Sets up template presentation
-2. Creates script that fetches latest data, generates plots, inserts into PPT
-3. Runs script automatically (cron/scheduled task)
-
-**Claude's role**:
-- Build end-to-end automation scripts
-- Handle error cases (missing data, corrupted files)
-- Set up logging and notifications
-
-### Workflow 3: A/B Testing Presentations
-
-**Scenario**: Multiple versions of a presentation with different images
-
-**User approach**:
-1. Creates different configs for different image sets
-2. Generates multiple presentation variants
-3. Compares side-by-side
-
-**Claude's role**:
-- Create config templates
-- Build batch generation scripts
-- Organize output files
+- **Start with user story**: Why do they need this? What problem does it solve?
+- **Maintain simplicity**: Does it fit the core mission (image insertion)?
+- **Backwards compatible**: Don't break existing configs or APIs
+- **Update docs**: Add examples to README and update CLAUDE.md
 
 ## Anti-Patterns to Avoid
 
-### ❌ Don't Over-Engineer
-
-**Bad**:
-```python
-class PresentationImageInserterFactoryBuilder:
-    def __init__(self):
-        self.strategies = []
-        self.observers = []
-    # ... 500 lines of abstraction
-```
-
-**Good**:
-```python
-def insert_image(ppt_path, slide_index, image_path, left, top, width, height):
-    """Insert image at specified position."""
-    # ... simple, direct implementation
-```
-
-**Rationale**: This is a utility library. Keep it simple and focused.
-
-### ❌ Don't Break Existing Configs
-
-**Bad**: Changing YAML field names without backwards compatibility
-```yaml
-# Old config breaks after your change
-presentation: "my.pptx"  # You renamed this to "ppt_file"
-```
-
-**Good**: Support both old and new field names, or provide clear migration guide
-
-### ❌ Don't Assume Directory Structure
-
-**Bad**:
-```python
-config_path = "configs/config.yaml"  # Assumes specific location
-```
-
-**Good**:
-```python
-config_path = os.path.join(os.path.dirname(__file__), "configs", "config.yaml")
-# Or better: take config path as argument
-```
-
-### ❌ Don't Silently Fail
-
-**Bad**:
-```python
-try:
-    insert_image(...)
-except:
-    pass  # User has no idea what went wrong
-```
-
-**Good**:
-```python
-try:
-    insert_image(...)
-except FileNotFoundError as e:
-    print(f"[ERROR] Image file not found: {e}")
-    error_count += 1
-```
+- **Don't over-engineer**: Keep functions simple and direct. This is a utility library, not a framework.
+- **Don't break existing configs**: Maintain backwards compatibility. Support both old and new field names if changing config structure.
+- **Don't assume directory structure**: Take paths as arguments or use relative paths from known locations.
+- **Don't silently fail**: Always log errors with clear messages. Exit with non-zero code on failures.
 
 ## When Users Ask For Help
 
 ### Debugging Checklist
 
-1. **Check paths**: Are all file paths correct? (absolute vs relative)
-2. **Check indices**: Slide indices are 0-based (slide 1 = index 0)
-3. **Check template**: Does template slide have exactly one image?
-4. **Check permissions**: Can we write to the PowerPoint file?
-5. **Check PowerPoint version**: Is it .pptx (not .ppt)?
+1. **Check if PowerPoint is closed**: The file must not be open in PowerPoint
+2. **Check paths**: Are all file paths correct? (absolute vs relative)
+3. **Check indices**: Slide indices are 0-based (slide 1 = index 0)
+4. **Check template**: Does template slide have exactly one image?
+5. **Check permissions**: Can we write to the PowerPoint file?
+6. **Check PowerPoint version**: Is it .pptx (not .ppt)?
 
 ### Common Questions & Answers
+
+**Q: "Script fails with permission error or file access error"**
+- A: The PowerPoint file must be **closed** before running the script. PowerPoint locks files when they're open.
 
 **Q: "Images aren't in the right position"**
 - A: Check that `auto_position: true` and template slide has one image where you want new images
 
 **Q: "Script is slow with 200 images"**
-- A: This is normal - PowerPoint files are complex XML. Consider batching.
+- A: This is normal - PowerPoint files are complex XML. Consider batching or be patient.
 
 **Q: "Can I insert multiple images per slide?"**
-- A: Not directly supported. Workaround: create multiple template slides or use direct API.
+- A: Not directly supported in batch mode. Workaround: create multiple template slides or use direct API.
 
 **Q: "Can I modify text in slides?"**
 - A: No - outside scope of this tool. Use python-pptx directly for that.
@@ -258,76 +246,11 @@ except FileNotFoundError as e:
 **Q: "Does it work with .ppt files?"**
 - A: No - only .pptx (Office Open XML format). Convert old files first.
 
-## Contributing Guidelines for Claude
+**Q: "How do I preserve my original template?"**
+- A: Use the `output_path` config option to create a new file instead of modifying the original.
 
-When helping users extend this tool:
-
-### New Features
-
-1. **Start with user story**: Why do they need this?
-2. **Check if possible**: Can python-pptx do this?
-3. **Maintain simplicity**: Does it fit the core mission?
-4. **Add tests**: Provide test case or example
-5. **Update docs**: Add to README and examples
-
-### Bug Fixes
-
-1. **Reproduce first**: Understand the issue fully
-2. **Minimal change**: Fix the bug, don't refactor unrelated code
-3. **Add regression test**: Prevent it from happening again
-4. **Document**: Note the fix in comments if non-obvious
-
-### Performance Improvements
-
-1. **Measure first**: Profile before optimizing
-2. **Document tradeoffs**: Faster but more memory? Note it.
-3. **Backwards compatible**: Don't break existing usage
-
-## Example Interactions
-
-### Good Interaction Example
-
-**User**: "I need to add 100 images to a presentation. They're in /data/plots/"
-
-**Claude**:
-```
-Let me help you set up a config and script for that.
-
-First, let's create a config file:
-```
-[Creates clear, well-commented YAML config]
-```
-
-Now here's a script to process your images:
-```
-[Creates simple, robust script with error handling]
-```
-
-To run:
-1. Make sure your PowerPoint has a template slide (slide 2) with one image
-2. Save the config as config.yaml
-3. Run: python insert_images.py
-
-The script will:
-- Delete old slides (keeping title & template)
-- Create 100 new slides from your images
-- Create backups before any changes
-
-Questions?
-```
-
-### Bad Interaction Example
-
-**User**: "I need to add 100 images to a presentation."
-
-**Claude**:
-```python
-# Here's the code
-from ppt import *
-do_the_thing("ppt.pptx", "/data")
-```
-
-[No explanation, no config, no error handling, invalid code]
+**Q: "Can I use multiple images per slide?"**
+- A: Yes! Use list format in config: `images: [[img1.png, img2.png], ...]`. Template slide must have matching number of placeholder images.
 
 ## Technical Gotchas
 
@@ -367,27 +290,6 @@ from ppt_image_inserter import cm_to_inches
 width = cm_to_inches(15.24)  # 15.24 cm = 6 inches
 ```
 
-### PowerPoint Object Model
-
-```python
-from pptx import Presentation
-
-prs = Presentation("file.pptx")
-slide = prs.slides[0]  # First slide
-
-# Slides have:
-# - shapes (text boxes, images, etc.)
-# - notes
-# - slide_layout (template)
-# - placeholders
-
-# Find images:
-for shape in slide.shapes:
-    if hasattr(shape, "image"):
-        # It's an image!
-        print(shape.left, shape.top, shape.width, shape.height)
-```
-
 ## Testing Checklist
 
 Before suggesting code to users, verify:
@@ -403,30 +305,5 @@ Before suggesting code to users, verify:
 ## Resources
 
 - **python-pptx docs**: https://python-pptx.readthedocs.io/
-- **PowerPoint Open XML format**: Understanding helps debug issues
 - **Example configs**: See `examples/` directory
-
-## Philosophy
-
-> "Automate the tedious, empower the creative"
-
-This tool exists because manually inserting hundreds of images into PowerPoint is:
-- Tedious and error-prone
-- Time-consuming
-- Not creative work
-
-Good contributions make batch operations:
-- Easier to set up
-- More reliable
-- Faster to execute
-- Clearer when things go wrong
-
-Bad contributions:
-- Add complexity without clear benefit
-- Break existing workflows
-- Assume specific use cases
-- Ignore cross-platform concerns
-
----
-
-**Remember**: Users are researchers, data scientists, analysts - not software engineers. Keep things simple, clear, and robust. When in doubt, ask clarifying questions rather than making assumptions.
+- **Target users**: Researchers, data scientists, analysts - prioritize simplicity and clear error messages

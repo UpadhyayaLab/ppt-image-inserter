@@ -5,21 +5,18 @@ High-level workflow functions for PowerPoint image replacement.
 from pptx import Presentation
 from pptx.util import Inches, Pt
 import os
-from .position import get_image_position
+from .position import get_image_position, get_all_image_positions
 from .slide_utils import duplicate_slide, remove_pictures_from_slide, remove_all_text_from_slide
 
 
 def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, position=None,
                              store_metadata=True, add_label=True):
     """
-    Copy a slide and replace its image with a new one.
+    Copy a slide and replace its image with a new one (single-image version).
 
-    This is the main high-level function for batch image processing. It:
-    1. Duplicates the source slide (creating a new slide at the end)
-    2. Removes all pictures from the duplicated slide
-    3. Inserts the new image at the specified position
-    4. Optionally stores the original image path in the picture's alt text
-    5. Optionally adds a visible text label showing filename and folder path
+    This is a convenience wrapper around copy_slide_replace_images() for the common
+    case of inserting a single image. It maintains backwards compatibility with
+    existing code.
 
     Args:
         ppt_path (str): Path to the PowerPoint file
@@ -27,13 +24,8 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         new_image_path (str): Path to the new image to insert
         position (dict, optional): Position dict with keys 'left', 'top', 'width', 'height'
                                    If None, auto-detects from first image in source slide
-        store_metadata (bool): If True, stores the original image path in the picture's
-                              alt text fields (descr = full path, title = filename).
-                              This allows tracking image sources after slide reordering.
-                              Default: True
-        add_label (bool): If True, adds a visible text box in bottom left corner showing
-                         the filename and folder path. Useful for visual tracking while
-                         viewing slides. Default: True
+        store_metadata (bool): If True, stores the image path in the picture's alt text. Default: True
+        add_label (bool): If True, adds a visible text label. Default: True
 
     Returns:
         int: Index of the newly created slide
@@ -44,37 +36,108 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         ValueError: If position is None and source slide has no pictures
 
     Example:
-        >>> # Auto-detect position with metadata and label
-        >>> new_idx = copy_slide_replace_image(
-        ...     'presentation.pptx',
-        ...     1,  # Copy slide 2
-        ...     'new_image.tif'
-        ... )
-        >>> print(f"Created slide {new_idx + 1}")
+        >>> # Auto-detect position
+        >>> new_idx = copy_slide_replace_image('presentation.pptx', 1, 'new_image.tif')
 
-        >>> # Specify exact position without label
+        >>> # Specify exact position
         >>> pos = {'left': 0.14, 'top': 0.96, 'width': 5.43, 'height': 2.72}
-        >>> new_idx = copy_slide_replace_image(
+        >>> new_idx = copy_slide_replace_image('presentation.pptx', 1, 'new_image.tif',
+        ...                                      position=pos, add_label=False)
+    """
+    # Convert single position dict to list format for plural version
+    positions = [position] if position is not None else None
+
+    # Call the plural version with single-item lists
+    return copy_slide_replace_images(
+        ppt_path,
+        source_slide_index,
+        [new_image_path],  # Wrap in list
+        positions=positions,
+        store_metadata=store_metadata,
+        add_label=add_label
+    )
+
+
+def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, positions=None,
+                               store_metadata=True, add_label=False):
+    """
+    Copy a slide and replace its images with new ones (supports multiple images per slide).
+
+    This is the plural version of copy_slide_replace_image. It:
+    1. Duplicates the source slide (creating a new slide at the end)
+    2. Removes all pictures from the duplicated slide
+    3. Inserts multiple new images at specified positions
+    4. Optionally stores metadata in each picture's alt text
+    5. Optionally adds visible text labels (disabled by default for multi-image slides)
+
+    Args:
+        ppt_path (str): Path to the PowerPoint file
+        source_slide_index (int): Index of the template slide to copy (0-based)
+        new_image_paths (list): List of image file paths to insert
+        positions (list, optional): List of position dicts with keys 'left', 'top', 'width', 'height'
+                                    If None, auto-detects from all images in source slide
+        store_metadata (bool): If True, stores image paths in pictures' alt text. Default: True
+        add_label (bool): If True, adds visible text labels. Default: False (usually too cluttered
+                         for multi-image slides)
+
+    Returns:
+        int: Index of the newly created slide
+
+    Raises:
+        FileNotFoundError: If PPT or any image file doesn't exist
+        IndexError: If source_slide_index is out of range
+        ValueError: If positions is None and source slide has no pictures, or if
+                   len(new_image_paths) != len(positions)
+
+    Example:
+        >>> # Auto-detect positions from template with 2 placeholder images
+        >>> new_idx = copy_slide_replace_images(
         ...     'presentation.pptx',
-        ...     1,
-        ...     'new_image.tif',
-        ...     position=pos,
-        ...     add_label=False
+        ...     1,  # Template is slide 2
+        ...     ['left_image.png', 'right_image.png']
+        ... )
+
+        >>> # Specify exact positions for 3 images
+        >>> positions = [
+        ...     {'left': 0.5, 'top': 1.0, 'width': 3.0, 'height': 2.0},
+        ...     {'left': 4.0, 'top': 1.0, 'width': 3.0, 'height': 2.0},
+        ...     {'left': 7.5, 'top': 1.0, 'width': 3.0, 'height': 2.0}
+        ... ]
+        >>> new_idx = copy_slide_replace_images(
+        ...     'presentation.pptx', 1,
+        ...     ['img1.png', 'img2.png', 'img3.png'],
+        ...     positions=positions
         ... )
     """
     # Validate input files
     if not os.path.exists(ppt_path):
         raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
 
-    if not os.path.exists(new_image_path):
-        raise FileNotFoundError(f"Image file not found: {new_image_path}")
+    for img_path in new_image_paths:
+        if not os.path.exists(img_path):
+            raise FileNotFoundError(f"Image file not found: {img_path}")
 
     # Load presentation
     prs = Presentation(ppt_path)
 
-    # Auto-detect position if not specified
-    if position is None:
-        position = get_image_position(ppt_path, source_slide_index, image_index=0)
+    # Auto-detect positions if not specified
+    if positions is None:
+        positions = get_all_image_positions(ppt_path, source_slide_index)
+
+        # If no images found in template, raise error
+        if not positions:
+            raise ValueError(
+                f"Source slide {source_slide_index} has no pictures to use as position templates. "
+                f"Add placeholder images to the template slide or specify positions manually."
+            )
+
+    # Validate that we have the same number of images and positions
+    if len(new_image_paths) != len(positions):
+        raise ValueError(
+            f"Number of images ({len(new_image_paths)}) does not match number of positions "
+            f"({len(positions)}). Template slide has {len(positions)} placeholder image(s), "
+            f"but config provides {len(new_image_paths)} image(s)."
+        )
 
     # Duplicate the source slide
     new_slide = duplicate_slide(prs, source_slide_index)
@@ -88,44 +151,44 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
     # Remove all text (including placeholders) from the new slide
     num_text_removed = remove_all_text_from_slide(new_slide)
 
-    # Insert the new image at the specified position
-    picture = new_slide.shapes.add_picture(
-        new_image_path,
-        Inches(position['left']),
-        Inches(position['top']),
-        width=Inches(position['width']),
-        height=Inches(position['height'])
-    )
+    # Insert all new images at their specified positions
+    pictures = []
+    for img_path, pos in zip(new_image_paths, positions):
+        picture = new_slide.shapes.add_picture(
+            img_path,
+            Inches(pos['left']),
+            Inches(pos['top']),
+            width=Inches(pos['width']),
+            height=Inches(pos['height'])
+        )
+        pictures.append(picture)
 
-    # Store metadata in alt text if requested
-    if store_metadata:
-        # Use XML API to set alt text (python-pptx 1.0.2 doesn't have descr/title properties)
-        try:
-            picture._element._nvXxPr.cNvPr.set("descr", new_image_path)  # Full path
-            picture._element._nvXxPr.cNvPr.set("title", os.path.basename(new_image_path))  # Filename
-        except Exception as e:
-            print(f"[WARNING] Could not store metadata: {e}")
+        # Store metadata in alt text if requested
+        if store_metadata:
+            try:
+                picture._element._nvXxPr.cNvPr.set("descr", img_path)  # Full path
+                picture._element._nvXxPr.cNvPr.set("title", os.path.basename(img_path))  # Filename
+            except Exception as e:
+                print(f"[WARNING] Could not store metadata for {os.path.basename(img_path)}: {e}")
 
-    # Add visible text label if requested
-    if add_label:
+    # Add visible text labels if requested (usually skipped for multi-image slides)
+    if add_label and len(new_image_paths) == 1:
+        # Only add label for single-image case to avoid clutter
         try:
-            # Create text box in bottom left corner
             textbox = new_slide.shapes.add_textbox(
                 Inches(0.5),    # Left: 0.5" from edge
-                Inches(7.0),    # Top: Near bottom (standard slide is 7.5" tall)
+                Inches(7.0),    # Top: Near bottom
                 Inches(5.0),    # Width: 5 inches
                 Inches(0.4)     # Height: 0.4 inches
             )
 
-            # Set text content
             text_frame = textbox.text_frame
-            folder_path = os.path.dirname(new_image_path)
-            filename = os.path.basename(new_image_path)
+            folder_path = os.path.dirname(new_image_paths[0])
+            filename = os.path.basename(new_image_paths[0])
             text_frame.text = f"File: {filename}\nPath: {folder_path}"
 
-            # Format text - small font
             for paragraph in text_frame.paragraphs:
-                paragraph.font.size = Pt(8)  # 8pt font
+                paragraph.font.size = Pt(8)
                 paragraph.font.name = 'Arial'
 
         except Exception as e:

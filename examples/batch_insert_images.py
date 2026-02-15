@@ -22,7 +22,7 @@ from pptx import Presentation
 # Add parent directory to path to import ppt_image_inserter
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ppt_image_inserter import delete_slide, copy_slide_replace_image
+from ppt_image_inserter import delete_slide, copy_slide_replace_image, copy_slide_replace_images
 
 
 def main(config_path):
@@ -98,33 +98,101 @@ def main(config_path):
     success_count = 0
     error_count = 0
 
-    for i, image_filename in enumerate(remaining_images):
-        # Construct full image path
-        if isinstance(image_filename, dict):
-            image_path = image_filename['path']
+    for i, image_spec in enumerate(remaining_images):
+        # Handle three cases: list (multi-image), dict (legacy), or string (single image)
+
+        if isinstance(image_spec, list):
+            # Multiple images per slide (NEW FEATURE)
+            if not image_spec:
+                # Empty list - skip with warning
+                print(f"[WARNING] Empty image list at index {i+1}, skipping")
+                continue
+
+            # Build full paths for all images in the list
+            image_paths = []
+            for img_filename in image_spec:
+                if os.path.isabs(img_filename):
+                    img_path = img_filename
+                else:
+                    img_path = os.path.join(base_dir, img_filename)
+                image_paths.append(img_path)
+
+            # Validate all images exist
+            all_exist = True
+            for img_path in image_paths:
+                if not os.path.exists(img_path):
+                    print(f"[ERROR] Image not found: {img_path}")
+                    error_count += 1
+                    all_exist = False
+
+            if not all_exist:
+                continue  # Skip this slide if any image is missing
+
+            try:
+                # Copy template slide and insert multiple images
+                new_idx = copy_slide_replace_images(
+                    ppt_file,
+                    template_slide_index,
+                    image_paths,
+                    positions=None,  # Auto-detect from template
+                    store_metadata=True,
+                    add_label=False  # Don't add labels for multi-image slides
+                )
+                success_count += 1
+                print(f"  Created slide with {len(image_paths)} images: {[os.path.basename(p) for p in image_paths]}")
+            except Exception as e:
+                print(f"[ERROR] Failed on multi-image slide: {e}")
+                error_count += 1
+
+        elif isinstance(image_spec, dict):
+            # Legacy dict format (single image with metadata)
+            image_path = image_spec['path']
+
+            # Check if image exists
+            if not os.path.exists(image_path):
+                print(f"[ERROR] Image not found: {image_path}")
+                error_count += 1
+                continue
+
+            try:
+                # Copy template slide and insert image
+                new_idx = copy_slide_replace_image(
+                    ppt_file,
+                    template_slide_index,
+                    image_path,
+                    position=None,  # Auto-detect from template
+                    store_metadata=True,
+                    add_label=True
+                )
+                success_count += 1
+            except Exception as e:
+                print(f"[ERROR] Failed on {os.path.basename(image_path)}: {e}")
+                error_count += 1
+
         else:
-            image_path = os.path.join(base_dir, image_filename)
+            # Single string (backwards compatible - most common case)
+            image_path = os.path.join(base_dir, image_spec)
 
-        # Check if image exists
-        if not os.path.exists(image_path):
-            print(f"[ERROR] Image not found: {image_path}")
-            error_count += 1
-            continue
+            # Check if image exists
+            if not os.path.exists(image_path):
+                print(f"[ERROR] Image not found: {image_path}")
+                error_count += 1
+                continue
 
-        try:
-            # Copy template slide and insert image
-            new_idx = copy_slide_replace_image(
-                ppt_file,
-                template_slide_index,
-                image_path,
-                position=None,  # Auto-detect from template
-                store_metadata=True,
-                add_label=True
-            )
-            success_count += 1
-        except Exception as e:
-            print(f"[ERROR] Failed on {os.path.basename(image_path)}: {e}")
-            error_count += 1
+            try:
+                # Copy template slide and insert image
+                new_idx = copy_slide_replace_image(
+                    ppt_file,
+                    template_slide_index,
+                    image_path,
+                    position=None,  # Auto-detect from template
+                    store_metadata=True,
+                    add_label=True
+                )
+                success_count += 1
+            except Exception as e:
+                print(f"[ERROR] Failed on {os.path.basename(image_path)}: {e}")
+                error_count += 1
 
     # Summary
     print(f"\nComplete: {success_count}/{len(remaining_images)} slides created")

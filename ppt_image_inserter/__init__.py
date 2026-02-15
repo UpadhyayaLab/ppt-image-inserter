@@ -18,6 +18,7 @@ from .core import (
 from .position import (
     cm_to_inches,
     get_image_position,
+    get_all_image_positions,
 )
 
 from .slide_utils import (
@@ -37,6 +38,7 @@ from .metadata import (
 
 from .workflow import (
     copy_slide_replace_image,
+    copy_slide_replace_images,
     replace_image_on_existing_slide,
 )
 
@@ -50,6 +52,7 @@ __all__ = [
     # Position utilities
     'cm_to_inches',
     'get_image_position',
+    'get_all_image_positions',
 
     # Slide manipulation
     'duplicate_slide',
@@ -65,5 +68,6 @@ __all__ = [
 
     # High-level workflows
     'copy_slide_replace_image',
+    'copy_slide_replace_images',
     'replace_image_on_existing_slide',
 ]

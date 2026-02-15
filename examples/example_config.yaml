@@ -31,15 +31,23 @@ auto_position: true
 # Base directory containing all images
 base_dir: "data/images"
 
-# List of image filenames (each creates a new slide)
+# List of image filenames
+# Supports both single images (one per slide) and multiple images (on one slide)
 images:
-  - metric_001_baseline.png
-  - metric_002_treatment_a.png
-  - metric_003_treatment_b.png
-  - metric_004_comparison.png
-  - metric_005_statistical_analysis.png
+  - metric_001_baseline.png                           # Single image = one slide
+  - [metric_002_a.png, metric_002_b.png]              # Two images = one slide (NEW!)
+  - metric_003_treatment_b.png                        # Single image = one slide
+  - [metric_004_a.png, metric_004_b.png, metric_004_c.png]  # Three images = one slide
+  - metric_005_statistical_analysis.png               # Single image = one slide
 
-# Notes:
+# Multi-image notes:
+# - For multi-image slides, template slide must have N placeholder images
+#   (e.g., 2 placeholder images for side-by-side comparison)
+# - Positions are auto-detected from template placeholders
+# - Number of images in list must match number of placeholders in template
+# - Text labels are disabled for multi-image slides to avoid clutter
+
+# General notes:
 # - Use forward slashes (/) in paths, even on Windows
 # - All images must exist in base_dir or will be skipped with an error
 # - Images are processed in the order listed

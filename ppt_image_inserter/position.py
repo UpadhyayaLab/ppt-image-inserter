@@ -84,3 +84,62 @@ def get_image_position(ppt_path, slide_index, image_index=0):
     }
 
     return position_info
+
+
+def get_all_image_positions(ppt_path, slide_index):
+    """
+    Extract positions and sizes of ALL images on a slide.
+
+    Useful for templates with multiple placeholder images. Returns positions
+    in the order they appear in the slide's shape collection.
+
+    Args:
+        ppt_path (str): Path to the PowerPoint file
+        slide_index (int): Slide number (0-based index)
+
+    Returns:
+        list: List of position dicts, each with keys 'left', 'top', 'width', 'height' (all in inches)
+              Returns empty list if slide has no pictures
+
+    Raises:
+        FileNotFoundError: If PPT file doesn't exist
+        IndexError: If slide_index is out of range
+
+    Example:
+        >>> positions = get_all_image_positions('presentation.pptx', 1)
+        >>> print(positions)
+        [
+            {'left': 0.5, 'top': 1.0, 'width': 4.0, 'height': 3.0},
+            {'left': 5.0, 'top': 1.0, 'width': 4.0, 'height': 3.0}
+        ]
+    """
+    if not os.path.exists(ppt_path):
+        raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
+
+    prs = Presentation(ppt_path)
+
+    if slide_index < 0 or slide_index >= len(prs.slides):
+        raise IndexError(
+            f"Slide index {slide_index} out of range. "
+            f"Presentation has {len(prs.slides)} slides"
+        )
+
+    slide = prs.slides[slide_index]
+
+    # Find all pictures on the slide
+    pictures = [shape for shape in slide.shapes
+                if shape.shape_type == MSO_SHAPE_TYPE.PICTURE]
+
+    # Convert all picture positions to dicts
+    positions = []
+    for picture in pictures:
+        # EMU = English Metric Units (914400 EMUs = 1 inch)
+        position_info = {
+            'left': picture.left / 914400.0,
+            'top': picture.top / 914400.0,
+            'width': picture.width / 914400.0,
+            'height': picture.height / 914400.0
+        }
+        positions.append(position_info)
+
+    return positions
