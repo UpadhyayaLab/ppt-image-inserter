@@ -15,8 +15,8 @@ template_slide: 1
 # Default: [0, template_slide]
 preserve_slides: [0, 1]  # Keeps title slide and template slide
 
-# Backup directory for automatic backups
-backup_dir: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/backups"
+# Backup directory: defaults to 'backups' subfolder in presentation's directory
+# (no need to specify unless you want a custom location)
 
 # Auto-detect image position from template slide
 auto_position: true

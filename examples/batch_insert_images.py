@@ -22,7 +22,7 @@ from pptx import Presentation
 # Add parent directory to path to import ppt_image_inserter
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ppt_image_inserter import delete_slide, copy_slide_replace_image, copy_slide_replace_images
+from ppt_image_inserter import delete_slide, copy_slide_replace_image, copy_slide_replace_images, backup_presentation
 
 
 def main(config_path):
@@ -40,8 +40,13 @@ def main(config_path):
     # Get preserve_slides, default to [0, template_slide] if not specified
     preserve_slides = config.get('preserve_slides', [0, template_slide_index])
 
-    # Get backup directory, default to 'PPT/backups' if not specified
-    backup_dir = config.get('backup_dir', 'PPT/backups')
+    # Get backup directory, default to 'backups' subfolder in presentation's directory
+    if 'backup_dir' in config:
+        backup_dir = config['backup_dir']
+    else:
+        # Create backups folder in same directory as presentation
+        ppt_dir = os.path.dirname(os.path.abspath(ppt_file))
+        backup_dir = os.path.join(ppt_dir, 'backups')
 
     # Handle output_path if specified (template preservation mode)
     output_path = config.get('output_path', None)
@@ -57,9 +62,15 @@ def main(config_path):
             print(f"[ERROR] Output directory does not exist: {output_dir}")
             sys.exit(1)
 
-        # Warn if output file exists
+        # Backup existing output file before overwriting (if it exists)
         if os.path.exists(output_path):
             print(f"[WARNING] Output file exists and will be overwritten")
+            print(f"Creating backup of existing output file in {backup_dir}...")
+            try:
+                backups_created = backup_presentation(output_path, backup_base=backup_dir)
+                print(f"  Backed up to: {', '.join(backups_created.keys())}")
+            except Exception as e:
+                print(f"[WARNING] Backup failed: {e}")
 
         # Copy template to output location
         try:
