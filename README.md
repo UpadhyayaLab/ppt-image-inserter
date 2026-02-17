@@ -23,10 +23,10 @@ pip install -r requirements.txt
 
 1. **Copy and edit an example config**:
    ```cmd
-   :: Basic single-image-per-slide example
    copy examples_and_configs\configs\example_config.yaml my_config.yaml
-
-   :: Or use the scientific microscopy example
+   ```
+   Or for the scientific microscopy example:
+   ```cmd
    copy examples_and_configs\configs\example_config_PLL_aCD3_vim_fixed_cells.yaml my_config.yaml
    ```
    Then edit `my_config.yaml` with your presentation path, image directory, and image list.
