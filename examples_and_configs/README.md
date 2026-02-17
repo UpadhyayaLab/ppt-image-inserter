@@ -14,7 +14,7 @@ python batch_insert_images.py configs/example_config.yaml
 python batch_insert_images.py configs/my_experiment.yaml
 
 # Config path can be relative or absolute
-python batch_insert_images.py /path/to/my_config.yaml
+python batch_insert_images.py C:\path\to\my_config.yaml
 ```
 
 **Use this for**: any batch job — single image per slide or multiple images per slide.
@@ -43,11 +43,11 @@ All YAML configs live here. The batch script accepts any of them as an argument.
 | `example_config.yaml` | Basic template — mix of single and multi-image slides |
 | `example_config_PLL_aCD3_vim_fixed_cells.yaml` | Real-world microscopy example (23 images, single per slide) |
 
-Copy one of these as a starting point:
-```bash
-cp configs/example_config.yaml configs/my_experiment.yaml
-# Then edit my_experiment.yaml
+Copy one of these as a starting point (in File Explorer, or via Command Prompt):
+```cmd
+copy configs\example_config.yaml configs\my_experiment.yaml
 ```
+Then edit `my_experiment.yaml`.
 
 ### Research Configs
 

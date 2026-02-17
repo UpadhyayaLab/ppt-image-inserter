@@ -32,7 +32,7 @@ auto_position: true
 #   height: 6.0    # image height in inches
 
 # Base directory containing all images
-base_dir: "/data/analysis/experiment_2024/plots"
+base_dir: "C:/data/analysis/experiment_2024/plots"
 
 # List of image filenames (each creates a new slide)
 # Images are processed in the order listed

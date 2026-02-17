@@ -22,15 +22,14 @@ pip install -r requirements.txt
 ### Basic Usage
 
 1. **Copy and edit an example config**:
-   ```bash
-   # Basic single-image-per-slide example
-   cp examples_and_configs/configs/example_config.yaml my_config.yaml
+   ```cmd
+   :: Basic single-image-per-slide example
+   copy examples_and_configs\configs\example_config.yaml my_config.yaml
 
-   # Or use the scientific microscopy example
-   cp examples_and_configs/configs/example_config_PLL_aCD3_vim_fixed_cells.yaml my_config.yaml
-
-   # Edit my_config.yaml with your presentation path, image directory, and image list
+   :: Or use the scientific microscopy example
+   copy examples_and_configs\configs\example_config_PLL_aCD3_vim_fixed_cells.yaml my_config.yaml
    ```
+   Then edit `my_config.yaml` with your presentation path, image directory, and image list.
 
 2. **Run the batch script**:
    ```bash
