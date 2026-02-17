@@ -22,7 +22,80 @@ from pptx import Presentation
 # Add parent directory to path to import ppt_image_inserter
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ppt_image_inserter import delete_slide, copy_slide_replace_image, copy_slide_replace_images, backup_presentation
+from ppt_image_inserter import delete_slide, copy_slide_replace_image, copy_slide_replace_images, backup_presentation, get_all_image_positions
+
+
+def validate_config(config, config_path):
+    """
+    Validate configuration file has all required fields with valid values.
+
+    Args:
+        config (dict): Parsed configuration dictionary
+        config_path (str): Path to config file (for error messages)
+
+    Raises:
+        SystemExit: If validation fails, exits with code 1
+    """
+    required_fields = ['presentation', 'template_slide', 'images']
+
+    # Check required fields exist
+    for field in required_fields:
+        if field not in config:
+            print(f"[ERROR] Required field '{field}' missing in {config_path}")
+            print(f"Config must include: {', '.join(required_fields)}")
+            sys.exit(1)
+
+    # Validate template_slide is integer
+    if not isinstance(config['template_slide'], int):
+        print(f"[ERROR] template_slide must be an integer (0-based index)")
+        print(f"Found: {config['template_slide']} ({type(config['template_slide']).__name__})")
+        sys.exit(1)
+
+    # Validate template_slide is non-negative
+    if config['template_slide'] < 0:
+        print(f"[ERROR] template_slide must be non-negative (found: {config['template_slide']})")
+        sys.exit(1)
+
+    # Validate images is a list
+    if not isinstance(config['images'], list):
+        print(f"[ERROR] 'images' must be a list")
+        sys.exit(1)
+
+    # Validate images list is not empty
+    if len(config['images']) == 0:
+        print(f"[ERROR] 'images' list is empty - nothing to process")
+        sys.exit(1)
+
+    # Validate presentation file exists
+    if not os.path.exists(config['presentation']):
+        print(f"[ERROR] Presentation file not found: {config['presentation']}")
+        sys.exit(1)
+
+    # Validate presentation is .pptx format
+    if not config['presentation'].endswith('.pptx'):
+        print(f"[ERROR] Presentation must be .pptx format (not .ppt)")
+        print(f"Found: {config['presentation']}")
+        sys.exit(1)
+
+    # Validate base_dir exists if specified
+    if 'base_dir' in config and config['base_dir']:
+        if not os.path.isdir(config['base_dir']):
+            print(f"[ERROR] base_dir is not a valid directory: {config['base_dir']}")
+            sys.exit(1)
+
+    # Validate output_path if specified
+    if 'output_path' in config and config['output_path']:
+        # Check output directory exists
+        output_dir = os.path.dirname(config['output_path'])
+        if output_dir and not os.path.exists(output_dir):
+            print(f"[ERROR] Output directory does not exist: {output_dir}")
+            sys.exit(1)
+
+        # Validate output_path is .pptx format
+        if not config['output_path'].endswith('.pptx'):
+            print(f"[ERROR] output_path must be .pptx format")
+            print(f"Found: {config['output_path']}")
+            sys.exit(1)
 
 
 def main(config_path):
@@ -31,6 +104,9 @@ def main(config_path):
     # Load configuration
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
+
+    # Validate configuration
+    validate_config(config, config_path)
 
     ppt_file = config['presentation']
     base_dir = config.get('base_dir', '')
@@ -83,9 +159,66 @@ def main(config_path):
         # Update ppt_file to point to output for all subsequent operations
         ppt_file = output_path
 
+    # Validate template slide exists and has images
+    prs = Presentation(ppt_file)
+    if template_slide_index >= len(prs.slides):
+        print(f"[ERROR] template_slide index {template_slide_index} out of range")
+        print(f"Presentation has {len(prs.slides)} slide(s) (indices 0-{len(prs.slides)-1})")
+        print(f"Note: Slide indices are 0-based (Slide 1 in UI = index 0)")
+        sys.exit(1)
+
+    # Validate template slide has images for auto-position
+    try:
+        positions = get_all_image_positions(ppt_file, template_slide_index)
+        if not positions:
+            print(f"[ERROR] Template slide {template_slide_index} has no images")
+            print("Add placeholder images to the template slide for auto-positioning")
+            sys.exit(1)
+        print(f"Template slide validated: {len(positions)} placeholder image(s) found")
+    except Exception as e:
+        print(f"[ERROR] Could not read template slide: {e}")
+        sys.exit(1)
+
     # Ensure template_slide is in preserve_slides if not explicitly excluded
     if template_slide_index not in preserve_slides:
         print(f"[WARNING] template_slide {template_slide_index} not in preserve_slides")
+
+    # Step 0: Pre-validate ALL images exist before any destructive operations
+    print("Validating all images exist...")
+    validation_errors = []
+
+    for i, image_spec in enumerate(images):
+        if isinstance(image_spec, list):
+            # Multi-image case
+            for img_filename in image_spec:
+                if os.path.isabs(img_filename):
+                    img_path = img_filename
+                else:
+                    img_path = os.path.join(base_dir, img_filename)
+
+                if not os.path.exists(img_path):
+                    validation_errors.append(f"Image {i+1} (multi): {img_path}")
+
+        elif isinstance(image_spec, dict):
+            # Legacy dict format
+            img_path = image_spec['path']
+            if not os.path.exists(img_path):
+                validation_errors.append(f"Image {i+1} (dict): {img_path}")
+
+        else:
+            # Single string
+            img_path = os.path.join(base_dir, image_spec) if not os.path.isabs(image_spec) else image_spec
+            if not os.path.exists(img_path):
+                validation_errors.append(f"Image {i+1}: {img_path}")
+
+    if validation_errors:
+        print(f"\n[ERROR] {len(validation_errors)} image(s) not found:")
+        for error in validation_errors:
+            print(f"  - {error}")
+        print("\nNo slides were modified (validation failed before processing)")
+        sys.exit(1)
+
+    print(f"All {len(images)} image spec(s) validated successfully\n")
 
     # Step 1: Delete old slides (except preserved ones)
 

@@ -1,0 +1,66 @@
+# Configuration for Ctrl vs DZNep: Lamin B + Hoechst fixed slice montages
+# Experiment: Ctrl, DZNep, bTub, Lamin B (2026-02-03)
+
+# Path to PowerPoint template (will remain unchanged)
+presentation: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Ctrl_DZNep_upto1hr_LaminB_Hoechst_montages_template.pptx"
+
+# Output path - creates a new file, leaving template untouched
+output_path: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Ctrl_DZNep_upto1hr_LaminB_Hoechst_montages.pptx"
+
+# Template slide to copy (0-based index)
+# Slide 2 in PowerPoint UI = index 1
+template_slide: 1
+
+# Slides to preserve (not delete) - 0-based indices
+# Default: [0, template_slide]
+preserve_slides: [0, 1]  # Keeps title slide and template slide
+
+# Backup directory: defaults to 'backups' subfolder in presentation's directory
+# (no need to specify unless you want a custom location)
+
+# Auto-detect image position from template slide
+auto_position: true
+
+# Base directory containing images (if using relative paths)
+# Leave empty if using absolute paths
+base_dir: ""
+
+# List of images to insert
+# Each slide has 2 images: Left = Control (h2o), Right = DZNep
+# Template slide already has 4 min images, so include them first
+images:
+  # 4min timepoint (already in template slide)
+  - [
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1A3_h2o_4min_lmnb1_/cropped/fixed_slice_images/montages/fixed_slice_montage_G1A3_h2o_4min_lmnb1_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1B3_dznep_4min_lmnb1_/cropped/fixed_slice_images/montages/fixed_slice_montage_G1B3_dznep_4min_lmnb1_.png"
+    ]
+
+  # 8min timepoint
+  - [
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2A3_h2o_8min_lmnb1_/cropped/fixed_slice_images/montages/fixed_slice_montage_G2A3_h2o_8min_lmnb1_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2B3_dznep_8min_lmnb1_/cropped/fixed_slice_images/montages/fixed_slice_montage_G2B3_dznep_8min_lmnb1_.png"
+    ]
+
+  # 15min timepoint
+  - [
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3A3_h2o_15min_lmnb1_/cropped/fixed_slice_images/montages/fixed_slice_montage_G3A3_h2o_15min_lmnb1_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3B3_dznep_15min_lmnb1_/cropped/fixed_slice_images/montages/fixed_slice_montage_G3B3_dznep_15min_lmnb1_.png"
+    ]
+
+  # 30min timepoint
+  - [
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4A3_h2o_30min_lmnb1_/cropped/fixed_slice_images/montages/fixed_slice_montage_G4A3_h2o_30min_lmnb1_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4B3_dznep_30min_lmnb1_/cropped/fixed_slice_images/montages/fixed_slice_montage_G4B3_dznep_30min_lmnb1_.png"
+    ]
+
+  # 1hr timepoint
+  - [
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5A3_h2o_1hr_lmnb1_/cropped/fixed_slice_images/montages/fixed_slice_montage_G5A3_h2o_1hr_lmnb1_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5B3_dznep_1hr_lmnb1_/cropped/fixed_slice_images/montages/fixed_slice_montage_G5B3_dznep_1hr_lmnb1_.png"
+    ]
+
+# Notes:
+# - Each list contains 2 images: [Control_LaminB, DZNep_LaminB]
+# - Template slide must have 2 placeholder images
+# - Images are from fixed_slice_images/montages (not xz_mips)
+# - All images verified to exist (10 total: 5 timepoints × 2 conditions)

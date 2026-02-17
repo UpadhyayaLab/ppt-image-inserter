@@ -7,6 +7,10 @@ from pptx.enum.shapes import MSO_SHAPE_TYPE
 import os
 from typing import List, Dict, Any
 
+# English Metric Units (EMU) conversion
+# PowerPoint uses EMUs internally: 914400 EMUs = 1 inch
+EMUS_PER_INCH = 914400.0
+
 
 def extract_image_metadata(ppt_path: str) -> List[Dict[str, Any]]:
     """
@@ -61,10 +65,10 @@ def extract_image_metadata(ppt_path: str) -> List[Dict[str, Any]]:
 
                 # Get position/size (convert from EMUs to inches)
                 position = {
-                    'left': shape.left / 914400,  # EMUs to inches
-                    'top': shape.top / 914400,
-                    'width': shape.width / 914400,
-                    'height': shape.height / 914400
+                    'left': shape.left / EMUS_PER_INCH,
+                    'top': shape.top / EMUS_PER_INCH,
+                    'width': shape.width / EMUS_PER_INCH,
+                    'height': shape.height / EMUS_PER_INCH
                 }
 
                 metadata.append({

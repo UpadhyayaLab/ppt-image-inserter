@@ -2,12 +2,17 @@
 Position and unit conversion utilities for PowerPoint images.
 """
 
+from typing import Dict, List
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 import os
 
+# English Metric Units (EMU) conversion
+# PowerPoint uses EMUs internally: 914400 EMUs = 1 inch
+EMUS_PER_INCH = 914400.0
 
-def cm_to_inches(cm):
+
+def cm_to_inches(cm: float) -> float:
     """
     Convert centimeters to inches.
 
@@ -20,7 +25,11 @@ def cm_to_inches(cm):
     return cm / 2.54
 
 
-def get_image_position(ppt_path, slide_index, image_index=0):
+def get_image_position(
+    ppt_path: str,
+    slide_index: int,
+    image_index: int = 0
+) -> Dict[str, float]:
     """
     Extract position and size information from an image on a slide.
 
@@ -75,18 +84,20 @@ def get_image_position(ppt_path, slide_index, image_index=0):
     picture = pictures[image_index]
 
     # Extract position and size (convert from EMUs to inches)
-    # EMU = English Metric Units (914400 EMUs = 1 inch)
     position_info = {
-        'left': picture.left / 914400.0,
-        'top': picture.top / 914400.0,
-        'width': picture.width / 914400.0,
-        'height': picture.height / 914400.0
+        'left': picture.left / EMUS_PER_INCH,
+        'top': picture.top / EMUS_PER_INCH,
+        'width': picture.width / EMUS_PER_INCH,
+        'height': picture.height / EMUS_PER_INCH
     }
 
     return position_info
 
 
-def get_all_image_positions(ppt_path, slide_index):
+def get_all_image_positions(
+    ppt_path: str,
+    slide_index: int
+) -> List[Dict[str, float]]:
     """
     Extract positions and sizes of ALL images on a slide.
 
@@ -133,12 +144,11 @@ def get_all_image_positions(ppt_path, slide_index):
     # Convert all picture positions to dicts
     positions = []
     for picture in pictures:
-        # EMU = English Metric Units (914400 EMUs = 1 inch)
         position_info = {
-            'left': picture.left / 914400.0,
-            'top': picture.top / 914400.0,
-            'width': picture.width / 914400.0,
-            'height': picture.height / 914400.0
+            'left': picture.left / EMUS_PER_INCH,
+            'top': picture.top / EMUS_PER_INCH,
+            'width': picture.width / EMUS_PER_INCH,
+            'height': picture.height / EMUS_PER_INCH
         }
         positions.append(position_info)
 

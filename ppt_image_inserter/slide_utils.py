@@ -3,13 +3,14 @@ Slide manipulation utilities for PowerPoint presentations.
 """
 
 from pptx import Presentation
+from pptx.slide import Slide
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 import copy
 import os
 from .backup import backup_presentation
 
 
-def duplicate_slide(prs, slide_index):
+def duplicate_slide(prs: Presentation, slide_index: int) -> Slide:
     """
     Duplicate a slide by creating a new slide and copying all shapes.
 
@@ -52,7 +53,7 @@ def duplicate_slide(prs, slide_index):
     return new_slide
 
 
-def remove_pictures_from_slide(slide):
+def remove_pictures_from_slide(slide: Slide) -> int:
     """
     Remove all picture shapes from a slide.
 
@@ -89,7 +90,7 @@ def remove_pictures_from_slide(slide):
     return pictures_removed
 
 
-def remove_all_text_from_slide(slide):
+def remove_all_text_from_slide(slide: Slide) -> int:
     """
     Remove ALL text boxes and placeholders from a slide.
 

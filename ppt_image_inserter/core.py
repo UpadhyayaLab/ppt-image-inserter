@@ -2,12 +2,21 @@
 Core image insertion functions for PowerPoint presentations.
 """
 
+from typing import List, Optional
 from pptx import Presentation
 from pptx.util import Inches
 import os
 
 
-def insert_image(ppt_path, slide_index, image_path, left, top, width, height):
+def insert_image(
+    ppt_path: str,
+    slide_index: int,
+    image_path: str,
+    left: float,
+    top: float,
+    width: float,
+    height: float
+) -> None:
     """
     Insert an image into a PowerPoint slide at a custom position.
 
@@ -38,36 +47,55 @@ def insert_image(ppt_path, slide_index, image_path, left, top, width, height):
     try:
         # Load the presentation
         prs = Presentation(ppt_path)
-
-        # Validate slide index
-        if slide_index < 0 or slide_index >= len(prs.slides):
-            raise IndexError(
-                f"Slide index {slide_index} out of range. "
-                f"Presentation has {len(prs.slides)} slides (indices 0-{len(prs.slides)-1})"
-            )
-
-        # Get the target slide
-        slide = prs.slides[slide_index]
-
-        # Insert the image
-        slide.shapes.add_picture(
-            image_path,
-            Inches(left),
-            Inches(top),
-            width=Inches(width),
-            height=Inches(height)
+    except Exception as e:
+        raise FileNotFoundError(
+            f"Could not open PowerPoint file: {ppt_path}. "
+            f"File may be corrupted or in old .ppt format. "
+            f"Original error: {e}"
         )
 
-        # Save the presentation
+    # Validate slide index
+    if slide_index < 0 or slide_index >= len(prs.slides):
+        raise IndexError(
+            f"Slide index {slide_index} out of range. "
+            f"Presentation has {len(prs.slides)} slides (indices 0-{len(prs.slides)-1})"
+        )
+
+    # Get the target slide
+    slide = prs.slides[slide_index]
+
+    # Insert the image
+    slide.shapes.add_picture(
+        image_path,
+        Inches(left),
+        Inches(top),
+        width=Inches(width),
+        height=Inches(height)
+    )
+
+    # Save the presentation
+    try:
         prs.save(ppt_path)
-
-        print(f"Successfully inserted {os.path.basename(image_path)} into slide {slide_index + 1}")
-
+    except PermissionError:
+        raise PermissionError(
+            f"Permission denied when saving {ppt_path}. "
+            f"Make sure the file is not open in PowerPoint."
+        )
     except Exception as e:
-        raise Exception(f"Error inserting image: {str(e)}")
+        raise IOError(f"Error saving PowerPoint file: {e}")
+
+    print(f"Successfully inserted {os.path.basename(image_path)} into slide {slide_index + 1}")
 
 
-def insert_image_preserve_aspect(ppt_path, slide_index, image_path, left, top, width=None, height=None):
+def insert_image_preserve_aspect(
+    ppt_path: str,
+    slide_index: int,
+    image_path: str,
+    left: float,
+    top: float,
+    width: Optional[float] = None,
+    height: Optional[float] = None
+) -> None:
     """
     Insert an image while preserving its aspect ratio.
     Specify either width or height, and the other dimension will be calculated.
@@ -96,39 +124,51 @@ def insert_image_preserve_aspect(ppt_path, slide_index, image_path, left, top, w
 
     try:
         prs = Presentation(ppt_path)
-
-        if slide_index < 0 or slide_index >= len(prs.slides):
-            raise IndexError(
-                f"Slide index {slide_index} out of range. "
-                f"Presentation has {len(prs.slides)} slides"
-            )
-
-        slide = prs.slides[slide_index]
-
-        # Insert with only one dimension specified (aspect ratio preserved)
-        if width is not None:
-            slide.shapes.add_picture(
-                image_path,
-                Inches(left),
-                Inches(top),
-                width=Inches(width)
-            )
-        else:
-            slide.shapes.add_picture(
-                image_path,
-                Inches(left),
-                Inches(top),
-                height=Inches(height)
-            )
-
-        prs.save(ppt_path)
-        print(f"Successfully inserted {os.path.basename(image_path)} with preserved aspect ratio")
-
     except Exception as e:
-        raise Exception(f"Error inserting image: {str(e)}")
+        raise FileNotFoundError(
+            f"Could not open PowerPoint file: {ppt_path}. "
+            f"File may be corrupted or in old .ppt format. "
+            f"Original error: {e}"
+        )
+
+    if slide_index < 0 or slide_index >= len(prs.slides):
+        raise IndexError(
+            f"Slide index {slide_index} out of range. "
+            f"Presentation has {len(prs.slides)} slides"
+        )
+
+    slide = prs.slides[slide_index]
+
+    # Insert with only one dimension specified (aspect ratio preserved)
+    if width is not None:
+        slide.shapes.add_picture(
+            image_path,
+            Inches(left),
+            Inches(top),
+            width=Inches(width)
+        )
+    else:
+        slide.shapes.add_picture(
+            image_path,
+            Inches(left),
+            Inches(top),
+            height=Inches(height)
+        )
+
+    try:
+        prs.save(ppt_path)
+    except PermissionError:
+        raise PermissionError(
+            f"Permission denied when saving {ppt_path}. "
+            f"Make sure the file is not open in PowerPoint."
+        )
+    except Exception as e:
+        raise IOError(f"Error saving PowerPoint file: {e}")
+
+    print(f"Successfully inserted {os.path.basename(image_path)} with preserved aspect ratio")
 
 
-def list_slides(ppt_path):
+def list_slides(ppt_path: str) -> List[str]:
     """
     List all slides in a PowerPoint presentation.
 

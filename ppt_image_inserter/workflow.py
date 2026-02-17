@@ -3,10 +3,58 @@ High-level workflow functions for PowerPoint image replacement.
 """
 
 from pptx import Presentation
+from pptx.slide import Slide
 from pptx.util import Inches, Pt
 import os
 from .position import get_image_position, get_all_image_positions
 from .slide_utils import duplicate_slide, remove_pictures_from_slide, remove_all_text_from_slide
+
+# Text label defaults (inches)
+LABEL_LEFT = 0.5
+LABEL_TOP = 7.0
+LABEL_WIDTH = 5.0
+LABEL_HEIGHT = 0.4
+LABEL_FONT_SIZE = 8
+LABEL_FONT_NAME = 'Arial'
+
+
+def _add_text_label(
+    slide: Slide,
+    image_path: str,
+    left: float = LABEL_LEFT,
+    top: float = LABEL_TOP,
+    width: float = LABEL_WIDTH,
+    height: float = LABEL_HEIGHT
+) -> None:
+    """
+    Add a text label with image filename and path to a slide.
+
+    Internal helper function for adding labels to slides.
+
+    Args:
+        slide: The slide to add the label to
+        image_path: Full path to the image file
+        left, top, width, height: Position and size in inches
+    """
+    try:
+        textbox = slide.shapes.add_textbox(
+            Inches(left),
+            Inches(top),
+            Inches(width),
+            Inches(height)
+        )
+
+        text_frame = textbox.text_frame
+        folder_path = os.path.dirname(image_path)
+        filename = os.path.basename(image_path)
+        text_frame.text = f"File: {filename}\nPath: {folder_path}"
+
+        for paragraph in text_frame.paragraphs:
+            paragraph.font.size = Pt(LABEL_FONT_SIZE)
+            paragraph.font.name = LABEL_FONT_NAME
+
+    except Exception as e:
+        print(f"[WARNING] Could not add text label: {e}")
 
 
 def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, position=None,
@@ -174,25 +222,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
     # Add visible text labels if requested (usually skipped for multi-image slides)
     if add_label and len(new_image_paths) == 1:
         # Only add label for single-image case to avoid clutter
-        try:
-            textbox = new_slide.shapes.add_textbox(
-                Inches(0.5),    # Left: 0.5" from edge
-                Inches(7.0),    # Top: Near bottom
-                Inches(5.0),    # Width: 5 inches
-                Inches(0.4)     # Height: 0.4 inches
-            )
-
-            text_frame = textbox.text_frame
-            folder_path = os.path.dirname(new_image_paths[0])
-            filename = os.path.basename(new_image_paths[0])
-            text_frame.text = f"File: {filename}\nPath: {folder_path}"
-
-            for paragraph in text_frame.paragraphs:
-                paragraph.font.size = Pt(8)
-                paragraph.font.name = 'Arial'
-
-        except Exception as e:
-            print(f"[WARNING] Could not add text label: {e}")
+        _add_text_label(new_slide, new_image_paths[0])
 
     # Save the presentation
     prs.save(ppt_path)
@@ -271,8 +301,9 @@ def replace_image_on_existing_slide(ppt_path: str, slide_index: int, new_image_p
                     if parent is not None:
                         parent.remove(shape._element)
                         textboxes_removed += 1
-            except:
-                pass  # Skip if we can't determine
+            except Exception:
+                # Skip if we can't determine - this is a best-effort cleanup
+                pass
     print(f"Removed {textboxes_removed} text box(es)")
 
     # Insert the new image at the original position
@@ -296,26 +327,8 @@ def replace_image_on_existing_slide(ppt_path: str, slide_index: int, new_image_p
 
     # Add visible text label if requested
     if add_label:
-        try:
-            textbox = slide.shapes.add_textbox(
-                Inches(0.5),
-                Inches(7.0),
-                Inches(5.0),
-                Inches(0.4)
-            )
-
-            text_frame = textbox.text_frame
-            folder_path = os.path.dirname(new_image_path)
-            filename = os.path.basename(new_image_path)
-            text_frame.text = f"File: {filename}\nPath: {folder_path}"
-
-            for paragraph in text_frame.paragraphs:
-                paragraph.font.size = Pt(8)
-                paragraph.font.name = 'Arial'
-
-            print(f"Added text label: {filename}")
-        except Exception as e:
-            print(f"[WARNING] Could not add text label: {e}")
+        _add_text_label(slide, new_image_path)
+        print(f"Added text label: {os.path.basename(new_image_path)}")
 
     # Save the presentation
     print(f"Saving presentation...")

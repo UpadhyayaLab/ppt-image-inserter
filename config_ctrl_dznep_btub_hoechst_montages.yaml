@@ -1,0 +1,60 @@
+# Configuration for Ctrl vs DZNep: bTub + Hoechst fixed slice montages
+# Experiment: Ctrl, DZNep, bTub, Lamin B (2026-02-03)
+
+# Path to PowerPoint template (will remain unchanged)
+presentation: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Ctrl_DZNep_upto1hr_bTub_Hoechst_montages_template.pptx"
+
+# Output path - creates a new file, leaving template untouched
+output_path: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Ctrl_DZNep_upto1hr_bTub_Hoechst_montages.pptx"
+
+# Template slide to copy (0-based index)
+# Slide 2 in PowerPoint UI = index 1
+template_slide: 1
+
+# Slides to preserve (not delete) - 0-based indices
+preserve_slides: [0, 1]  # Keeps title slide and template slide
+
+# Auto-detect image position from template slide
+auto_position: true
+
+# Base directory (leave empty for absolute paths)
+base_dir: ""
+
+# List of images to insert
+# Each slide has 2 images: Left = Control (h2o), Right = DZNep
+images:
+  # 4min timepoint
+  - [
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1A4_h2o_4min_bTub_/cropped/fixed_slice_images/montages/fixed_slice_montage_G1A4_h2o_4min_bTub_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1B4_dznep_4min_bTub_/cropped/fixed_slice_images/montages/fixed_slice_montage_G1B4_dznep_4min_bTub_.png"
+    ]
+
+  # 8min timepoint
+  - [
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2A4_h2o_8min_bTub_/cropped/fixed_slice_images/montages/fixed_slice_montage_G2A4_h2o_8min_bTub_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2B4_dznep_8min_bTub_/cropped/fixed_slice_images/montages/fixed_slice_montage_G2B4_dznep_8min_bTub_.png"
+    ]
+
+  # 15min timepoint (NOTE: bTub from different dated folder 020402026)
+  - [
+      "J:/FF/Nucleus_Project_up_to_1hr/020402026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3A4_h2o_15min_bTub_/cropped/fixed_slice_images/montages/fixed_slice_montage_G3A4_h2o_15min_bTub_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020402026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3B4_dznep_15min_bTub_/cropped/fixed_slice_images/montages/fixed_slice_montage_G3B4_dznep_15min_bTub_.png"
+    ]
+
+  # 30min timepoint
+  - [
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4A4_h2o_30min_bTub_/cropped/fixed_slice_images/montages/fixed_slice_montage_G4A4_h2o_30min_bTub_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4B4_dznep_30min_bTub_/cropped/fixed_slice_images/montages/fixed_slice_montage_G4B4_dznep_30min_bTub_.png"
+    ]
+
+  # 1hr timepoint
+  - [
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5A4_h2o_1hr_bTub_/cropped/fixed_slice_images/montages/fixed_slice_montage_G5A4_h2o_1hr_bTub_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5B4_dznep_1hr_bTub_/cropped/fixed_slice_images/montages/fixed_slice_montage_G5B4_dznep_1hr_bTub_.png"
+    ]
+
+# Notes:
+# - Each list contains 2 images: [Control_bTub, DZNep_bTub]
+# - bTub uses A4/B4 wells (vs. A3/B3 for Lamin B)
+# - 15 min bTub images from folder 020402026 (special case)
+# - Images from fixed_slice_images/montages (not xz_mips)
