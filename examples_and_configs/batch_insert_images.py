@@ -6,11 +6,11 @@ This script demonstrates how to use a YAML config file to batch-insert
 images into a PowerPoint presentation.
 
 Usage:
-    python batch_insert_images.py config.yaml
+    python batch_insert_images.py configs/example_config.yaml
 
 Requirements:
     - PowerPoint file with title slide (slide 1) and template slide (slide 2)
-    - Template slide should have one image at the desired position
+    - Template slide should have placeholder image(s) at the desired position(s)
     - All images listed in the config file should exist
 """
 
@@ -354,7 +354,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python batch_insert_images.py <config.yaml>")
         print("\nExample:")
-        print("  python batch_insert_images.py example_config.yaml")
+        print("  python batch_insert_images.py configs/example_config.yaml")
         sys.exit(1)
 
     config_path = sys.argv[1]

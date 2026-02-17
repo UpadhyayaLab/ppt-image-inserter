@@ -2,8 +2,6 @@
 
 A Python toolkit for batch-inserting images into PowerPoint presentations. Designed for researchers who need to create presentation decks with large numbers of analysis plots following a consistent template.
 
-**Note**: The batch processing workflow currently supports **one image per slide**. Each slide is created from the template with a single image replacement, and metadata (filename, path) is automatically tracked.
-
 ## Quick Start
 
 ### Installation
@@ -23,27 +21,27 @@ pip install -r requirements.txt
 
 ### Basic Usage
 
-1. **Copy and edit the example config**:
+1. **Copy and edit an example config**:
    ```bash
-   # Basic example
-   cp examples/example_config.yaml config.yaml
+   # Basic single-image-per-slide example
+   cp examples_and_configs/configs/example_config.yaml my_config.yaml
 
    # Or use the scientific microscopy example
-   cp examples/example_config_PLL_aCD3_vim_fixed_cells.yaml config.yaml
+   cp examples_and_configs/configs/example_config_PLL_aCD3_vim_fixed_cells.yaml my_config.yaml
 
-   # Edit config.yaml with your presentation path, image directory, and image list
+   # Edit my_config.yaml with your presentation path, image directory, and image list
    ```
 
 2. **Run the batch script**:
    ```bash
-   python examples/batch_insert_images.py config.yaml
+   python examples_and_configs/batch_insert_images.py my_config.yaml
    ```
 
 ## How It Works
 
-1. **Template slide**: Create a slide with your desired layout and one placeholder image. Specify which slide to use as the template in your config (0-indexed: slide 2 in PowerPoint = index 1)
+1. **Template slide**: Create a slide with your desired layout and one or more placeholder images. Specify which slide to use as the template in your config (0-indexed: slide 2 in PowerPoint = index 1)
 2. **Config file**: List all images you want to insert and which slides to preserve
-3. **Batch process**: Script copies the template slide for each image, replacing the placeholder
+3. **Batch process**: Script copies the template slide for each image set, replacing the placeholder(s)
 4. **Result**: Presentation with consistent formatting across all slides
 
 ## Prerequisites
@@ -58,29 +56,37 @@ pip install -r requirements.txt
 ## Key Features
 
 - **Template-based** - Consistent formatting across all slides
+- **Multi-image per slide** - Side-by-side comparisons using list syntax (e.g., `[control.png, treated.png]`)
 - **Config-driven** - YAML configuration for easy batch processing
-- **Metadata tracking** - Displays image filenames on slides and stores paths in notes
+- **Template preservation** - Use `output_path` to create a new file, leaving the original untouched
+- **Metadata tracking** - Displays image filenames on slides and stores paths in alt text
 - **Automatic backups** - Creates timestamped backups before modifications
+- **Image pre-validation** - Checks all images exist before making any changes
 
 ## Best Practices
 
 ### Template Design
-- Create a template slide with your desired layout and one placeholder image
+- Create a template slide with your desired layout and placeholder image(s)
 - Specify the template slide index in your config file (0-indexed)
-- This image's position is auto-detected and used for all new slides
-- One image per slide in batch mode
+- For single-image slides: one placeholder; position is auto-detected
+- For multi-image slides (e.g., side-by-side): add N placeholder images; positions are auto-detected from left to right
 - Use `preserve_slides` in config to specify which slides to keep (default: title slide and template)
 
 ### File Organization
 ```
 project/
-├── config.yaml
+├── examples_and_configs/
+│   ├── batch_insert_images.py      # Generic batch script
+│   ├── example_multi_image.py      # Multi-image API example
+│   └── configs/
+│       ├── example_config.yaml     # Basic example
+│       └── my_experiment.yaml      # Your research configs
 ├── presentations/
 │   └── analysis_results.pptx
 └── data/
     └── analysis/
-        ├── nuc_aspect_ratio_grid.tif
-        ├── actin_deform_ratio_grid.tif
+        ├── control_result.png
+        ├── treated_result.png
         └── ...
 ```
 
@@ -92,14 +98,18 @@ project/
 - Use forward slashes `/` in paths
 
 **Presentation corrupted or slides lost**
-- Check backup files in `PPT/backups/`
+- Check backup files in the `backups/` subfolder next to your presentation
 - **Close PowerPoint before running the script** - file must not be open
 - Verify write permissions
+
+**Images not in the right position?**
+- Check that the template slide contains the correct number of placeholder images
+- For multi-image slides, placeholder order in the template determines left-to-right image order
 
 ## Documentation
 
 - [Detailed Usage Guide](docs/DETAILED_USAGE.md) - Complete function reference and examples
-- [Examples](examples/) - Sample configs and scripts
+- [Examples](examples_and_configs/) - Sample configs and scripts
 
 ## Support
 

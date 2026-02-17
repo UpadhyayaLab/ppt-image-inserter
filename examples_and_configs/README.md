@@ -1,107 +1,91 @@
-# Examples
+# Examples and Configs
 
-This directory contains example configurations and scripts demonstrating how to use the PPT Batch Image Inserter.
+This directory contains scripts and configuration files for using the PPT Batch Image Inserter.
 
-## Quick Start
+## Scripts
 
-The `batch_insert_images.py` script is a **generic script that works with ANY config file**. You don't need to create separate scripts for each dataset - just pass different config files as command-line arguments.
+### `batch_insert_images.py` — Generic Batch Script
 
-### Basic Usage
-
-```bash
-# Run with the basic example config
-python batch_insert_images.py example_config.yaml
-
-# Run with the microscopy analysis example
-python batch_insert_images.py example_config_PLL_aCD3_vim_fixed_cells.yaml
-
-# Run with your own custom config
-python batch_insert_images.py path/to/your_config.yaml
-```
-
-## Available Example Configs
-
-### `example_config.yaml`
-Basic configuration demonstrating:
-- Simple image list with generic filenames
-- Auto-detected image positions
-- Preserved slides configuration
-
-**Use this as a starting point** for your own configs.
-
-### `example_config_PLL_aCD3_vim_fixed_cells.yaml`
-Real-world microscopy analysis example demonstrating:
-- Large-scale batch processing (23 images)
-- Organized by metric categories (nuclear, actin, centrosome, deformation, vimentin)
-- Actual research workflow from cell biology experiments
-
-**Use this to see** how the tool scales to real research projects.
-
-## How It Works
-
-1. **Copy an example config** or create your own:
-   ```bash
-   cp example_config.yaml my_experiment_config.yaml
-   ```
-
-2. **Edit the config** to match your needs:
-   - Set the PowerPoint file path
-   - Specify the template slide index
-   - List which slides to preserve
-   - Add your image filenames
-
-3. **Run the script** with your config:
-   ```bash
-   python batch_insert_images.py my_experiment_config.yaml
-   ```
-
-The script will:
-- Delete old slides (except those in `preserve_slides`)
-- Create new slides by copying the template
-- Insert your images with consistent formatting
-- Track metadata (filenames, paths) on each slide
-
-## Common Workflows
-
-### Updating an Existing Presentation
+The main entry point. Reads any YAML config and runs the full workflow: validates images, deletes old slides, creates new ones from the template.
 
 ```bash
-# First run - creates initial slides
-python batch_insert_images.py experiment_v1.yaml
+# Run with any config
+python batch_insert_images.py configs/example_config.yaml
+python batch_insert_images.py configs/my_experiment.yaml
 
-# Update data, regenerate plots, then re-run
-python batch_insert_images.py experiment_v1.yaml  # Regenerates all slides
+# Config path can be relative or absolute
+python batch_insert_images.py /path/to/my_config.yaml
 ```
 
-### Multiple Experiments/Datasets
+**Use this for**: any batch job — single image per slide or multiple images per slide.
+
+### `example_multi_image.py` — Multi-Image API Example
+
+Demonstrates how to use `copy_slide_replace_images()` directly from Python (no config file needed). Useful when you want programmatic control over which images go on which slide, or when the YAML config format doesn't fit your workflow.
 
 ```bash
-# Different experiments, different configs, SAME script
-python batch_insert_images.py configs/experiment_activation.yaml
-python batch_insert_images.py configs/experiment_inhibition.yaml
-python batch_insert_images.py configs/experiment_control.yaml
+# Edit the paths at the top of the file, then run
+python example_multi_image.py
 ```
 
-**No need to create separate Python scripts!** The config files contain all the differences.
+**Use this for**: understanding the API, one-off scripts, or custom workflows.
 
-## Creating Your Own Config
+---
 
-See the [main README](../README.md#basic-usage) and [detailed usage guide](../docs/DETAILED_USAGE.md) for complete documentation on config file format.
+## configs/ — Configuration Files
 
-Key parameters:
-- `presentation`: Path to your PowerPoint file
-- `template_slide`: Which slide to use as template (0-indexed)
-- `preserve_slides`: Which slides to keep (e.g., `[0, 1]` = keep title and template)
-- `base_dir`: Directory containing your images
-- `images`: List of image filenames to process
+All YAML configs live here. The batch script accepts any of them as an argument.
 
-## Tips
+### Example Configs (starting points)
+
+| File | Description |
+|------|-------------|
+| `example_config.yaml` | Basic template — mix of single and multi-image slides |
+| `example_config_PLL_aCD3_vim_fixed_cells.yaml` | Real-world microscopy example (23 images, single per slide) |
+
+Copy one of these as a starting point:
+```bash
+cp configs/example_config.yaml configs/my_experiment.yaml
+# Then edit my_experiment.yaml
+```
+
+### Research Configs
+
+| File | Description |
+|------|-------------|
+| `config_ctrl_dznep_montages.yaml` | XZ MIP montages — 4 images/slide (2×2 grid) |
+| `config_ctrl_dznep_laminb_hoechst_montages.yaml` | Lamin B fixed slice montages — 2 images/slide |
+| `config_ctrl_dznep_btub_hoechst_montages.yaml` | bTub fixed slice montages — 2 images/slide |
+
+---
+
+## Multi-Image Support
+
+Use list syntax in your config to put multiple images on one slide:
+
+```yaml
+images:
+  - single_image.png                         # one image → one slide
+  - [control.png, treated.png]               # two images → one slide (side-by-side)
+  - [rep1.png, rep2.png, rep3.png]           # three images → one slide
+```
+
+The template slide must have the same number of placeholder images as the list. Positions are auto-detected from the template.
+
+---
+
+## Workflow Tips
+
+- **Different experiments, same script**: only the config changes
+  ```bash
+  python batch_insert_images.py configs/experiment_A.yaml
+  python batch_insert_images.py configs/experiment_B.yaml
+  ```
+
+- **Re-run to update**: the script deletes and recreates all content slides, so re-running after updating images gives a fresh result
+
+- **Template preservation**: use `output_path` in the config to write to a new file, leaving the original template untouched
 
 - **Version control your configs**, not your PowerPoint files
-- **Use descriptive config names**: `config_experiment_2024-02-10.yaml`
-- **Test with a few images first**, then scale up to large batches
-- **Check backups** in `PPT/.backups/` if something goes wrong
 
-## Questions?
-
-See the [main README](../README.md) or [detailed usage guide](../docs/DETAILED_USAGE.md) for more information.
+See the [main README](../README.md) and [detailed usage guide](../docs/DETAILED_USAGE.md) for full documentation.

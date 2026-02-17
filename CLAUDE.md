@@ -36,7 +36,7 @@ pip install -r requirements.txt
 ### Running the Batch Script
 
 ```bash
-python examples/batch_insert_images.py config.yaml
+python examples_and_configs/batch_insert_images.py examples_and_configs/configs/example_config.yaml
 ```
 
 **CRITICAL**: The PowerPoint file must be closed before running the script. The script needs exclusive file access to modify the presentation.
@@ -88,7 +88,7 @@ from ppt_image_inserter import insert_image, copy_slide_replace_image
 
 1. **Config files (YAML)**: Define presentation path, template slide, image list
 2. **Scripts**: User-written Python scripts that use the core module
-3. **Examples**: Template configs and scripts in `examples/`
+3. **Examples**: Template configs and scripts in `examples_and_configs/`
 
 ### YAML Configuration Structure
 
@@ -305,5 +305,5 @@ Before suggesting code to users, verify:
 ## Resources
 
 - **python-pptx docs**: https://python-pptx.readthedocs.io/
-- **Example configs**: See `examples/` directory
+- **Example configs**: See `examples_and_configs/configs/` directory
 - **Target users**: Researchers, data scientists, analysts - prioritize simplicity and clear error messages
