@@ -50,7 +50,7 @@ pip install -r requirements.txt
 - Images in common formats (PNG, JPG, TIFF, GIF, BMP)
 - Windows OS
 
-**Important**: Close your PowerPoint file before running the script. The script needs exclusive access to modify the file.
+**Important**: Close the file in PowerPoint before running the script. The script needs exclusive access to modify the file.
 
 ## Key Features
 
@@ -98,7 +98,7 @@ project/
 
 **Presentation corrupted or slides lost**
 - Check backup files in the `backups/` subfolder next to your presentation
-- **Close PowerPoint before running the script** - file must not be open
+- **Close the file in PowerPoint before running the script** - the file must not be open
 - Verify write permissions
 
 **Images not in the right position?**

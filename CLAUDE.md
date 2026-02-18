@@ -39,7 +39,7 @@ pip install -r requirements.txt
 python examples_and_configs/batch_insert_images.py examples_and_configs/configs/example_config.yaml
 ```
 
-**CRITICAL**: The PowerPoint file must be closed before running the script. The script needs exclusive file access to modify the presentation.
+**CRITICAL**: The file must be closed in PowerPoint before running the script. The script needs exclusive file access to modify the presentation.
 
 ## Architecture
 
@@ -219,7 +219,7 @@ This copies the template to `output_path` before processing, leaving the origina
 
 ### Debugging Checklist
 
-1. **Check if PowerPoint is closed**: The file must not be open in PowerPoint
+1. **Check the file is closed in PowerPoint**: The file must not be open in PowerPoint
 2. **Check paths**: Are all file paths correct? (absolute vs relative)
 3. **Check indices**: Slide indices are 0-based (slide 1 = index 0)
 4. **Check template**: Does template slide have exactly one image?
@@ -229,7 +229,7 @@ This copies the template to `output_path` before processing, leaving the origina
 ### Common Questions & Answers
 
 **Q: "Script fails with permission error or file access error"**
-- A: The PowerPoint file must be **closed** before running the script. PowerPoint locks files when they're open.
+- A: The file must be **closed in PowerPoint** before running the script. PowerPoint locks files when they're open.
 
 **Q: "Images aren't in the right position"**
 - A: Check that `auto_position: true` and template slide has one image where you want new images
