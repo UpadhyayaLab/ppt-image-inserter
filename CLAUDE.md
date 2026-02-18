@@ -118,7 +118,7 @@ images:
 
 # Optional fields
 preserve_slides: [0, 1]              # Default: [0, template_slide]
-backup_dir: "custom/backup/location" # Default: "PPT/backups"
+backup_dir: "custom/backup/location" # Default: backups/ folder next to the presentation file
 output_path: "output/new.pptx"       # Template preservation mode (see below)
 auto_position: true                   # Default: true (auto-detect from template image)
 
@@ -236,9 +236,6 @@ This copies the template to `output_path` before processing, leaving the origina
 
 **Q: "Script is slow with 200 images"**
 - A: This is normal - PowerPoint files are complex XML. Consider batching or be patient.
-
-**Q: "Can I insert multiple images per slide?"**
-- A: Not directly supported in batch mode. Workaround: create multiple template slides or use direct API.
 
 **Q: "Can I modify text in slides?"**
 - A: No - outside scope of this tool. Use python-pptx directly for that.

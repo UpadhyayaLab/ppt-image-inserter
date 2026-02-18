@@ -68,7 +68,7 @@ pip install -r requirements.txt
 - Create a template slide with your desired layout and placeholder image(s)
 - Specify the template slide index in your config file (0-indexed)
 - For single-image slides: one placeholder; position is auto-detected
-- For multi-image slides (e.g., side-by-side): add N placeholder images; positions are auto-detected from left to right
+- For multi-image slides (e.g., side-by-side): add N placeholder images; positions are auto-detected from each placeholder in turn
 - Use `preserve_slides` in config to specify which slides to keep (default: title slide and template)
 
 ### File Organization
@@ -102,13 +102,13 @@ project/
 - Verify write permissions
 
 **Images not in the right position?**
-- Check that the template slide contains the correct number of placeholder images
-- For multi-image slides, placeholder order in the template determines left-to-right image order
+- Check that the template slide has the correct number of placeholder images
+- If images appear at the wrong placeholder, reorder them in your config list to match
 
 ## Documentation
 
 - [Detailed Usage Guide](docs/DETAILED_USAGE.md) - Complete function reference and examples
-- [Examples](examples_and_configs/) - Sample configs and scripts
+- [Examples and Configs](examples_and_configs/) - Sample configs and scripts
 
 ## Support
 

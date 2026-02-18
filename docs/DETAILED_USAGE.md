@@ -103,7 +103,7 @@ copy_slide_replace_image(
 - `template_slide_index`: Index of template slide to copy (0-based)
 - `new_image_path`: Path to the new image
 - `position`: Optional dict with keys: `left`, `top`, `width`, `height`. If None, auto-detects from template
-- `store_metadata`: Whether to store image path in slide notes
+- `store_metadata`: Whether to store image path in the image's alt text (default: True)
 - `add_label`: Whether to add image filename as text label
 
 **Returns:** Index of the newly created slide
@@ -133,7 +133,7 @@ Get information about all slides in a presentation.
 list_slides(ppt_path: str) -> list
 ```
 
-**Returns:** List of slide information dictionaries
+**Returns:** List of strings in the format `'index: title'` (e.g. `'0: Introduction'`)
 
 #### `insert_image_preserve_aspect()`
 Insert an image while preserving its aspect ratio. Specify either width or height, and the other dimension will be calculated automatically.
@@ -213,6 +213,32 @@ get_image_position(
 >>> pos = get_image_position('presentation.pptx', 1, 0)
 >>> print(pos)
 {'left': 0.14, 'top': 0.96, 'width': 5.43, 'height': 2.72}
+```
+
+#### `get_all_image_positions()`
+Extract positions and sizes of **all** images on a slide. Used by the batch workflow to auto-detect positions from a multi-image template.
+
+```python
+get_all_image_positions(
+    ppt_path: str,
+    slide_index: int
+) -> list
+```
+
+**Parameters:**
+- `ppt_path`: Path to the PowerPoint file
+- `slide_index`: Slide number (0-based index)
+
+**Returns:** List of position dicts (same format as `get_image_position()`), one per image, in the order shapes were added to the slide (z-order). Returns an empty list if the slide has no images.
+
+**Example:**
+```python
+>>> positions = get_all_image_positions('presentation.pptx', 1)
+>>> print(positions)
+[
+    {'left': 0.5, 'top': 1.0, 'width': 4.0, 'height': 3.0},
+    {'left': 5.0, 'top': 1.0, 'width': 4.0, 'height': 3.0}
+]
 ```
 
 ### Slide Manipulation Functions

@@ -10,7 +10,7 @@ template_slide: 1
 
 # Slides to preserve (not delete) - 0-based indices
 # Default: [0, template_slide]
-preserve_slides: [0, 1]  # Keeps title slide (1) and template slide (2)
+preserve_slides: [0, 1]  # Keeps title slide and template slide
 
 # Backup directory for automatic backups (optional)
 # Default: PPT/backups
