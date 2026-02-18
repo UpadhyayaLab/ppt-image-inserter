@@ -13,7 +13,7 @@ template_slide: 1
 preserve_slides: [0, 1]  # Keeps title slide and template slide
 
 # Backup directory for automatic backups (optional)
-# Default: PPT/backups
+# Default: backups/ folder next to the presentation file
 # backup_dir: "custom/backup/location"
 
 # Auto-detect image position from the first image in the template slide
@@ -35,7 +35,7 @@ base_dir: "data/images"
 # Supports both single images (one per slide) and multiple images (on one slide)
 images:
   - metric_001_baseline.png                           # Single image = one slide
-  - [metric_002_a.png, metric_002_b.png]              # Two images = one slide (NEW!)
+  - [metric_002_a.png, metric_002_b.png]              # Two images = one slide
   - metric_003_treatment_b.png                        # Single image = one slide
   - [metric_004_a.png, metric_004_b.png, metric_004_c.png]  # Three images = one slide
   - metric_005_statistical_analysis.png               # Single image = one slide
