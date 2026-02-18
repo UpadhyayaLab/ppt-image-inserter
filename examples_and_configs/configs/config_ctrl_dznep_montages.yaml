@@ -27,45 +27,47 @@ base_dir: ""
 
 # List of images to insert
 # Each slide has 4 images in a 2x2 grid:
-#   Top row: bTub (Control left, DZNep right)
-#   Bottom row: Lamin B1 (Control left, DZNep right)
+#   Top row: bTub (H2O left, DZNep right)
+#   Bottom row: Lamin B1 (H2O left, DZNep right)
+# NOTE: List order matches template placeholder z-order, not spatial order.
+#   Correct order: [laminB_h2o, bTub_h2o, laminB_dznep, bTub_dznep]
 images:
   # 4min timepoint
   - [
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1A4_h2o_4min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G1A4_h2o_4min_bTub_.png",
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1B4_dznep_4min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G1B4_dznep_4min_bTub_.png",
       "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1A3_h2o_4min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G1A3_h2o_4min_lmnb1_.png",
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1B3_dznep_4min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G1B3_dznep_4min_lmnb1_.png"
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1A4_h2o_4min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G1A4_h2o_4min_bTub_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1B3_dznep_4min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G1B3_dznep_4min_lmnb1_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G1B4_dznep_4min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G1B4_dznep_4min_bTub_.png"
     ]
 
   # 8min timepoint
   - [
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2A4_h2o_8min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G2A4_h2o_8min_bTub_.png",
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2B4_dznep_8min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G2B4_dznep_8min_bTub_.png",
       "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2A3_h2o_8min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G2A3_h2o_8min_lmnb1_.png",
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2B3_dznep_8min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G2B3_dznep_8min_lmnb1_.png"
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2A4_h2o_8min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G2A4_h2o_8min_bTub_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2B3_dznep_8min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G2B3_dznep_8min_lmnb1_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2B4_dznep_8min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G2B4_dznep_8min_bTub_.png"
     ]
 
   # 15min timepoint (NOTE: bTub images from different dated folder 020402026)
   - [
-      "J:/FF/Nucleus_Project_up_to_1hr/020402026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3A4_h2o_15min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G3A4_h2o_15min_bTub_.png",
-      "J:/FF/Nucleus_Project_up_to_1hr/020402026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3B4_dznep_15min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G3B4_dznep_15min_bTub_.png",
       "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3A3_h2o_15min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G3A3_h2o_15min_lmnb1_.png",
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3B3_dznep_15min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G3B3_dznep_15min_lmnb1_.png"
+      "J:/FF/Nucleus_Project_up_to_1hr/020402026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3A4_h2o_15min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G3A4_h2o_15min_bTub_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3B3_dznep_15min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G3B3_dznep_15min_lmnb1_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020402026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G3B4_dznep_15min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G3B4_dznep_15min_bTub_.png"
     ]
 
   # 30min timepoint
   - [
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4A4_h2o_30min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G4A4_h2o_30min_bTub_.png",
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4B4_dznep_30min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G4B4_dznep_30min_bTub_.png",
       "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4A3_h2o_30min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G4A3_h2o_30min_lmnb1_.png",
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4B3_dznep_30min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G4B3_dznep_30min_lmnb1_.png"
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4A4_h2o_30min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G4A4_h2o_30min_bTub_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4B3_dznep_30min_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G4B3_dznep_30min_lmnb1_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G4B4_dznep_30min_bTub_/cropped/xz_mips/montages/xz_mip_montage_G4B4_dznep_30min_bTub_.png"
     ]
 
   # 1hr timepoint
   - [
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5A4_h2o_1hr_bTub_/cropped/xz_mips/montages/xz_mip_montage_G5A4_h2o_1hr_bTub_.png",
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5B4_dznep_1hr_bTub_/cropped/xz_mips/montages/xz_mip_montage_G5B4_dznep_1hr_bTub_.png",
       "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5A3_h2o_1hr_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G5A3_h2o_1hr_lmnb1_.png",
-      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5B3_dznep_1hr_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G5B3_dznep_1hr_lmnb1_.png"
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5A4_h2o_1hr_bTub_/cropped/xz_mips/montages/xz_mip_montage_G5A4_h2o_1hr_bTub_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5B3_dznep_1hr_lmnb1_/cropped/xz_mips/montages/xz_mip_montage_G5B3_dznep_1hr_lmnb1_.png",
+      "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G5B4_dznep_1hr_bTub_/cropped/xz_mips/montages/xz_mip_montage_G5B4_dznep_1hr_bTub_.png"
     ]
