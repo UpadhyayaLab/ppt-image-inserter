@@ -10,44 +10,64 @@ from .position import get_image_position, get_all_image_positions
 from .slide_utils import duplicate_slide, remove_pictures_from_slide, remove_all_text_from_slide
 
 # Text label defaults (inches)
-LABEL_LEFT = 0.5
-LABEL_TOP = 7.0
+LABEL_MARGIN = 0.3       # margin from right and bottom edges
 LABEL_WIDTH = 5.0
-LABEL_HEIGHT = 0.4
 LABEL_FONT_SIZE = 8
 LABEL_FONT_NAME = 'Arial'
 
 
 def _add_text_label(
     slide: Slide,
-    image_path: str,
-    left: float = LABEL_LEFT,
-    top: float = LABEL_TOP,
-    width: float = LABEL_WIDTH,
-    height: float = LABEL_HEIGHT
+    image_paths,
+    slide_width_inches: float = 13.333,
+    slide_height_inches: float = 7.5,
+    base_dir: str = None,
 ) -> None:
     """
-    Add a text label with image filename and path to a slide.
+    Add a text label with image path(s) in the bottom-right corner of a slide.
 
     Internal helper function for adding labels to slides.
 
     Args:
         slide: The slide to add the label to
-        image_path: Full path to the image file
-        left, top, width, height: Position and size in inches
+        image_paths: Full path to the image file (str), or list of paths for multi-image slides
+        slide_width_inches: Slide width in inches (used for right-alignment)
+        slide_height_inches: Slide height in inches (used for bottom-alignment)
+        base_dir: If provided, paths are shown relative to this directory
     """
+    if isinstance(image_paths, str):
+        image_paths = [image_paths]
+
+    def _rel(p):
+        # Only compute relative path for absolute paths — leave placeholders/labels untouched
+        if base_dir and os.path.isabs(p):
+            try:
+                return os.path.relpath(p, base_dir).replace('\\', '/')
+            except ValueError:
+                return p  # Different drive on Windows — fall back to full path
+        return p
+
+    label_text = "\n".join(_rel(p) for p in image_paths)
+    n_lines = len(image_paths)
+
+    # Compute height from number of lines (~0.13" per line at 8pt + small buffer)
+    height = n_lines * 0.13 + 0.1
+
+    # Position: bottom-right corner
+    left = slide_width_inches - LABEL_MARGIN - LABEL_WIDTH
+    top = slide_height_inches - LABEL_MARGIN - height
+
     try:
         textbox = slide.shapes.add_textbox(
             Inches(left),
             Inches(top),
-            Inches(width),
+            Inches(LABEL_WIDTH),
             Inches(height)
         )
 
         text_frame = textbox.text_frame
-        folder_path = os.path.dirname(image_path)
-        filename = os.path.basename(image_path)
-        text_frame.text = f"File: {filename}\nPath: {folder_path}"
+        text_frame.word_wrap = False
+        text_frame.text = label_text
 
         for paragraph in text_frame.paragraphs:
             paragraph.font.size = Pt(LABEL_FONT_SIZE)
@@ -58,7 +78,7 @@ def _add_text_label(
 
 
 def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, position=None,
-                             store_metadata=True, add_label=True):
+                             store_metadata=True, add_label=True, base_dir=None):
     """
     Copy a slide and replace its image with a new one (single-image version).
 
@@ -102,12 +122,13 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         [new_image_path],  # Wrap in list
         positions=positions,
         store_metadata=store_metadata,
-        add_label=add_label
+        add_label=add_label,
+        base_dir=base_dir,
     )
 
 
 def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, positions=None,
-                               store_metadata=True, add_label=False):
+                               store_metadata=True, add_label=False, base_dir=None):
     """
     Copy a slide and replace its images with new ones (supports multiple images per slide).
 
@@ -219,10 +240,11 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
             except Exception as e:
                 print(f"[WARNING] Could not store metadata for {os.path.basename(img_path)}: {e}")
 
-    # Add visible text labels if requested (usually skipped for multi-image slides)
-    if add_label and len(new_image_paths) == 1:
-        # Only add label for single-image case to avoid clutter
-        _add_text_label(new_slide, new_image_paths[0])
+    # Add visible text label in bottom-right corner if requested
+    if add_label:
+        slide_w = prs.slide_width.inches
+        slide_h = prs.slide_height.inches
+        _add_text_label(new_slide, new_image_paths, slide_w, slide_h, base_dir=base_dir)
 
     # Save the presentation
     prs.save(ppt_path)
@@ -327,7 +349,9 @@ def replace_image_on_existing_slide(ppt_path: str, slide_index: int, new_image_p
 
     # Add visible text label if requested
     if add_label:
-        _add_text_label(slide, new_image_path)
+        slide_w = prs.slide_width.inches
+        slide_h = prs.slide_height.inches
+        _add_text_label(slide, new_image_path, slide_w, slide_h)
         print(f"Added text label: {os.path.basename(new_image_path)}")
 
     # Save the presentation
@@ -335,3 +359,64 @@ def replace_image_on_existing_slide(ppt_path: str, slide_index: int, new_image_p
     prs.save(ppt_path)
 
     print(f"[SUCCESS] Updated slide {slide_index} (slide {slide_index + 1} in PowerPoint UI)")
+
+
+def add_label_to_existing_slide(ppt_path: str, slide_index: int, base_dir: str = None) -> bool:
+    """
+    Add a visible metadata label to an existing slide by reading image source paths from alt-text.
+
+    Reads the 'descr' alt-text stored by copy_slide_replace_images() and adds a visible
+    text label in the bottom-right corner. Falls back to shape name if no alt-text found.
+
+    Args:
+        ppt_path (str): Path to the PowerPoint file
+        slide_index (int): Index of the slide to label (0-based)
+        base_dir (str, optional): Base directory for computing relative paths in the label
+
+    Returns:
+        bool: True if a label was added, False if slide has no pictures
+    """
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
+
+    if not os.path.exists(ppt_path):
+        raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
+
+    prs = Presentation(ppt_path)
+
+    if slide_index < 0 or slide_index >= len(prs.slides):
+        raise IndexError(f"Slide index {slide_index} out of range")
+
+    slide = prs.slides[slide_index]
+    pictures = [s for s in slide.shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
+
+    if not pictures:
+        return False
+
+    # Read descr alt-text from each picture using lxml tag search (robust across shape types)
+    found_metadata = []
+    for pic in pictures:
+        descr = ""
+        try:
+            for elem in pic._element.iter():
+                local = elem.tag.split('}')[-1] if '}' in elem.tag else elem.tag
+                if local == 'cNvPr':
+                    descr = elem.get("descr", "")
+                    if descr:
+                        break
+        except Exception:
+            pass
+        found_metadata.append(descr)
+
+    slide_w = prs.slide_width.inches
+    slide_h = prs.slide_height.inches
+
+    if any(found_metadata):
+        # Show real source paths where available
+        img_labels = [d if d else f"[placeholder {i + 1}]" for i, d in enumerate(found_metadata)]
+        _add_text_label(slide, img_labels, slide_w, slide_h, base_dir=base_dir)
+    else:
+        # No metadata stored — just mark this as the template slide
+        _add_text_label(slide, ["TEMPLATE SLIDE"], slide_w, slide_h)
+
+    prs.save(ppt_path)
+    return True

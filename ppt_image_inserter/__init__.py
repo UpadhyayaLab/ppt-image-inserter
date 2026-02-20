@@ -40,6 +40,7 @@ from .workflow import (
     copy_slide_replace_image,
     copy_slide_replace_images,
     replace_image_on_existing_slide,
+    add_label_to_existing_slide,
 )
 
 # Define public API
@@ -70,4 +71,5 @@ __all__ = [
     'copy_slide_replace_image',
     'copy_slide_replace_images',
     'replace_image_on_existing_slide',
+    'add_label_to_existing_slide',
 ]

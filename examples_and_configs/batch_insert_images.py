@@ -22,7 +22,7 @@ from pptx import Presentation
 # Add parent directory to path to import ppt_image_inserter
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ppt_image_inserter import delete_slide, copy_slide_replace_image, copy_slide_replace_images, backup_presentation, get_all_image_positions
+from ppt_image_inserter import delete_slide, copy_slide_replace_image, copy_slide_replace_images, backup_presentation, get_all_image_positions, add_label_to_existing_slide
 
 
 def validate_config(config, config_path):
@@ -159,6 +159,14 @@ def main(config_path):
         # Update ppt_file to point to output for all subsequent operations
         ppt_file = output_path
 
+        # Add metadata label to template slide in the output file
+        try:
+            added = add_label_to_existing_slide(ppt_file, template_slide_index, base_dir=base_dir)
+            if added:
+                print(f"Added metadata label to template slide")
+        except Exception as e:
+            print(f"[WARNING] Could not add label to template slide: {e}")
+
     # Validate template slide exists and has images
     prs = Presentation(ppt_file)
     if template_slide_index >= len(prs.slides):
@@ -234,8 +242,7 @@ def main(config_path):
             delete_slide(ppt_file, slide_idx, backup_base=backup_dir)
 
     # Step 2: Create new slides from images
-    # Skip first image (should already be in template slide)
-    remaining_images = images[1:]
+    remaining_images = images
 
     print(f"Inserting {len(remaining_images)} images...")
 
@@ -280,7 +287,8 @@ def main(config_path):
                     image_paths,
                     positions=None,  # Auto-detect from template
                     store_metadata=True,
-                    add_label=False  # Don't add labels for multi-image slides
+                    add_label=True,
+                    base_dir=base_dir,
                 )
                 success_count += 1
                 print(f"  Created slide with {len(image_paths)} images: {[os.path.basename(p) for p in image_paths]}")
@@ -306,9 +314,11 @@ def main(config_path):
                     image_path,
                     position=None,  # Auto-detect from template
                     store_metadata=True,
-                    add_label=True
+                    add_label=True,
+                    base_dir=base_dir,
                 )
                 success_count += 1
+                print(f"  Created slide: {os.path.basename(image_path)}")
             except Exception as e:
                 print(f"[ERROR] Failed on {os.path.basename(image_path)}: {e}")
                 error_count += 1
@@ -331,9 +341,11 @@ def main(config_path):
                     image_path,
                     position=None,  # Auto-detect from template
                     store_metadata=True,
-                    add_label=True
+                    add_label=True,
+                    base_dir=base_dir,
                 )
                 success_count += 1
+                print(f"  Created slide: {os.path.basename(image_path)}")
             except Exception as e:
                 print(f"[ERROR] Failed on {os.path.basename(image_path)}: {e}")
                 error_count += 1

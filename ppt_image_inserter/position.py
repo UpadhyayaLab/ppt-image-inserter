@@ -152,4 +152,8 @@ def get_all_image_positions(
         }
         positions.append(position_info)
 
+    # Sort by visual reading order: top-to-bottom, then left-to-right within each row.
+    # Round top to nearest 0.1" to group images that share a row despite minor pixel offsets.
+    positions.sort(key=lambda p: (round(p['top'], 1), round(p['left'], 1)))
+
     return positions

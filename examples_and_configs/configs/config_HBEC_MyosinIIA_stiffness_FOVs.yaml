@@ -1,0 +1,40 @@
+presentation: "H:/PPTs/20260210_Update_MG_Fixed HBEC Myosin IIA IF_Stiffness Assay_template.pptx"
+output_path: "H:/PPTs/20260210_Update_MG_Fixed HBEC Myosin IIA IF_Stiffness Assay.pptx"
+template_slide: 4        # 0-based index = Slide 5 in PowerPoint UI
+preserve_slides: [0, 1, 2, 3, 4]
+auto_position: true
+base_dir: "H:/Working_Data/20260124_Fixed_HBEC-MYH9_Myosin-IIA/60xWI_AF647-MIIA_BodipyPhal_MYH9-MS2-GFP_Hoechst"
+
+# Layout per slide (6 images, z-order = left-to-right, top-to-bottom):
+#   Top row:    0.1 kPa | 1 kPa | 12 kPa | 100 kPa
+#   Bottom row: Glass (PureCol) | Glass (Uncoated)
+#
+# NOTE: 0p1kPa files use FOV001 format; all other conditions use 01 format.
+#
+# After running, output will have:
+#   Slide 5  = template (delete manually in PowerPoint to renumber)
+#   Slides 6–8   = C1 (Myosin IIA / AF647) FOV 001–003
+#   Slides 9–11  = C2 (F-Actin / Bodipy Phal) FOV 001–003
+#   Slides 12–14 = Composite FOV 001–003
+
+images:
+  # =========================================================
+  # C1 — Myosin IIA (AF647) — FOV 001–003
+  # =========================================================
+  - [0p1kPa_Col-I/mip/jpeg_C1/MAX_FOV001_C1.jpg, 1kPa_Col-I/mip/jpeg_C1/MAX_01_C1.jpg, 12kPa_Col-I/mip/jpeg_C1/MAX_01_C1.jpg, 100kPa_Col-I/mip/jpeg_C1/MAX_01_C1.jpg, Glass_PureCol/mip/jpeg_C1/MAX_01_C1.jpg, Glass_Uncoated/mip/jpeg_C1/MAX_01_C1.jpg]
+  - [0p1kPa_Col-I/mip/jpeg_C1/MAX_FOV002_C1.jpg, 1kPa_Col-I/mip/jpeg_C1/MAX_02_C1.jpg, 12kPa_Col-I/mip/jpeg_C1/MAX_02_C1.jpg, 100kPa_Col-I/mip/jpeg_C1/MAX_02_C1.jpg, Glass_PureCol/mip/jpeg_C1/MAX_02_C1.jpg, Glass_Uncoated/mip/jpeg_C1/MAX_02_C1.jpg]
+  - [0p1kPa_Col-I/mip/jpeg_C1/MAX_FOV003_C1.jpg, 1kPa_Col-I/mip/jpeg_C1/MAX_03_C1.jpg, 12kPa_Col-I/mip/jpeg_C1/MAX_03_C1.jpg, 100kPa_Col-I/mip/jpeg_C1/MAX_03_C1.jpg, Glass_PureCol/mip/jpeg_C1/MAX_03_C1.jpg, Glass_Uncoated/mip/jpeg_C1/MAX_03_C1.jpg]
+
+  # =========================================================
+  # C2 — F-Actin (Bodipy Phal) — FOV 001–003
+  # =========================================================
+  - [0p1kPa_Col-I/mip/jpeg_C2/MAX_FOV001_C2.jpg, 1kPa_Col-I/mip/jpeg_C2/MAX_01_C2.jpg, 12kPa_Col-I/mip/jpeg_C2/MAX_01_C2.jpg, 100kPa_Col-I/mip/jpeg_C2/MAX_01_C2.jpg, Glass_PureCol/mip/jpeg_C2/MAX_01_C2.jpg, Glass_Uncoated/mip/jpeg_C2/MAX_01_C2.jpg]
+  - [0p1kPa_Col-I/mip/jpeg_C2/MAX_FOV002_C2.jpg, 1kPa_Col-I/mip/jpeg_C2/MAX_02_C2.jpg, 12kPa_Col-I/mip/jpeg_C2/MAX_02_C2.jpg, 100kPa_Col-I/mip/jpeg_C2/MAX_02_C2.jpg, Glass_PureCol/mip/jpeg_C2/MAX_02_C2.jpg, Glass_Uncoated/mip/jpeg_C2/MAX_02_C2.jpg]
+  - [0p1kPa_Col-I/mip/jpeg_C2/MAX_FOV003_C2.jpg, 1kPa_Col-I/mip/jpeg_C2/MAX_03_C2.jpg, 12kPa_Col-I/mip/jpeg_C2/MAX_03_C2.jpg, 100kPa_Col-I/mip/jpeg_C2/MAX_03_C2.jpg, Glass_PureCol/mip/jpeg_C2/MAX_03_C2.jpg, Glass_Uncoated/mip/jpeg_C2/MAX_03_C2.jpg]
+
+  # =========================================================
+  # Composite (11010) — FOV 001–003
+  # =========================================================
+  - [0p1kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_FOV001.jpg, 1kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_01.jpg, 12kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_01.jpg, 100kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_01.jpg, Glass_PureCol/mip/composite/11010/Composite_Channels_11010_MAX_01.jpg, Glass_Uncoated/mip/composite/11010/Composite_Channels_11010_MAX_01.jpg]
+  - [0p1kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_FOV002.jpg, 1kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_02.jpg, 12kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_02.jpg, 100kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_02.jpg, Glass_PureCol/mip/composite/11010/Composite_Channels_11010_MAX_02.jpg, Glass_Uncoated/mip/composite/11010/Composite_Channels_11010_MAX_02.jpg]
+  - [0p1kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_FOV003.jpg, 1kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_03.jpg, 12kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_03.jpg, 100kPa_Col-I/mip/composite/11010/Composite_Channels_11010_MAX_03.jpg, Glass_PureCol/mip/composite/11010/Composite_Channels_11010_MAX_03.jpg, Glass_Uncoated/mip/composite/11010/Composite_Channels_11010_MAX_03.jpg]

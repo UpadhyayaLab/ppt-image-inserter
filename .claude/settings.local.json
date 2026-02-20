@@ -5,7 +5,10 @@
       "Bash(do)",
       "Bash(if [ -f \"$f\" ])",
       "Bash(fi)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(/c/Users/MG/AppData/Local/Microsoft/WindowsApps/python:*)"
     ]
   }
 }
