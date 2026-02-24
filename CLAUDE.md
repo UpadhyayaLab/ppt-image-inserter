@@ -145,6 +145,11 @@ This copies the template to `output_path` before processing, leaving the origina
 - Generating multiple variants from one template
 - Preserving original presentation files
 
+**Naming convention**: Template files are named `*_template.pptx`; output files drop the `_template` suffix (e.g., `my_presentation_template.pptx` → `my_presentation.pptx`). In standalone scripts, derive the output path automatically:
+```python
+OUTPUT_PATH = PPT_PATH.replace("_template.pptx", ".pptx")
+```
+
 ## Important Constraints
 
 ### PowerPoint File Handling
