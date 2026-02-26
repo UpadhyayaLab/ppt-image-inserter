@@ -112,6 +112,7 @@ def main(config_path):
     base_dir = config.get('base_dir', '')
     images = config['images']
     template_slide_index = config.get('template_slide', 1)
+    add_label = config.get('add_label', True)
 
     # Get preserve_slides, default to [0, template_slide] if not specified
     preserve_slides = config.get('preserve_slides', [0, template_slide_index])
@@ -160,12 +161,13 @@ def main(config_path):
         ppt_file = output_path
 
         # Add metadata label to template slide in the output file
-        try:
-            added = add_label_to_existing_slide(ppt_file, template_slide_index, base_dir=base_dir)
-            if added:
-                print(f"Added metadata label to template slide")
-        except Exception as e:
-            print(f"[WARNING] Could not add label to template slide: {e}")
+        if add_label:
+            try:
+                added = add_label_to_existing_slide(ppt_file, template_slide_index, base_dir=base_dir)
+                if added:
+                    print(f"Added metadata label to template slide")
+            except Exception as e:
+                print(f"[WARNING] Could not add label to template slide: {e}")
 
     # Validate template slide exists and has images
     prs = Presentation(ppt_file)
@@ -175,7 +177,6 @@ def main(config_path):
         print(f"Note: Slide indices are 0-based (Slide 1 in UI = index 0)")
         sys.exit(1)
 
-    # Validate template slide has images for auto-position
     try:
         positions = get_all_image_positions(ppt_file, template_slide_index)
         if not positions:
@@ -208,10 +209,17 @@ def main(config_path):
                     validation_errors.append(f"Image {i+1} (multi): {img_path}")
 
         elif isinstance(image_spec, dict):
-            # Legacy dict format
-            img_path = image_spec['path']
-            if not os.path.exists(img_path):
-                validation_errors.append(f"Image {i+1} (dict): {img_path}")
+            if 'images' in image_spec:
+                # New multi-image dict format with optional per-entry template_slide
+                for img_filename in image_spec['images']:
+                    img_path = img_filename if os.path.isabs(img_filename) else os.path.join(base_dir, img_filename)
+                    if not os.path.exists(img_path):
+                        validation_errors.append(f"Image {i+1} (multi-dict): {img_path}")
+            else:
+                # Legacy dict format
+                img_path = image_spec['path']
+                if not os.path.exists(img_path):
+                    validation_errors.append(f"Image {i+1} (dict): {img_path}")
 
         else:
             # Single string
@@ -287,7 +295,7 @@ def main(config_path):
                     image_paths,
                     positions=None,  # Auto-detect from template
                     store_metadata=True,
-                    add_label=True,
+                    add_label=add_label,
                     base_dir=base_dir,
                 )
                 success_count += 1
@@ -297,31 +305,69 @@ def main(config_path):
                 error_count += 1
 
         elif isinstance(image_spec, dict):
-            # Legacy dict format (single image with metadata)
-            image_path = image_spec['path']
+            if 'images' in image_spec:
+                # New: multi-image dict with optional per-entry template_slide override
+                slide_template = image_spec.get('template_slide', template_slide_index)
+                image_paths = [
+                    img if os.path.isabs(img) else os.path.join(base_dir, img)
+                    for img in image_spec['images']
+                ]
 
-            # Check if image exists
-            if not os.path.exists(image_path):
-                print(f"[ERROR] Image not found: {image_path}")
-                error_count += 1
-                continue
+                all_exist = True
+                for img_path in image_paths:
+                    if not os.path.exists(img_path):
+                        print(f"[ERROR] Image not found: {img_path}")
+                        error_count += 1
+                        all_exist = False
 
-            try:
-                # Copy template slide and insert image
-                new_idx = copy_slide_replace_image(
-                    ppt_file,
-                    template_slide_index,
-                    image_path,
-                    position=None,  # Auto-detect from template
-                    store_metadata=True,
-                    add_label=True,
-                    base_dir=base_dir,
-                )
-                success_count += 1
-                print(f"  Created slide: {os.path.basename(image_path)}")
-            except Exception as e:
-                print(f"[ERROR] Failed on {os.path.basename(image_path)}: {e}")
-                error_count += 1
+                if not all_exist:
+                    continue
+
+                try:
+                    slide_title = image_spec.get('title', None)
+                    new_idx = copy_slide_replace_images(
+                        ppt_file,
+                        slide_template,
+                        image_paths,
+                        positions=None,
+                        store_metadata=True,
+                        add_label=add_label,
+                        base_dir=base_dir,
+                        title=slide_title,
+                    )
+                    success_count += 1
+                    print(f"  Created slide with {len(image_paths)} images (template {slide_template}): {[os.path.basename(p) for p in image_paths]}")
+                except Exception as e:
+                    print(f"[ERROR] Failed on multi-image dict slide: {e}")
+                    error_count += 1
+
+            else:
+                # Legacy dict format (single image with metadata)
+                image_path = image_spec['path']
+
+                # Check if image exists
+                if not os.path.exists(image_path):
+                    print(f"[ERROR] Image not found: {image_path}")
+                    error_count += 1
+                    continue
+
+                try:
+                    # Copy template slide and insert image
+                    new_idx = copy_slide_replace_image(
+                        ppt_file,
+                        template_slide_index,
+                        image_path,
+                        position=None,  # Auto-detect from template
+                        store_metadata=True,
+                        add_label=add_label,
+                        base_dir=base_dir,
+                        title=image_spec.get('title', None),
+                    )
+                    success_count += 1
+                    print(f"  Created slide: {os.path.basename(image_path)}")
+                except Exception as e:
+                    print(f"[ERROR] Failed on {os.path.basename(image_path)}: {e}")
+                    error_count += 1
 
         else:
             # Single string (backwards compatible - most common case)
@@ -341,7 +387,7 @@ def main(config_path):
                     image_path,
                     position=None,  # Auto-detect from template
                     store_metadata=True,
-                    add_label=True,
+                    add_label=add_label,
                     base_dir=base_dir,
                 )
                 success_count += 1

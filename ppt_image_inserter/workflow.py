@@ -5,6 +5,7 @@ High-level workflow functions for PowerPoint image replacement.
 from pptx import Presentation
 from pptx.slide import Slide
 from pptx.util import Inches, Pt
+from pptx.enum.text import PP_ALIGN
 import os
 from .position import get_image_position, get_all_image_positions
 from .slide_utils import duplicate_slide, remove_pictures_from_slide, remove_all_text_from_slide
@@ -14,6 +15,31 @@ LABEL_MARGIN = 0.3       # margin from right and bottom edges
 LABEL_WIDTH = 5.0
 LABEL_FONT_SIZE = 8
 LABEL_FONT_NAME = 'Arial'
+
+
+TITLE_LEFT = 1.167
+TITLE_TOP = 0.0
+TITLE_WIDTH = 11.0
+TITLE_HEIGHT = 1.5
+TITLE_FONT_SIZE_PT = 32
+
+
+def _add_title(slide: Slide, text: str) -> None:
+    """Add a centered bold title textbox at the top of a slide."""
+    try:
+        txBox = slide.shapes.add_textbox(
+            Inches(TITLE_LEFT), Inches(TITLE_TOP),
+            Inches(TITLE_WIDTH), Inches(TITLE_HEIGHT),
+        )
+        tf = txBox.text_frame
+        tf.word_wrap = True
+        tf.text = text
+        para = tf.paragraphs[0]
+        para.font.size = Pt(TITLE_FONT_SIZE_PT)
+        para.font.bold = True
+        para.alignment = PP_ALIGN.CENTER
+    except Exception as e:
+        print(f"[WARNING] Could not add title: {e}")
 
 
 def _add_text_label(
@@ -78,7 +104,7 @@ def _add_text_label(
 
 
 def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, position=None,
-                             store_metadata=True, add_label=True, base_dir=None):
+                             store_metadata=True, add_label=True, base_dir=None, title=None):
     """
     Copy a slide and replace its image with a new one (single-image version).
 
@@ -124,11 +150,12 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         store_metadata=store_metadata,
         add_label=add_label,
         base_dir=base_dir,
+        title=title,
     )
 
 
 def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, positions=None,
-                               store_metadata=True, add_label=False, base_dir=None):
+                               store_metadata=True, add_label=False, base_dir=None, title=None):
     """
     Copy a slide and replace its images with new ones (supports multiple images per slide).
 
@@ -220,7 +247,9 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
     # Remove all text (including placeholders) from the new slide
     num_text_removed = remove_all_text_from_slide(new_slide)
 
-    # Insert all new images at their specified positions
+    # Insert all new images at their specified positions.
+    # Only width is specified; height is auto-calculated by python-pptx from the
+    # image's native aspect ratio, preventing distortion from mismatched placeholders.
     pictures = []
     for img_path, pos in zip(new_image_paths, positions):
         picture = new_slide.shapes.add_picture(
@@ -228,7 +257,6 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
             Inches(pos['left']),
             Inches(pos['top']),
             width=Inches(pos['width']),
-            height=Inches(pos['height'])
         )
         pictures.append(picture)
 
@@ -245,6 +273,10 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
         slide_w = prs.slide_width.inches
         slide_h = prs.slide_height.inches
         _add_text_label(new_slide, new_image_paths, slide_w, slide_h, base_dir=base_dir)
+
+    # Add title if provided
+    if title:
+        _add_title(new_slide, title)
 
     # Save the presentation
     prs.save(ppt_path)

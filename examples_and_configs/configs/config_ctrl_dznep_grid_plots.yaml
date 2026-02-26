@@ -1,0 +1,224 @@
+# Config: Jurkats DZNep timecourse -- grid plots (combined, laminB only, bTub only)
+#
+# Generates a standalone PPTX with violin-plot grid images for 3 datasets x 5 metrics.
+# Two template slides:
+#   template_slide 0: layout for timecourse (Treatment_Timecourses) slides
+#   template_slide 1: layout for adjacent-timepoint (Timepoint_Comparisons) slides
+#
+# Each slide has 2 images stacked vertically:
+#   TOP:    full timecourse (4, 8, 15, 30 min, 1 hr)
+#   BOTTOM: without 15 min timepoint
+#
+# Slide title formula: {Metric}: {Comparison} ({Dataset})
+#   Comparison labels:
+#     Treatment_Timecourses pair    -> "Ctrl and DZNep at adjacent timepoints"
+#     Timepoint_Comparisons pair   -> "Ctrl vs DZNep"
+#   Dataset labels:
+#     combined -> "lamin B and bTub combined"
+#     lmnb1    -> "lamin B only"
+#     bTub     -> "bTub only"
+#
+# Ordering: Metric -> Dataset -> Comparison (30 slides: 5 x 3 x 2)
+# Metrics (in order): nuc_deform_ratio_major_m, nuc_centroid_z,
+#   nuc_centroid_z_bottom_ce, invag_ratio, actin_bottom_mask_area
+# Display names:
+#   nuc_deform_ratio_major_m    -> "Nuclear aspect ratio"
+#   nuc_centroid_z              -> "Nuclear centroid z-position relative to bottom plane of imaging"
+#   nuc_centroid_z_bottom_ce    -> "Nuclear centroid z-position relative to cell bottom"
+#   invag_ratio                 -> "Nuclear invagination ratio"
+#   actin_bottom_mask_area      -> "Area at synapse"
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Ctrl_DZNep_upto1hr_compilation_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Ctrl_DZNep_upto1hr_compilation.pptx"
+template_slide: 0
+preserve_slides: [0, 1]
+base_dir: ""
+auto_position: true
+add_label: false
+
+images:
+
+  # ===========================================================================
+  # METRIC 1: Nuclear aspect ratio  (nuc_deform_ratio_major_m)
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Treatment_Timecourses/nuc_deform_ratio_major_m_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Treatment_Timecourses_no15min/nuc_deform_ratio_major_m_grid.png"
+    title: "Nuclear aspect ratio: Ctrl and DZNep at adjacent timepoints (lamin B and bTub combined)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Timepoint_Comparisons/nuc_deform_ratio_major_m_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Timepoint_Comparisons_no15min/nuc_deform_ratio_major_m_grid.png"
+    template_slide: 1
+    title: "Nuclear aspect ratio: Ctrl vs DZNep (lamin B and bTub combined)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Treatment_Timecourses/nuc_deform_ratio_major_m_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Treatment_Timecourses_no15min/nuc_deform_ratio_major_m_grid.png"
+    title: "Nuclear aspect ratio: Ctrl and DZNep at adjacent timepoints (lamin B only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Timepoint_Comparisons/nuc_deform_ratio_major_m_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Timepoint_Comparisons_no15min/nuc_deform_ratio_major_m_grid.png"
+    template_slide: 1
+    title: "Nuclear aspect ratio: Ctrl vs DZNep (lamin B only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Treatment_Timecourses/nuc_deform_ratio_major_m_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Treatment_Timecourses_no15min/nuc_deform_ratio_major_m_grid.png"
+    title: "Nuclear aspect ratio: Ctrl and DZNep at adjacent timepoints (bTub only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Timepoint_Comparisons/nuc_deform_ratio_major_m_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Timepoint_Comparisons_no15min/nuc_deform_ratio_major_m_grid.png"
+    template_slide: 1
+    title: "Nuclear aspect ratio: Ctrl vs DZNep (bTub only)"
+
+  # ===========================================================================
+  # METRIC 2: Nuclear z-position  (nuc_centroid_z)
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Treatment_Timecourses/nuc_centroid_z_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Treatment_Timecourses_no15min/nuc_centroid_z_grid.png"
+    title: "Nuclear centroid z-position relative to bottom plane of imaging: Ctrl and DZNep at adjacent timepoints (lamin B and bTub combined)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Timepoint_Comparisons/nuc_centroid_z_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Timepoint_Comparisons_no15min/nuc_centroid_z_grid.png"
+    template_slide: 1
+    title: "Nuclear centroid z-position relative to bottom plane of imaging: Ctrl vs DZNep (lamin B and bTub combined)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Treatment_Timecourses/nuc_centroid_z_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Treatment_Timecourses_no15min/nuc_centroid_z_grid.png"
+    title: "Nuclear centroid z-position relative to bottom plane of imaging: Ctrl and DZNep at adjacent timepoints (lamin B only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Timepoint_Comparisons/nuc_centroid_z_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Timepoint_Comparisons_no15min/nuc_centroid_z_grid.png"
+    template_slide: 1
+    title: "Nuclear centroid z-position relative to bottom plane of imaging: Ctrl vs DZNep (lamin B only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Treatment_Timecourses/nuc_centroid_z_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Treatment_Timecourses_no15min/nuc_centroid_z_grid.png"
+    title: "Nuclear centroid z-position relative to bottom plane of imaging: Ctrl and DZNep at adjacent timepoints (bTub only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Timepoint_Comparisons/nuc_centroid_z_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Timepoint_Comparisons_no15min/nuc_centroid_z_grid.png"
+    template_slide: 1
+    title: "Nuclear centroid z-position relative to bottom plane of imaging: Ctrl vs DZNep (bTub only)"
+
+  # ===========================================================================
+  # METRIC 3: Nuclear z-position from cell bottom  (nuc_centroid_z_bottom_ce)
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Treatment_Timecourses/nuc_centroid_z_bottom_ce_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Treatment_Timecourses_no15min/nuc_centroid_z_bottom_ce_grid.png"
+    title: "Nuclear centroid z-position relative to cell bottom: Ctrl and DZNep at adjacent timepoints (lamin B and bTub combined)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Timepoint_Comparisons/nuc_centroid_z_bottom_ce_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Timepoint_Comparisons_no15min/nuc_centroid_z_bottom_ce_grid.png"
+    template_slide: 1
+    title: "Nuclear centroid z-position relative to cell bottom: Ctrl vs DZNep (lamin B and bTub combined)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Treatment_Timecourses/nuc_centroid_z_bottom_ce_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Treatment_Timecourses_no15min/nuc_centroid_z_bottom_ce_grid.png"
+    title: "Nuclear centroid z-position relative to cell bottom: Ctrl and DZNep at adjacent timepoints (lamin B only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Timepoint_Comparisons/nuc_centroid_z_bottom_ce_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Timepoint_Comparisons_no15min/nuc_centroid_z_bottom_ce_grid.png"
+    template_slide: 1
+    title: "Nuclear centroid z-position relative to cell bottom: Ctrl vs DZNep (lamin B only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Treatment_Timecourses/nuc_centroid_z_bottom_ce_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Treatment_Timecourses_no15min/nuc_centroid_z_bottom_ce_grid.png"
+    title: "Nuclear centroid z-position relative to cell bottom: Ctrl and DZNep at adjacent timepoints (bTub only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Timepoint_Comparisons/nuc_centroid_z_bottom_ce_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Timepoint_Comparisons_no15min/nuc_centroid_z_bottom_ce_grid.png"
+    template_slide: 1
+    title: "Nuclear centroid z-position relative to cell bottom: Ctrl vs DZNep (bTub only)"
+
+  # ===========================================================================
+  # METRIC 4: Nuclear invagination ratio  (invag_ratio)
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Treatment_Timecourses/invag_ratio_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Treatment_Timecourses_no15min/invag_ratio_grid.png"
+    title: "Nuclear invagination ratio: Ctrl and DZNep at adjacent timepoints (lamin B and bTub combined)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Timepoint_Comparisons/invag_ratio_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Timepoint_Comparisons_no15min/invag_ratio_grid.png"
+    template_slide: 1
+    title: "Nuclear invagination ratio: Ctrl vs DZNep (lamin B and bTub combined)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Treatment_Timecourses/invag_ratio_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Treatment_Timecourses_no15min/invag_ratio_grid.png"
+    title: "Nuclear invagination ratio: Ctrl and DZNep at adjacent timepoints (lamin B only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Timepoint_Comparisons/invag_ratio_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Timepoint_Comparisons_no15min/invag_ratio_grid.png"
+    template_slide: 1
+    title: "Nuclear invagination ratio: Ctrl vs DZNep (lamin B only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Treatment_Timecourses/invag_ratio_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Treatment_Timecourses_no15min/invag_ratio_grid.png"
+    title: "Nuclear invagination ratio: Ctrl and DZNep at adjacent timepoints (bTub only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Timepoint_Comparisons/invag_ratio_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Timepoint_Comparisons_no15min/invag_ratio_grid.png"
+    template_slide: 1
+    title: "Nuclear invagination ratio: Ctrl vs DZNep (bTub only)"
+
+  # ===========================================================================
+  # METRIC 5: Actin footprint area  (actin_bottom_mask_area)
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Treatment_Timecourses/actin_bottom_mask_area_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Treatment_Timecourses_no15min/actin_bottom_mask_area_grid.png"
+    title: "Area at synapse: Ctrl and DZNep at adjacent timepoints (lamin B and bTub combined)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Timepoint_Comparisons/actin_bottom_mask_area_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/combined/grids/Timepoint_Comparisons_no15min/actin_bottom_mask_area_grid.png"
+    template_slide: 1
+    title: "Area at synapse: Ctrl vs DZNep (lamin B and bTub combined)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Treatment_Timecourses/actin_bottom_mask_area_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Treatment_Timecourses_no15min/actin_bottom_mask_area_grid.png"
+    title: "Area at synapse: Ctrl and DZNep at adjacent timepoints (lamin B only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Timepoint_Comparisons/actin_bottom_mask_area_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/lmnb1/grids/Timepoint_Comparisons_no15min/actin_bottom_mask_area_grid.png"
+    template_slide: 1
+    title: "Area at synapse: Ctrl vs DZNep (lamin B only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Treatment_Timecourses/actin_bottom_mask_area_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Treatment_Timecourses_no15min/actin_bottom_mask_area_grid.png"
+    title: "Area at synapse: Ctrl and DZNep at adjacent timepoints (bTub only)"
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Timepoint_Comparisons/actin_bottom_mask_area_grid.png"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_nobTub_lamin_timecourse_20260203_20240801_pipeline_20260225/bTub/grids/Timepoint_Comparisons_no15min/actin_bottom_mask_area_grid.png"
+    template_slide: 1
+    title: "Area at synapse: Ctrl vs DZNep (bTub only)"

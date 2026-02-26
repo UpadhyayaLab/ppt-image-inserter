@@ -8,7 +8,8 @@
       "Bash(done)",
       "Bash(python3:*)",
       "Bash(python:*)",
-      "Bash(/c/Users/MG/AppData/Local/Microsoft/WindowsApps/python:*)"
+      "Bash(/c/Users/MG/AppData/Local/Microsoft/WindowsApps/python:*)",
+      "Bash(cd:*)"
     ]
   }
 }
