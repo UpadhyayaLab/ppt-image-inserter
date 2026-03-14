@@ -1,0 +1,181 @@
+# Config: Jurkats DZNep timecourse -- grid plots (bTub only)
+#
+# Generates a standalone PPTX with violin-plot grid images for bTub dataset.
+# One template slide with 2 image placeholders:
+#   TOP:    treatment_timecourses (Ctrl and DZNep at adjacent timepoints)
+#   BOTTOM: timepoint_comparisons (Ctrl vs DZNep)
+#
+# Each metric = 1 slide (18 slides total).
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Ctrl_DZNep_upto1hr_bTub_compilation_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Ctrl_DZNep_upto1hr_bTub_compilation.pptx"
+template_slide: 0
+preserve_slides: [0]
+base_dir: ""
+auto_position: true
+add_label: false
+
+images:
+
+  # ===========================================================================
+  # METRIC 1: nuc_aspect_ratio
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/nuc_aspect_ratio.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/nuc_aspect_ratio.tiff"
+    title: "Nuclear aspect ratio (bTub only)"
+
+  # ===========================================================================
+  # METRIC 2: actin_deform_ratio
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/actin_deform_ratio.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/actin_deform_ratio.tiff"
+    title: "Actin deformation ratio (bTub only)"
+
+  # ===========================================================================
+  # METRIC 3: centrosome_from_MT_z_cell_bottom_distance
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/centrosome_from_MT_z_cell_bottom_distance.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/centrosome_from_MT_z_cell_bottom_distance.tiff"
+    title: "Centrosome z-position relative to cell bottom (bTub only)"
+
+  # ===========================================================================
+  # METRIC 4: avg_normal_angle_adaptive_region_growth
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/avg_normal_angle_adaptive_region_growth.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/avg_normal_angle_adaptive_region_growth.tiff"
+    title: "Average normal angle (adaptive region growth) (bTub only)"
+
+  # ===========================================================================
+  # METRIC 5: nuc_cent_closest_dist
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/nuc_cent_closest_dist.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/nuc_cent_closest_dist.tiff"
+    title: "Nucleus-centrosome closest distance (bTub only)"
+
+  # ===========================================================================
+  # METRIC 6: chull_max_D
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/chull_max_D.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/chull_max_D.tiff"
+    title: "Convex hull max diameter (bTub only)"
+
+  # ===========================================================================
+  # METRIC 7: chull_max_D_by_cent
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/chull_max_D_by_cent.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/chull_max_D_by_cent.tiff"
+    title: "Convex hull max diameter by centrosome (bTub only)"
+
+  # ===========================================================================
+  # METRIC 8: chull_mean_D
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/chull_mean_D.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/chull_mean_D.tiff"
+    title: "Convex hull mean diameter (bTub only)"
+
+  # ===========================================================================
+  # METRIC 9: chull_mean_D_cent_ratio
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/chull_mean_D_cent_ratio.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/chull_mean_D_cent_ratio.tiff"
+    title: "Convex hull mean diameter to centrosome ratio (bTub only)"
+
+  # ===========================================================================
+  # METRIC 10: centrosome_dist_deepest_real_avg_periphery_ratio
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/centrosome_dist_deepest_real_avg_periphery_ratio.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/centrosome_dist_deepest_real_avg_periphery_ratio.tiff"
+    title: "Centrosome distance to deepest invagination / periphery ratio (bTub only)"
+
+  # ===========================================================================
+  # METRIC 11: concavity_index_around_cent
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/concavity_index_around_cent.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/concavity_index_around_cent.tiff"
+    title: "Concavity index around centrosome (bTub only)"
+
+  # ===========================================================================
+  # METRIC 12: deepest_invag_fraction_chull_volume
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/deepest_invag_fraction_chull_volume.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/deepest_invag_fraction_chull_volume.tiff"
+    title: "Deepest invagination fraction of convex hull volume (bTub only)"
+
+  # ===========================================================================
+  # METRIC 13: nuc_solidity
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/nuc_solidity.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/nuc_solidity.tiff"
+    title: "Nuclear solidity (bTub only)"
+
+  # ===========================================================================
+  # METRIC 14: nuc_SA_mesh
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/nuc_SA_mesh.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/nuc_SA_mesh.tiff"
+    title: "Nuclear surface area (mesh) (bTub only)"
+
+  # ===========================================================================
+  # METRIC 15: nuc_volume_mesh
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/nuc_volume_mesh.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/nuc_volume_mesh.tiff"
+    title: "Nuclear volume (mesh) (bTub only)"
+
+  # ===========================================================================
+  # METRIC 16: actin_MFI_around_cent_2um
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/actin_MFI_around_cent_2um.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/actin_MFI_around_cent_2um.tiff"
+    title: "Actin MFI around centrosome (2 μm) (bTub only)"
+
+  # ===========================================================================
+  # METRIC 17: actin_frac_around_cent_2um
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/actin_frac_around_cent_2um.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/actin_frac_around_cent_2um.tiff"
+    title: "Actin fraction around centrosome (2 μm) (bTub only)"
+
+  # ===========================================================================
+  # METRIC 18: deepest_region_periph_ratio_025um
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/treatment_timecourses/deepest_region_periph_ratio_025um.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20260314/grid_panels/timepoint_comparisons/deepest_region_periph_ratio_025um.tiff"
+    title: "Deepest region to periphery ratio (0.25 μm) (bTub only)"
+

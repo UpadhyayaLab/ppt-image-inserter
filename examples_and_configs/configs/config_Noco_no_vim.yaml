@@ -1,0 +1,52 @@
+# Batch Image Replacement Configuration
+# This YAML file specifies which images to insert into PowerPoint slides
+
+# Path to the PowerPoint presentation
+presentation: "PPT/Effects of Noco, Fixed Cells, 4 exp, no vim.pptx"
+
+# Template slide to copy (0-based index)
+# Slide 2 in PowerPoint UI = index 1
+template_slide: 1
+
+# Auto-detect position from the first image in the template slide
+# Set to false to manually specify position below
+auto_position: true
+
+# Manual position (only used if auto_position is false)
+# Uncomment and set values if you want to override auto-detection
+# position:
+#   left: 0.14      # inches from left edge
+#   top: 0.96       # inches from top edge
+#   width: 5.43     # image width in inches
+#   height: 2.72    # image height in inches
+
+# Base directory containing all images
+base_dir: "J:/FF/fixed_cell/results_across_experiments/Noco_CD3_no_vim_no_MT_20260210/grid_panels"
+
+# List of image filenames (each creates a new slide)
+# Images are processed in the order listed
+# Vimentin metrics excluded for nocodazole experiment (no vim staining)
+images:
+  - nuc_aspect_ratio_grid.tif
+  - actin_deform_ratio_grid.tif
+  - centrosome_center_z_rel_bottom_actin_plane_grid.tif
+  - avg_normal_angle_adaptive_region_growth_grid.tif
+  - nuc_cent_closest_dist_grid.tif
+  - chull_max_D_grid.tif
+  - chull_mean_D_cent_ratio_grid.tif
+  - centrosome_dist_deepest_real_avg_periphery_ratio_grid.tif
+  - concavity_index_around_cent_grid.tif
+  - deepest_invag_fraction_chull_volume_grid.tif
+  - nuc_resized_solidity_grid.tif
+  - nuc_SA_mesh_grid.tif
+  - nuc_volume_mesh_grid.tif
+  - actin_MFI_around_cent_2um_grid.tif
+  - actin_frac_around_cent_2um_grid.tif
+  - deepest_region_periph_ratio_025um_grid.tif
+
+# Notes:
+# - Use forward slashes (/) in paths, even on Windows
+# - Or use double backslashes (\\) on Windows
+# - All images must exist in base_dir or the batch will skip them with an error
+# - Images are processed in the order listed
+# - Add or remove filenames as needed
