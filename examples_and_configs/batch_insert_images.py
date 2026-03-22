@@ -113,6 +113,7 @@ def main(config_path):
     images = config['images']
     template_slide_index = config.get('template_slide', 1)
     add_label = config.get('add_label', True)
+    label_side = config.get('label_side', 'right')
 
     # Get preserve_slides, default to [0, template_slide] if not specified
     preserve_slides = config.get('preserve_slides', [0, template_slide_index])
@@ -217,7 +218,8 @@ def main(config_path):
                         validation_errors.append(f"Image {i+1} (multi-dict): {img_path}")
             else:
                 # Legacy dict format
-                img_path = image_spec['path']
+                raw_path = image_spec['path']
+                img_path = raw_path if os.path.isabs(raw_path) else os.path.join(base_dir, raw_path)
                 if not os.path.exists(img_path):
                     validation_errors.append(f"Image {i+1} (dict): {img_path}")
 
@@ -334,6 +336,7 @@ def main(config_path):
                         add_label=add_label,
                         base_dir=base_dir,
                         title=slide_title,
+                        label_side=label_side,
                     )
                     success_count += 1
                     print(f"  Created slide with {len(image_paths)} images (template {slide_template}): {[os.path.basename(p) for p in image_paths]}")
@@ -343,7 +346,8 @@ def main(config_path):
 
             else:
                 # Legacy dict format (single image with metadata)
-                image_path = image_spec['path']
+                raw_path = image_spec['path']
+                image_path = raw_path if os.path.isabs(raw_path) else os.path.join(base_dir, raw_path)
 
                 # Check if image exists
                 if not os.path.exists(image_path):
@@ -362,6 +366,7 @@ def main(config_path):
                         add_label=add_label,
                         base_dir=base_dir,
                         title=image_spec.get('title', None),
+                        label_side=label_side,
                     )
                     success_count += 1
                     print(f"  Created slide: {os.path.basename(image_path)}")
@@ -389,6 +394,7 @@ def main(config_path):
                     store_metadata=True,
                     add_label=add_label,
                     base_dir=base_dir,
+                    label_side=label_side,
                 )
                 success_count += 1
                 print(f"  Created slide: {os.path.basename(image_path)}")

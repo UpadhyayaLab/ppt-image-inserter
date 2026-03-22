@@ -1,0 +1,27 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, Jurkats, montages_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, Jurkats, montages.pptx"
+template_slide: 0
+preserve_slides: [0]
+base_dir: "H:/FF/Nucleus_Data/3D_Nucleus/Fixed"
+label_side: left
+images:
+  # 20230803 experiment — aCD3 (2 slides)
+  - path: 202308033_E6-1_H3K27me3_aCD3vPLL/W1_E6-1_aCD3_7min_Rh-Phalloidin_488-H3K27me3_Hoechst/Cells/channels/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_1_31.png
+    title: "H3K27me3 (aCD3) montages: 20230803 experiment (montage 1)"
+  - path: 202308033_E6-1_H3K27me3_aCD3vPLL/W1_E6-1_aCD3_7min_Rh-Phalloidin_488-H3K27me3_Hoechst/Cells/channels/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_32_58.png
+    title: "H3K27me3 (aCD3) montages: 20230803 experiment (montage 2)"
+  # 20230803 experiment — PLL (2 slides)
+  - path: 202308033_E6-1_H3K27me3_aCD3vPLL/W2_E6-1_PLL_7min_Rh-Phalloidin_488-H3K27me3_Hoechst/Cells/channels/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_1_25.png
+    title: "H3K27me3 (PLL) montages: 20230803 experiment (montage 1)"
+  - path: 202308033_E6-1_H3K27me3_aCD3vPLL/W2_E6-1_PLL_7min_Rh-Phalloidin_488-H3K27me3_Hoechst/Cells/channels/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_26_50.png
+    title: "H3K27me3 (PLL) montages: 20230803 experiment (montage 2)"
+  # 20230911 experiment — aCD3 (2 slides)
+  - path: 20230911_Fixed_E6-1_WT_H3K27me3/W1_aCD3_E6-1_WT_535Phalloidin_488H3K27me3_405Hoechst/Cells/channels/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_1_42.png
+    title: "H3K27me3 (aCD3) montages: 20230911 experiment (montage 1)"
+  - path: 20230911_Fixed_E6-1_WT_H3K27me3/W1_aCD3_E6-1_WT_535Phalloidin_488H3K27me3_405Hoechst/Cells/channels/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_44_75.png
+    title: "H3K27me3 (aCD3) montages: 20230911 experiment (montage 2)"
+  # 20230911 experiment — PLL (2 slides)
+  - path: 20230911_Fixed_E6-1_WT_H3K27me3/W2_PLL_E6-1_WT_535Phalloidin_488H3K27me3_405Hoechst/Cells/channels/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_1_26.png
+    title: "H3K27me3 (PLL) montages: 20230911 experiment (montage 1)"
+  - path: 20230911_Fixed_E6-1_WT_H3K27me3/W2_PLL_E6-1_WT_535Phalloidin_488H3K27me3_405Hoechst/Cells/channels/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_27_51.png
+    title: "H3K27me3 (PLL) montages: 20230911 experiment (montage 2)"

@@ -6,6 +6,7 @@ from pptx import Presentation
 from pptx.slide import Slide
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
+from PIL import Image as PILImage
 import os
 from .position import get_image_position, get_all_image_positions
 from .slide_utils import duplicate_slide, remove_pictures_from_slide, remove_all_text_from_slide
@@ -48,18 +49,20 @@ def _add_text_label(
     slide_width_inches: float = 13.333,
     slide_height_inches: float = 7.5,
     base_dir: str = None,
+    label_side: str = 'right',
 ) -> None:
     """
-    Add a text label with image path(s) in the bottom-right corner of a slide.
+    Add a text label with image path(s) in the bottom corner of a slide.
 
     Internal helper function for adding labels to slides.
 
     Args:
         slide: The slide to add the label to
         image_paths: Full path to the image file (str), or list of paths for multi-image slides
-        slide_width_inches: Slide width in inches (used for right-alignment)
+        slide_width_inches: Slide width in inches (used for alignment)
         slide_height_inches: Slide height in inches (used for bottom-alignment)
         base_dir: If provided, paths are shown relative to this directory
+        label_side: 'right' (default) or 'left' — which corner to place the label
     """
     if isinstance(image_paths, str):
         image_paths = [image_paths]
@@ -79,8 +82,11 @@ def _add_text_label(
     # Compute height from number of lines (~0.13" per line at 8pt + small buffer)
     height = n_lines * 0.13 + 0.1
 
-    # Position: bottom-right corner
-    left = slide_width_inches - LABEL_MARGIN - LABEL_WIDTH
+    # Position: bottom-left or bottom-right corner
+    if label_side == 'left':
+        left = LABEL_MARGIN
+    else:
+        left = slide_width_inches - LABEL_MARGIN - LABEL_WIDTH
     top = slide_height_inches - LABEL_MARGIN - height
 
     try:
@@ -104,7 +110,8 @@ def _add_text_label(
 
 
 def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, position=None,
-                             store_metadata=True, add_label=True, base_dir=None, title=None):
+                             store_metadata=True, add_label=True, base_dir=None, title=None,
+                             label_side='right'):
     """
     Copy a slide and replace its image with a new one (single-image version).
 
@@ -151,11 +158,13 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         add_label=add_label,
         base_dir=base_dir,
         title=title,
+        label_side=label_side,
     )
 
 
 def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, positions=None,
-                               store_metadata=True, add_label=False, base_dir=None, title=None):
+                               store_metadata=True, add_label=False, base_dir=None, title=None,
+                               label_side='right'):
     """
     Copy a slide and replace its images with new ones (supports multiple images per slide).
 
@@ -247,16 +256,36 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
     # Remove all text (including placeholders) from the new slide
     num_text_removed = remove_all_text_from_slide(new_slide)
 
-    # Insert all new images at their specified positions.
-    # Only width is specified; height is auto-calculated by python-pptx from the
-    # image's native aspect ratio, preventing distortion from mismatched placeholders.
+    # Insert all new images, fitting within placeholder bounds while preserving aspect ratio.
     pictures = []
     for img_path, pos in zip(new_image_paths, positions):
+        # Get image native dimensions to compute aspect ratio
+        with PILImage.open(img_path) as img:
+            img_w, img_h = img.size
+
+        img_aspect = img_w / img_h
+        box_w, box_h = pos['width'], pos['height']
+        box_aspect = box_w / box_h
+
+        if img_aspect >= box_aspect:
+            # Image is wider than box — constrain by width
+            final_width = box_w
+            final_height = box_w / img_aspect
+        else:
+            # Image is taller than box — constrain by height
+            final_height = box_h
+            final_width = box_h * img_aspect
+
+        # Center within placeholder bounds
+        left = pos['left'] + (box_w - final_width) / 2
+        top = pos['top'] + (box_h - final_height) / 2
+
         picture = new_slide.shapes.add_picture(
             img_path,
-            Inches(pos['left']),
-            Inches(pos['top']),
-            width=Inches(pos['width']),
+            Inches(left),
+            Inches(top),
+            width=Inches(final_width),
+            height=Inches(final_height),
         )
         pictures.append(picture)
 
@@ -268,11 +297,11 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
             except Exception as e:
                 print(f"[WARNING] Could not store metadata for {os.path.basename(img_path)}: {e}")
 
-    # Add visible text label in bottom-right corner if requested
+    # Add visible text label if requested
     if add_label:
         slide_w = prs.slide_width.inches
         slide_h = prs.slide_height.inches
-        _add_text_label(new_slide, new_image_paths, slide_w, slide_h, base_dir=base_dir)
+        _add_text_label(new_slide, new_image_paths, slide_w, slide_h, base_dir=base_dir, label_side=label_side)
 
     # Add title if provided
     if title:

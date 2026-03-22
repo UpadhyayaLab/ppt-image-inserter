@@ -1,0 +1,27 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K9me3, H3K27ac, Jurkats, montages_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K9me3, H3K27ac, Jurkats, montages.pptx"
+template_slide: 0
+preserve_slides: [0]
+base_dir: "J:/FF/fixed_cell/Jurkat_nucleus/histone_mods/tifsJurkat_cd3vspll_histoneMods_0617"
+label_side: left
+images:
+  # aCD3 + H3K27ac (2 slides)
+  - path: f-jurkat-acd3-h3k27ac-0617/combined/prog_fixed_cells/H3K27ac/panels/H3K27ac/montage_cells_1_26.png
+    title: "H3K27ac (aCD3) montages: 20240617 experiment (montage 1)"
+  - path: f-jurkat-acd3-h3k27ac-0617/combined/prog_fixed_cells/H3K27ac/panels/H3K27ac/montage_cells_27_51.png
+    title: "H3K27ac (aCD3) montages: 20240617 experiment (montage 2)"
+  # aCD3 + H3K9me3 (2 slides)
+  - path: f-jurkat-acd3-h3k9me3-0617/combined/prog_fixed_cells/H3K27ac/panels/H3K27ac/montage_cells_2_26.png
+    title: "H3K9me3 (aCD3) montages: 20240617 experiment (montage 1)"
+  - path: f-jurkat-acd3-h3k9me3-0617/combined/prog_fixed_cells/H3K27ac/panels/H3K27ac/montage_cells_27_47.png
+    title: "H3K9me3 (aCD3) montages: 20240617 experiment (montage 2)"
+  # PLL + H3K27ac (2 slides)
+  - path: f-jurkat-pll-h3k27ac-0617/combined/prog_fixed_cells/H3K27ac/panels/H3K27ac/montage_cells_2_26.png
+    title: "H3K27ac (PLL) montages: 20240617 experiment (montage 1)"
+  - path: f-jurkat-pll-h3k27ac-0617/combined/prog_fixed_cells/H3K27ac/panels/H3K27ac/montage_cells_27_49.png
+    title: "H3K27ac (PLL) montages: 20240617 experiment (montage 2)"
+  # PLL + H3K9me3 (2 slides)
+  - path: f-jurkat-pll-h3k9me3-0617/combined/prog_fixed_cells/H3K27ac/panels/H3K27ac/montage_cells_1_30.png
+    title: "H3K9me3 (PLL) montages: 20240617 experiment (montage 1)"
+  - path: f-jurkat-pll-h3k9me3-0617/combined/prog_fixed_cells/H3K27ac/panels/H3K27ac/montage_cells_31_41.png
+    title: "H3K9me3 (PLL) montages: 20240617 experiment (montage 2)"

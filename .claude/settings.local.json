@@ -9,7 +9,17 @@
       "Bash(python3:*)",
       "Bash(python:*)",
       "Bash(/c/Users/MG/AppData/Local/Microsoft/WindowsApps/python:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(ls:*)",
+      "Bash(grep -v \"^.*prog_fixed_cells$\")",
+      "Bash(do echo:*)",
+      "Read(//j/FF/fixed_cell/Jurkat_nucleus/histone_mods/tifsJurkat_cd3vspll_histoneMods_0617/$cond/combined/**)",
+      "Read(//h/FF/Nucleus_Data/3D_Nucleus/Fixed/202308033_E6-1_H3K27me3_aCD3vPLL/**)",
+      "Read(//h/FF/Nucleus_Data/3D_Nucleus/Fixed/20230911_Fixed_E6-1_WT_H3K27me3/**)",
+      "Bash(base1=\"H:/FF/Nucleus_Data/3D_Nucleus/Fixed/202308033_E6-1_H3K27me3_aCD3vPLL\")",
+      "Bash(base2=\"H:/FF/Nucleus_Data/3D_Nucleus/Fixed/20230911_Fixed_E6-1_WT_H3K27me3\")",
+      "Bash(echo \"=== $p ===\")",
+      "Read(//k/FF/Code/Scripts/PPT_image_inserter/**)"
     ]
   }
 }
