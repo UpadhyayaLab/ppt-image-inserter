@@ -1,0 +1,35 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, Jurkats.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, HMGA1, Jurkats.pptx"
+template_slide: 1
+preserve_slides: [0, 1]
+base_dir: "M:/Fixed Cell Data/New_05172023/20230106_HMGA1-KD_H3K27me3/results_compilation/Jurkats_HMGA1_H3K27me3_20230106_20260323"
+images:
+  # Grid panels
+  - grid_panels/siCtrl_vs_siHMGA1/nuc_aspect_ratio.tiff
+  - grid_panels/siCtrl_vs_siHMGA1/actin_deform_ratio.tiff
+  - grid_panels/siCtrl_vs_siHMGA1/avg_normal_angle_adaptive_region_growth.tiff
+  - grid_panels/siCtrl_vs_siHMGA1/chull_max_D.tiff
+  - grid_panels/siCtrl_vs_siHMGA1/deepest_invag_fraction_chull_volume.tiff
+  - grid_panels/siCtrl_vs_siHMGA1/nuc_solidity.tiff
+  - grid_panels/siCtrl_vs_siHMGA1/nuc_SA_mesh.tiff
+  - grid_panels/siCtrl_vs_siHMGA1/nuc_volume_mesh.tiff
+  - grid_panels/siCtrl_vs_siHMGA1/deepest_region_periph_ratio_025um.tiff
+  - grid_panels/siCtrl_vs_siHMGA1/struct_in_nuc_deepest_region_periph_ratio_025um.tiff
+  - grid_panels/siCtrl_vs_siHMGA1/struct_in_nuc_MFI.tiff
+  # Histograms — combined
+  - histograms/deepest_region_periph_ratio_025um_histogram.tiff
+  - histograms/struct_in_nuc_deepest_region_periph_ratio_025um_histogram.tiff
+  # Histograms — per condition
+  - histograms/deepest_region_periph_ratio_025um_histogram_siCtrl.tiff
+  - histograms/struct_in_nuc_deepest_region_periph_ratio_025um_histogram_siCtrl.tiff
+  - histograms/deepest_region_periph_ratio_025um_histogram_siHMGA1.tiff
+  - histograms/struct_in_nuc_deepest_region_periph_ratio_025um_histogram_siHMGA1.tiff
+  # Pairwise plots — combined
+  - pairwise_plots/H3K27me3_vs_All_Metrics/H3K27me3_deepest_region_periph_ratio_025um_VS_chull_max_D.tif
+  - pairwise_plots/H3K27me3_vs_All_Metrics/H3K27me3_deepest_region_periph_ratio_025um_VS_avg_normal_angle_adaptive_region_growth.tif
+  # Pairwise plots — siCtrl
+  - pairwise_plots/H3K27me3_vs_All_Metrics/siCtrl/H3K27me3_deepest_region_periph_ratio_025um_VS_chull_max_D.tif
+  - pairwise_plots/H3K27me3_vs_All_Metrics/siCtrl/H3K27me3_deepest_region_periph_ratio_025um_VS_avg_normal_angle_adaptive_region_growth.tif
+  # Pairwise plots — siHMGA1
+  - pairwise_plots/H3K27me3_vs_All_Metrics/siHMGA1/H3K27me3_deepest_region_periph_ratio_025um_VS_chull_max_D.tif
+  - pairwise_plots/H3K27me3_vs_All_Metrics/siHMGA1/H3K27me3_deepest_region_periph_ratio_025um_VS_avg_normal_angle_adaptive_region_growth.tif

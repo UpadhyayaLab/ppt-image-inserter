@@ -1,0 +1,104 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/SUN/SUN1, SUN2, Jurkats, montages_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/SUN/SUN1, SUN2, Jurkats, montages.pptx"
+template_slide: 0
+preserve_slides: [0]
+base_dir: "M:/Fixed Cell Data"
+label_side: left
+images:
+  # ============================================================
+  # SUN1 N1 (May 18, 2022) — UNC84a staining, no centrosome
+  # 3-panel montages: Hoechst | SUN1 | RGB merge
+  # ============================================================
+
+  # SUN1 N1: siControl
+  - path: "05182022 - KDs Validation N1/siControl - UNC84a Validation/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_26.png"
+    title: "SUN1 (siCtrl) montages: N1 20220518 (montage 1)"
+  - path: "05182022 - KDs Validation N1/siControl - UNC84a Validation/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_27_51.png"
+    title: "SUN1 (siCtrl) montages: N1 20220518 (montage 2)"
+  - path: "05182022 - KDs Validation N1/siControl - UNC84a Validation/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_52_76.png"
+    title: "SUN1 (siCtrl) montages: N1 20220518 (montage 3)"
+  - path: "05182022 - KDs Validation N1/siControl - UNC84a Validation/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_77_101.png"
+    title: "SUN1 (siCtrl) montages: N1 20220518 (montage 4)"
+  - path: "05182022 - KDs Validation N1/siControl - UNC84a Validation/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_102_119.png"
+    title: "SUN1 (siCtrl) montages: N1 20220518 (montage 5)"
+
+  # SUN1 N1: siUNC84a (SUN1 KD)
+  - path: "K:/FF/temp_montages/05182022 - KDs Validation N1, siUNC84a - KD Validation/montage_cells_1_26.png"
+    title: "SUN1 (siUNC84a) montages: N1 20220518 (montage 1)"
+  - path: "K:/FF/temp_montages/05182022 - KDs Validation N1, siUNC84a - KD Validation/montage_cells_27_51.png"
+    title: "SUN1 (siUNC84a) montages: N1 20220518 (montage 2)"
+  - path: "K:/FF/temp_montages/05182022 - KDs Validation N1, siUNC84a - KD Validation/montage_cells_52_78.png"
+    title: "SUN1 (siUNC84a) montages: N1 20220518 (montage 3)"
+  - path: "K:/FF/temp_montages/05182022 - KDs Validation N1, siUNC84a - KD Validation/montage_cells_79_105.png"
+    title: "SUN1 (siUNC84a) montages: N1 20220518 (montage 4)"
+  - path: "K:/FF/temp_montages/05182022 - KDs Validation N1, siUNC84a - KD Validation/montage_cells_106_129.png"
+    title: "SUN1 (siUNC84a) montages: N1 20220518 (montage 5)"
+
+  # ============================================================
+  # SUN1 N2 (May 31, 2022) — UNC84a staining, has centrosome
+  # 3-panel montages: Hoechst | SUN1 | RGB merge
+  # ============================================================
+
+  # SUN1 N2: siControl
+  - path: "05312022 - KDs Validation N2/siControl - UNC84a CD3/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_27.png"
+    title: "SUN1 (siCtrl) montages: N2 20220531 (montage 1)"
+  - path: "05312022 - KDs Validation N2/siControl - UNC84a CD3/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_28_55.png"
+    title: "SUN1 (siCtrl) montages: N2 20220531 (montage 2)"
+  - path: "05312022 - KDs Validation N2/siControl - UNC84a CD3/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_56_81.png"
+    title: "SUN1 (siCtrl) montages: N2 20220531 (montage 3)"
+  - path: "05312022 - KDs Validation N2/siControl - UNC84a CD3/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_82_110.png"
+    title: "SUN1 (siCtrl) montages: N2 20220531 (montage 4)"
+  - path: "05312022 - KDs Validation N2/siControl - UNC84a CD3/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_111_136.png"
+    title: "SUN1 (siCtrl) montages: N2 20220531 (montage 5)"
+  - path: "05312022 - KDs Validation N2/siControl - UNC84a CD3/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_137_143.png"
+    title: "SUN1 (siCtrl) montages: N2 20220531 (montage 6)"
+
+  # SUN1 N2: siUNC84a (SUN1 KD)
+  - path: "K:/FF/temp_montages/05312022 - KDs Validation N2, siUNC84a - UNC84a/montage_cells_1_26.png"
+    title: "SUN1 (siUNC84a) montages: N2 20220531 (montage 1)"
+  - path: "K:/FF/temp_montages/05312022 - KDs Validation N2, siUNC84a - UNC84a/montage_cells_27_54.png"
+    title: "SUN1 (siUNC84a) montages: N2 20220531 (montage 2)"
+  - path: "K:/FF/temp_montages/05312022 - KDs Validation N2, siUNC84a - UNC84a/montage_cells_55_84.png"
+    title: "SUN1 (siUNC84a) montages: N2 20220531 (montage 3)"
+  - path: "K:/FF/temp_montages/05312022 - KDs Validation N2, siUNC84a - UNC84a/montage_cells_85_112.png"
+    title: "SUN1 (siUNC84a) montages: N2 20220531 (montage 4)"
+  - path: "K:/FF/temp_montages/05312022 - KDs Validation N2, siUNC84a - UNC84a/montage_cells_113_142.png"
+    title: "SUN1 (siUNC84a) montages: N2 20220531 (montage 5)"
+  - path: "K:/FF/temp_montages/05312022 - KDs Validation N2, siUNC84a - UNC84a/montage_cells_143_152.png"
+    title: "SUN1 (siUNC84a) montages: N2 20220531 (montage 6)"
+
+  # ============================================================
+  # SUN2 (July 4, 2022) — UNC84b staining, no centrosome
+  # siControl: no panels subfolder available, using regular montages
+  # siUNC84b: 3-panel montages: Hoechst | SUN2 | RGB merge
+  # ============================================================
+
+  # SUN2: siControl — 3-panel montages: Hoechst | SUN2 | RGB merge
+  - path: "0704-2022 - Sun2 AND Ycomp/siControl-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_25.png"
+    title: "SUN2 (siCtrl) montages: 20220704 (montage 1)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siControl-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_26_50.png"
+    title: "SUN2 (siCtrl) montages: 20220704 (montage 2)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siControl-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_51_75.png"
+    title: "SUN2 (siCtrl) montages: 20220704 (montage 3)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siControl-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_76_100.png"
+    title: "SUN2 (siCtrl) montages: 20220704 (montage 4)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siControl-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_101_125.png"
+    title: "SUN2 (siCtrl) montages: 20220704 (montage 5)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siControl-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_126_145.png"
+    title: "SUN2 (siCtrl) montages: 20220704 (montage 6)"
+
+  # SUN2: siUNC84b (SUN2 KD) — 3-panel montages
+  - path: "0704-2022 - Sun2 AND Ycomp/siUNC84b-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_2_27.png"
+    title: "SUN2 (siUNC84b) montages: 20220704 (montage 1)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siUNC84b-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_28_52.png"
+    title: "SUN2 (siUNC84b) montages: 20220704 (montage 2)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siUNC84b-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_53_78.png"
+    title: "SUN2 (siUNC84b) montages: 20220704 (montage 3)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siUNC84b-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_79_104.png"
+    title: "SUN2 (siUNC84b) montages: 20220704 (montage 4)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siUNC84b-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_105_130.png"
+    title: "SUN2 (siUNC84b) montages: 20220704 (montage 5)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siUNC84b-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_131_155.png"
+    title: "SUN2 (siUNC84b) montages: 20220704 (montage 6)"
+  - path: "0704-2022 - Sun2 AND Ycomp/siUNC84b-UNC84b/Cells/Colors/prog_fixed_cells/SUN2/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_156_177.png"
+    title: "SUN2 (siUNC84b) montages: 20220704 (montage 7)"

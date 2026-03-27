@@ -1,0 +1,130 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/SUN/SUN1, Jurkats_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/SUN/SUN1, SUN2, Jurkats.pptx"
+template_slide: 1
+preserve_slides: [0, 1]
+
+# Paths used below (for reference):
+#   N1:  L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05182022 - KDs Validation N1/results_compilation/Jurkats_KDsValidation_SUN1_20220518_20260326/grid_panels/siCtrl_vs_siSUN1/
+#   N2:  L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05312022 - KDs Validation N2/results_compilation/Jurkats_KDsValidation_SUN1_N2_20220531_20260326/grid_panels/siCtrl_vs_siSUN1/
+#  SUN2: L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/0704-2022 - Sun2 AND Ycomp/results_compilation/Jurkats_KDsValidation_SUN2_20220704_20260326/grid_panels/siCtrl_vs_siSUN2/
+
+images:
+
+  # ============================================================
+  # SUN1 -MFI at Nuclear Boundary
+  # ============================================================
+  - title: "SUN1 MFI at Nuc Boundary - N1 (siCtrl vs siSUN1, 20220518)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05182022 - KDs Validation N1/results_compilation/Jurkats_KDsValidation_SUN1_20220518_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_MFI_at_nuc_boundary.tiff"
+  - title: "SUN1 MFI at Nuc Boundary - N2 (siCtrl vs siSUN1, 20220531)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05312022 - KDs Validation N2/results_compilation/Jurkats_KDsValidation_SUN1_N2_20220531_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_MFI_at_nuc_boundary.tiff"
+
+  # ============================================================
+  # SUN1 -MFI Outer Shell
+  # ============================================================
+  - title: "SUN1 MFI Outer Shell - N1 (siCtrl vs siSUN1, 20220518)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05182022 - KDs Validation N1/results_compilation/Jurkats_KDsValidation_SUN1_20220518_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_MFI_outer_shell.tiff"
+  - title: "SUN1 MFI Outer Shell - N2 (siCtrl vs siSUN1, 20220531)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05312022 - KDs Validation N2/results_compilation/Jurkats_KDsValidation_SUN1_N2_20220531_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_MFI_outer_shell.tiff"
+
+  # ============================================================
+  # SUN1 -Total Signal
+  # ============================================================
+  - title: "SUN1 Total Signal - N1 (siCtrl vs siSUN1, 20220518)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05182022 - KDs Validation N1/results_compilation/Jurkats_KDsValidation_SUN1_20220518_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_total_sig.tiff"
+  - title: "SUN1 Total Signal - N2 (siCtrl vs siSUN1, 20220531)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05312022 - KDs Validation N2/results_compilation/Jurkats_KDsValidation_SUN1_N2_20220531_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_total_sig.tiff"
+
+  # ============================================================
+  # SUN1 -Deepest Invagination Ratio (Edge)
+  # ============================================================
+  - title: "SUN1 Deepest Invag Ratio (Edge) - N1 (siCtrl vs siSUN1, 20220518)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05182022 - KDs Validation N1/results_compilation/Jurkats_KDsValidation_SUN1_20220518_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_deepest_invag_ratio_edge.tiff"
+  - title: "SUN1 Deepest Invag Ratio (Edge) - N2 (siCtrl vs siSUN1, 20220531)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05312022 - KDs Validation N2/results_compilation/Jurkats_KDsValidation_SUN1_N2_20220531_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_deepest_invag_ratio_edge.tiff"
+
+  # ============================================================
+  # SUN1 -Deepest Invagination Ratio (Outer Shell)
+  # ============================================================
+  - title: "SUN1 Deepest Invag Ratio (Outer Shell) - N1 (siCtrl vs siSUN1, 20220518)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05182022 - KDs Validation N1/results_compilation/Jurkats_KDsValidation_SUN1_20220518_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_deepest_invag_ratio_outer_shell.tiff"
+  - title: "SUN1 Deepest Invag Ratio (Outer Shell) - N2 (siCtrl vs siSUN1, 20220531)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05312022 - KDs Validation N2/results_compilation/Jurkats_KDsValidation_SUN1_N2_20220531_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_deepest_invag_ratio_outer_shell.tiff"
+
+  # ============================================================
+  # SUN1 -Ratio by Deepest Invagination (Away 0.5 µm)
+  # ============================================================
+  - title: "SUN1 Cyto: Near/Away Deepest Invag - N1 (siCtrl vs siSUN1, 20220518)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05182022 - KDs Validation N1/results_compilation/Jurkats_KDsValidation_SUN1_20220518_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_ratio_by_deepest_invag_away_0_5um.tiff"
+  - title: "SUN1 Cyto: Near/Away Deepest Invag - N2 (siCtrl vs siSUN1, 20220531)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05312022 - KDs Validation N2/results_compilation/Jurkats_KDsValidation_SUN1_N2_20220531_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_ratio_by_deepest_invag_away_0_5um.tiff"
+
+  # ============================================================
+  # SUN1 -Cyto-in-Hull vs Near-Convex-Nuc MFI Ratio
+  # ============================================================
+  - title: "SUN1 Cyto: Invag/Convex MFI - N1 (siCtrl vs siSUN1, 20220518)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05182022 - KDs Validation N1/results_compilation/Jurkats_KDsValidation_SUN1_20220518_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
+  - title: "SUN1 Cyto: Invag/Convex MFI - N2 (siCtrl vs siSUN1, 20220531)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05312022 - KDs Validation N2/results_compilation/Jurkats_KDsValidation_SUN1_N2_20220531_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
+
+  # ============================================================
+  # SUN2 -MFI at Nuclear Boundary
+  # ============================================================
+  - title: "SUN2 MFI at Nuc Boundary (siCtrl vs siSUN2, 20220704)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/0704-2022 - Sun2 AND Ycomp/results_compilation/Jurkats_KDsValidation_SUN2_20220704_20260326/grid_panels/siCtrl_vs_siSUN2/SUN2_MFI_at_nuc_boundary.tiff"
+
+  # ============================================================
+  # SUN2 -MFI Outer Shell
+  # ============================================================
+  - title: "SUN2 MFI Outer Shell (siCtrl vs siSUN2, 20220704)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/0704-2022 - Sun2 AND Ycomp/results_compilation/Jurkats_KDsValidation_SUN2_20220704_20260326/grid_panels/siCtrl_vs_siSUN2/SUN2_MFI_outer_shell.tiff"
+
+  # ============================================================
+  # SUN2 -Total Signal
+  # ============================================================
+  - title: "SUN2 Total Signal (siCtrl vs siSUN2, 20220704)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/0704-2022 - Sun2 AND Ycomp/results_compilation/Jurkats_KDsValidation_SUN2_20220704_20260326/grid_panels/siCtrl_vs_siSUN2/SUN2_total_sig.tiff"
+
+  # ============================================================
+  # SUN2 -Deepest Invagination Ratio (Edge)
+  # ============================================================
+  - title: "SUN2 Deepest Invag Ratio (Edge) -(siCtrl vs siSUN2, 20220704)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/0704-2022 - Sun2 AND Ycomp/results_compilation/Jurkats_KDsValidation_SUN2_20220704_20260326/grid_panels/siCtrl_vs_siSUN2/SUN2_deepest_invag_ratio_edge.tiff"
+
+  # ============================================================
+  # SUN2 -Deepest Invagination Ratio (Outer Shell)
+  # ============================================================
+  - title: "SUN2 Deepest Invag Ratio (Outer Shell) -(siCtrl vs siSUN2, 20220704)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/0704-2022 - Sun2 AND Ycomp/results_compilation/Jurkats_KDsValidation_SUN2_20220704_20260326/grid_panels/siCtrl_vs_siSUN2/SUN2_deepest_invag_ratio_outer_shell.tiff"
+
+  # ============================================================
+  # SUN2 -Ratio by Deepest Invagination (Away 0.5 µm)
+  # ============================================================
+  - title: "SUN2 Cyto: Near/Away Deepest Invag (siCtrl vs siSUN2, 20220704)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/0704-2022 - Sun2 AND Ycomp/results_compilation/Jurkats_KDsValidation_SUN2_20220704_20260326/grid_panels/siCtrl_vs_siSUN2/SUN2_ratio_by_deepest_invag_away_0_5um.tiff"
+
+  # ============================================================
+  # SUN2 -Cyto-in-Hull vs Near-Convex-Nuc MFI Ratio
+  # ============================================================
+  - title: "SUN2 Cyto: Invag/Convex MFI (siCtrl vs siSUN2, 20220704)"
+    images:
+      - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/0704-2022 - Sun2 AND Ycomp/results_compilation/Jurkats_KDsValidation_SUN2_20220704_20260326/grid_panels/siCtrl_vs_siSUN2/SUN2_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"

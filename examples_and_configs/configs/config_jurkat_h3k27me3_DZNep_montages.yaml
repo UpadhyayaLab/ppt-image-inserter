@@ -1,0 +1,21 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, DZNep, Jurkats, montages_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, DZNep, Jurkats, montages.pptx"
+template_slide: 0
+preserve_slides: [0]
+base_dir: "M:/Fixed Cell Data/New_05172023/02232023_DZNep_H3K27me3-staining"
+label_side: left
+images:
+  # H2O Control (3 slides)
+  - path: H2O Control/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_2_44.png
+    title: "H3K27me3 (H2O control) montages: 20230223 experiment (montage 1)"
+  - path: H2O Control/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_45_88.png
+    title: "H3K27me3 (H2O control) montages: 20230223 experiment (montage 2)"
+  - path: H2O Control/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_90_100.png
+    title: "H3K27me3 (H2O control) montages: 20230223 experiment (montage 3)"
+  # DZNep (3 slides)
+  - path: DZNep/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_1_48.png
+    title: "H3K27me3 (DZNep) montages: 20230223 experiment (montage 1)"
+  - path: DZNep/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_52_84.png
+    title: "H3K27me3 (DZNep) montages: 20230223 experiment (montage 2)"
+  - path: DZNep/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_86_99.png
+    title: "H3K27me3 (DZNep) montages: 20230223 experiment (montage 3)"

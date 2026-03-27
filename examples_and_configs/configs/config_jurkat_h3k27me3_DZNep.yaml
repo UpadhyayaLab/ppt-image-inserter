@@ -1,0 +1,24 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, Jurkats.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, DZNep, Jurkats.pptx"
+template_slide: 1
+preserve_slides: [0, 1]
+base_dir: "M:/Fixed Cell Data/New_05172023/02232023_DZNep_H3K27me3-staining/results_compilation/Jurkats_DZNep_H3K27me3_20230223_20260323"
+images:
+  # Grid panels
+  - grid_panels/H2O_vs_DZNep/nuc_aspect_ratio.tiff
+  - grid_panels/H2O_vs_DZNep/actin_deform_ratio.tiff
+  - grid_panels/H2O_vs_DZNep/avg_normal_angle_adaptive_region_growth.tiff
+  - grid_panels/H2O_vs_DZNep/chull_max_D.tiff
+  - grid_panels/H2O_vs_DZNep/deepest_invag_fraction_chull_volume.tiff
+  - grid_panels/H2O_vs_DZNep/nuc_solidity.tiff
+  - grid_panels/H2O_vs_DZNep/nuc_SA_mesh.tiff
+  - grid_panels/H2O_vs_DZNep/nuc_volume_mesh.tiff
+  - grid_panels/H2O_vs_DZNep/deepest_region_periph_ratio_025um.tiff
+  - grid_panels/H2O_vs_DZNep/struct_in_nuc_deepest_region_periph_ratio_025um.tiff
+  - grid_panels/H2O_vs_DZNep/struct_in_nuc_MFI.tiff
+  # Histograms
+  - histograms/deepest_region_periph_ratio_025um_histogram.tiff
+  - histograms/struct_in_nuc_deepest_region_periph_ratio_025um_histogram.tiff
+  # Pairwise plots
+  - pairwise_plots/H3K27me3_vs_All_Metrics/H3K27me3_deepest_region_periph_ratio_025um_VS_chull_max_D.tif
+  - pairwise_plots/H3K27me3_vs_All_Metrics/H3K27me3_deepest_region_periph_ratio_025um_VS_avg_normal_angle_adaptive_region_growth.tif

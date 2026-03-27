@@ -1,0 +1,27 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, siSUN, Jurkats, montages_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, siSUN, Jurkats, montages.pptx"
+template_slide: 0
+preserve_slides: [0]
+base_dir: "M:/Fixed Cell Data/092023_H3K27me3_SUN"
+label_side: left
+images:
+  # CD3, siCtrl (2 slides)
+  - path: G1_CD3_siCtrl_H3K27me3Stain_/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_1_33.png
+    title: "H3K27me3 (aCD3, siCtrl) montages: 20230900 experiment (montage 1)"
+  - path: G1_CD3_siCtrl_H3K27me3Stain_/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_35_59.png
+    title: "H3K27me3 (aCD3, siCtrl) montages: 20230900 experiment (montage 2)"
+  # PLL, siCtrl (2 slides)
+  - path: G1_PLL_siCtrl_H3K27me3Stain_/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_1_25.png
+    title: "H3K27me3 (PLL, siCtrl) montages: 20230900 experiment (montage 1)"
+  - path: G1_PLL_siCtrl_H3K27me3Stain_/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_26_50.png
+    title: "H3K27me3 (PLL, siCtrl) montages: 20230900 experiment (montage 2)"
+  # CD3, siSUN2 (2 slides)
+  - path: G1_CD3_siSUN2_H3K27me3Stain_/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_1_25.png
+    title: "H3K27me3 (aCD3, siSUN2) montages: 20230900 experiment (montage 1)"
+  - path: G1_CD3_siSUN2_H3K27me3Stain_/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_26_51.png
+    title: "H3K27me3 (aCD3, siSUN2) montages: 20230900 experiment (montage 2)"
+  # CD3, siUNC84a (2 slides)
+  - path: G1_CD3_siUNC84a_H3K27me3Stain_/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_1_25.png
+    title: "H3K27me3 (aCD3, siUNC84a) montages: 20230900 experiment (montage 1)"
+  - path: G1_CD3_siUNC84a_H3K27me3Stain_/Cells/Colors/prog_fixed_cells/H3K27me3/panels/H3K27me3/montage_cells_26_51.png
+    title: "H3K27me3 (aCD3, siUNC84a) montages: 20230900 experiment (montage 2)"

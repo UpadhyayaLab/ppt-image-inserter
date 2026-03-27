@@ -8,6 +8,21 @@ from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
 from PIL import Image as PILImage
 import os
+import sys
+
+
+def _safe_exists(path: str) -> bool:
+    """Check file existence, using extended-length path prefix on Windows to bypass MAX_PATH."""
+    if sys.platform == "win32" and len(path) > 240:
+        return os.path.exists("\\\\?\\" + path.replace("/", "\\"))
+    return os.path.exists(path)
+
+
+def _to_open_path(path: str) -> str:
+    """Return a path safe for open()/PIL/pptx on Windows, using \\?\ prefix for long paths."""
+    if sys.platform == "win32" and len(path) > 240:
+        return "\\\\?\\" + path.replace("/", "\\")
+    return path
 from .position import get_image_position, get_all_image_positions
 from .slide_utils import duplicate_slide, remove_pictures_from_slide, remove_all_text_from_slide
 
@@ -219,7 +234,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
         raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
 
     for img_path in new_image_paths:
-        if not os.path.exists(img_path):
+        if not _safe_exists(img_path):
             raise FileNotFoundError(f"Image file not found: {img_path}")
 
     # Load presentation
@@ -260,7 +275,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
     pictures = []
     for img_path, pos in zip(new_image_paths, positions):
         # Get image native dimensions to compute aspect ratio
-        with PILImage.open(img_path) as img:
+        with PILImage.open(_to_open_path(img_path)) as img:
             img_w, img_h = img.size
 
         img_aspect = img_w / img_h
@@ -281,7 +296,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
         top = pos['top'] + (box_h - final_height) / 2
 
         picture = new_slide.shapes.add_picture(
-            img_path,
+            _to_open_path(img_path),
             Inches(left),
             Inches(top),
             width=Inches(final_width),
@@ -345,7 +360,7 @@ def replace_image_on_existing_slide(ppt_path: str, slide_index: int, new_image_p
     if not os.path.exists(ppt_path):
         raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
 
-    if not os.path.exists(new_image_path):
+    if not _safe_exists(new_image_path):
         raise FileNotFoundError(f"Image file not found: {new_image_path}")
 
     # Load presentation
@@ -392,7 +407,7 @@ def replace_image_on_existing_slide(ppt_path: str, slide_index: int, new_image_p
     # Insert the new image at the original position
     print(f"Inserting {os.path.basename(new_image_path)}...")
     picture = slide.shapes.add_picture(
-        new_image_path,
+        _to_open_path(new_image_path),
         Inches(position['left']),
         Inches(position['top']),
         width=Inches(position['width']),

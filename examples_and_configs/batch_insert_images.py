@@ -19,6 +19,14 @@ import os
 import yaml
 from pptx import Presentation
 
+
+def safe_exists(path):
+    """Check file existence, using extended-length path prefix on Windows to bypass MAX_PATH (260 chars)."""
+    if sys.platform == "win32" and len(path) > 240:
+        win_path = "\\\\?\\" + path.replace("/", "\\")
+        return os.path.exists(win_path)
+    return os.path.exists(path)
+
 # Add parent directory to path to import ppt_image_inserter
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -206,7 +214,7 @@ def main(config_path):
                 else:
                     img_path = os.path.join(base_dir, img_filename)
 
-                if not os.path.exists(img_path):
+                if not safe_exists(img_path):
                     validation_errors.append(f"Image {i+1} (multi): {img_path}")
 
         elif isinstance(image_spec, dict):
@@ -214,19 +222,19 @@ def main(config_path):
                 # New multi-image dict format with optional per-entry template_slide
                 for img_filename in image_spec['images']:
                     img_path = img_filename if os.path.isabs(img_filename) else os.path.join(base_dir, img_filename)
-                    if not os.path.exists(img_path):
+                    if not safe_exists(img_path):
                         validation_errors.append(f"Image {i+1} (multi-dict): {img_path}")
             else:
                 # Legacy dict format
                 raw_path = image_spec['path']
                 img_path = raw_path if os.path.isabs(raw_path) else os.path.join(base_dir, raw_path)
-                if not os.path.exists(img_path):
+                if not safe_exists(img_path):
                     validation_errors.append(f"Image {i+1} (dict): {img_path}")
 
         else:
             # Single string
             img_path = os.path.join(base_dir, image_spec) if not os.path.isabs(image_spec) else image_spec
-            if not os.path.exists(img_path):
+            if not safe_exists(img_path):
                 validation_errors.append(f"Image {i+1}: {img_path}")
 
     if validation_errors:
@@ -281,7 +289,7 @@ def main(config_path):
             # Validate all images exist
             all_exist = True
             for img_path in image_paths:
-                if not os.path.exists(img_path):
+                if not safe_exists(img_path):
                     print(f"[ERROR] Image not found: {img_path}")
                     error_count += 1
                     all_exist = False
@@ -317,7 +325,7 @@ def main(config_path):
 
                 all_exist = True
                 for img_path in image_paths:
-                    if not os.path.exists(img_path):
+                    if not safe_exists(img_path):
                         print(f"[ERROR] Image not found: {img_path}")
                         error_count += 1
                         all_exist = False
@@ -350,7 +358,7 @@ def main(config_path):
                 image_path = raw_path if os.path.isabs(raw_path) else os.path.join(base_dir, raw_path)
 
                 # Check if image exists
-                if not os.path.exists(image_path):
+                if not safe_exists(image_path):
                     print(f"[ERROR] Image not found: {image_path}")
                     error_count += 1
                     continue
@@ -379,7 +387,7 @@ def main(config_path):
             image_path = os.path.join(base_dir, image_spec)
 
             # Check if image exists
-            if not os.path.exists(image_path):
+            if not safe_exists(image_path):
                 print(f"[ERROR] Image not found: {image_path}")
                 error_count += 1
                 continue

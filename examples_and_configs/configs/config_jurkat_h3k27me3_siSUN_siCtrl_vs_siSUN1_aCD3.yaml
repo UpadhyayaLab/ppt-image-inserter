@@ -1,0 +1,24 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, Jurkats.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/H3K27me3, siSUN, Jurkats, siCtrl vs siSUN1 aCD3.pptx"
+template_slide: 1
+preserve_slides: [0, 1]
+base_dir: "M:/Fixed Cell Data/092023_H3K27me3_SUN/results_compilation/Jurkats_H3K27me3_siSUN_20230900_20260323"
+images:
+  # Grid panels
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/nuc_aspect_ratio.tiff
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/actin_deform_ratio.tiff
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/avg_normal_angle_adaptive_region_growth.tiff
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/chull_max_D.tiff
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/deepest_invag_fraction_chull_volume.tiff
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/nuc_solidity.tiff
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/nuc_SA_mesh.tiff
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/nuc_volume_mesh.tiff
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/deepest_region_periph_ratio_025um.tiff
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/struct_in_nuc_deepest_region_periph_ratio_025um.tiff
+  - grid_panels/siCtrl_vs_siSUN1_aCD3/struct_in_nuc_MFI.tiff
+  # Histograms
+  - histograms/deepest_region_periph_ratio_025um_histogram.tiff
+  - histograms/struct_in_nuc_deepest_region_periph_ratio_025um_histogram.tiff
+  # Pairwise plots
+  - pairwise_plots/H3K27me3_vs_All_Metrics/H3K27me3_deepest_region_periph_ratio_025um_VS_chull_max_D.tif
+  - pairwise_plots/H3K27me3_vs_All_Metrics/H3K27me3_deepest_region_periph_ratio_025um_VS_avg_normal_angle_adaptive_region_growth.tif

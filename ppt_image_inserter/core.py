@@ -6,6 +6,21 @@ from typing import List, Optional
 from pptx import Presentation
 from pptx.util import Inches
 import os
+import sys
+
+
+def _safe_exists(path: str) -> bool:
+    """Check file existence, using extended-length path prefix on Windows to bypass MAX_PATH."""
+    if sys.platform == "win32" and len(path) > 240:
+        return os.path.exists("\\\\?\\" + path.replace("/", "\\"))
+    return os.path.exists(path)
+
+
+def _to_open_path(path: str) -> str:
+    """Return a path safe for open()/PIL/pptx on Windows, using \\?\ prefix for long paths."""
+    if sys.platform == "win32" and len(path) > 240:
+        return "\\\\?\\" + path.replace("/", "\\")
+    return path
 
 
 def insert_image(
@@ -41,7 +56,7 @@ def insert_image(
     if not os.path.exists(ppt_path):
         raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
 
-    if not os.path.exists(image_path):
+    if not _safe_exists(image_path):
         raise FileNotFoundError(f"Image file not found: {image_path}")
 
     try:
@@ -66,7 +81,7 @@ def insert_image(
 
     # Insert the image
     slide.shapes.add_picture(
-        image_path,
+        _to_open_path(image_path),
         Inches(left),
         Inches(top),
         width=Inches(width),
@@ -119,7 +134,7 @@ def insert_image_preserve_aspect(
     if not os.path.exists(ppt_path):
         raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
 
-    if not os.path.exists(image_path):
+    if not _safe_exists(image_path):
         raise FileNotFoundError(f"Image file not found: {image_path}")
 
     try:
@@ -142,14 +157,14 @@ def insert_image_preserve_aspect(
     # Insert with only one dimension specified (aspect ratio preserved)
     if width is not None:
         slide.shapes.add_picture(
-            image_path,
+            _to_open_path(image_path),
             Inches(left),
             Inches(top),
             width=Inches(width)
         )
     else:
         slide.shapes.add_picture(
-            image_path,
+            _to_open_path(image_path),
             Inches(left),
             Inches(top),
             height=Inches(height)
