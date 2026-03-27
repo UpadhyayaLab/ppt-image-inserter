@@ -45,7 +45,12 @@
       "Bash(mv \"K:/FF/temp_montages/N2_siUNC84a\" \"K:/FF/temp_montages/05312022 - KDs Validation N2, siUNC84a - UNC84a\")",
       "Bash(mkdir -p \"K:/FF/temp_montages/05182022 - KDs Validation N1, siUNC84a - KD Validation\")",
       "Bash(cp \"M:/Fixed Cell Data/05182022 - KDs Validation N1/siUNC84a - KD Validation/Cells/Colors/prog_fixed_cells/SUN1/deepest_invag_slice/panels/montages_deepest_invag/\"*.png \"K:/FF/temp_montages/05182022 - KDs Validation N1, siUNC84a - KD Validation/\")",
-      "Bash(__NEW_LINE_a110b9f2af4ee8a8__ echo:*)"
+      "Bash(__NEW_LINE_a110b9f2af4ee8a8__ echo:*)",
+      "Bash(mv config_H3K27me3_Jurkats.yaml config_H3K9me3_H3K27ac_Jurkats.yaml config_jurkat_histone_mods_all.yaml config_jurkat_histone_mods_all_short.yaml config_jurkat_histone_mods_montages.yaml config_jurkat_h3k27me3_DZNep.yaml config_jurkat_h3k27me3_DZNep_montages.yaml config_jurkat_h3k27me3_HMGA1.yaml config_jurkat_h3k27me3_HMGA1_montages.yaml config_jurkat_h3k27me3_montages.yaml config_jurkat_h3k27me3_siSUN_PLL_vs_aCD3_siCtrl.yaml config_jurkat_h3k27me3_siSUN_siCtrl_vs_siSUN1_aCD3.yaml config_jurkat_h3k27me3_siSUN_siCtrl_vs_siSUN2_aCD3.yaml config_jurkat_h3k27me3_siSUN_montages.yaml fixed/Jurkats/histone_mods/)",
+      "Bash(mv config_jurkat_SUN1_SUN2_compilation.yaml config_jurkat_SUN1_SUN2_montages.yaml config_jurkat_SUN1_SUN2_montages_1each.yaml config_jurkat_SUN1_montages.yaml fixed/Jurkats/SUN/)",
+      "Bash(mv config_ctrl_dznep_grid_plots.yaml config_ctrl_dznep_btub_grid_plots.yaml config_ctrl_dznep_montages.yaml config_ctrl_dznep_laminb_hoechst_montages.yaml config_ctrl_dznep_btub_hoechst_montages.yaml config_ctrl_dznep_nuc_lamin_MT_montages.yaml fixed/Jurkats/DZNep_siHMGA1/)",
+      "Bash(mv config_Noco_no_vim.yaml config_Noco_CD3_vim.yaml config_Noco_MT.yaml config_PLL_aCD3_vim_fixed_cells.yaml config_PLL_aCD3_3_12min_vim_fixed_cells.yaml config_CilioD_vim_fixed_cells.yaml fixed/Jurkats/)",
+      "Bash(mv config_HBEC_MyosinIIA_stiffness_FOVs.yaml HBEC/)"
     ]
   }
 }
