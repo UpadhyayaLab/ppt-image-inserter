@@ -1,0 +1,37 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/DZNep_siHMGA1/siHMGA1_Jurkats_crossexp_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/DZNep_siHMGA1/siHMGA1_Jurkats_crossexp_20260327.pptx"
+template_slide: 1
+preserve_slides: [0, 1]
+base_dir: "M:/Fixed Cell Data/compiled_results/Jurkats_siHMGA1_KD_crossexp_v2_20260327/grid_panels"
+
+images:
+
+  # ============================================================
+  # Nuclear shape
+  # ============================================================
+  - path: "nuc_aspect_ratio_grid.tif"
+    title: "Nuclear aspect ratio"
+
+  - path: "actin_deform_ratio_grid.tif"
+    title: "Actin deformation ratio"
+
+  - path: "avg_normal_angle_adaptive_region_growth_grid.tif"
+    title: "Average normal angle (adaptive region growth)"
+
+  - path: "chull_max_D_grid.tif"
+    title: "Convex hull max diameter"
+
+  - path: "deepest_invag_fraction_chull_volume_grid.tif"
+    title: "Deepest invagination fraction of convex hull volume"
+
+  - path: "nuc_solidity_grid.tif"
+    title: "Nuclear solidity"
+
+  - path: "nuc_SA_mesh_grid.tif"
+    title: "Nuclear surface area (mesh)"
+
+  - path: "nuc_volume_mesh_grid.tif"
+    title: "Nuclear volume (mesh)"
+
+  - path: "deepest_region_periph_ratio_025um_grid.tif"
+    title: "Deepest region to periphery ratio (0.25 um)"
