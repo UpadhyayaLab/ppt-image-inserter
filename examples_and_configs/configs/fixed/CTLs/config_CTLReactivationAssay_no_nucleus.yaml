@@ -1,0 +1,364 @@
+# Config: CTL Lamp1 grid plots -- no nucleus
+#
+# Template slides (3 slides, 0-indexed):
+#   0: 2-image comparison (stiffness, timecourse, and activation comparisons)
+#   1: 1-image ~square panel (3SI_vs_4SI, 72hr_8p0)
+#   2: 1-image wide panel (all_conditions, ratio ~3.3:1)
+#
+# Ordering: Metric -> Comparison type (60 slides: 10 metrics x 6 comparisons)
+#
+# Metrics:
+#   Lamp1_peak_sig, Lamp1_total_sig, Lamp1_synapse_MFI, Lamp1_synapse_MFI_3mip,
+#   Lamp1_synapse_inner_outer_ratio, Lamp1_synapse_inner_outer_ratio_3mip,
+#   Lamp1_z50_cell_bottom_distance, Lamp1_z50_cell_bottom_distance_norm_cell_height,
+#   Lamp1_synapse_total_sig, Lamp1_synapse_total_sig_3mip
+
+presentation: "K:/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/CTLReactivationAssay_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/Lamp1_no_nucleus.pptx"
+template_slide: 0
+preserve_slides: [0, 1, 2]
+base_dir: "J:/FF/fixed_cell/CTL_nucleus/Lamp1_Hoechst/0901_naiveCTLs_reactivationAssay_Lamp1_Hoechst_/results/results_no_nuc_dist_filt_20260403/grid_panels"
+auto_position: true
+add_label: false
+
+images:
+
+  # ===========================================================================
+  # METRIC 1: Lamp1_peak_sig
+  # ===========================================================================
+
+  - images:
+      - "48hr_stiffness_10min/Lamp1_peak_sig.tiff"
+      - "48hr_stiffness_20min/Lamp1_peak_sig.tiff"
+    title: "Lamp1 peak signal: stiffness comparison"
+
+  - images:
+      - "48hr_time_1p5kPa/Lamp1_peak_sig.tiff"
+      - "48hr_time_12kPa/Lamp1_peak_sig.tiff"
+    title: "Lamp1 peak signal: reactivation time comparison"
+
+  - images:
+      - "48hr_3SI_vs_4SI/Lamp1_peak_sig.tiff"
+    template_slide: 1
+    title: "Lamp1 peak signal: 3SI vs 4SI"
+
+  - images:
+      - "72hr_8p0/Lamp1_peak_sig.tiff"
+    template_slide: 1
+    title: "Lamp1 peak signal: 72hr 8.0 kPa"
+
+  - images:
+      - "activation_8p0_10min/Lamp1_peak_sig.tiff"
+      - "activation_8p0_20min/Lamp1_peak_sig.tiff"
+    title: "Lamp1 peak signal: 48 hr vs 72 hr (8p0)"
+
+  - images:
+      - "all_conditions/Lamp1_peak_sig.tiff"
+    template_slide: 2
+    title: "Lamp1 peak signal: all conditions"
+
+  # ===========================================================================
+  # METRIC 2: Lamp1_total_sig
+  # ===========================================================================
+
+  - images:
+      - "48hr_stiffness_10min/Lamp1_total_sig.tiff"
+      - "48hr_stiffness_20min/Lamp1_total_sig.tiff"
+    title: "Lamp1 total signal: stiffness comparison"
+
+  - images:
+      - "48hr_time_1p5kPa/Lamp1_total_sig.tiff"
+      - "48hr_time_12kPa/Lamp1_total_sig.tiff"
+    title: "Lamp1 total signal: reactivation time comparison"
+
+  - images:
+      - "48hr_3SI_vs_4SI/Lamp1_total_sig.tiff"
+    template_slide: 1
+    title: "Lamp1 total signal: 3SI vs 4SI"
+
+  - images:
+      - "72hr_8p0/Lamp1_total_sig.tiff"
+    template_slide: 1
+    title: "Lamp1 total signal: 72hr 8.0 kPa"
+
+  - images:
+      - "activation_8p0_10min/Lamp1_total_sig.tiff"
+      - "activation_8p0_20min/Lamp1_total_sig.tiff"
+    title: "Lamp1 total signal: 48 hr vs 72 hr (8p0)"
+
+  - images:
+      - "all_conditions/Lamp1_total_sig.tiff"
+    template_slide: 2
+    title: "Lamp1 total signal: all conditions"
+
+  # ===========================================================================
+  # METRIC 3: Lamp1_synapse_MFI
+  # ===========================================================================
+
+  - images:
+      - "48hr_stiffness_10min/Lamp1_synapse_MFI.tiff"
+      - "48hr_stiffness_20min/Lamp1_synapse_MFI.tiff"
+    title: "Lamp1 synapse MFI: stiffness comparison"
+
+  - images:
+      - "48hr_time_1p5kPa/Lamp1_synapse_MFI.tiff"
+      - "48hr_time_12kPa/Lamp1_synapse_MFI.tiff"
+    title: "Lamp1 synapse MFI: reactivation time comparison"
+
+  - images:
+      - "48hr_3SI_vs_4SI/Lamp1_synapse_MFI.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse MFI: 3SI vs 4SI"
+
+  - images:
+      - "72hr_8p0/Lamp1_synapse_MFI.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse MFI: 72hr 8.0 kPa"
+
+  - images:
+      - "activation_8p0_10min/Lamp1_synapse_MFI.tiff"
+      - "activation_8p0_20min/Lamp1_synapse_MFI.tiff"
+    title: "Lamp1 synapse MFI: 48 hr vs 72 hr (8p0)"
+
+  - images:
+      - "all_conditions/Lamp1_synapse_MFI.tiff"
+    template_slide: 2
+    title: "Lamp1 synapse MFI: all conditions"
+
+  # ===========================================================================
+  # METRIC 4: Lamp1_synapse_MFI_3mip
+  # ===========================================================================
+
+  - images:
+      - "48hr_stiffness_10min/Lamp1_synapse_MFI_3mip.tiff"
+      - "48hr_stiffness_20min/Lamp1_synapse_MFI_3mip.tiff"
+    title: "Lamp1 synapse MFI (3-MIP): stiffness comparison"
+
+  - images:
+      - "48hr_time_1p5kPa/Lamp1_synapse_MFI_3mip.tiff"
+      - "48hr_time_12kPa/Lamp1_synapse_MFI_3mip.tiff"
+    title: "Lamp1 synapse MFI (3-MIP): reactivation time comparison"
+
+  - images:
+      - "48hr_3SI_vs_4SI/Lamp1_synapse_MFI_3mip.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse MFI (3-MIP): 3SI vs 4SI"
+
+  - images:
+      - "72hr_8p0/Lamp1_synapse_MFI_3mip.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse MFI (3-MIP): 72hr 8.0 kPa"
+
+  - images:
+      - "activation_8p0_10min/Lamp1_synapse_MFI_3mip.tiff"
+      - "activation_8p0_20min/Lamp1_synapse_MFI_3mip.tiff"
+    title: "Lamp1 synapse MFI (3-MIP): 48 hr vs 72 hr (8p0)"
+
+  - images:
+      - "all_conditions/Lamp1_synapse_MFI_3mip.tiff"
+    template_slide: 2
+    title: "Lamp1 synapse MFI (3-MIP): all conditions"
+
+  # ===========================================================================
+  # METRIC 5: Lamp1_synapse_inner_outer_ratio
+  # ===========================================================================
+
+  - images:
+      - "48hr_stiffness_10min/Lamp1_synapse_inner_outer_ratio.tiff"
+      - "48hr_stiffness_20min/Lamp1_synapse_inner_outer_ratio.tiff"
+    title: "Lamp1 synapse inner/outer ratio: stiffness comparison"
+
+  - images:
+      - "48hr_time_1p5kPa/Lamp1_synapse_inner_outer_ratio.tiff"
+      - "48hr_time_12kPa/Lamp1_synapse_inner_outer_ratio.tiff"
+    title: "Lamp1 synapse inner/outer ratio: reactivation time comparison"
+
+  - images:
+      - "48hr_3SI_vs_4SI/Lamp1_synapse_inner_outer_ratio.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse inner/outer ratio: 3SI vs 4SI"
+
+  - images:
+      - "72hr_8p0/Lamp1_synapse_inner_outer_ratio.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse inner/outer ratio: 72hr 8.0 kPa"
+
+  - images:
+      - "activation_8p0_10min/Lamp1_synapse_inner_outer_ratio.tiff"
+      - "activation_8p0_20min/Lamp1_synapse_inner_outer_ratio.tiff"
+    title: "Lamp1 synapse inner/outer ratio: 48 hr vs 72 hr (8p0)"
+
+  - images:
+      - "all_conditions/Lamp1_synapse_inner_outer_ratio.tiff"
+    template_slide: 2
+    title: "Lamp1 synapse inner/outer ratio: all conditions"
+
+  # ===========================================================================
+  # METRIC 6: Lamp1_synapse_inner_outer_ratio_3mip
+  # ===========================================================================
+
+  - images:
+      - "48hr_stiffness_10min/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
+      - "48hr_stiffness_20min/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
+    title: "Lamp1 synapse inner/outer ratio (3-MIP): stiffness comparison"
+
+  - images:
+      - "48hr_time_1p5kPa/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
+      - "48hr_time_12kPa/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
+    title: "Lamp1 synapse inner/outer ratio (3-MIP): reactivation time comparison"
+
+  - images:
+      - "48hr_3SI_vs_4SI/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse inner/outer ratio (3-MIP): 3SI vs 4SI"
+
+  - images:
+      - "72hr_8p0/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse inner/outer ratio (3-MIP): 72hr 8.0 kPa"
+
+  - images:
+      - "activation_8p0_10min/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
+      - "activation_8p0_20min/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
+    title: "Lamp1 synapse inner/outer ratio (3-MIP): 48 hr vs 72 hr (8p0)"
+
+  - images:
+      - "all_conditions/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
+    template_slide: 2
+    title: "Lamp1 synapse inner/outer ratio (3-MIP): all conditions"
+
+  # ===========================================================================
+  # METRIC 7: Lamp1_z50_cell_bottom_distance
+  # ===========================================================================
+
+  - images:
+      - "48hr_stiffness_10min/Lamp1_z50_cell_bottom_distance.tiff"
+      - "48hr_stiffness_20min/Lamp1_z50_cell_bottom_distance.tiff"
+    title: "Lamp1 z50 cell bottom distance: stiffness comparison"
+
+  - images:
+      - "48hr_time_1p5kPa/Lamp1_z50_cell_bottom_distance.tiff"
+      - "48hr_time_12kPa/Lamp1_z50_cell_bottom_distance.tiff"
+    title: "Lamp1 z50 cell bottom distance: reactivation time comparison"
+
+  - images:
+      - "48hr_3SI_vs_4SI/Lamp1_z50_cell_bottom_distance.tiff"
+    template_slide: 1
+    title: "Lamp1 z50 cell bottom distance: 3SI vs 4SI"
+
+  - images:
+      - "72hr_8p0/Lamp1_z50_cell_bottom_distance.tiff"
+    template_slide: 1
+    title: "Lamp1 z50 cell bottom distance: 72hr 8.0 kPa"
+
+  - images:
+      - "activation_8p0_10min/Lamp1_z50_cell_bottom_distance.tiff"
+      - "activation_8p0_20min/Lamp1_z50_cell_bottom_distance.tiff"
+    title: "Lamp1 z50 cell bottom distance: 48 hr vs 72 hr (8p0)"
+
+  - images:
+      - "all_conditions/Lamp1_z50_cell_bottom_distance.tiff"
+    template_slide: 2
+    title: "Lamp1 z50 cell bottom distance: all conditions"
+
+  # ===========================================================================
+  # METRIC 8: Lamp1_z50_cell_bottom_distance_norm_cell_height
+  # ===========================================================================
+
+  - images:
+      - "48hr_stiffness_10min/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
+      - "48hr_stiffness_20min/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
+    title: "Lamp1 z50 cell bottom distance (norm. cell height): stiffness comparison"
+
+  - images:
+      - "48hr_time_1p5kPa/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
+      - "48hr_time_12kPa/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
+    title: "Lamp1 z50 cell bottom distance (norm. cell height): reactivation time comparison"
+
+  - images:
+      - "48hr_3SI_vs_4SI/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
+    template_slide: 1
+    title: "Lamp1 z50 cell bottom distance (norm. cell height): 3SI vs 4SI"
+
+  - images:
+      - "72hr_8p0/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
+    template_slide: 1
+    title: "Lamp1 z50 cell bottom distance (norm. cell height): 72hr 8.0 kPa"
+
+  - images:
+      - "activation_8p0_10min/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
+      - "activation_8p0_20min/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
+    title: "Lamp1 z50 cell bottom distance (norm. cell height): 48 hr vs 72 hr (8p0)"
+
+  - images:
+      - "all_conditions/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
+    template_slide: 2
+    title: "Lamp1 z50 cell bottom distance (norm. cell height): all conditions"
+
+  # ===========================================================================
+  # METRIC 9: Lamp1_synapse_total_sig
+  # ===========================================================================
+
+  - images:
+      - "48hr_stiffness_10min/Lamp1_synapse_total_sig.tiff"
+      - "48hr_stiffness_20min/Lamp1_synapse_total_sig.tiff"
+    title: "Lamp1 synapse total signal: stiffness comparison"
+
+  - images:
+      - "48hr_time_1p5kPa/Lamp1_synapse_total_sig.tiff"
+      - "48hr_time_12kPa/Lamp1_synapse_total_sig.tiff"
+    title: "Lamp1 synapse total signal: reactivation time comparison"
+
+  - images:
+      - "48hr_3SI_vs_4SI/Lamp1_synapse_total_sig.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse total signal: 3SI vs 4SI"
+
+  - images:
+      - "72hr_8p0/Lamp1_synapse_total_sig.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse total signal: 72hr 8.0 kPa"
+
+  - images:
+      - "activation_8p0_10min/Lamp1_synapse_total_sig.tiff"
+      - "activation_8p0_20min/Lamp1_synapse_total_sig.tiff"
+    title: "Lamp1 synapse total signal: 48 hr vs 72 hr (8p0)"
+
+  - images:
+      - "all_conditions/Lamp1_synapse_total_sig.tiff"
+    template_slide: 2
+    title: "Lamp1 synapse total signal: all conditions"
+
+  # ===========================================================================
+  # METRIC 10: Lamp1_synapse_total_sig_3mip
+  # ===========================================================================
+
+  - images:
+      - "48hr_stiffness_10min/Lamp1_synapse_total_sig_3mip.tiff"
+      - "48hr_stiffness_20min/Lamp1_synapse_total_sig_3mip.tiff"
+    title: "Lamp1 synapse total signal (3-MIP): stiffness comparison"
+
+  - images:
+      - "48hr_time_1p5kPa/Lamp1_synapse_total_sig_3mip.tiff"
+      - "48hr_time_12kPa/Lamp1_synapse_total_sig_3mip.tiff"
+    title: "Lamp1 synapse total signal (3-MIP): reactivation time comparison"
+
+  - images:
+      - "48hr_3SI_vs_4SI/Lamp1_synapse_total_sig_3mip.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse total signal (3-MIP): 3SI vs 4SI"
+
+  - images:
+      - "72hr_8p0/Lamp1_synapse_total_sig_3mip.tiff"
+    template_slide: 1
+    title: "Lamp1 synapse total signal (3-MIP): 72hr 8.0 kPa"
+
+  - images:
+      - "activation_8p0_10min/Lamp1_synapse_total_sig_3mip.tiff"
+      - "activation_8p0_20min/Lamp1_synapse_total_sig_3mip.tiff"
+    title: "Lamp1 synapse total signal (3-MIP): 48 hr vs 72 hr (8p0)"
+
+  - images:
+      - "all_conditions/Lamp1_synapse_total_sig_3mip.tiff"
+    template_slide: 2
+    title: "Lamp1 synapse total signal (3-MIP): all conditions"

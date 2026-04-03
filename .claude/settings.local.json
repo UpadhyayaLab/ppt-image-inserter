@@ -50,7 +50,11 @@
       "Bash(mv config_jurkat_SUN1_SUN2_compilation.yaml config_jurkat_SUN1_SUN2_montages.yaml config_jurkat_SUN1_SUN2_montages_1each.yaml config_jurkat_SUN1_montages.yaml fixed/Jurkats/SUN/)",
       "Bash(mv config_ctrl_dznep_grid_plots.yaml config_ctrl_dznep_btub_grid_plots.yaml config_ctrl_dznep_montages.yaml config_ctrl_dznep_laminb_hoechst_montages.yaml config_ctrl_dznep_btub_hoechst_montages.yaml config_ctrl_dznep_nuc_lamin_MT_montages.yaml fixed/Jurkats/DZNep_siHMGA1/)",
       "Bash(mv config_Noco_no_vim.yaml config_Noco_CD3_vim.yaml config_Noco_MT.yaml config_PLL_aCD3_vim_fixed_cells.yaml config_PLL_aCD3_3_12min_vim_fixed_cells.yaml config_CilioD_vim_fixed_cells.yaml fixed/Jurkats/)",
-      "Bash(mv config_HBEC_MyosinIIA_stiffness_FOVs.yaml HBEC/)"
+      "Bash(mv config_HBEC_MyosinIIA_stiffness_FOVs.yaml HBEC/)",
+      "Bash(grep \"\\\\.tiff$\")",
+      "Bash(grep -E \"^Lamp1_\\(peak_sig|total_sig|synapse_MFI|synapse_MFI_3mip|synapse_inner_outer_ratio|synapse_inner_outer_ratio_3mip|z50_cell_bottom_distance|z50_cell_bottom_distance_norm_cell_height|synapse_total_sig|synapse_total_sig_3mip\\)\\\\.tiff$\")",
+      "Bash(grep -E \"^\\(nuc_aspect_ratio|actin_deform_ratio|avg_normal_angle_adaptive_region_growth|chull_max_D|deepest_invag_fraction_chull_volume|nuc_solidity|nuc_SA_mesh|nuc_volume_mesh\\)\\\\.tiff$\")",
+      "Bash(grep -E \"^\\(avg_normal_angle_adaptive_region_growth_by_cent|avg_normal_angle_by_cent|chull_max_D_by_cent|chull_mean_D_cent_global_ratio|deepest_invag_volume\\)\\\\.tiff$\")"
     ]
   }
 }

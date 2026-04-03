@@ -309,7 +309,7 @@ def main(config_path):
                     base_dir=base_dir,
                 )
                 success_count += 1
-                print(f"  Created slide with {len(image_paths)} images: {[os.path.basename(p) for p in image_paths]}")
+                print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}): {[os.path.basename(p) for p in image_paths]}")
             except Exception as e:
                 print(f"[ERROR] Failed on multi-image slide: {e}")
                 error_count += 1
@@ -347,7 +347,7 @@ def main(config_path):
                         label_side=label_side,
                     )
                     success_count += 1
-                    print(f"  Created slide with {len(image_paths)} images (template {slide_template}): {[os.path.basename(p) for p in image_paths]}")
+                    print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}, template {slide_template}): {[os.path.basename(p) for p in image_paths]}")
                 except Exception as e:
                     print(f"[ERROR] Failed on multi-image dict slide: {e}")
                     error_count += 1
