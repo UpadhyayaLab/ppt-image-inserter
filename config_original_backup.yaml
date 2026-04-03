@@ -5,7 +5,7 @@
 #   1: 1-image ~square panel (3SI_vs_4SI, 72hr_8p0)
 #   2: 1-image wide panel (all_conditions, ratio ~3.3:1)
 #
-# Ordering: Metric -> Comparison type (259 slides: 37 metrics x 7 comparisons)
+# Ordering: Metric -> Comparison type (216 slides: 36 metrics x 6 comparisons)
 #
 # Metrics (in order):
 #   1. actin_deform_ratio -- Actin deformation ratio
@@ -14,43 +14,42 @@
 #   4. actin_bottom_mask_area -- Actin synapse footprint area
 #   5. actin_bottom_MFI -- Actin synapse MFI
 #   6. actin_bottom_inner_outer_ratio -- Actin synapse inner/outer ratio
-#   7. actin_bottom_circularity -- Synapse Circularity
-#   8. Lamp1_peak_sig -- Lamp1 peak signal
-#   9. Lamp1_total_sig -- Lamp1 total signal
-#  10. Lamp1_synapse_MFI -- Lamp1 synapse MFI
-#  11. Lamp1_synapse_MFI_3mip -- Lamp1 synapse MFI (3-MIP)
-#  12. Lamp1_synapse_inner_outer_ratio -- Lamp1 synapse inner/outer ratio
-#  13. Lamp1_synapse_inner_outer_ratio_3mip -- Lamp1 synapse inner/outer ratio (3-MIP)
-#  14. Lamp1_z50_cell_bottom_distance -- Lamp1 z50 cell bottom distance
-#  15. Lamp1_z50_cell_bottom_distance_norm_cell_height -- Lamp1 z50 cell bottom distance (norm. cell height)
-#  16. Lamp1_synapse_total_sig -- Lamp1 synapse total signal
-#  17. Lamp1_synapse_total_sig_3mip -- Lamp1 synapse total signal (3-MIP)
-#  18. nuc_volume_mesh -- Nuclear volume
-#  19. nuc_SA_mesh -- Nuclear surface area
-#  20. chull_mean_D_cent_global_ratio -- Centrosomal Invagination Index
-#  21. chull_max_D_by_cent -- Invag depth near centrosome
-#  22. chull_max_D -- Max invag depth over full nucleus
-#  23. deepest_invag_volume -- Deepest invagination volume
-#  24. deepest_invag_fraction_chull_volume -- Deepest invag: frac of convex hull volume
-#  25. nuc_solidity -- Nuclear solidity
-#  26. avg_normal_angle_adaptive_region_growth_by_cent -- Invag Orientation
-#  27. avg_normal_angle_by_cent -- Invag Orientation
-#  28. avg_normal_angle_adaptive_region_growth -- Deepest Invag Orientation
-#  29. Lamp1_enrichment_within_half_um_nuc_2_um_cent -- Lamp1 enrichment (peri-nuclear, 2 \u00b5m of cent)
-#  30. Lamp1_MFI_around_cent_1um -- Lamp1 MFI around centrosome (1 \u00b5m)
-#  31. Lamp1_MFI_around_cent_2um -- Lamp1 MFI around centrosome (2 \u00b5m)
-#  32. Lamp1_MFI_around_cent_3um -- Lamp1 MFI around centrosome (3 \u00b5m)
-#  33. Lamp1_frac_around_cent_1um -- Lamp1 fraction around centrosome (1 \u00b5m)
-#  34. Lamp1_frac_around_cent_2um -- Lamp1 fraction around centrosome (2 \u00b5m)
-#  35. Lamp1_frac_around_cent_3um -- Lamp1 fraction around centrosome (3 \u00b5m)
-#  36. nuc_cent_closest_dist -- Nucleus-centrosome closest distance
-#  37. centrosome_z_pos_rel_nucleus -- Centrosome z position relative to nucleus
+#   7. Lamp1_peak_sig -- Lamp1 peak signal
+#   8. Lamp1_total_sig -- Lamp1 total signal
+#   9. Lamp1_synapse_MFI -- Lamp1 synapse MFI
+#  10. Lamp1_synapse_MFI_3mip -- Lamp1 synapse MFI (3-MIP)
+#  11. Lamp1_synapse_inner_outer_ratio -- Lamp1 synapse inner/outer ratio
+#  12. Lamp1_synapse_inner_outer_ratio_3mip -- Lamp1 synapse inner/outer ratio (3-MIP)
+#  13. Lamp1_z50_cell_bottom_distance -- Lamp1 z50 cell bottom distance
+#  14. Lamp1_z50_cell_bottom_distance_norm_cell_height -- Lamp1 z50 cell bottom distance (norm. cell height)
+#  15. Lamp1_synapse_total_sig -- Lamp1 synapse total signal
+#  16. Lamp1_synapse_total_sig_3mip -- Lamp1 synapse total signal (3-MIP)
+#  17. nuc_volume_mesh -- Nuclear volume
+#  18. nuc_SA_mesh -- Nuclear surface area
+#  19. chull_mean_D_cent_global_ratio -- Centrosomal Invagination Index
+#  20. chull_max_D_by_cent -- Invag depth near centrosome
+#  21. chull_max_D -- Max invag depth over full nucleus
+#  22. deepest_invag_volume -- Deepest invagination volume
+#  23. deepest_invag_fraction_chull_volume -- Deepest invag: frac of convex hull volume
+#  24. nuc_solidity -- Nuclear solidity
+#  25. avg_normal_angle_adaptive_region_growth_by_cent -- Invag Orientation
+#  26. avg_normal_angle_by_cent -- Invag Orientation
+#  27. avg_normal_angle_adaptive_region_growth -- Deepest Invag Orientation
+#  28. Lamp1_enrichment_within_half_um_nuc_2_um_cent -- Lamp1 enrichment (peri-nuclear, 2 \u00b5m of cent)
+#  29. Lamp1_MFI_around_cent_1um -- Lamp1 MFI around centrosome (1 \u00b5m)
+#  30. Lamp1_MFI_around_cent_2um -- Lamp1 MFI around centrosome (2 \u00b5m)
+#  31. Lamp1_MFI_around_cent_3um -- Lamp1 MFI around centrosome (3 \u00b5m)
+#  32. Lamp1_frac_around_cent_1um -- Lamp1 fraction around centrosome (1 \u00b5m)
+#  33. Lamp1_frac_around_cent_2um -- Lamp1 fraction around centrosome (2 \u00b5m)
+#  34. Lamp1_frac_around_cent_3um -- Lamp1 fraction around centrosome (3 \u00b5m)
+#  35. nuc_cent_closest_dist -- Nucleus-centrosome closest distance
+#  36. centrosome_z_pos_rel_nucleus -- Centrosome z position relative to nucleus
 
 presentation: "K:/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/CTLReactivationAssay_template.pptx"
 output_path: "K:/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/CTLReactivationAssay.pptx"
 template_slide: 0
 preserve_slides: [0, 1, 2]
-base_dir: "J:/FF/fixed_cell/CTL_nucleus/Lamp1_Hoechst/0901_naiveCTLs_reactivationAssay_Lamp1_Hoechst_/results/results_20260403/grid_panels"
+base_dir: "J:/FF/fixed_cell/CTL_nucleus/Lamp1_Hoechst/0901_naiveCTLs_reactivationAssay_Lamp1_Hoechst_/results/results_no_nuc_dist_filt_20260403/grid_panels"
 auto_position: true
 add_label: true
 
@@ -65,11 +64,6 @@ images:
     template_slide: 2
     title: "Actin deformation ratio: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/actin_deform_ratio.tiff"
-    template_slide: 1
-    title: "Actin deformation ratio: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/actin_deform_ratio.tiff"
       - "48hr_stiffness_20min/actin_deform_ratio.tiff"
@@ -88,14 +82,12 @@ images:
   - images:
       - "72hr_8p0/actin_deform_ratio.tiff"
     template_slide: 1
-    title: "Actin deformation ratio: 72hr 12 kPa"
+    title: "Actin deformation ratio: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/actin_deform_ratio.tiff"
       - "activation_8p0_20min/actin_deform_ratio.tiff"
     title: "Actin deformation ratio: 48 hr vs 72 hr (8p0)"
-
-
 
   # ===========================================================================
   # METRIC 2: nuc_aspect_ratio
@@ -106,11 +98,6 @@ images:
     template_slide: 2
     title: "Nuclear aspect ratio: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/nuc_aspect_ratio.tiff"
-    template_slide: 1
-    title: "Nuclear aspect ratio: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/nuc_aspect_ratio.tiff"
       - "48hr_stiffness_20min/nuc_aspect_ratio.tiff"
@@ -129,14 +116,12 @@ images:
   - images:
       - "72hr_8p0/nuc_aspect_ratio.tiff"
     template_slide: 1
-    title: "Nuclear aspect ratio: 72hr 12 kPa"
+    title: "Nuclear aspect ratio: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/nuc_aspect_ratio.tiff"
       - "activation_8p0_20min/nuc_aspect_ratio.tiff"
     title: "Nuclear aspect ratio: 48 hr vs 72 hr (8p0)"
-
-
 
   # ===========================================================================
   # METRIC 3: centrosome_from_MT_z_cell_bottom_distance
@@ -147,11 +132,6 @@ images:
     template_slide: 2
     title: "Centrosome-synapse distance: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/centrosome_from_MT_z_cell_bottom_distance.tiff"
-    template_slide: 1
-    title: "Centrosome-synapse distance: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/centrosome_from_MT_z_cell_bottom_distance.tiff"
       - "48hr_stiffness_20min/centrosome_from_MT_z_cell_bottom_distance.tiff"
@@ -170,14 +150,12 @@ images:
   - images:
       - "72hr_8p0/centrosome_from_MT_z_cell_bottom_distance.tiff"
     template_slide: 1
-    title: "Centrosome-synapse distance: 72hr 12 kPa"
+    title: "Centrosome-synapse distance: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/centrosome_from_MT_z_cell_bottom_distance.tiff"
       - "activation_8p0_20min/centrosome_from_MT_z_cell_bottom_distance.tiff"
     title: "Centrosome-synapse distance: 48 hr vs 72 hr (8p0)"
-
-
 
   # ===========================================================================
   # METRIC 4: actin_bottom_mask_area
@@ -188,11 +166,6 @@ images:
     template_slide: 2
     title: "Actin synapse footprint area: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/actin_bottom_mask_area.tiff"
-    template_slide: 1
-    title: "Actin synapse footprint area: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/actin_bottom_mask_area.tiff"
       - "48hr_stiffness_20min/actin_bottom_mask_area.tiff"
@@ -211,14 +184,12 @@ images:
   - images:
       - "72hr_8p0/actin_bottom_mask_area.tiff"
     template_slide: 1
-    title: "Actin synapse footprint area: 72hr 12 kPa"
+    title: "Actin synapse footprint area: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/actin_bottom_mask_area.tiff"
       - "activation_8p0_20min/actin_bottom_mask_area.tiff"
     title: "Actin synapse footprint area: 48 hr vs 72 hr (8p0)"
-
-
 
   # ===========================================================================
   # METRIC 5: actin_bottom_MFI
@@ -229,11 +200,6 @@ images:
     template_slide: 2
     title: "Actin synapse MFI: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/actin_bottom_MFI.tiff"
-    template_slide: 1
-    title: "Actin synapse MFI: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/actin_bottom_MFI.tiff"
       - "48hr_stiffness_20min/actin_bottom_MFI.tiff"
@@ -252,14 +218,12 @@ images:
   - images:
       - "72hr_8p0/actin_bottom_MFI.tiff"
     template_slide: 1
-    title: "Actin synapse MFI: 72hr 12 kPa"
+    title: "Actin synapse MFI: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/actin_bottom_MFI.tiff"
       - "activation_8p0_20min/actin_bottom_MFI.tiff"
     title: "Actin synapse MFI: 48 hr vs 72 hr (8p0)"
-
-
 
   # ===========================================================================
   # METRIC 6: actin_bottom_inner_outer_ratio
@@ -270,11 +234,6 @@ images:
     template_slide: 2
     title: "Actin synapse inner/outer ratio: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/actin_bottom_inner_outer_ratio.tiff"
-    template_slide: 1
-    title: "Actin synapse inner/outer ratio: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/actin_bottom_inner_outer_ratio.tiff"
       - "48hr_stiffness_20min/actin_bottom_inner_outer_ratio.tiff"
@@ -293,57 +252,15 @@ images:
   - images:
       - "72hr_8p0/actin_bottom_inner_outer_ratio.tiff"
     template_slide: 1
-    title: "Actin synapse inner/outer ratio: 72hr 12 kPa"
+    title: "Actin synapse inner/outer ratio: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/actin_bottom_inner_outer_ratio.tiff"
       - "activation_8p0_20min/actin_bottom_inner_outer_ratio.tiff"
     title: "Actin synapse inner/outer ratio: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 8: actin_bottom_circularity
-  # ===========================================================================
-
-  - images:
-      - "all_conditions/actin_bottom_circularity.tiff"
-    template_slide: 2
-    title: "Synapse Circularity: all conditions"
-
-  - images:
-      - "48hr_20min_all_substrates/actin_bottom_circularity.tiff"
-    template_slide: 1
-    title: "Synapse Circularity: 48 hr 20 min (all substrates)"
-
-  - images:
-      - "48hr_stiffness_10min/actin_bottom_circularity.tiff"
-      - "48hr_stiffness_20min/actin_bottom_circularity.tiff"
-    title: "Synapse Circularity: stiffness comparison"
-
-  - images:
-      - "48hr_time_1p5kPa/actin_bottom_circularity.tiff"
-      - "48hr_time_12kPa/actin_bottom_circularity.tiff"
-    title: "Synapse Circularity: reactivation time comparison"
-
-  - images:
-      - "48hr_3SI_vs_4SI/actin_bottom_circularity.tiff"
-    template_slide: 1
-    title: "Synapse Circularity: 3SI vs 4SI"
-
-  - images:
-      - "72hr_8p0/actin_bottom_circularity.tiff"
-    template_slide: 1
-    title: "Synapse Circularity: 72hr 12 kPa"
-
-  - images:
-      - "activation_8p0_10min/actin_bottom_circularity.tiff"
-      - "activation_8p0_20min/actin_bottom_circularity.tiff"
-    title: "Synapse Circularity: 48 hr vs 72 hr (8p0)"
-
-
-  # ===========================================================================
-  # METRIC 8: Lamp1_peak_sig
+  # METRIC 7: Lamp1_peak_sig
   # ===========================================================================
 
   - images:
@@ -351,11 +268,6 @@ images:
     template_slide: 2
     title: "Lamp1 peak signal: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_peak_sig.tiff"
-    template_slide: 1
-    title: "Lamp1 peak signal: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_peak_sig.tiff"
       - "48hr_stiffness_20min/Lamp1_peak_sig.tiff"
@@ -374,17 +286,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_peak_sig.tiff"
     template_slide: 1
-    title: "Lamp1 peak signal: 72hr 12 kPa"
+    title: "Lamp1 peak signal: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_peak_sig.tiff"
       - "activation_8p0_20min/Lamp1_peak_sig.tiff"
     title: "Lamp1 peak signal: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 9: Lamp1_total_sig
+  # METRIC 8: Lamp1_total_sig
   # ===========================================================================
 
   - images:
@@ -392,11 +302,6 @@ images:
     template_slide: 2
     title: "Lamp1 total signal: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_total_sig.tiff"
-    template_slide: 1
-    title: "Lamp1 total signal: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_total_sig.tiff"
       - "48hr_stiffness_20min/Lamp1_total_sig.tiff"
@@ -415,17 +320,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_total_sig.tiff"
     template_slide: 1
-    title: "Lamp1 total signal: 72hr 12 kPa"
+    title: "Lamp1 total signal: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_total_sig.tiff"
       - "activation_8p0_20min/Lamp1_total_sig.tiff"
     title: "Lamp1 total signal: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 10: Lamp1_synapse_MFI
+  # METRIC 9: Lamp1_synapse_MFI
   # ===========================================================================
 
   - images:
@@ -433,11 +336,6 @@ images:
     template_slide: 2
     title: "Lamp1 synapse MFI: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_synapse_MFI.tiff"
-    template_slide: 1
-    title: "Lamp1 synapse MFI: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_synapse_MFI.tiff"
       - "48hr_stiffness_20min/Lamp1_synapse_MFI.tiff"
@@ -456,17 +354,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_MFI.tiff"
     template_slide: 1
-    title: "Lamp1 synapse MFI: 72hr 12 kPa"
+    title: "Lamp1 synapse MFI: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_MFI.tiff"
       - "activation_8p0_20min/Lamp1_synapse_MFI.tiff"
     title: "Lamp1 synapse MFI: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 11: Lamp1_synapse_MFI_3mip
+  # METRIC 10: Lamp1_synapse_MFI_3mip
   # ===========================================================================
 
   - images:
@@ -474,11 +370,6 @@ images:
     template_slide: 2
     title: "Lamp1 synapse MFI (3-MIP): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_synapse_MFI_3mip.tiff"
-    template_slide: 1
-    title: "Lamp1 synapse MFI (3-MIP): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_synapse_MFI_3mip.tiff"
       - "48hr_stiffness_20min/Lamp1_synapse_MFI_3mip.tiff"
@@ -497,17 +388,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_MFI_3mip.tiff"
     template_slide: 1
-    title: "Lamp1 synapse MFI (3-MIP): 72hr 12 kPa"
+    title: "Lamp1 synapse MFI (3-MIP): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_MFI_3mip.tiff"
       - "activation_8p0_20min/Lamp1_synapse_MFI_3mip.tiff"
     title: "Lamp1 synapse MFI (3-MIP): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 12: Lamp1_synapse_inner_outer_ratio
+  # METRIC 11: Lamp1_synapse_inner_outer_ratio
   # ===========================================================================
 
   - images:
@@ -515,11 +404,6 @@ images:
     template_slide: 2
     title: "Lamp1 synapse inner/outer ratio: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_synapse_inner_outer_ratio.tiff"
-    template_slide: 1
-    title: "Lamp1 synapse inner/outer ratio: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_synapse_inner_outer_ratio.tiff"
       - "48hr_stiffness_20min/Lamp1_synapse_inner_outer_ratio.tiff"
@@ -538,17 +422,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_inner_outer_ratio.tiff"
     template_slide: 1
-    title: "Lamp1 synapse inner/outer ratio: 72hr 12 kPa"
+    title: "Lamp1 synapse inner/outer ratio: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_inner_outer_ratio.tiff"
       - "activation_8p0_20min/Lamp1_synapse_inner_outer_ratio.tiff"
     title: "Lamp1 synapse inner/outer ratio: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 13: Lamp1_synapse_inner_outer_ratio_3mip
+  # METRIC 12: Lamp1_synapse_inner_outer_ratio_3mip
   # ===========================================================================
 
   - images:
@@ -556,11 +438,6 @@ images:
     template_slide: 2
     title: "Lamp1 synapse inner/outer ratio (3-MIP): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
-    template_slide: 1
-    title: "Lamp1 synapse inner/outer ratio (3-MIP): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
       - "48hr_stiffness_20min/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
@@ -579,17 +456,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
     template_slide: 1
-    title: "Lamp1 synapse inner/outer ratio (3-MIP): 72hr 12 kPa"
+    title: "Lamp1 synapse inner/outer ratio (3-MIP): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
       - "activation_8p0_20min/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
     title: "Lamp1 synapse inner/outer ratio (3-MIP): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 14: Lamp1_z50_cell_bottom_distance
+  # METRIC 13: Lamp1_z50_cell_bottom_distance
   # ===========================================================================
 
   - images:
@@ -597,11 +472,6 @@ images:
     template_slide: 2
     title: "Lamp1 z50 cell bottom distance: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_z50_cell_bottom_distance.tiff"
-    template_slide: 1
-    title: "Lamp1 z50 cell bottom distance: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_z50_cell_bottom_distance.tiff"
       - "48hr_stiffness_20min/Lamp1_z50_cell_bottom_distance.tiff"
@@ -620,17 +490,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_z50_cell_bottom_distance.tiff"
     template_slide: 1
-    title: "Lamp1 z50 cell bottom distance: 72hr 12 kPa"
+    title: "Lamp1 z50 cell bottom distance: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_z50_cell_bottom_distance.tiff"
       - "activation_8p0_20min/Lamp1_z50_cell_bottom_distance.tiff"
     title: "Lamp1 z50 cell bottom distance: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 15: Lamp1_z50_cell_bottom_distance_norm_cell_height
+  # METRIC 14: Lamp1_z50_cell_bottom_distance_norm_cell_height
   # ===========================================================================
 
   - images:
@@ -638,11 +506,6 @@ images:
     template_slide: 2
     title: "Lamp1 z50 cell bottom distance (norm. cell height): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
-    template_slide: 1
-    title: "Lamp1 z50 cell bottom distance (norm. cell height): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
       - "48hr_stiffness_20min/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
@@ -661,17 +524,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
     template_slide: 1
-    title: "Lamp1 z50 cell bottom distance (norm. cell height): 72hr 12 kPa"
+    title: "Lamp1 z50 cell bottom distance (norm. cell height): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
       - "activation_8p0_20min/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
     title: "Lamp1 z50 cell bottom distance (norm. cell height): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 16: Lamp1_synapse_total_sig
+  # METRIC 15: Lamp1_synapse_total_sig
   # ===========================================================================
 
   - images:
@@ -679,11 +540,6 @@ images:
     template_slide: 2
     title: "Lamp1 synapse total signal: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_synapse_total_sig.tiff"
-    template_slide: 1
-    title: "Lamp1 synapse total signal: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_synapse_total_sig.tiff"
       - "48hr_stiffness_20min/Lamp1_synapse_total_sig.tiff"
@@ -702,17 +558,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_total_sig.tiff"
     template_slide: 1
-    title: "Lamp1 synapse total signal: 72hr 12 kPa"
+    title: "Lamp1 synapse total signal: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_total_sig.tiff"
       - "activation_8p0_20min/Lamp1_synapse_total_sig.tiff"
     title: "Lamp1 synapse total signal: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 17: Lamp1_synapse_total_sig_3mip
+  # METRIC 16: Lamp1_synapse_total_sig_3mip
   # ===========================================================================
 
   - images:
@@ -720,11 +574,6 @@ images:
     template_slide: 2
     title: "Lamp1 synapse total signal (3-MIP): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_synapse_total_sig_3mip.tiff"
-    template_slide: 1
-    title: "Lamp1 synapse total signal (3-MIP): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_synapse_total_sig_3mip.tiff"
       - "48hr_stiffness_20min/Lamp1_synapse_total_sig_3mip.tiff"
@@ -743,17 +592,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_total_sig_3mip.tiff"
     template_slide: 1
-    title: "Lamp1 synapse total signal (3-MIP): 72hr 12 kPa"
+    title: "Lamp1 synapse total signal (3-MIP): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_total_sig_3mip.tiff"
       - "activation_8p0_20min/Lamp1_synapse_total_sig_3mip.tiff"
     title: "Lamp1 synapse total signal (3-MIP): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 18: nuc_volume_mesh
+  # METRIC 17: nuc_volume_mesh
   # ===========================================================================
 
   - images:
@@ -761,11 +608,6 @@ images:
     template_slide: 2
     title: "Nuclear volume: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/nuc_volume_mesh.tiff"
-    template_slide: 1
-    title: "Nuclear volume: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/nuc_volume_mesh.tiff"
       - "48hr_stiffness_20min/nuc_volume_mesh.tiff"
@@ -784,17 +626,15 @@ images:
   - images:
       - "72hr_8p0/nuc_volume_mesh.tiff"
     template_slide: 1
-    title: "Nuclear volume: 72hr 12 kPa"
+    title: "Nuclear volume: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/nuc_volume_mesh.tiff"
       - "activation_8p0_20min/nuc_volume_mesh.tiff"
     title: "Nuclear volume: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 19: nuc_SA_mesh
+  # METRIC 18: nuc_SA_mesh
   # ===========================================================================
 
   - images:
@@ -802,11 +642,6 @@ images:
     template_slide: 2
     title: "Nuclear surface area: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/nuc_SA_mesh.tiff"
-    template_slide: 1
-    title: "Nuclear surface area: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/nuc_SA_mesh.tiff"
       - "48hr_stiffness_20min/nuc_SA_mesh.tiff"
@@ -825,17 +660,15 @@ images:
   - images:
       - "72hr_8p0/nuc_SA_mesh.tiff"
     template_slide: 1
-    title: "Nuclear surface area: 72hr 12 kPa"
+    title: "Nuclear surface area: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/nuc_SA_mesh.tiff"
       - "activation_8p0_20min/nuc_SA_mesh.tiff"
     title: "Nuclear surface area: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 20: chull_mean_D_cent_global_ratio
+  # METRIC 19: chull_mean_D_cent_global_ratio
   # ===========================================================================
 
   - images:
@@ -843,11 +676,6 @@ images:
     template_slide: 2
     title: "Centrosomal Invagination Index: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/chull_mean_D_cent_global_ratio.tiff"
-    template_slide: 1
-    title: "Centrosomal Invagination Index: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/chull_mean_D_cent_global_ratio.tiff"
       - "48hr_stiffness_20min/chull_mean_D_cent_global_ratio.tiff"
@@ -866,17 +694,15 @@ images:
   - images:
       - "72hr_8p0/chull_mean_D_cent_global_ratio.tiff"
     template_slide: 1
-    title: "Centrosomal Invagination Index: 72hr 12 kPa"
+    title: "Centrosomal Invagination Index: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/chull_mean_D_cent_global_ratio.tiff"
       - "activation_8p0_20min/chull_mean_D_cent_global_ratio.tiff"
     title: "Centrosomal Invagination Index: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 21: chull_max_D_by_cent
+  # METRIC 20: chull_max_D_by_cent
   # ===========================================================================
 
   - images:
@@ -884,11 +710,6 @@ images:
     template_slide: 2
     title: "Invag depth near centrosome: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/chull_max_D_by_cent.tiff"
-    template_slide: 1
-    title: "Invag depth near centrosome: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/chull_max_D_by_cent.tiff"
       - "48hr_stiffness_20min/chull_max_D_by_cent.tiff"
@@ -907,17 +728,15 @@ images:
   - images:
       - "72hr_8p0/chull_max_D_by_cent.tiff"
     template_slide: 1
-    title: "Invag depth near centrosome: 72hr 12 kPa"
+    title: "Invag depth near centrosome: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/chull_max_D_by_cent.tiff"
       - "activation_8p0_20min/chull_max_D_by_cent.tiff"
     title: "Invag depth near centrosome: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 22: chull_max_D
+  # METRIC 21: chull_max_D
   # ===========================================================================
 
   - images:
@@ -925,11 +744,6 @@ images:
     template_slide: 2
     title: "Max invag depth over full nucleus: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/chull_max_D.tiff"
-    template_slide: 1
-    title: "Max invag depth over full nucleus: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/chull_max_D.tiff"
       - "48hr_stiffness_20min/chull_max_D.tiff"
@@ -948,17 +762,15 @@ images:
   - images:
       - "72hr_8p0/chull_max_D.tiff"
     template_slide: 1
-    title: "Max invag depth over full nucleus: 72hr 12 kPa"
+    title: "Max invag depth over full nucleus: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/chull_max_D.tiff"
       - "activation_8p0_20min/chull_max_D.tiff"
     title: "Max invag depth over full nucleus: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 23: deepest_invag_volume
+  # METRIC 22: deepest_invag_volume
   # ===========================================================================
 
   - images:
@@ -966,11 +778,6 @@ images:
     template_slide: 2
     title: "Deepest invagination volume: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/deepest_invag_volume.tiff"
-    template_slide: 1
-    title: "Deepest invagination volume: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/deepest_invag_volume.tiff"
       - "48hr_stiffness_20min/deepest_invag_volume.tiff"
@@ -989,17 +796,15 @@ images:
   - images:
       - "72hr_8p0/deepest_invag_volume.tiff"
     template_slide: 1
-    title: "Deepest invagination volume: 72hr 12 kPa"
+    title: "Deepest invagination volume: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/deepest_invag_volume.tiff"
       - "activation_8p0_20min/deepest_invag_volume.tiff"
     title: "Deepest invagination volume: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 24: deepest_invag_fraction_chull_volume
+  # METRIC 23: deepest_invag_fraction_chull_volume
   # ===========================================================================
 
   - images:
@@ -1007,11 +812,6 @@ images:
     template_slide: 2
     title: "Deepest invag: frac of convex hull volume: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/deepest_invag_fraction_chull_volume.tiff"
-    template_slide: 1
-    title: "Deepest invag: frac of convex hull volume: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/deepest_invag_fraction_chull_volume.tiff"
       - "48hr_stiffness_20min/deepest_invag_fraction_chull_volume.tiff"
@@ -1030,17 +830,15 @@ images:
   - images:
       - "72hr_8p0/deepest_invag_fraction_chull_volume.tiff"
     template_slide: 1
-    title: "Deepest invag: frac of convex hull volume: 72hr 12 kPa"
+    title: "Deepest invag: frac of convex hull volume: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/deepest_invag_fraction_chull_volume.tiff"
       - "activation_8p0_20min/deepest_invag_fraction_chull_volume.tiff"
     title: "Deepest invag: frac of convex hull volume: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 25: nuc_solidity
+  # METRIC 24: nuc_solidity
   # ===========================================================================
 
   - images:
@@ -1048,11 +846,6 @@ images:
     template_slide: 2
     title: "Nuclear solidity: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/nuc_solidity.tiff"
-    template_slide: 1
-    title: "Nuclear solidity: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/nuc_solidity.tiff"
       - "48hr_stiffness_20min/nuc_solidity.tiff"
@@ -1071,17 +864,15 @@ images:
   - images:
       - "72hr_8p0/nuc_solidity.tiff"
     template_slide: 1
-    title: "Nuclear solidity: 72hr 12 kPa"
+    title: "Nuclear solidity: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/nuc_solidity.tiff"
       - "activation_8p0_20min/nuc_solidity.tiff"
     title: "Nuclear solidity: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 26: avg_normal_angle_adaptive_region_growth_by_cent
+  # METRIC 25: avg_normal_angle_adaptive_region_growth_by_cent
   # ===========================================================================
 
   - images:
@@ -1089,11 +880,6 @@ images:
     template_slide: 2
     title: "Invag Orientation: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/avg_normal_angle_adaptive_region_growth_by_cent.tiff"
-    template_slide: 1
-    title: "Invag Orientation: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/avg_normal_angle_adaptive_region_growth_by_cent.tiff"
       - "48hr_stiffness_20min/avg_normal_angle_adaptive_region_growth_by_cent.tiff"
@@ -1112,17 +898,15 @@ images:
   - images:
       - "72hr_8p0/avg_normal_angle_adaptive_region_growth_by_cent.tiff"
     template_slide: 1
-    title: "Invag Orientation: 72hr 12 kPa"
+    title: "Invag Orientation: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/avg_normal_angle_adaptive_region_growth_by_cent.tiff"
       - "activation_8p0_20min/avg_normal_angle_adaptive_region_growth_by_cent.tiff"
     title: "Invag Orientation: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 27: avg_normal_angle_by_cent
+  # METRIC 26: avg_normal_angle_by_cent
   # ===========================================================================
 
   - images:
@@ -1130,11 +914,6 @@ images:
     template_slide: 2
     title: "Invag Orientation: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/avg_normal_angle_by_cent.tiff"
-    template_slide: 1
-    title: "Invag Orientation: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/avg_normal_angle_by_cent.tiff"
       - "48hr_stiffness_20min/avg_normal_angle_by_cent.tiff"
@@ -1153,17 +932,15 @@ images:
   - images:
       - "72hr_8p0/avg_normal_angle_by_cent.tiff"
     template_slide: 1
-    title: "Invag Orientation: 72hr 12 kPa"
+    title: "Invag Orientation: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/avg_normal_angle_by_cent.tiff"
       - "activation_8p0_20min/avg_normal_angle_by_cent.tiff"
     title: "Invag Orientation: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 28: avg_normal_angle_adaptive_region_growth
+  # METRIC 27: avg_normal_angle_adaptive_region_growth
   # ===========================================================================
 
   - images:
@@ -1171,11 +948,6 @@ images:
     template_slide: 2
     title: "Deepest Invag Orientation: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/avg_normal_angle_adaptive_region_growth.tiff"
-    template_slide: 1
-    title: "Deepest Invag Orientation: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/avg_normal_angle_adaptive_region_growth.tiff"
       - "48hr_stiffness_20min/avg_normal_angle_adaptive_region_growth.tiff"
@@ -1194,17 +966,15 @@ images:
   - images:
       - "72hr_8p0/avg_normal_angle_adaptive_region_growth.tiff"
     template_slide: 1
-    title: "Deepest Invag Orientation: 72hr 12 kPa"
+    title: "Deepest Invag Orientation: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/avg_normal_angle_adaptive_region_growth.tiff"
       - "activation_8p0_20min/avg_normal_angle_adaptive_region_growth.tiff"
     title: "Deepest Invag Orientation: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 29: Lamp1_enrichment_within_half_um_nuc_2_um_cent
+  # METRIC 28: Lamp1_enrichment_within_half_um_nuc_2_um_cent
   # ===========================================================================
 
   - images:
@@ -1212,11 +982,6 @@ images:
     template_slide: 2
     title: "Lamp1 enrichment (peri-nuclear, 2 \u00b5m of cent): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_enrichment_within_half_um_nuc_2_um_cent.tiff"
-    template_slide: 1
-    title: "Lamp1 enrichment (peri-nuclear, 2 \u00b5m of cent): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_enrichment_within_half_um_nuc_2_um_cent.tiff"
       - "48hr_stiffness_20min/Lamp1_enrichment_within_half_um_nuc_2_um_cent.tiff"
@@ -1235,17 +1000,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_enrichment_within_half_um_nuc_2_um_cent.tiff"
     template_slide: 1
-    title: "Lamp1 enrichment (peri-nuclear, 2 \u00b5m of cent): 72hr 12 kPa"
+    title: "Lamp1 enrichment (peri-nuclear, 2 \u00b5m of cent): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_enrichment_within_half_um_nuc_2_um_cent.tiff"
       - "activation_8p0_20min/Lamp1_enrichment_within_half_um_nuc_2_um_cent.tiff"
     title: "Lamp1 enrichment (peri-nuclear, 2 \u00b5m of cent): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 30: Lamp1_MFI_around_cent_1um
+  # METRIC 29: Lamp1_MFI_around_cent_1um
   # ===========================================================================
 
   - images:
@@ -1253,11 +1016,6 @@ images:
     template_slide: 2
     title: "Lamp1 MFI around centrosome (1 \u00b5m): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_MFI_around_cent_1um.tiff"
-    template_slide: 1
-    title: "Lamp1 MFI around centrosome (1 \u00b5m): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_MFI_around_cent_1um.tiff"
       - "48hr_stiffness_20min/Lamp1_MFI_around_cent_1um.tiff"
@@ -1276,17 +1034,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_MFI_around_cent_1um.tiff"
     template_slide: 1
-    title: "Lamp1 MFI around centrosome (1 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 MFI around centrosome (1 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_MFI_around_cent_1um.tiff"
       - "activation_8p0_20min/Lamp1_MFI_around_cent_1um.tiff"
     title: "Lamp1 MFI around centrosome (1 \u00b5m): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 31: Lamp1_MFI_around_cent_2um
+  # METRIC 30: Lamp1_MFI_around_cent_2um
   # ===========================================================================
 
   - images:
@@ -1294,11 +1050,6 @@ images:
     template_slide: 2
     title: "Lamp1 MFI around centrosome (2 \u00b5m): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_MFI_around_cent_2um.tiff"
-    template_slide: 1
-    title: "Lamp1 MFI around centrosome (2 \u00b5m): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_MFI_around_cent_2um.tiff"
       - "48hr_stiffness_20min/Lamp1_MFI_around_cent_2um.tiff"
@@ -1317,17 +1068,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_MFI_around_cent_2um.tiff"
     template_slide: 1
-    title: "Lamp1 MFI around centrosome (2 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 MFI around centrosome (2 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_MFI_around_cent_2um.tiff"
       - "activation_8p0_20min/Lamp1_MFI_around_cent_2um.tiff"
     title: "Lamp1 MFI around centrosome (2 \u00b5m): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 32: Lamp1_MFI_around_cent_3um
+  # METRIC 31: Lamp1_MFI_around_cent_3um
   # ===========================================================================
 
   - images:
@@ -1335,11 +1084,6 @@ images:
     template_slide: 2
     title: "Lamp1 MFI around centrosome (3 \u00b5m): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_MFI_around_cent_3um.tiff"
-    template_slide: 1
-    title: "Lamp1 MFI around centrosome (3 \u00b5m): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_MFI_around_cent_3um.tiff"
       - "48hr_stiffness_20min/Lamp1_MFI_around_cent_3um.tiff"
@@ -1358,17 +1102,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_MFI_around_cent_3um.tiff"
     template_slide: 1
-    title: "Lamp1 MFI around centrosome (3 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 MFI around centrosome (3 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_MFI_around_cent_3um.tiff"
       - "activation_8p0_20min/Lamp1_MFI_around_cent_3um.tiff"
     title: "Lamp1 MFI around centrosome (3 \u00b5m): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 33: Lamp1_frac_around_cent_1um
+  # METRIC 32: Lamp1_frac_around_cent_1um
   # ===========================================================================
 
   - images:
@@ -1376,11 +1118,6 @@ images:
     template_slide: 2
     title: "Lamp1 fraction around centrosome (1 \u00b5m): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_frac_around_cent_1um.tiff"
-    template_slide: 1
-    title: "Lamp1 fraction around centrosome (1 \u00b5m): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_frac_around_cent_1um.tiff"
       - "48hr_stiffness_20min/Lamp1_frac_around_cent_1um.tiff"
@@ -1399,17 +1136,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_frac_around_cent_1um.tiff"
     template_slide: 1
-    title: "Lamp1 fraction around centrosome (1 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 fraction around centrosome (1 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_frac_around_cent_1um.tiff"
       - "activation_8p0_20min/Lamp1_frac_around_cent_1um.tiff"
     title: "Lamp1 fraction around centrosome (1 \u00b5m): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 34: Lamp1_frac_around_cent_2um
+  # METRIC 33: Lamp1_frac_around_cent_2um
   # ===========================================================================
 
   - images:
@@ -1417,11 +1152,6 @@ images:
     template_slide: 2
     title: "Lamp1 fraction around centrosome (2 \u00b5m): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_frac_around_cent_2um.tiff"
-    template_slide: 1
-    title: "Lamp1 fraction around centrosome (2 \u00b5m): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_frac_around_cent_2um.tiff"
       - "48hr_stiffness_20min/Lamp1_frac_around_cent_2um.tiff"
@@ -1440,17 +1170,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_frac_around_cent_2um.tiff"
     template_slide: 1
-    title: "Lamp1 fraction around centrosome (2 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 fraction around centrosome (2 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_frac_around_cent_2um.tiff"
       - "activation_8p0_20min/Lamp1_frac_around_cent_2um.tiff"
     title: "Lamp1 fraction around centrosome (2 \u00b5m): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 35: Lamp1_frac_around_cent_3um
+  # METRIC 34: Lamp1_frac_around_cent_3um
   # ===========================================================================
 
   - images:
@@ -1458,11 +1186,6 @@ images:
     template_slide: 2
     title: "Lamp1 fraction around centrosome (3 \u00b5m): all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/Lamp1_frac_around_cent_3um.tiff"
-    template_slide: 1
-    title: "Lamp1 fraction around centrosome (3 \u00b5m): 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/Lamp1_frac_around_cent_3um.tiff"
       - "48hr_stiffness_20min/Lamp1_frac_around_cent_3um.tiff"
@@ -1481,17 +1204,15 @@ images:
   - images:
       - "72hr_8p0/Lamp1_frac_around_cent_3um.tiff"
     template_slide: 1
-    title: "Lamp1 fraction around centrosome (3 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 fraction around centrosome (3 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_frac_around_cent_3um.tiff"
       - "activation_8p0_20min/Lamp1_frac_around_cent_3um.tiff"
     title: "Lamp1 fraction around centrosome (3 \u00b5m): 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 36: nuc_cent_closest_dist
+  # METRIC 35: nuc_cent_closest_dist
   # ===========================================================================
 
   - images:
@@ -1499,11 +1220,6 @@ images:
     template_slide: 2
     title: "Nucleus-centrosome closest distance: all conditions"
 
-
-  - images:
-      - "48hr_20min_all_substrates/nuc_cent_closest_dist.tiff"
-    template_slide: 1
-    title: "Nucleus-centrosome closest distance: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/nuc_cent_closest_dist.tiff"
       - "48hr_stiffness_20min/nuc_cent_closest_dist.tiff"
@@ -1522,28 +1238,21 @@ images:
   - images:
       - "72hr_8p0/nuc_cent_closest_dist.tiff"
     template_slide: 1
-    title: "Nucleus-centrosome closest distance: 72hr 12 kPa"
+    title: "Nucleus-centrosome closest distance: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/nuc_cent_closest_dist.tiff"
       - "activation_8p0_20min/nuc_cent_closest_dist.tiff"
     title: "Nucleus-centrosome closest distance: 48 hr vs 72 hr (8p0)"
 
-
-
   # ===========================================================================
-  # METRIC 37: centrosome_z_pos_rel_nucleus
+  # METRIC 36: centrosome_z_pos_rel_nucleus
   # ===========================================================================
 
   - images:
       - "all_conditions/centrosome_z_pos_rel_nucleus.tiff"
     template_slide: 2
     title: "Centrosome z position relative to nucleus: all conditions"
-
-  - images:
-      - "48hr_20min_all_substrates/centrosome_z_pos_rel_nucleus.tiff"
-    template_slide: 1
-    title: "Centrosome z position relative to nucleus: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/centrosome_z_pos_rel_nucleus.tiff"
       - "48hr_stiffness_20min/centrosome_z_pos_rel_nucleus.tiff"
@@ -1562,12 +1271,10 @@ images:
   - images:
       - "72hr_8p0/centrosome_z_pos_rel_nucleus.tiff"
     template_slide: 1
-    title: "Centrosome z position relative to nucleus: 72hr 12 kPa"
+    title: "Centrosome z position relative to nucleus: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/centrosome_z_pos_rel_nucleus.tiff"
       - "activation_8p0_20min/centrosome_z_pos_rel_nucleus.tiff"
     title: "Centrosome z position relative to nucleus: 48 hr vs 72 hr (8p0)"
-
-
 

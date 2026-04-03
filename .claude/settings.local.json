@@ -54,7 +54,11 @@
       "Bash(grep \"\\\\.tiff$\")",
       "Bash(grep -E \"^Lamp1_\\(peak_sig|total_sig|synapse_MFI|synapse_MFI_3mip|synapse_inner_outer_ratio|synapse_inner_outer_ratio_3mip|z50_cell_bottom_distance|z50_cell_bottom_distance_norm_cell_height|synapse_total_sig|synapse_total_sig_3mip\\)\\\\.tiff$\")",
       "Bash(grep -E \"^\\(nuc_aspect_ratio|actin_deform_ratio|avg_normal_angle_adaptive_region_growth|chull_max_D|deepest_invag_fraction_chull_volume|nuc_solidity|nuc_SA_mesh|nuc_volume_mesh\\)\\\\.tiff$\")",
-      "Bash(grep -E \"^\\(avg_normal_angle_adaptive_region_growth_by_cent|avg_normal_angle_by_cent|chull_max_D_by_cent|chull_mean_D_cent_global_ratio|deepest_invag_volume\\)\\\\.tiff$\")"
+      "Bash(grep -E \"^\\(avg_normal_angle_adaptive_region_growth_by_cent|avg_normal_angle_by_cent|chull_max_D_by_cent|chull_mean_D_cent_global_ratio|deepest_invag_volume\\)\\\\.tiff$\")",
+      "Bash(grep -E \"-- .*:.*\")",
+      "Bash(git -C \"K:/FF/Code/Scripts/PPT_image_inserter\" show HEAD:\"examples_and_configs/configs/fixed/CTLs/config_CTLReactivationAssay.yaml\")",
+      "Read(//k/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/**)",
+      "Read(//k/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/**)"
     ]
   }
 }

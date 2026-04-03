@@ -1,0 +1,35 @@
+presentation: "K:/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/CTLReactivationAssay_deepest_invag_montages_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/CTLReactivationAssay_deepest_invag_montages.pptx"
+template_slide: 0
+preserve_slides: [0]
+base_dir: "J:/FF/fixed_cell/CTL_nucleus/Lamp1_Hoechst/0901_naiveCTLs_reactivationAssay_Lamp1_Hoechst_"
+label_side: left
+auto_position: true
+
+images:
+  - path: 48hrActivation3p0_10minReactivationGlass_/cropped/individual_channels/prog_fixed_cells/lytic_granule/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_0_26_with_MT.png
+    title: "Deepest invag (Nuc+Lamp1+MT): 48hr activation, 1.5 kPa, 10min reactivation"
+
+  - path: 48hrActivation3p0_20minReactivationGlass_/cropped/individual_channels/prog_fixed_cells/lytic_granule/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_0_24_with_MT.png
+    title: "Deepest invag (Nuc+Lamp1+MT): 48hr activation, 1.5 kPa, 20min reactivation"
+
+  - path: 48hrActivation8p0_10minReactivationGlass_/cropped/individual_channels/prog_fixed_cells/lytic_granule/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_0_24_with_MT.png
+    title: "Deepest invag (Nuc+Lamp1+MT): 48hr activation, 12 kPa, 10min reactivation"
+
+  - path: 48hrActivation8p0_20minReactivationGlass_/cropped/individual_channels/prog_fixed_cells/lytic_granule/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_0_25_with_MT.png
+    title: "Deepest invag (Nuc+Lamp1+MT): 48hr activation, 12 kPa, 20min reactivation"
+
+  - path: 48hrActivationAct3si_20minReactivationGlass_/cropped/individual_channels/prog_fixed_cells/lytic_granule/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_0_28_with_MT.png
+    title: "Deepest invag (Nuc+Lamp1+MT): 48hr activation, 3SI, 20min reactivation"
+
+  - path: 48hrActivationAct4si_20minReactivationGlass_/cropped/individual_channels/prog_fixed_cells/lytic_granule/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_0_25_with_MT.png
+    title: "Deepest invag (Nuc+Lamp1+MT): 48hr activation, 4SI, 20min reactivation"
+
+  - path: 72hrActivation3p0_10minReactivationGlass_/cropped/individual_channels/prog_fixed_cells/lytic_granule/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_0_13_with_MT.png
+    title: "Deepest invag (Nuc+Lamp1+MT): 72hr activation, 1.5 kPa, 10min reactivation"
+
+  - path: 72hrActivation8p0_10minReactivationGlass_/cropped/individual_channels/prog_fixed_cells/lytic_granule/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_0_24_with_MT.png
+    title: "Deepest invag (Nuc+Lamp1+MT): 72hr activation, 12 kPa, 10min reactivation"
+
+  - path: 72hrActivation8p0_20minReactivationGlass_/cropped/individual_channels/prog_fixed_cells/lytic_granule/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_0_24_with_MT.png
+    title: "Deepest invag (Nuc+Lamp1+MT): 72hr activation, 12 kPa, 20min reactivation"

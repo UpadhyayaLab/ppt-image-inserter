@@ -47,10 +47,10 @@
 #  37. centrosome_z_pos_rel_nucleus -- Centrosome z position relative to nucleus
 
 presentation: "K:/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/CTLReactivationAssay_template.pptx"
-output_path: "K:/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/CTLReactivationAssay.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/CTLReactivationAssay_no_nuc_dist_filt.pptx"
 template_slide: 0
 preserve_slides: [0, 1, 2]
-base_dir: "J:/FF/fixed_cell/CTL_nucleus/Lamp1_Hoechst/0901_naiveCTLs_reactivationAssay_Lamp1_Hoechst_/results/results_20260403/grid_panels"
+base_dir: "J:/FF/fixed_cell/CTL_nucleus/Lamp1_Hoechst/0901_naiveCTLs_reactivationAssay_Lamp1_Hoechst_/results/results_no_nuc_dist_filt_20260403/grid_panels"
 auto_position: true
 add_label: true
 
@@ -88,7 +88,7 @@ images:
   - images:
       - "72hr_8p0/actin_deform_ratio.tiff"
     template_slide: 1
-    title: "Actin deformation ratio: 72hr 12 kPa"
+    title: "Actin deformation ratio: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/actin_deform_ratio.tiff"
@@ -129,7 +129,7 @@ images:
   - images:
       - "72hr_8p0/nuc_aspect_ratio.tiff"
     template_slide: 1
-    title: "Nuclear aspect ratio: 72hr 12 kPa"
+    title: "Nuclear aspect ratio: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/nuc_aspect_ratio.tiff"
@@ -170,7 +170,7 @@ images:
   - images:
       - "72hr_8p0/centrosome_from_MT_z_cell_bottom_distance.tiff"
     template_slide: 1
-    title: "Centrosome-synapse distance: 72hr 12 kPa"
+    title: "Centrosome-synapse distance: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/centrosome_from_MT_z_cell_bottom_distance.tiff"
@@ -211,7 +211,7 @@ images:
   - images:
       - "72hr_8p0/actin_bottom_mask_area.tiff"
     template_slide: 1
-    title: "Actin synapse footprint area: 72hr 12 kPa"
+    title: "Actin synapse footprint area: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/actin_bottom_mask_area.tiff"
@@ -252,7 +252,7 @@ images:
   - images:
       - "72hr_8p0/actin_bottom_MFI.tiff"
     template_slide: 1
-    title: "Actin synapse MFI: 72hr 12 kPa"
+    title: "Actin synapse MFI: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/actin_bottom_MFI.tiff"
@@ -293,7 +293,7 @@ images:
   - images:
       - "72hr_8p0/actin_bottom_inner_outer_ratio.tiff"
     template_slide: 1
-    title: "Actin synapse inner/outer ratio: 72hr 12 kPa"
+    title: "Actin synapse inner/outer ratio: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/actin_bottom_inner_outer_ratio.tiff"
@@ -334,7 +334,7 @@ images:
   - images:
       - "72hr_8p0/actin_bottom_circularity.tiff"
     template_slide: 1
-    title: "Synapse Circularity: 72hr 12 kPa"
+    title: "Synapse Circularity: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/actin_bottom_circularity.tiff"
@@ -374,7 +374,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_peak_sig.tiff"
     template_slide: 1
-    title: "Lamp1 peak signal: 72hr 12 kPa"
+    title: "Lamp1 peak signal: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_peak_sig.tiff"
@@ -415,7 +415,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_total_sig.tiff"
     template_slide: 1
-    title: "Lamp1 total signal: 72hr 12 kPa"
+    title: "Lamp1 total signal: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_total_sig.tiff"
@@ -456,7 +456,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_MFI.tiff"
     template_slide: 1
-    title: "Lamp1 synapse MFI: 72hr 12 kPa"
+    title: "Lamp1 synapse MFI: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_MFI.tiff"
@@ -497,7 +497,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_MFI_3mip.tiff"
     template_slide: 1
-    title: "Lamp1 synapse MFI (3-MIP): 72hr 12 kPa"
+    title: "Lamp1 synapse MFI (3-MIP): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_MFI_3mip.tiff"
@@ -538,7 +538,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_inner_outer_ratio.tiff"
     template_slide: 1
-    title: "Lamp1 synapse inner/outer ratio: 72hr 12 kPa"
+    title: "Lamp1 synapse inner/outer ratio: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_inner_outer_ratio.tiff"
@@ -579,7 +579,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
     template_slide: 1
-    title: "Lamp1 synapse inner/outer ratio (3-MIP): 72hr 12 kPa"
+    title: "Lamp1 synapse inner/outer ratio (3-MIP): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_inner_outer_ratio_3mip.tiff"
@@ -620,7 +620,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_z50_cell_bottom_distance.tiff"
     template_slide: 1
-    title: "Lamp1 z50 cell bottom distance: 72hr 12 kPa"
+    title: "Lamp1 z50 cell bottom distance: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_z50_cell_bottom_distance.tiff"
@@ -661,7 +661,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
     template_slide: 1
-    title: "Lamp1 z50 cell bottom distance (norm. cell height): 72hr 12 kPa"
+    title: "Lamp1 z50 cell bottom distance (norm. cell height): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_z50_cell_bottom_distance_norm_cell_height.tiff"
@@ -702,7 +702,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_total_sig.tiff"
     template_slide: 1
-    title: "Lamp1 synapse total signal: 72hr 12 kPa"
+    title: "Lamp1 synapse total signal: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_total_sig.tiff"
@@ -743,7 +743,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_synapse_total_sig_3mip.tiff"
     template_slide: 1
-    title: "Lamp1 synapse total signal (3-MIP): 72hr 12 kPa"
+    title: "Lamp1 synapse total signal (3-MIP): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_synapse_total_sig_3mip.tiff"
@@ -784,7 +784,7 @@ images:
   - images:
       - "72hr_8p0/nuc_volume_mesh.tiff"
     template_slide: 1
-    title: "Nuclear volume: 72hr 12 kPa"
+    title: "Nuclear volume: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/nuc_volume_mesh.tiff"
@@ -825,7 +825,7 @@ images:
   - images:
       - "72hr_8p0/nuc_SA_mesh.tiff"
     template_slide: 1
-    title: "Nuclear surface area: 72hr 12 kPa"
+    title: "Nuclear surface area: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/nuc_SA_mesh.tiff"
@@ -866,7 +866,7 @@ images:
   - images:
       - "72hr_8p0/chull_mean_D_cent_global_ratio.tiff"
     template_slide: 1
-    title: "Centrosomal Invagination Index: 72hr 12 kPa"
+    title: "Centrosomal Invagination Index: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/chull_mean_D_cent_global_ratio.tiff"
@@ -907,7 +907,7 @@ images:
   - images:
       - "72hr_8p0/chull_max_D_by_cent.tiff"
     template_slide: 1
-    title: "Invag depth near centrosome: 72hr 12 kPa"
+    title: "Invag depth near centrosome: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/chull_max_D_by_cent.tiff"
@@ -948,7 +948,7 @@ images:
   - images:
       - "72hr_8p0/chull_max_D.tiff"
     template_slide: 1
-    title: "Max invag depth over full nucleus: 72hr 12 kPa"
+    title: "Max invag depth over full nucleus: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/chull_max_D.tiff"
@@ -989,7 +989,7 @@ images:
   - images:
       - "72hr_8p0/deepest_invag_volume.tiff"
     template_slide: 1
-    title: "Deepest invagination volume: 72hr 12 kPa"
+    title: "Deepest invagination volume: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/deepest_invag_volume.tiff"
@@ -1030,7 +1030,7 @@ images:
   - images:
       - "72hr_8p0/deepest_invag_fraction_chull_volume.tiff"
     template_slide: 1
-    title: "Deepest invag: frac of convex hull volume: 72hr 12 kPa"
+    title: "Deepest invag: frac of convex hull volume: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/deepest_invag_fraction_chull_volume.tiff"
@@ -1071,7 +1071,7 @@ images:
   - images:
       - "72hr_8p0/nuc_solidity.tiff"
     template_slide: 1
-    title: "Nuclear solidity: 72hr 12 kPa"
+    title: "Nuclear solidity: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/nuc_solidity.tiff"
@@ -1112,7 +1112,7 @@ images:
   - images:
       - "72hr_8p0/avg_normal_angle_adaptive_region_growth_by_cent.tiff"
     template_slide: 1
-    title: "Invag Orientation: 72hr 12 kPa"
+    title: "Invag Orientation: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/avg_normal_angle_adaptive_region_growth_by_cent.tiff"
@@ -1153,7 +1153,7 @@ images:
   - images:
       - "72hr_8p0/avg_normal_angle_by_cent.tiff"
     template_slide: 1
-    title: "Invag Orientation: 72hr 12 kPa"
+    title: "Invag Orientation: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/avg_normal_angle_by_cent.tiff"
@@ -1194,7 +1194,7 @@ images:
   - images:
       - "72hr_8p0/avg_normal_angle_adaptive_region_growth.tiff"
     template_slide: 1
-    title: "Deepest Invag Orientation: 72hr 12 kPa"
+    title: "Deepest Invag Orientation: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/avg_normal_angle_adaptive_region_growth.tiff"
@@ -1235,7 +1235,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_enrichment_within_half_um_nuc_2_um_cent.tiff"
     template_slide: 1
-    title: "Lamp1 enrichment (peri-nuclear, 2 \u00b5m of cent): 72hr 12 kPa"
+    title: "Lamp1 enrichment (peri-nuclear, 2 \u00b5m of cent): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_enrichment_within_half_um_nuc_2_um_cent.tiff"
@@ -1276,7 +1276,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_MFI_around_cent_1um.tiff"
     template_slide: 1
-    title: "Lamp1 MFI around centrosome (1 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 MFI around centrosome (1 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_MFI_around_cent_1um.tiff"
@@ -1317,7 +1317,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_MFI_around_cent_2um.tiff"
     template_slide: 1
-    title: "Lamp1 MFI around centrosome (2 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 MFI around centrosome (2 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_MFI_around_cent_2um.tiff"
@@ -1358,7 +1358,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_MFI_around_cent_3um.tiff"
     template_slide: 1
-    title: "Lamp1 MFI around centrosome (3 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 MFI around centrosome (3 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_MFI_around_cent_3um.tiff"
@@ -1399,7 +1399,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_frac_around_cent_1um.tiff"
     template_slide: 1
-    title: "Lamp1 fraction around centrosome (1 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 fraction around centrosome (1 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_frac_around_cent_1um.tiff"
@@ -1440,7 +1440,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_frac_around_cent_2um.tiff"
     template_slide: 1
-    title: "Lamp1 fraction around centrosome (2 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 fraction around centrosome (2 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_frac_around_cent_2um.tiff"
@@ -1481,7 +1481,7 @@ images:
   - images:
       - "72hr_8p0/Lamp1_frac_around_cent_3um.tiff"
     template_slide: 1
-    title: "Lamp1 fraction around centrosome (3 \u00b5m): 72hr 12 kPa"
+    title: "Lamp1 fraction around centrosome (3 \u00b5m): 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/Lamp1_frac_around_cent_3um.tiff"
@@ -1522,7 +1522,7 @@ images:
   - images:
       - "72hr_8p0/nuc_cent_closest_dist.tiff"
     template_slide: 1
-    title: "Nucleus-centrosome closest distance: 72hr 12 kPa"
+    title: "Nucleus-centrosome closest distance: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/nuc_cent_closest_dist.tiff"
@@ -1562,7 +1562,7 @@ images:
   - images:
       - "72hr_8p0/centrosome_z_pos_rel_nucleus.tiff"
     template_slide: 1
-    title: "Centrosome z position relative to nucleus: 72hr 12 kPa"
+    title: "Centrosome z position relative to nucleus: 72hr 8.0 kPa"
 
   - images:
       - "activation_8p0_10min/centrosome_z_pos_rel_nucleus.tiff"
