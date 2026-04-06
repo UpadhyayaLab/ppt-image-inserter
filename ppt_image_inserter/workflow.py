@@ -82,16 +82,7 @@ def _add_text_label(
     if isinstance(image_paths, str):
         image_paths = [image_paths]
 
-    def _rel(p):
-        # Only compute relative path for absolute paths — leave placeholders/labels untouched
-        if base_dir and os.path.isabs(p):
-            try:
-                return os.path.relpath(p, base_dir).replace('\\', '/')
-            except ValueError:
-                return p  # Different drive on Windows — fall back to full path
-        return p
-
-    label_text = "\n".join(_rel(p) for p in image_paths)
+    label_text = "\n".join(image_paths)
     n_lines = len(image_paths)
 
     # Compute height from number of lines (~0.13" per line at 8pt + small buffer)

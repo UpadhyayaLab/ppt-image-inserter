@@ -1,0 +1,55 @@
+# Batch Image Replacement Configuration
+# Combined across two experiments — no nucleus-based metrics
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Effects of CilioD, Fixed Cells_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Effects of CilioD, Fixed Cells, Combined, no Nucleus.pptx"
+
+# Template slide to copy (0-based index)
+template_slide: 1
+preserve_slides: [0, 1]
+
+# Auto-detect position from the first image in the template slide
+auto_position: true
+
+label_side: left
+
+# Base directory containing all images
+base_dir: "J:/FF/vim_data/ciliobrevin-D/CilioD_combined/results_compilation/CilioD_combined_20260405/grid_panels"
+
+images:
+  # --- Cell/actin morphology ---
+  - path: actin_deform_ratio_per_experiment_grid.tif
+    title: "Cell Aspect Ratio"
+
+  # --- Centrosome ---
+  - path: centrosome_center_z_rel_bottom_actin_plane_per_experiment_grid.tif
+    title: "Centrosome-synapse distance"
+
+  # --- Actin around centrosome ---
+  - path: actin_MFI_around_cent_1um_per_experiment_grid.tif
+    title: "Actin MFI around centrosome (1 µm)"
+
+  - path: actin_MFI_around_cent_2um_per_experiment_grid.tif
+    title: "Actin MFI around centrosome (2 µm)"
+
+  - path: actin_frac_around_cent_1um_per_experiment_grid.tif
+    title: "Actin fraction around centrosome (1 µm)"
+
+  - path: actin_frac_around_cent_2um_per_experiment_grid.tif
+    title: "Actin fraction around centrosome (2 µm)"
+
+  # --- Vimentin ---
+  - path: VCRAI_0_2um_per_experiment_grid.tif
+    title: "VCRAI (0-2 µm)"
+
+  - path: vim_frac_around_cent_1um_per_experiment_grid.tif
+    title: "Vimentin fraction around centrosome (1 µm)"
+
+  - path: vim_frac_around_cent_2um_per_experiment_grid.tif
+    title: "Vimentin fraction around centrosome (2 µm)"
+
+  - path: vim_MFI_around_cent_1um_per_experiment_grid.tif
+    title: "Vimentin MFI around centrosome (1 µm)"
+
+  - path: vim_MFI_around_cent_2um_per_experiment_grid.tif
+    title: "Vimentin MFI around centrosome (2 µm)"

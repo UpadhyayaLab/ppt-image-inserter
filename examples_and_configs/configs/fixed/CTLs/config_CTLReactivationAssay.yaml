@@ -8,10 +8,10 @@
 # Ordering: Metric -> Comparison type (259 slides: 37 metrics x 7 comparisons)
 #
 # Metrics (in order):
-#   1. actin_deform_ratio -- Actin deformation ratio
+#   1. actin_deform_ratio -- Cell Aspect Ratio
 #   2. nuc_aspect_ratio -- Nuclear aspect ratio
 #   3. centrosome_from_MT_z_cell_bottom_distance -- Centrosome-synapse distance
-#   4. actin_bottom_mask_area -- Actin synapse footprint area
+#   4. actin_bottom_mask_area -- Synapse Area
 #   5. actin_bottom_MFI -- Actin synapse MFI
 #   6. actin_bottom_inner_outer_ratio -- Actin synapse inner/outer ratio
 #   7. actin_bottom_circularity -- Synapse Circularity
@@ -63,37 +63,37 @@ images:
   - images:
       - "all_conditions/actin_deform_ratio.tiff"
     template_slide: 2
-    title: "Actin deformation ratio: all conditions"
+    title: "Cell Aspect Ratio: all conditions"
 
 
   - images:
       - "48hr_20min_all_substrates/actin_deform_ratio.tiff"
     template_slide: 1
-    title: "Actin deformation ratio: 48 hr 20 min (all substrates)"
+    title: "Cell Aspect Ratio: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/actin_deform_ratio.tiff"
       - "48hr_stiffness_20min/actin_deform_ratio.tiff"
-    title: "Actin deformation ratio: stiffness comparison"
+    title: "Cell Aspect Ratio: stiffness comparison"
 
   - images:
       - "48hr_time_1p5kPa/actin_deform_ratio.tiff"
       - "48hr_time_12kPa/actin_deform_ratio.tiff"
-    title: "Actin deformation ratio: reactivation time comparison"
+    title: "Cell Aspect Ratio: reactivation time comparison"
 
   - images:
       - "48hr_3SI_vs_4SI/actin_deform_ratio.tiff"
     template_slide: 1
-    title: "Actin deformation ratio: 3SI vs 4SI"
+    title: "Cell Aspect Ratio: 3SI vs 4SI"
 
   - images:
       - "72hr_8p0/actin_deform_ratio.tiff"
     template_slide: 1
-    title: "Actin deformation ratio: 72hr 12 kPa"
+    title: "Cell Aspect Ratio: 72hr 12 kPa"
 
   - images:
       - "activation_8p0_10min/actin_deform_ratio.tiff"
       - "activation_8p0_20min/actin_deform_ratio.tiff"
-    title: "Actin deformation ratio: 48 hr vs 72 hr (8p0)"
+    title: "Cell Aspect Ratio: 48 hr vs 72 hr (8p0)"
 
 
 
@@ -186,37 +186,37 @@ images:
   - images:
       - "all_conditions/actin_bottom_mask_area.tiff"
     template_slide: 2
-    title: "Actin synapse footprint area: all conditions"
+    title: "Synapse Area: all conditions"
 
 
   - images:
       - "48hr_20min_all_substrates/actin_bottom_mask_area.tiff"
     template_slide: 1
-    title: "Actin synapse footprint area: 48 hr 20 min (all substrates)"
+    title: "Synapse Area: 48 hr 20 min (all substrates)"
   - images:
       - "48hr_stiffness_10min/actin_bottom_mask_area.tiff"
       - "48hr_stiffness_20min/actin_bottom_mask_area.tiff"
-    title: "Actin synapse footprint area: stiffness comparison"
+    title: "Synapse Area: stiffness comparison"
 
   - images:
       - "48hr_time_1p5kPa/actin_bottom_mask_area.tiff"
       - "48hr_time_12kPa/actin_bottom_mask_area.tiff"
-    title: "Actin synapse footprint area: reactivation time comparison"
+    title: "Synapse Area: reactivation time comparison"
 
   - images:
       - "48hr_3SI_vs_4SI/actin_bottom_mask_area.tiff"
     template_slide: 1
-    title: "Actin synapse footprint area: 3SI vs 4SI"
+    title: "Synapse Area: 3SI vs 4SI"
 
   - images:
       - "72hr_8p0/actin_bottom_mask_area.tiff"
     template_slide: 1
-    title: "Actin synapse footprint area: 72hr 12 kPa"
+    title: "Synapse Area: 72hr 12 kPa"
 
   - images:
       - "activation_8p0_10min/actin_bottom_mask_area.tiff"
       - "activation_8p0_20min/actin_bottom_mask_area.tiff"
-    title: "Actin synapse footprint area: 48 hr vs 72 hr (8p0)"
+    title: "Synapse Area: 48 hr vs 72 hr (8p0)"
 
 
 
