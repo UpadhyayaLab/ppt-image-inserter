@@ -1,0 +1,296 @@
+# Config: CTL IFNg grid plots -- all conditions only
+#
+# Template slide (1 slide, 0-indexed):
+#   0: All conditions (1 wide image, ~2.96:1)
+#
+# Ordering: 1 slide per metric (35 slides total)
+#
+# Metrics (in order):
+#   --- Cell/actin synapse (5) ---
+#    1. actin_deform_ratio                                       -- Cell Aspect Ratio
+#    2. actin_bottom_mask_area                                   -- Synapse Area
+#    3. actin_bottom_MFI                                         -- Actin synapse MFI
+#    4. actin_bottom_inner_outer_ratio                           -- Actin synapse inner/outer ratio
+#    5. actin_bottom_circularity                                 -- Synapse Circularity
+#   --- IFNg synapse (10) ---
+#    6. IFNg_peak_sig                                            -- IFN-g peak signal
+#    7. IFNg_total_sig                                           -- IFN-g total signal
+#    8. IFNg_synapse_MFI                                         -- IFN-g synapse MFI
+#    9. IFNg_synapse_MFI_3mip                                    -- IFN-g synapse MFI (3-MIP)
+#   10. IFNg_synapse_inner_outer_ratio                           -- IFN-g synapse inner/outer ratio
+#   11. IFNg_synapse_inner_outer_ratio_3mip                      -- IFN-g synapse inner/outer ratio (3-MIP)
+#   12. IFNg_synapse_total_sig                                   -- IFN-g synapse total signal
+#   13. IFNg_synapse_total_sig_3mip                              -- IFN-g synapse total signal (3-MIP)
+#   14. IFNg_z50_cell_bottom_distance                            -- IFN-g z50 cell bottom distance
+#   15. IFNg_z50_cell_bottom_distance_norm_cell_height           -- IFN-g z50 cell bottom distance (norm. cell height)
+#   --- Nuclear shape & invagination (8) ---
+#   16. nuc_aspect_ratio                                         -- Nuclear aspect ratio
+#   17. nuc_volume_mesh                                          -- Nuclear volume
+#   18. nuc_SA_mesh                                              -- Nuclear surface area
+#   19. nuc_solidity                                             -- Nuclear solidity
+#   20. chull_max_D                                              -- Max invag depth over full nucleus
+#   21. deepest_invag_volume                                     -- Deepest invagination volume
+#   22. deepest_invag_fraction_chull_volume                      -- Deepest invag: frac of convex hull volume
+#   23. avg_normal_angle_adaptive_region_growth                  -- Deepest invag orientation
+#   --- IFN-g perinuclear / invag enrichment (8) ---
+#   24. IFNg_cyto_in_nuc_hull_MFI                                -- IFN-g invag MFI (0.5 um shell, inside hull)
+#   25. IFNg_cyto_in_nuc_hull_sig_fraction                       -- IFN-g invag signal fraction
+#   27. IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio       -- IFN-g invag vs near-convex nuclear MFI ratio
+#   28. IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio           -- IFN-g invag vs all perinuclear MFI ratio
+#   29. IFNg_invag_within_chull_vs_convex_within_chull_MFI_ratio -- IFN-g invag vs convex within hull MFI ratio
+#   30. IFNg_invag_within_chull_vs_all_chull_MFI_ratio           -- IFN-g invag vs all hull MFI ratio
+#   31. IFNg_frac_in_nuc_convex_hull                             -- IFN-g fraction inside nuclear convex hull
+#   --- IFN-g deepest-invag ratios (4) ---
+#   32. IFNg_ratio_by_deepest_invag_all_0_5um                    -- IFN-g levels near deepest invag (denom: all, 0.5 um)
+#   33. IFNg_ratio_by_deepest_invag_all_1um                      -- IFN-g levels near deepest invag (denom: all, 1 um)
+#   34. IFNg_ratio_by_deepest_invag_away_0_5um                   -- IFN-g levels near deepest invag (denom: away, 0.5 um)
+#   35. IFNg_ratio_by_deepest_invag_away_1um                     -- IFN-g levels near deepest invag (denom: away, 1 um)
+
+presentation: "K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_all_conditions_only_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_all_conditions_only.pptx"
+template_slide: 0
+preserve_slides: [0]
+base_dir: "J:/FF/fixed_cell/CTL_nucleus/granuleTestsForFrank/0121026_ctls_ifnG_/results/CTL_ifnG_20260121_20260408/grid_panels"
+auto_position: true
+add_label: true
+label_side: left
+
+images:
+
+  # ===========================================================================
+  # METRIC 1: actin_deform_ratio
+  # ===========================================================================
+  - images:
+      - "all_conditions/actin_deform_ratio.tiff"
+    title: "Cell Aspect Ratio: all conditions"
+
+  # ===========================================================================
+  # METRIC 2: actin_bottom_mask_area
+  # ===========================================================================
+  - images:
+      - "all_conditions/actin_bottom_mask_area.tiff"
+    title: "Synapse Area: all conditions"
+
+  # ===========================================================================
+  # METRIC 3: actin_bottom_MFI
+  # ===========================================================================
+  - images:
+      - "all_conditions/actin_bottom_MFI.tiff"
+    title: "Actin synapse MFI: all conditions"
+
+  # ===========================================================================
+  # METRIC 4: actin_bottom_inner_outer_ratio
+  # ===========================================================================
+  - images:
+      - "all_conditions/actin_bottom_inner_outer_ratio.tiff"
+    title: "Actin synapse inner/outer ratio: all conditions"
+
+  # ===========================================================================
+  # METRIC 5: actin_bottom_circularity
+  # ===========================================================================
+  - images:
+      - "all_conditions/actin_bottom_circularity.tiff"
+    title: "Synapse Circularity: all conditions"
+
+  # ===========================================================================
+  # METRIC 6: IFNg_peak_sig
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_peak_sig.tiff"
+    title: "IFN-\u03B3 peak signal: all conditions"
+
+  # ===========================================================================
+  # METRIC 7: IFNg_total_sig
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_total_sig.tiff"
+    title: "IFN-\u03B3 total signal: all conditions"
+
+  # ===========================================================================
+  # METRIC 8: IFNg_synapse_MFI
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_synapse_MFI.tiff"
+    title: "IFN-\u03B3 synapse MFI: all conditions"
+
+  # ===========================================================================
+  # METRIC 9: IFNg_synapse_MFI_3mip
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_synapse_MFI_3mip.tiff"
+    title: "IFN-\u03B3 synapse MFI (3-MIP): all conditions"
+
+  # ===========================================================================
+  # METRIC 10: IFNg_synapse_inner_outer_ratio
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_synapse_inner_outer_ratio.tiff"
+    title: "IFN-\u03B3 synapse inner/outer ratio: all conditions"
+
+  # ===========================================================================
+  # METRIC 11: IFNg_synapse_inner_outer_ratio_3mip
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_synapse_inner_outer_ratio_3mip.tiff"
+    title: "IFN-\u03B3 synapse inner/outer ratio (3-MIP): all conditions"
+
+  # ===========================================================================
+  # METRIC 12: IFNg_synapse_total_sig
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_synapse_total_sig.tiff"
+    title: "IFN-\u03B3 synapse total signal: all conditions"
+
+  # ===========================================================================
+  # METRIC 13: IFNg_synapse_total_sig_3mip
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_synapse_total_sig_3mip.tiff"
+    title: "IFN-\u03B3 synapse total signal (3-MIP): all conditions"
+
+  # ===========================================================================
+  # METRIC 14: IFNg_z50_cell_bottom_distance
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_z50_cell_bottom_distance.tiff"
+    title: "IFN-\u03B3 z50 cell bottom distance: all conditions"
+
+  # ===========================================================================
+  # METRIC 15: IFNg_z50_cell_bottom_distance_norm_cell_height
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_z50_cell_bottom_distance_norm_cell_height.tiff"
+    title: "IFN-\u03B3 z50 cell bottom distance (norm. cell height): all conditions"
+
+  # ===========================================================================
+  # METRIC 16: nuc_aspect_ratio
+  # ===========================================================================
+  - images:
+      - "all_conditions/nuc_aspect_ratio.tiff"
+    title: "Nuclear aspect ratio: all conditions"
+
+  # ===========================================================================
+  # METRIC 17: nuc_volume_mesh
+  # ===========================================================================
+  - images:
+      - "all_conditions/nuc_volume_mesh.tiff"
+    title: "Nuclear volume: all conditions"
+
+  # ===========================================================================
+  # METRIC 18: nuc_SA_mesh
+  # ===========================================================================
+  - images:
+      - "all_conditions/nuc_SA_mesh.tiff"
+    title: "Nuclear surface area: all conditions"
+
+  # ===========================================================================
+  # METRIC 19: nuc_solidity
+  # ===========================================================================
+  - images:
+      - "all_conditions/nuc_solidity.tiff"
+    title: "Nuclear solidity: all conditions"
+
+  # ===========================================================================
+  # METRIC 20: chull_max_D
+  # ===========================================================================
+  - images:
+      - "all_conditions/chull_max_D.tiff"
+    title: "Max invag depth over full nucleus: all conditions"
+
+  # ===========================================================================
+  # METRIC 21: deepest_invag_volume
+  # ===========================================================================
+  - images:
+      - "all_conditions/deepest_invag_volume.tiff"
+    title: "Deepest invagination volume: all conditions"
+
+  # ===========================================================================
+  # METRIC 22: deepest_invag_fraction_chull_volume
+  # ===========================================================================
+  - images:
+      - "all_conditions/deepest_invag_fraction_chull_volume.tiff"
+    title: "Deepest invag: frac of convex hull volume: all conditions"
+
+  # ===========================================================================
+  # METRIC 23: avg_normal_angle_adaptive_region_growth
+  # ===========================================================================
+  - images:
+      - "all_conditions/avg_normal_angle_adaptive_region_growth.tiff"
+    title: "Deepest invag orientation: all conditions"
+
+  # ===========================================================================
+  # METRIC 24: IFNg_cyto_in_nuc_hull_MFI
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_cyto_in_nuc_hull_MFI.tiff"
+    title: "IFN-\u03B3 MFI within Nuc Chull: all conditions"
+
+  # ===========================================================================
+  # METRIC 25: IFNg_cyto_in_nuc_hull_sig_fraction
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_cyto_in_nuc_hull_sig_fraction.tiff"
+    title: "IFN-\u03B3 Sig Frac within Nuc Chull: all conditions"
+
+  # ===========================================================================
+  # METRIC 27: IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
+    title: "IFN-\u03B3 enrichment near invag: all conditions"
+
+  # ===========================================================================
+  # METRIC 28: IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio.tiff"
+    title: "IFN-\u03B3 invag vs all perinuclear MFI ratio: all conditions"
+
+  # ===========================================================================
+  # METRIC 29: IFNg_invag_within_chull_vs_convex_within_chull_MFI_ratio
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_invag_within_chull_vs_convex_within_chull_MFI_ratio.tiff"
+    title: "IFN-\u03B3 invag vs convex (within hull) MFI ratio: all conditions"
+
+  # ===========================================================================
+  # METRIC 30: IFNg_invag_within_chull_vs_all_chull_MFI_ratio
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_invag_within_chull_vs_all_chull_MFI_ratio.tiff"
+    title: "IFN-\u03B3 invag vs all (within hull) MFI ratio: all conditions"
+
+  # ===========================================================================
+  # METRIC 31: IFNg_frac_in_nuc_convex_hull
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_frac_in_nuc_convex_hull.tiff"
+    title: "IFN-\u03B3 fraction inside nuclear convex hull: all conditions"
+
+  # ===========================================================================
+  # METRIC 32: IFNg_ratio_by_deepest_invag_all_0_5um
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_ratio_by_deepest_invag_all_0_5um.tiff"
+    title: "IFN-\u03B3 levels near deepest invag (denom: all, 0.5 \u00b5m): all conditions"
+
+  # ===========================================================================
+  # METRIC 33: IFNg_ratio_by_deepest_invag_all_1um
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_ratio_by_deepest_invag_all_1um.tiff"
+    title: "IFN-\u03B3 levels near deepest invag (denom: all, 1 \u00b5m): all conditions"
+
+  # ===========================================================================
+  # METRIC 34: IFNg_ratio_by_deepest_invag_away_0_5um
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_ratio_by_deepest_invag_away_0_5um.tiff"
+    title: "IFN-\u03B3 levels near deepest invag (denom: away, 0.5 \u00b5m): all conditions"
+
+  # ===========================================================================
+  # METRIC 35: IFNg_ratio_by_deepest_invag_away_1um
+  # ===========================================================================
+  - images:
+      - "all_conditions/IFNg_ratio_by_deepest_invag_away_1um.tiff"
+    title: "IFN-\u03B3 levels near deepest invag (denom: away, 1 \u00b5m): all conditions"

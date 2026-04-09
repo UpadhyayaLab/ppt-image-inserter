@@ -60,7 +60,9 @@
       "Read(//k/FF/PPT/PPT_autogeneration/CTL_Reactivation_Assay/**)",
       "Read(//k/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods/**)",
       "Bash(cp \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_no_nucleus_template.pptx\" \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_template.pptx\")",
-      "Read(//k/FF/PPT/PPT_autogeneration/IFNg/**)"
+      "Read(//k/FF/PPT/PPT_autogeneration/IFNg/**)",
+      "Bash(mv \"K:/FF/Code/Scripts/PPT_image_inserter/examples_and_configs/configs/fixed/CTLs/config_IFNg_all_conditions.yaml\" \"K:/FF/Code/Scripts/PPT_image_inserter/examples_and_configs/configs/fixed/CTLs/config_IFNg_all_conditions_only.yaml\")",
+      "Bash(mv \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_all_conditions_template.pptx\" \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_all_conditions_only_template.pptx\")"
     ]
   }
 }

@@ -34,28 +34,28 @@
 #   21. deepest_invag_volume                                     -- Deepest invagination volume
 #   22. deepest_invag_fraction_chull_volume                      -- Deepest invag: frac of convex hull volume
 #   23. avg_normal_angle_adaptive_region_growth                  -- Deepest invag orientation
-#   --- IFN-g perinuclear / groove enrichment (8) ---
-#   24. IFNg_cyto_in_nuc_hull_MFI                                -- IFN-g groove MFI (0.5 um shell, inside hull)
-#   25. IFNg_cyto_in_nuc_hull_sig_fraction                       -- IFN-g groove signal fraction
-#   26. IFNg_cyto_in_nuc_hull_vs_nuc_MFI_ratio                   -- IFN-g groove vs nuclear MFI ratio
-#   27. IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio       -- IFN-g groove vs near-convex nuclear MFI ratio
-#   28. IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio           -- IFN-g groove vs all perinuclear MFI ratio
+#   --- IFN-g perinuclear / invag enrichment (8) ---
+#   24. IFNg_cyto_in_nuc_hull_MFI                                -- IFN-g invag MFI (0.5 um shell, inside hull)
+#   25. IFNg_cyto_in_nuc_hull_sig_fraction                       -- IFN-g invag signal fraction
+#   27. IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio       -- IFN-g invag vs near-convex nuclear MFI ratio
+#   28. IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio           -- IFN-g invag vs all perinuclear MFI ratio
 #   29. IFNg_invag_within_chull_vs_convex_within_chull_MFI_ratio -- IFN-g invag vs convex within hull MFI ratio
 #   30. IFNg_invag_within_chull_vs_all_chull_MFI_ratio           -- IFN-g invag vs all hull MFI ratio
 #   31. IFNg_frac_in_nuc_convex_hull                             -- IFN-g fraction inside nuclear convex hull
 #   --- IFN-g deepest-invag ratios (4) ---
-#   32. IFNg_ratio_by_deepest_invag_all_0_5um                    -- IFN-g ratio by deepest invag (all, 0.5 um)
-#   33. IFNg_ratio_by_deepest_invag_all_1um                      -- IFN-g ratio by deepest invag (all, 1 um)
-#   34. IFNg_ratio_by_deepest_invag_away_0_5um                   -- IFN-g ratio by deepest invag (away, 0.5 um)
-#   35. IFNg_ratio_by_deepest_invag_away_1um                     -- IFN-g ratio by deepest invag (away, 1 um)
+#   32. IFNg_ratio_by_deepest_invag_all_0_5um                    -- IFN-g levels near deepest invag (denom: all, 0.5 um)
+#   33. IFNg_ratio_by_deepest_invag_all_1um                      -- IFN-g levels near deepest invag (denom: all, 1 um)
+#   34. IFNg_ratio_by_deepest_invag_away_0_5um                   -- IFN-g levels near deepest invag (denom: away, 0.5 um)
+#   35. IFNg_ratio_by_deepest_invag_away_1um                     -- IFN-g levels near deepest invag (denom: away, 1 um)
 
 presentation: "K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_template.pptx"
 output_path: "K:/FF/PPT/PPT_autogeneration/IFNg/IFNg.pptx"
 template_slide: 0
 preserve_slides: [0, 1, 2]
-base_dir: "J:/FF/fixed_cell/CTL_nucleus/granuleTestsForFrank/0121026_ctls_ifnG_/results/CTL_ifnG_20260121_20260406/grid_panels"
+base_dir: "J:/FF/fixed_cell/CTL_nucleus/granuleTestsForFrank/0121026_ctls_ifnG_/results/CTL_ifnG_20260121_20260408/grid_panels"
 auto_position: true
 add_label: true
+label_side: left
 
 images:
 
@@ -640,24 +640,24 @@ images:
   - images:
       - "all_conditions/IFNg_cyto_in_nuc_hull_MFI.tiff"
     template_slide: 2
-    title: "IFN-\u03B3 groove MFI (0.5 \u00b5m shell, inside hull): all conditions"
+    title: "IFN-\u03B3 MFI within Nuc Chull: all conditions"
 
   - images:
       - "3p0_timecourse/IFNg_cyto_in_nuc_hull_MFI.tiff"
       - "8p0_timecourse/IFNg_cyto_in_nuc_hull_MFI.tiff"
       - "glass_timecourse/IFNg_cyto_in_nuc_hull_MFI.tiff"
-    title: "IFN-\u03B3 groove MFI (0.5 \u00b5m shell, inside hull): timepoint comparison"
+    title: "IFN-\u03B3 MFI within Nuc Chull: timepoint comparison"
 
   - images:
       - "stiffness_4hr/IFNg_cyto_in_nuc_hull_MFI.tiff"
       - "stiffness_24hr/IFNg_cyto_in_nuc_hull_MFI.tiff"
       - "stiffness_48hr/IFNg_cyto_in_nuc_hull_MFI.tiff"
-    title: "IFN-\u03B3 groove MFI (0.5 \u00b5m shell, inside hull): stiffness comparison"
+    title: "IFN-\u03B3 MFI within Nuc Chull: stiffness comparison"
 
   - images:
       - "pll_vs_cd3/IFNg_cyto_in_nuc_hull_MFI.tiff"
     template_slide: 1
-    title: "IFN-\u03B3 groove MFI (0.5 \u00b5m shell, inside hull): effects of activation"
+    title: "IFN-\u03B3 MFI within Nuc Chull: effects of activation"
 
   # ===========================================================================
   # METRIC 25: IFNg_cyto_in_nuc_hull_sig_fraction
@@ -665,49 +665,24 @@ images:
   - images:
       - "all_conditions/IFNg_cyto_in_nuc_hull_sig_fraction.tiff"
     template_slide: 2
-    title: "IFN-\u03B3 groove signal fraction: all conditions"
+    title: "IFN-\u03B3 Sig Frac within Nuc Chull: all conditions"
 
   - images:
       - "3p0_timecourse/IFNg_cyto_in_nuc_hull_sig_fraction.tiff"
       - "8p0_timecourse/IFNg_cyto_in_nuc_hull_sig_fraction.tiff"
       - "glass_timecourse/IFNg_cyto_in_nuc_hull_sig_fraction.tiff"
-    title: "IFN-\u03B3 groove signal fraction: timepoint comparison"
+    title: "IFN-\u03B3 Sig Frac within Nuc Chull: timepoint comparison"
 
   - images:
       - "stiffness_4hr/IFNg_cyto_in_nuc_hull_sig_fraction.tiff"
       - "stiffness_24hr/IFNg_cyto_in_nuc_hull_sig_fraction.tiff"
       - "stiffness_48hr/IFNg_cyto_in_nuc_hull_sig_fraction.tiff"
-    title: "IFN-\u03B3 groove signal fraction: stiffness comparison"
+    title: "IFN-\u03B3 Sig Frac within Nuc Chull: stiffness comparison"
 
   - images:
       - "pll_vs_cd3/IFNg_cyto_in_nuc_hull_sig_fraction.tiff"
     template_slide: 1
-    title: "IFN-\u03B3 groove signal fraction: effects of activation"
-
-  # ===========================================================================
-  # METRIC 26: IFNg_cyto_in_nuc_hull_vs_nuc_MFI_ratio
-  # ===========================================================================
-  - images:
-      - "all_conditions/IFNg_cyto_in_nuc_hull_vs_nuc_MFI_ratio.tiff"
-    template_slide: 2
-    title: "IFN-\u03B3 groove vs nuclear MFI ratio: all conditions"
-
-  - images:
-      - "3p0_timecourse/IFNg_cyto_in_nuc_hull_vs_nuc_MFI_ratio.tiff"
-      - "8p0_timecourse/IFNg_cyto_in_nuc_hull_vs_nuc_MFI_ratio.tiff"
-      - "glass_timecourse/IFNg_cyto_in_nuc_hull_vs_nuc_MFI_ratio.tiff"
-    title: "IFN-\u03B3 groove vs nuclear MFI ratio: timepoint comparison"
-
-  - images:
-      - "stiffness_4hr/IFNg_cyto_in_nuc_hull_vs_nuc_MFI_ratio.tiff"
-      - "stiffness_24hr/IFNg_cyto_in_nuc_hull_vs_nuc_MFI_ratio.tiff"
-      - "stiffness_48hr/IFNg_cyto_in_nuc_hull_vs_nuc_MFI_ratio.tiff"
-    title: "IFN-\u03B3 groove vs nuclear MFI ratio: stiffness comparison"
-
-  - images:
-      - "pll_vs_cd3/IFNg_cyto_in_nuc_hull_vs_nuc_MFI_ratio.tiff"
-    template_slide: 1
-    title: "IFN-\u03B3 groove vs nuclear MFI ratio: effects of activation"
+    title: "IFN-\u03B3 Sig Frac within Nuc Chull: effects of activation"
 
   # ===========================================================================
   # METRIC 27: IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio
@@ -715,24 +690,24 @@ images:
   - images:
       - "all_conditions/IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
     template_slide: 2
-    title: "IFN-\u03B3 groove vs near-convex nuclear MFI ratio: all conditions"
+    title: "IFN-\u03B3 enrichment near invag: all conditions"
 
   - images:
       - "3p0_timecourse/IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
       - "8p0_timecourse/IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
       - "glass_timecourse/IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
-    title: "IFN-\u03B3 groove vs near-convex nuclear MFI ratio: timepoint comparison"
+    title: "IFN-\u03B3 enrichment near invag: timepoint comparison"
 
   - images:
       - "stiffness_4hr/IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
       - "stiffness_24hr/IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
       - "stiffness_48hr/IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
-    title: "IFN-\u03B3 groove vs near-convex nuclear MFI ratio: stiffness comparison"
+    title: "IFN-\u03B3 enrichment near invag: stiffness comparison"
 
   - images:
       - "pll_vs_cd3/IFNg_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.tiff"
     template_slide: 1
-    title: "IFN-\u03B3 groove vs near-convex nuclear MFI ratio: effects of activation"
+    title: "IFN-\u03B3 enrichment near invag: effects of activation"
 
   # ===========================================================================
   # METRIC 28: IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio
@@ -740,24 +715,24 @@ images:
   - images:
       - "all_conditions/IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio.tiff"
     template_slide: 2
-    title: "IFN-\u03B3 groove vs all perinuclear MFI ratio: all conditions"
+    title: "IFN-\u03B3 invag vs all perinuclear MFI ratio: all conditions"
 
   - images:
       - "3p0_timecourse/IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio.tiff"
       - "8p0_timecourse/IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio.tiff"
       - "glass_timecourse/IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio.tiff"
-    title: "IFN-\u03B3 groove vs all perinuclear MFI ratio: timepoint comparison"
+    title: "IFN-\u03B3 invag vs all perinuclear MFI ratio: timepoint comparison"
 
   - images:
       - "stiffness_4hr/IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio.tiff"
       - "stiffness_24hr/IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio.tiff"
       - "stiffness_48hr/IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio.tiff"
-    title: "IFN-\u03B3 groove vs all perinuclear MFI ratio: stiffness comparison"
+    title: "IFN-\u03B3 invag vs all perinuclear MFI ratio: stiffness comparison"
 
   - images:
       - "pll_vs_cd3/IFNg_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio.tiff"
     template_slide: 1
-    title: "IFN-\u03B3 groove vs all perinuclear MFI ratio: effects of activation"
+    title: "IFN-\u03B3 invag vs all perinuclear MFI ratio: effects of activation"
 
   # ===========================================================================
   # METRIC 29: IFNg_invag_within_chull_vs_convex_within_chull_MFI_ratio
@@ -840,24 +815,24 @@ images:
   - images:
       - "all_conditions/IFNg_ratio_by_deepest_invag_all_0_5um.tiff"
     template_slide: 2
-    title: "IFN-\u03B3 ratio by deepest invag (all, 0.5 \u00b5m): all conditions"
+    title: "IFN-\u03B3 levels near deepest invag (denom: all, 0.5 \u00b5m): all conditions"
 
   - images:
       - "3p0_timecourse/IFNg_ratio_by_deepest_invag_all_0_5um.tiff"
       - "8p0_timecourse/IFNg_ratio_by_deepest_invag_all_0_5um.tiff"
       - "glass_timecourse/IFNg_ratio_by_deepest_invag_all_0_5um.tiff"
-    title: "IFN-\u03B3 ratio by deepest invag (all, 0.5 \u00b5m): timepoint comparison"
+    title: "IFN-\u03B3 levels near deepest invag (denom: all, 0.5 \u00b5m): timepoint comparison"
 
   - images:
       - "stiffness_4hr/IFNg_ratio_by_deepest_invag_all_0_5um.tiff"
       - "stiffness_24hr/IFNg_ratio_by_deepest_invag_all_0_5um.tiff"
       - "stiffness_48hr/IFNg_ratio_by_deepest_invag_all_0_5um.tiff"
-    title: "IFN-\u03B3 ratio by deepest invag (all, 0.5 \u00b5m): stiffness comparison"
+    title: "IFN-\u03B3 levels near deepest invag (denom: all, 0.5 \u00b5m): stiffness comparison"
 
   - images:
       - "pll_vs_cd3/IFNg_ratio_by_deepest_invag_all_0_5um.tiff"
     template_slide: 1
-    title: "IFN-\u03B3 ratio by deepest invag (all, 0.5 \u00b5m): effects of activation"
+    title: "IFN-\u03B3 levels near deepest invag (denom: all, 0.5 \u00b5m): effects of activation"
 
   # ===========================================================================
   # METRIC 33: IFNg_ratio_by_deepest_invag_all_1um
@@ -865,24 +840,24 @@ images:
   - images:
       - "all_conditions/IFNg_ratio_by_deepest_invag_all_1um.tiff"
     template_slide: 2
-    title: "IFN-\u03B3 ratio by deepest invag (all, 1 \u00b5m): all conditions"
+    title: "IFN-\u03B3 levels near deepest invag (denom: all, 1 \u00b5m): all conditions"
 
   - images:
       - "3p0_timecourse/IFNg_ratio_by_deepest_invag_all_1um.tiff"
       - "8p0_timecourse/IFNg_ratio_by_deepest_invag_all_1um.tiff"
       - "glass_timecourse/IFNg_ratio_by_deepest_invag_all_1um.tiff"
-    title: "IFN-\u03B3 ratio by deepest invag (all, 1 \u00b5m): timepoint comparison"
+    title: "IFN-\u03B3 levels near deepest invag (denom: all, 1 \u00b5m): timepoint comparison"
 
   - images:
       - "stiffness_4hr/IFNg_ratio_by_deepest_invag_all_1um.tiff"
       - "stiffness_24hr/IFNg_ratio_by_deepest_invag_all_1um.tiff"
       - "stiffness_48hr/IFNg_ratio_by_deepest_invag_all_1um.tiff"
-    title: "IFN-\u03B3 ratio by deepest invag (all, 1 \u00b5m): stiffness comparison"
+    title: "IFN-\u03B3 levels near deepest invag (denom: all, 1 \u00b5m): stiffness comparison"
 
   - images:
       - "pll_vs_cd3/IFNg_ratio_by_deepest_invag_all_1um.tiff"
     template_slide: 1
-    title: "IFN-\u03B3 ratio by deepest invag (all, 1 \u00b5m): effects of activation"
+    title: "IFN-\u03B3 levels near deepest invag (denom: all, 1 \u00b5m): effects of activation"
 
   # ===========================================================================
   # METRIC 34: IFNg_ratio_by_deepest_invag_away_0_5um
@@ -890,24 +865,24 @@ images:
   - images:
       - "all_conditions/IFNg_ratio_by_deepest_invag_away_0_5um.tiff"
     template_slide: 2
-    title: "IFN-\u03B3 ratio by deepest invag (away, 0.5 \u00b5m): all conditions"
+    title: "IFN-\u03B3 levels near deepest invag (denom: away, 0.5 \u00b5m): all conditions"
 
   - images:
       - "3p0_timecourse/IFNg_ratio_by_deepest_invag_away_0_5um.tiff"
       - "8p0_timecourse/IFNg_ratio_by_deepest_invag_away_0_5um.tiff"
       - "glass_timecourse/IFNg_ratio_by_deepest_invag_away_0_5um.tiff"
-    title: "IFN-\u03B3 ratio by deepest invag (away, 0.5 \u00b5m): timepoint comparison"
+    title: "IFN-\u03B3 levels near deepest invag (denom: away, 0.5 \u00b5m): timepoint comparison"
 
   - images:
       - "stiffness_4hr/IFNg_ratio_by_deepest_invag_away_0_5um.tiff"
       - "stiffness_24hr/IFNg_ratio_by_deepest_invag_away_0_5um.tiff"
       - "stiffness_48hr/IFNg_ratio_by_deepest_invag_away_0_5um.tiff"
-    title: "IFN-\u03B3 ratio by deepest invag (away, 0.5 \u00b5m): stiffness comparison"
+    title: "IFN-\u03B3 levels near deepest invag (denom: away, 0.5 \u00b5m): stiffness comparison"
 
   - images:
       - "pll_vs_cd3/IFNg_ratio_by_deepest_invag_away_0_5um.tiff"
     template_slide: 1
-    title: "IFN-\u03B3 ratio by deepest invag (away, 0.5 \u00b5m): effects of activation"
+    title: "IFN-\u03B3 levels near deepest invag (denom: away, 0.5 \u00b5m): effects of activation"
 
   # ===========================================================================
   # METRIC 35: IFNg_ratio_by_deepest_invag_away_1um
@@ -915,21 +890,21 @@ images:
   - images:
       - "all_conditions/IFNg_ratio_by_deepest_invag_away_1um.tiff"
     template_slide: 2
-    title: "IFN-\u03B3 ratio by deepest invag (away, 1 \u00b5m): all conditions"
+    title: "IFN-\u03B3 levels near deepest invag (denom: away, 1 \u00b5m): all conditions"
 
   - images:
       - "3p0_timecourse/IFNg_ratio_by_deepest_invag_away_1um.tiff"
       - "8p0_timecourse/IFNg_ratio_by_deepest_invag_away_1um.tiff"
       - "glass_timecourse/IFNg_ratio_by_deepest_invag_away_1um.tiff"
-    title: "IFN-\u03B3 ratio by deepest invag (away, 1 \u00b5m): timepoint comparison"
+    title: "IFN-\u03B3 levels near deepest invag (denom: away, 1 \u00b5m): timepoint comparison"
 
   - images:
       - "stiffness_4hr/IFNg_ratio_by_deepest_invag_away_1um.tiff"
       - "stiffness_24hr/IFNg_ratio_by_deepest_invag_away_1um.tiff"
       - "stiffness_48hr/IFNg_ratio_by_deepest_invag_away_1um.tiff"
-    title: "IFN-\u03B3 ratio by deepest invag (away, 1 \u00b5m): stiffness comparison"
+    title: "IFN-\u03B3 levels near deepest invag (denom: away, 1 \u00b5m): stiffness comparison"
 
   - images:
       - "pll_vs_cd3/IFNg_ratio_by_deepest_invag_away_1um.tiff"
     template_slide: 1
-    title: "IFN-\u03B3 ratio by deepest invag (away, 1 \u00b5m): effects of activation"
+    title: "IFN-\u03B3 levels near deepest invag (denom: away, 1 \u00b5m): effects of activation"
