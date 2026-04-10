@@ -14,7 +14,7 @@ auto_position: true
 label_side: left
 
 # Base directory containing all images
-base_dir: "J:/FF/vim_data/ciliobrevin-D/CilioD_combined/results_compilation/CilioD_combined_20260405/grid_panels"
+base_dir: "J:/FF/vim_data/ciliobrevin-D/CilioD_combined/results_compilation/CilioD_combined_20260410/grid_panels"
 
 images:
   # --- Cell/actin morphology ---
@@ -24,6 +24,9 @@ images:
   # --- Centrosome ---
   - path: centrosome_center_z_rel_bottom_actin_plane_per_experiment_grid.tif
     title: "Centrosome-synapse distance"
+
+  - path: centrosome_r_norm_bottom_plane_per_experiment_grid.tif
+    title: "Centrosome radial position (bottom plane)"
 
   # --- Actin around centrosome ---
   - path: actin_MFI_around_cent_1um_per_experiment_grid.tif
@@ -37,6 +40,12 @@ images:
 
   - path: actin_frac_around_cent_2um_per_experiment_grid.tif
     title: "Actin fraction around centrosome (2 µm)"
+
+  - path: actin_depletion_ratio_around_cent_bot_plane_1um_per_experiment_grid.tif
+    title: "Actin depletion ratio near centrosome, bottom plane (1 µm)"
+
+  - path: actin_depletion_ratio_around_cent_bot_plane_2um_per_experiment_grid.tif
+    title: "Actin depletion ratio near centrosome, bottom plane (2 µm)"
 
   # --- Vimentin ---
   - path: VCRAI_0_2um_per_experiment_grid.tif
@@ -53,3 +62,16 @@ images:
 
   - path: vim_MFI_around_cent_2um_per_experiment_grid.tif
     title: "Vimentin MFI around centrosome (2 µm)"
+
+  # --- Actin at synapse ---
+  - path: actin_bottom_mask_area_per_experiment_grid.tif
+    title: "Synapse Area"
+
+  - path: actin_bottom_MFI_per_experiment_grid.tif
+    title: "Actin MFI at synapse"
+
+  - path: actin_bottom_inner_outer_ratio_per_experiment_grid.tif
+    title: "Actin inner/outer synapse ratio"
+
+  - path: actin_bottom_circularity_per_experiment_grid.tif
+    title: "Synapse Circularity"

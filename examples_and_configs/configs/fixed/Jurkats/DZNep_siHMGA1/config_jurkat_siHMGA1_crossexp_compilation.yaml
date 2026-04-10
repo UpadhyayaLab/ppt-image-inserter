@@ -1,37 +1,112 @@
+# Batch Image Replacement Configuration
+# siHMGA1 KD — Jurkats, cross-experiment compilation
+
 presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/DZNep_siHMGA1/siHMGA1_Jurkats_crossexp_template.pptx"
 output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/DZNep_siHMGA1/siHMGA1_Jurkats_crossexp_20260327.pptx"
+
+# Template slide to copy (0-based index)
 template_slide: 1
 preserve_slides: [0, 1]
+
+# Auto-detect position from the first image in the template slide
+auto_position: true
+
+label_side: left
+
+# Base directory containing all images
 base_dir: "M:/Fixed Cell Data/compiled_results/Jurkats_siHMGA1_KD_crossexp_v2_20260327/grid_panels"
 
 images:
+  # --- Cell/actin morphology ---
+  - path: actin_deform_ratio_grid.tif
+    title: "Cell Aspect Ratio"
 
-  # ============================================================
-  # Nuclear shape
-  # ============================================================
-  - path: "nuc_aspect_ratio_grid.tif"
+  # --- Nuclear morphology ---
+  - path: nuc_aspect_ratio_grid.tif
     title: "Nuclear aspect ratio"
 
-  - path: "actin_deform_ratio_grid.tif"
-    title: "Actin deformation ratio"
-
-  - path: "avg_normal_angle_adaptive_region_growth_grid.tif"
-    title: "Average normal angle (adaptive region growth)"
-
-  - path: "chull_max_D_grid.tif"
-    title: "Convex hull max diameter"
-
-  - path: "deepest_invag_fraction_chull_volume_grid.tif"
-    title: "Deepest invagination fraction of convex hull volume"
-
-  - path: "nuc_solidity_grid.tif"
+  - path: nuc_solidity_grid.tif
     title: "Nuclear solidity"
 
-  - path: "nuc_SA_mesh_grid.tif"
-    title: "Nuclear surface area (mesh)"
+  - path: nuc_volume_mesh_grid.tif
+    title: "Nuclear volume"
 
-  - path: "nuc_volume_mesh_grid.tif"
-    title: "Nuclear volume (mesh)"
+  - path: nuc_SA_mesh_grid.tif
+    title: "Nuclear surface area"
 
-  - path: "deepest_region_periph_ratio_025um_grid.tif"
-    title: "Deepest region to periphery ratio (0.25 um)"
+  # --- Nuclear invaginations ---
+  - path: chull_max_D_grid.tif
+    title: "Max invag depth over full nucleus"
+
+  - path: chull_max_D_by_cent_grid.tif
+    title: "Invag depth near centrosome"
+
+  - path: chull_mean_D_cent_ratio_grid.tif
+    title: "Centrosomal Invagination Index"
+
+  - path: centrosome_dist_deepest_real_avg_periphery_ratio_grid.tif
+    title: "Centrosome distance to deepest invag vs avg periphery ratio"
+
+  - path: concavity_index_around_cent_grid.tif
+    title: "Concavity index around centrosome"
+
+  - path: deepest_invag_volume_grid.tif
+    title: "Deepest invagination volume"
+
+  - path: deepest_invag_fraction_chull_volume_grid.tif
+    title: "Deepest invag: frac of convex hull volume"
+
+  - path: deepest_region_periph_ratio_025um_grid.tif
+    title: "DNA levels near invag"
+
+  # --- Invagination orientation ---
+  - path: avg_normal_angle_adaptive_region_growth_grid.tif
+    title: "Deepest Invag Orientation"
+
+  - path: avg_normal_angle_adaptive_region_growth_by_cent_grid.tif
+    title: "Invag orientation (near centrosome)"
+
+  - path: avg_normal_angle_by_cent_grid.tif
+    title: "Invag Orientation (by centrosome)"
+
+  # --- Centrosome ---
+  - path: centrosome_center_z_rel_bottom_actin_plane_grid.tif
+    title: "Centrosome-synapse distance"
+
+  - path: nuc_cent_closest_dist_grid.tif
+    title: "Nucleus-centrosome closest distance"
+
+  - path: centrosome_r_norm_bottom_plane_grid.tif
+    title: "Centrosome radial position (bottom plane)"
+
+  # --- Actin around centrosome ---
+  - path: actin_MFI_around_cent_1um_grid.tif
+    title: "Actin MFI around centrosome (1 µm)"
+
+  - path: actin_MFI_around_cent_2um_grid.tif
+    title: "Actin MFI around centrosome (2 µm)"
+
+  - path: actin_frac_around_cent_1um_grid.tif
+    title: "Actin fraction around centrosome (1 µm)"
+
+  - path: actin_frac_around_cent_2um_grid.tif
+    title: "Actin fraction around centrosome (2 µm)"
+
+  - path: actin_depletion_ratio_around_cent_bot_plane_1um_grid.tif
+    title: "Actin depletion ratio near centrosome, bottom plane (1 µm)"
+
+  - path: actin_depletion_ratio_around_cent_bot_plane_2um_grid.tif
+    title: "Actin depletion ratio near centrosome, bottom plane (2 µm)"
+
+  # --- Actin at synapse ---
+  - path: actin_bottom_mask_area_grid.tif
+    title: "Synapse Area"
+
+  - path: actin_bottom_MFI_grid.tif
+    title: "Actin MFI at synapse"
+
+  - path: actin_bottom_inner_outer_ratio_grid.tif
+    title: "Actin inner/outer synapse ratio"
+
+  - path: actin_bottom_circularity_grid.tif
+    title: "Synapse Circularity"

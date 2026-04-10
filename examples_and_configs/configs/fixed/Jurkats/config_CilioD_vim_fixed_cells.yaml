@@ -14,7 +14,7 @@ auto_position: true
 label_side: left
 
 # Base directory containing all images
-base_dir: "J:/FF/vim_data/ciliobrevin-D/20230604_MAC_CilioD/results_compilation/CilioD_20230604_7min_12min_20260405/grid_panels"
+base_dir: "J:/FF/vim_data/ciliobrevin-D/20230604_MAC_CilioD/results_compilation/CilioD_20230604_7min_12min_20260410/grid_panels"
 
 images:
   # --- Cell/actin morphology ---
@@ -81,16 +81,16 @@ images:
 
   # --- Actin around centrosome ---
   - path: actin_MFI_around_cent_1um_grid.tif
-    title: "Actin MFI around centrosome (1 um)"
+    title: "Actin MFI around centrosome (1 µm)"
 
   - path: actin_MFI_around_cent_2um_grid.tif
-    title: "Actin MFI around centrosome (2 um)"
+    title: "Actin MFI around centrosome (2 µm)"
 
   - path: actin_frac_around_cent_1um_grid.tif
-    title: "Actin fraction around centrosome (1 um)"
+    title: "Actin fraction around centrosome (1 µm)"
 
   - path: actin_frac_around_cent_2um_grid.tif
-    title: "Actin fraction around centrosome (2 um)"
+    title: "Actin fraction around centrosome (2 µm)"
 
   - path: actin_depletion_ratio_around_cent_bot_plane_1um_grid.tif
     title: "Actin depletion ratio near centrosome, bottom plane (1 µm)"
@@ -103,25 +103,38 @@ images:
     title: "Vimentin fraction in nuclear convex hull"
 
   - path: vim_enrichment_within_half_um_nuc_2_um_cent_grid.tif
-    title: "Vimentin enrichment (0.5 um of nuc, 2 um of cent)"
+    title: "Vimentin enrichment (0.5 µm of nuc, 2 µm of cent)"
 
   - path: vim_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio_grid.tif
     title: "Vimentin MFI: cytoplasmic (in nuc hull) vs near-convex regions of nuc"
 
   - path: VCRAI_0_2um_grid.tif
-    title: "VCRAI (0-2 um)"
+    title: "VCRAI (0-2 µm)"
 
   - path: vim_frac_around_cent_1um_grid.tif
-    title: "Vimentin fraction around centrosome (1 um)"
+    title: "Vimentin fraction around centrosome (1 µm)"
 
   - path: vim_frac_around_cent_2um_grid.tif
-    title: "Vimentin fraction around centrosome (2 um)"
+    title: "Vimentin fraction around centrosome (2 µm)"
 
   - path: vim_MFI_around_cent_1um_grid.tif
-    title: "Vimentin MFI around centrosome (1 um)"
+    title: "Vimentin MFI around centrosome (1 µm)"
 
   - path: vim_MFI_around_cent_2um_grid.tif
-    title: "Vimentin MFI around centrosome (2 um)"
+    title: "Vimentin MFI around centrosome (2 µm)"
 
   - path: vim_ratio_above_below_0_5um_grid.tif
-    title: "Vimentin ratio above/below 0.5 um"
+    title: "Vimentin ratio above/below 0.5 µm"
+
+  # --- Actin at synapse ---
+  - path: actin_bottom_mask_area_grid.tif
+    title: "Synapse Area"
+
+  - path: actin_bottom_MFI_grid.tif
+    title: "Actin MFI at synapse"
+
+  - path: actin_bottom_inner_outer_ratio_grid.tif
+    title: "Actin inner/outer synapse ratio"
+
+  - path: actin_bottom_circularity_grid.tif
+    title: "Synapse Circularity"
