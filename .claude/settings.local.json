@@ -62,7 +62,12 @@
       "Bash(cp \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_no_nucleus_template.pptx\" \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_template.pptx\")",
       "Read(//k/FF/PPT/PPT_autogeneration/IFNg/**)",
       "Bash(mv \"K:/FF/Code/Scripts/PPT_image_inserter/examples_and_configs/configs/fixed/CTLs/config_IFNg_all_conditions.yaml\" \"K:/FF/Code/Scripts/PPT_image_inserter/examples_and_configs/configs/fixed/CTLs/config_IFNg_all_conditions_only.yaml\")",
-      "Bash(mv \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_all_conditions_template.pptx\" \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_all_conditions_only_template.pptx\")"
+      "Bash(mv \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_all_conditions_template.pptx\" \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_all_conditions_only_template.pptx\")",
+      "Bash(mkdir -p \"K:/FF/PPT/PPT_autogeneration/CTL_Glass_Nucleus_Centrosome\")",
+      "Bash(cp \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_all_conditions_only_template.pptx\" \"K:/FF/PPT/PPT_autogeneration/CTL_Glass_Nucleus_Centrosome/CTL_Glass_Nucleus_Centrosome_template.pptx\")",
+      "Bash(sed 's/_grid\\\\.tif//')",
+      "Bash(sed 's/\"//')",
+      "Bash([ -f \"$base/$f\" ])"
     ]
   }
 }

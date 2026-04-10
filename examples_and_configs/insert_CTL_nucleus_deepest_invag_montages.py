@@ -1,16 +1,16 @@
 """
-insert_VimMG_deepest_invag_montages.py
+insert_CTL_nucleus_deepest_invag_montages.py
 
-Creates one slide per condition (5 slides total) comparing both Vimentin MG experiments.
+Creates one slide per condition (2 slides total) comparing both CTL nucleus experiments.
 Each slide shows:
-  - Experiment 1 (20240318) _with_cent montage (top)
-  - Experiment 2 (20241212) _with_cent montage (bottom)
-Source: merges/montages_deepest_invag in each experiment.
+  - Experiment 1 (20230524) montage (top)
+  - Experiment 2 (20230529) montage (bottom)
+Source: Cells/channels/prog_fixed_cells/centrosome/deepest_invag_slice/panels/montages_deepest_invag
 
-Conditions: PLL 3min, PLL 12min, αCD3 3min, αCD3 7min, αCD3 12min
+Conditions: αCD3 5min, PLL 5min
 
 Usage:
-    python examples_and_configs/insert_VimMG_deepest_invag_montages.py
+    python examples_and_configs/insert_CTL_nucleus_deepest_invag_montages.py
 """
 
 import os
@@ -25,28 +25,19 @@ from pptx.util import Inches, Pt
 # Configuration
 # ---------------------------------------------------------------------------
 
-OUTPUT_PATH = "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Vimentin_MG_deepest_invag_montages.pptx"
+OUTPUT_PATH = "K:/FF/PPT/PPT_autogeneration/CTL_Nucleus/CTL_nucleus_deepest_invag_montages.pptx"
 
-EXPERIMENTS = [
-    {
-        "base_dir":        "J:/FF/vim_data/20240318_MG_E6-1_Vimentin",
-        "montage_subpath": "channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag",
-        "tp_suffix":       "m",     # folder names like aCD3_3m
-    },
-    {
-        "base_dir":        "J:/FF/vim_data/20241212_MG_E6-1_Vimentin",
-        "montage_subpath": "individual_channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag",
-        "tp_suffix":       "min",   # folder names like aCD3_3min
-    },
+BASE_DIRS = [
+    "H:/FF/Nucleus_Data/CTL/Fixed/20230524_CTLs_Nucleus",
+    "H:/FF/Nucleus_Data/CTL/Fixed/20230529_CTLs_Nucleus",
 ]
 
-# Conditions in display order: (treatment_folder, timepoint_num, display_label)
+MONTAGE_SUBPATH = "Cells/channels/prog_fixed_cells/centrosome/deepest_invag_slice/panels/montages_deepest_invag"
+
+# (folder_name, display_label) — same folder name in both experiments
 CONDITIONS = [
-    ("PLL",  "3",  "PLL, 3 min"),
-    ("PLL",  "12", "PLL, 12 min"),
-    ("aCD3", "3",  "\u03b1CD3, 3 min"),
-    ("aCD3", "7",  "\u03b1CD3, 7 min"),
-    ("aCD3", "12", "\u03b1CD3, 12 min"),
+    ("W1_aCD3_3SI_5min_EGFP-Cen-2_RhodPhalloidin_Hoechst", "\u03b1CD3, 5 min"),
+    ("W2_PLL_3SI_5min_EGFP-Cen-2_RhodPhalloidin_Hoechst",  "PLL, 5 min"),
 ]
 
 # Slide dimensions (widescreen)
@@ -54,10 +45,10 @@ SLIDE_WIDTH_IN  = 13.333
 SLIDE_HEIGHT_IN = 7.5
 
 # Title
-TITLE_LEFT   = 1.167
-TITLE_TOP    = 0.0
-TITLE_WIDTH  = 11.0
-TITLE_HEIGHT = 0.85
+TITLE_LEFT      = 1.167
+TITLE_TOP       = 0.0
+TITLE_WIDTH     = 11.0
+TITLE_HEIGHT    = 0.85
 TITLE_FONT_SIZE = Pt(32)
 
 # Images: exp1 top, exp2 bottom
@@ -74,9 +65,9 @@ LABEL_FONT_NAME = "Arial"
 # ---------------------------------------------------------------------------
 
 
-def find_first_with_cent(montage_dir: Path) -> Path | None:
-    """Return the _with_cent montage with the lowest starting cell number."""
-    matches = list(montage_dir.glob("montage_cells_*_with_cent.png"))
+def find_first_montage(montage_dir: Path) -> Path | None:
+    """Return the montage with the lowest starting cell number."""
+    matches = list(montage_dir.glob("montage_cells_*.png"))
     if not matches:
         return None
 
@@ -136,35 +127,33 @@ def main() -> None:
     slides_added = 0
     missing_report = []
 
-    for treatment, tp_num, display_label in CONDITIONS:
+    for folder_name, display_label in CONDITIONS:
         print(f"\n[{display_label}]")
 
         images = []
-        for exp in EXPERIMENTS:
-            base = Path(exp["base_dir"])
-            folder_name = f"{treatment}_{tp_num}{exp['tp_suffix']}"
-            montage_dir = base / folder_name / exp["montage_subpath"]
+        for base_dir in BASE_DIRS:
+            base = Path(base_dir)
+            montage_dir = base / folder_name / MONTAGE_SUBPATH
 
-            img = find_first_with_cent(montage_dir) if montage_dir.exists() else None
+            img = find_first_montage(montage_dir) if montage_dir.exists() else None
             status = img.name if img else "NOT FOUND"
-            print(f"  {base.name}/{folder_name}: {status}")
+            print(f"  {base.name}: {status}")
 
             if not montage_dir.exists():
                 missing_report.append(f"{base.name}/{folder_name}: montage folder missing")
             elif not img:
-                missing_report.append(f"{base.name}/{folder_name}: no _with_cent montage found")
+                missing_report.append(f"{base.name}/{folder_name}: no montage found")
 
             images.append(img)
 
         slide = prs.slides.add_slide(blank_layout)
-        add_title(slide, f"Vimentin deepest invag: {display_label}")
+        add_title(slide, f"CTL nucleus deepest invag: {display_label}")
 
-        top_positions = [TOP_IMG_TOP, BOT_IMG_TOP]
-        for img, top in zip(images, top_positions):
+        for img, top in zip(images, [TOP_IMG_TOP, BOT_IMG_TOP]):
             if img:
                 insert_image_width_constrained(slide, img, IMG_LEFT, top, IMG_MAX_WIDTH)
 
-        label_path = str(next((img for img in images if img), montage_dir))
+        label_path = str(next((img for img in images if img), Path(BASE_DIRS[0])))
         add_path_label(slide, label_path)
 
         slides_added += 1
