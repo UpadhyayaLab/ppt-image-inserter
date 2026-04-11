@@ -1,12 +1,12 @@
 # Batch Image Replacement Configuration
-# siHMGA1 KD — Jurkats, cross-experiment compilation
+# DZNep — Jurkats, cross-experiment compilation (no centrosome metrics)
 
-presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/DZNep_siHMGA1/siHMGA1_Jurkats_crossexp_template.pptx"
-output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/DZNep_siHMGA1/siHMGA1_Jurkats_crossexp_20260327.pptx"
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Vimentin MG, Fixed Cells_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/DZNep_siHMGA1/DZNep_Jurkats_no_cent_crossexp_20260410.pptx"
 
 # Template slide to copy (0-based index)
-template_slide: 1
-preserve_slides: [0, 1]
+template_slide: 0
+preserve_slides: [0]
 
 # Auto-detect position from the first image in the template slide
 auto_position: true
@@ -14,7 +14,7 @@ auto_position: true
 label_side: left
 
 # Base directory containing all images
-base_dir: "M:/Fixed Cell Data/compiled_results/Jurkats_siHMGA1_KD_crossexp_v2_20260327/grid_panels"
+base_dir: "M:/Fixed Cell Data/compiled_results/Jurkats_DZNep_no_cent_crossexp_20260410/grid_panels"
 
 images:
   # --- Cell/actin morphology ---
@@ -50,16 +50,3 @@ images:
   # --- Invagination orientation ---
   - path: avg_normal_angle_adaptive_region_growth_grid.tif
     title: "Deepest Invag Orientation"
-
-  # --- Actin at synapse ---
-  - path: actin_bottom_mask_area_grid.tif
-    title: "Synapse Area"
-
-  - path: actin_bottom_MFI_grid.tif
-    title: "Actin MFI at synapse"
-
-  - path: actin_bottom_inner_outer_ratio_grid.tif
-    title: "Actin inner/outer synapse ratio"
-
-  - path: actin_bottom_circularity_grid.tif
-    title: "Synapse Circularity"
