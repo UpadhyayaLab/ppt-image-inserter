@@ -102,7 +102,8 @@ def get_all_image_positions(
     Extract positions and sizes of ALL images on a slide.
 
     Useful for templates with multiple placeholder images. Returns positions
-    in the order they appear in the slide's shape collection.
+    sorted by visual reading order: top-to-bottom, then left-to-right within
+    each row (tops are rounded to the nearest 0.5" to group images in the same row).
 
     Args:
         ppt_path (str): Path to the PowerPoint file

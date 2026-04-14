@@ -67,7 +67,16 @@
       "Bash(cp \"K:/FF/PPT/PPT_autogeneration/IFNg/IFNg_all_conditions_only_template.pptx\" \"K:/FF/PPT/PPT_autogeneration/CTL_Glass_Nucleus_Centrosome/CTL_Glass_Nucleus_Centrosome_template.pptx\")",
       "Bash(sed 's/_grid\\\\.tif//')",
       "Bash(sed 's/\"//')",
-      "Bash([ -f \"$base/$f\" ])"
+      "Bash([ -f \"$base/$f\" ])",
+      "Bash(grep '\\\\.tif$')",
+      "Read(//tmp/**)",
+      "Read(//k/FF/PPT/PPT_autogeneration/**)",
+      "Bash(mkdir -p \"K:/FF/PPT/PPT_autogeneration/Live Cells\")",
+      "Bash(cp \"K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Vimentin MG, Fixed Cells_template.pptx\" \"K:/FF/PPT/PPT_autogeneration/Live Cells/Nucleus Centrosome Live, 15min_template.pptx\")",
+      "Bash(grep -c '\\\\.tif$')",
+      "Bash(grep -E \"per_experiment_grid\\\\.tif$\")",
+      "Bash(grep \"\\\\.tif$\")",
+      "Bash(find:*)"
     ]
   }
 }

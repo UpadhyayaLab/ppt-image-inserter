@@ -1,0 +1,52 @@
+# LatA deepest-invag montages across 4 experiments (CD3 + PLL conditions)
+# Expt 1 (Mar 2023) has no vim channel -> centrosome/ folder
+# Expts 2-4 have vim -> vimentin/ folder, with _with_cent filename variant
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/LatA, Deepest Invag Montages_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/LatA, Deepest Invag Montages.pptx"
+
+template_slide: 0
+preserve_slides: [0]
+auto_position: true
+label_side: left
+
+images:
+  # --- Expt 1: Mar 2023 (no vim; centrosome/ folder) ---
+  - path: "H:/FF/Nucleus_Data/3D_Nucleus_Centrosome/Fixed/LatA_032023/Cropped_W1_DMSO_405LP30_488LP40_561LP30_640LP40_100ms_/combined/prog_fixed_cells/centrosome/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_27.png"
+    title: "Mar 2023: DMSO"
+  - path: "H:/FF/Nucleus_Data/3D_Nucleus_Centrosome/Fixed/LatA_032023/Cropped_W2_LatA100nM_405LP30_488LP40_561LP30_640LP40_100ms_/combined/prog_fixed_cells/centrosome/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_25.png"
+    title: "Mar 2023: LatA 100nM"
+  - path: "H:/FF/Nucleus_Data/3D_Nucleus_Centrosome/Fixed/LatA_032023/Cropped_W3_LatA250nM_405LP30_488LP40_561LP30_640LP40_100ms_/combined/prog_fixed_cells/centrosome/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_25.png"
+    title: "Mar 2023: LatA 250nM"
+
+  # --- Expt 2: Nov 7 2023 (vim folder) ---
+  - path: "H:/FF/Nucleus_Data/3D_Nucleus_Centrosome/Fixed/LatA_11072023/f-Control-DMSO-1107/combined/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_2_28_with_cent.png"
+    title: "Nov 2023: DMSO"
+  - path: "H:/FF/Nucleus_Data/3D_Nucleus_Centrosome/Fixed/LatA_11072023/f-LatrunculinA-100nM-1107/combined/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_25_with_cent.png"
+    title: "Nov 2023: LatA 100nM"
+  - path: "H:/FF/Nucleus_Data/3D_Nucleus_Centrosome/Fixed/LatA_11072023/f-LatrunculinA-250nM-1107/combined/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_26_with_cent.png"
+    title: "Nov 2023: LatA 250nM"
+
+  # --- Expt 3: May 9 2024 (vim folder) ---
+  - path: "J:/FF/fixed_cell/Vimentin/20240509_Jurkat-LatA/05092024_jurkats_LatA_50nMor100nM_1minPreIncubation_7minSpreading_antiVim647LP55_PhalloidinLP60_EGFPCent2LP55_hoeschstLP40/GcA1_CD3_DMSO_1to2000_1-20/cells/channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_26_with_cent.png"
+    title: "May 2024: CD3 DMSO"
+  - path: "J:/FF/fixed_cell/Vimentin/20240509_Jurkat-LatA/05092024_jurkats_LatA_50nMor100nM_1minPreIncubation_7minSpreading_antiVim647LP55_PhalloidinLP60_EGFPCent2LP55_hoeschstLP40/GcA2_CD3_50nM_1-20/cells/channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_25_with_cent.png"
+    title: "May 2024: CD3 LatA 50nM"
+  - path: "J:/FF/fixed_cell/Vimentin/20240509_Jurkat-LatA/05092024_jurkats_LatA_50nMor100nM_1minPreIncubation_7minSpreading_antiVim647LP55_PhalloidinLP60_EGFPCent2LP55_hoeschstLP40/GcA3_CD3_100nM_1-20/cells/channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_31_with_cent.png"
+    title: "May 2024: CD3 LatA 100nM"
+  - path: "J:/FF/fixed_cell/Vimentin/20240509_Jurkat-LatA/05092024_jurkats_LatA_50nMor100nM_1minPreIncubation_7minSpreading_antiVim647LP55_PhalloidinLP60_EGFPCent2LP55_hoeschstLP40/GpB1_PLL_DMSO_1to2000_1-20/cells/channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_25_with_cent.png"
+    title: "May 2024: PLL DMSO"
+  - path: "J:/FF/fixed_cell/Vimentin/20240509_Jurkat-LatA/05092024_jurkats_LatA_50nMor100nM_1minPreIncubation_7minSpreading_antiVim647LP55_PhalloidinLP60_EGFPCent2LP55_hoeschstLP40/GpB2_PLL_50nM_1-20/cells/channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_25_with_cent.png"
+    title: "May 2024: PLL LatA 50nM"
+  - path: "J:/FF/fixed_cell/Vimentin/20240509_Jurkat-LatA/05092024_jurkats_LatA_50nMor100nM_1minPreIncubation_7minSpreading_antiVim647LP55_PhalloidinLP60_EGFPCent2LP55_hoeschstLP40/GpB3_PLL_100nM_1-20/cells/channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_26_with_cent.png"
+    title: "May 2024: PLL LatA 100nM"
+
+  # --- Expt 4: Jun 14 2024 (vim folder; 50nM LatA) ---
+  - path: "J:/FF/fixed_cell/Vimentin/20240614_Jurkat-LatA/06142024_jurkats_LatA_50nM_1minPreIncubation_7minSpreading_antiVim647LP55_PhalloidinLP60_EGFPCent2LP55_hoeschstLP40/CD3_DMSO_W1/cells/channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_25_with_cent.png"
+    title: "Jun 2024: CD3 DMSO"
+  - path: "J:/FF/fixed_cell/Vimentin/20240614_Jurkat-LatA/06142024_jurkats_LatA_50nM_1minPreIncubation_7minSpreading_antiVim647LP55_PhalloidinLP60_EGFPCent2LP55_hoeschstLP40/CD3_LatA_W1/cells/channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_26_with_cent.png"
+    title: "Jun 2024: CD3 LatA 50nM"
+  - path: "J:/FF/fixed_cell/Vimentin/20240614_Jurkat-LatA/06142024_jurkats_LatA_50nM_1minPreIncubation_7minSpreading_antiVim647LP55_PhalloidinLP60_EGFPCent2LP55_hoeschstLP40/PLL wells/PLL_DMSO_W1/cells/channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_26_with_cent.png"
+    title: "Jun 2024: PLL DMSO"
+  - path: "J:/FF/fixed_cell/Vimentin/20240614_Jurkat-LatA/06142024_jurkats_LatA_50nM_1minPreIncubation_7minSpreading_antiVim647LP55_PhalloidinLP60_EGFPCent2LP55_hoeschstLP40/PLL wells/PLL_LatA_W1/cells/channels/prog_fixed_cells/vimentin/deepest_invag_slice/panels/montages_deepest_invag/montage_cells_1_25_with_cent.png"
+    title: "Jun 2024: PLL LatA 50nM"

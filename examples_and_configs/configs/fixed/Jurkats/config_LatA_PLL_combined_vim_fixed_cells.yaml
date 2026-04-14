@@ -1,0 +1,108 @@
+# Batch Image Replacement Configuration
+# LatA: PLL vs aCD3 comparison across 2 experiments
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Effects of LatA (PLL vs aCD3), Fixed Cells_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Effects of LatA (PLL vs aCD3), Fixed Cells.pptx"
+
+# Template slide to copy (0-based index)
+template_slide: 0
+preserve_slides: [0]
+
+# Auto-detect position from the first image in the template slide
+auto_position: true
+
+label_side: left
+
+# Base directory containing all images
+base_dir: "J:/FF/fixed_cell/Vimentin/LatA_PLL_combined/results_compilation/LatA_PLL_combined_20260414/grid_panels"
+
+images:
+  # --- Nuclear morphology ---
+  - path: nuc_aspect_ratio_per_experiment_grid.tif
+    title: "Nuclear aspect ratio"
+
+  - path: nuc_solidity_per_experiment_grid.tif
+    title: "Nuclear solidity"
+
+  - path: nuc_volume_mesh_per_experiment_grid.tif
+    title: "Nuclear volume"
+
+  - path: nuc_SA_mesh_per_experiment_grid.tif
+    title: "Nuclear surface area"
+
+  # --- Nuclear invaginations ---
+  - path: chull_max_D_per_experiment_grid.tif
+    title: "Max invag depth over full nucleus"
+
+  - path: chull_max_D_by_cent_per_experiment_grid.tif
+    title: "Invag depth near centrosome"
+
+  - path: chull_mean_D_cent_global_ratio_per_experiment_grid.tif
+    title: "Centrosomal Invagination Index"
+
+  - path: centrosome_dist_deepest_real_avg_periphery_ratio_per_experiment_grid.tif
+    title: "Centrosome distance to deepest invag vs avg periphery ratio"
+
+  - path: C_min_F_mean_by_cent_per_experiment_grid.tif
+    title: "Curvature near centrosome"
+
+  - path: concavity_index_around_cent_per_experiment_grid.tif
+    title: "Concavity index around centrosome"
+
+  - path: deepest_invag_volume_per_experiment_grid.tif
+    title: "Deepest invagination volume"
+
+  - path: deepest_invag_fraction_chull_volume_per_experiment_grid.tif
+    title: "Deepest invag: frac of convex hull volume"
+
+  - path: deepest_region_periph_ratio_025um_per_experiment_grid.tif
+    title: "DNA levels near invag"
+
+  # --- Invagination orientation ---
+  - path: avg_normal_angle_adaptive_region_growth_per_experiment_grid.tif
+    title: "Deepest Invag Orientation"
+
+  - path: avg_normal_angle_adaptive_region_growth_by_cent_per_experiment_grid.tif
+    title: "Invag orientation (near centrosome)"
+
+  - path: avg_normal_angle_by_cent_per_experiment_grid.tif
+    title: "Invag Orientation (by centrosome)"
+
+  # --- Centrosome ---
+  - path: centrosome_center_z_rel_bottom_actin_plane_per_experiment_grid.tif
+    title: "Centrosome-synapse distance"
+
+  - path: nuc_cent_closest_dist_per_experiment_grid.tif
+    title: "Nucleus-centrosome closest distance"
+
+  # --- Vimentin ---
+  - path: vim_frac_in_nuc_convex_hull_per_experiment_grid.tif
+    title: "Vimentin fraction in nuclear convex hull"
+
+  - path: vim_enrichment_within_half_um_nuc_2_um_cent_per_experiment_grid.tif
+    title: "Vimentin enrichment (0.5 µm of nuc, 2 µm of cent)"
+
+  - path: vim_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio_per_experiment_grid.tif
+    title: "Vimentin MFI: cytoplasmic (in nuc hull) vs near-convex regions of nuc"
+
+  - path: VCRAI_0_2um_per_experiment_grid.tif
+    title: "VCRAI (0-2 µm)"
+
+  - path: vim_frac_around_cent_1um_per_experiment_grid.tif
+    title: "Vimentin fraction around centrosome (1 µm)"
+
+  - path: vim_frac_around_cent_2um_per_experiment_grid.tif
+    title: "Vimentin fraction around centrosome (2 µm)"
+
+  - path: vim_MFI_around_cent_1um_per_experiment_grid.tif
+    title: "Vimentin MFI around centrosome (1 µm)"
+
+  - path: vim_MFI_around_cent_2um_per_experiment_grid.tif
+    title: "Vimentin MFI around centrosome (2 µm)"
+
+  - path: vim_ratio_above_below_0_5um_per_experiment_grid.tif
+    title: "Vimentin ratio above/below 0.5 µm"
+
+  # --- Synapse ---
+  - path: IRM_mask_area_per_experiment_grid.tif
+    title: "Synapse Area (IRM)"

@@ -1,0 +1,80 @@
+# Batch Image Replacement Configuration
+# Live-cell CTL Nucleus/Centrosome — CD3_combined, 10 min window, 20260413
+# Metrics mirror the Jurkat live-cell config (nucleus + centrosome + invagination subset).
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Live Cells/CTL Nucleus Centrosome Live_template.pptx"
+output_path:  "K:/FF/PPT/PPT_autogeneration/Live Cells/CTL Nucleus Centrosome Live, 10min.pptx"
+
+# Template slide must have four image placeholders (base / _norm / _all_cells / _0_vs_tend).
+template_slide: 0
+preserve_slides: [0]
+
+auto_position: true
+label_side: left
+
+base_dir: "M:/Zach/Nucleus_Data_Live/CTL/CD3_combined/results_live_cells/nuc_cent_10min_20260413"
+
+# Each slide = one metric, four panels:
+#   1) <metric>.tif            (raw)
+#   2) <metric>_norm.tif       (per-cell normalized)
+#   3) <metric>_all_cells.tif  (all cells overlay)
+#   4) <metric>_0_vs_tend.tif  (start vs end)
+
+images:
+
+  - title: "Centrosomal Invagination Index"
+    images: [chull_mean_D_cent_global_ratio.tif, chull_mean_D_cent_global_ratio_norm.tif, chull_mean_D_cent_global_ratio_all_cells.tif, chull_mean_D_cent_global_ratio_0_vs_tend.tif]
+
+  - title: "Invag depth near centrosome"
+    images: [chull_max_D_by_cent.tif, chull_max_D_by_cent_norm.tif, chull_max_D_by_cent_all_cells.tif, chull_max_D_by_cent_0_vs_tend.tif]
+
+  - title: "Max invag depth over full nucleus"
+    images: [chull_max_D.tif, chull_max_D_norm.tif, chull_max_D_all_cells.tif, chull_max_D_0_vs_tend.tif]
+
+  - title: "Nuclear solidity"
+    images: [nuc_solidity.tif, nuc_solidity_norm.tif, nuc_solidity_all_cells.tif, nuc_solidity_0_vs_tend.tif]
+
+  - title: "Centrosome distance to deepest invag vs avg periphery ratio"
+    images: [centrosome_dist_deepest_real_avg_periphery_ratio.tif, centrosome_dist_deepest_real_avg_periphery_ratio_norm.tif, centrosome_dist_deepest_real_avg_periphery_ratio_all_cells.tif, centrosome_dist_deepest_real_avg_periphery_ratio_0_vs_tend.tif]
+
+  - title: "Min curvature near centrosome"
+    images: [C_min_F_mean_by_cent.tif, C_min_F_mean_by_cent_norm.tif, C_min_F_mean_by_cent_all_cells.tif, C_min_F_mean_by_cent_0_vs_tend.tif]
+
+  - title: "Concavity index around centrosome"
+    images: [concavity_index_around_cent.tif, concavity_index_around_cent_norm.tif, concavity_index_around_cent_all_cells.tif, concavity_index_around_cent_0_vs_tend.tif]
+
+  - title: "Deepest invagination volume"
+    images: [deepest_invag_volume.tif, deepest_invag_volume_norm.tif, deepest_invag_volume_all_cells.tif, deepest_invag_volume_0_vs_tend.tif]
+
+  - title: "Deepest invag: frac of convex hull volume"
+    images: [deepest_invag_fraction_chull_volume.tif, deepest_invag_fraction_chull_volume_norm.tif, deepest_invag_fraction_chull_volume_all_cells.tif, deepest_invag_fraction_chull_volume_0_vs_tend.tif]
+
+  - title: "Deepest Invag Orientation"
+    images: [avg_normal_angle_adaptive_region_growth.tif, avg_normal_angle_adaptive_region_growth_norm.tif, avg_normal_angle_adaptive_region_growth_all_cells.tif, avg_normal_angle_adaptive_region_growth_0_vs_tend.tif]
+
+  - title: "Invag orientation (near centrosome)"
+    images: [avg_normal_angle_adaptive_region_growth_by_cent.tif, avg_normal_angle_adaptive_region_growth_by_cent_norm.tif, avg_normal_angle_adaptive_region_growth_by_cent_all_cells.tif, avg_normal_angle_adaptive_region_growth_by_cent_0_vs_tend.tif]
+
+  - title: "Invag Orientation (by centrosome)"
+    images: [avg_normal_angle_by_cent.tif, avg_normal_angle_by_cent_norm.tif, avg_normal_angle_by_cent_all_cells.tif, avg_normal_angle_by_cent_0_vs_tend.tif]
+
+  - title: "Nucleus-centrosome closest distance"
+    images: [nuc_cent_closest_dist.tif, nuc_cent_closest_dist_norm.tif, nuc_cent_closest_dist_all_cells.tif, nuc_cent_closest_dist_0_vs_tend.tif]
+
+  - title: "Centrosome distance to bottom of nucleus"
+    images: [centrosome_z_nuc_bottom_distance.tif, centrosome_z_nuc_bottom_distance_norm.tif, centrosome_z_nuc_bottom_distance_all_cells.tif, centrosome_z_nuc_bottom_distance_0_vs_tend.tif]
+
+  - title: "Centrosome position relative to nucleus"
+    images: [centrosome_z_pos_rel_nucleus.tif, centrosome_z_pos_rel_nucleus_norm.tif, centrosome_z_pos_rel_nucleus_all_cells.tif, centrosome_z_pos_rel_nucleus_0_vs_tend.tif]
+
+  - title: "Nuclear aspect ratio"
+    images: [nuc_aspect_ratio.tif, nuc_aspect_ratio_norm.tif, nuc_aspect_ratio_all_cells.tif, nuc_aspect_ratio_0_vs_tend.tif]
+
+  - title: "Nuclear volume"
+    images: [nuc_volume_mesh.tif, nuc_volume_mesh_norm.tif, nuc_volume_mesh_all_cells.tif, nuc_volume_mesh_0_vs_tend.tif]
+
+  - title: "Nuclear surface area"
+    images: [nuc_SA_mesh.tif, nuc_SA_mesh_norm.tif, nuc_SA_mesh_all_cells.tif, nuc_SA_mesh_0_vs_tend.tif]
+
+  - title: "DNA levels near invag"
+    images: [deepest_region_periph_ratio_025um.tif, deepest_region_periph_ratio_025um_norm.tif, deepest_region_periph_ratio_025um_all_cells.tif, deepest_region_periph_ratio_025um_0_vs_tend.tif]
