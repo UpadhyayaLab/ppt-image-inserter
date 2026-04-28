@@ -43,6 +43,10 @@ from .workflow import (
     add_label_to_existing_slide,
 )
 
+from .movies import (
+    force_autoplay_in_pptx,
+)
+
 # Define public API
 __all__ = [
     # Core functions
@@ -72,4 +76,7 @@ __all__ = [
     'copy_slide_replace_images',
     'replace_image_on_existing_slide',
     'add_label_to_existing_slide',
+
+    # Movie helpers
+    'force_autoplay_in_pptx',
 ]

@@ -76,7 +76,16 @@
       "Bash(grep -c '\\\\.tif$')",
       "Bash(grep -E \"per_experiment_grid\\\\.tif$\")",
       "Bash(grep \"\\\\.tif$\")",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(mamba run *)",
+      "Bash(unzip -p \"K:/FF/PPT/PPT_autogeneration/Live Cells/_autoplay_smoketest.pptx\" ppt/slides/slide1.xml)",
+      "Bash(unzip -p \"K:/FF/PPT/PPT_autogeneration/Live Cells/_autoplay_smoketest.pptx\" ppt/slides/slide2.xml)",
+      "Bash(unzip -p \"K:/FF/PPT/PPT_autogeneration/Live Cells/Jurkat_invag_cent_panels_test_with_previous.pptx\" ppt/slides/slide2.xml)",
+      "Bash(grep \"_invag_cent_panels.mp4$\")",
+      "Bash(unzip -p _autoplay_e2e_test.pptx ppt/slides/slide1.xml)",
+      "Read(//c/Users/Upadhyaya_Lab/AppData/Local/Temp/**)",
+      "Bash(unzip -p _autoplay_e2e_test.pptx ppt/slides/slide2.xml)",
+      "Bash(powershell -NoProfile -Command \"Get-Process POWERPNT -ErrorAction SilentlyContinue | Select-Object Id, StartTime\")"
     ]
   }
 }
