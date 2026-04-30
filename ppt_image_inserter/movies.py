@@ -1,23 +1,30 @@
 """Movie-related helpers for PowerPoint decks.
 
-Currently this module exposes a single helper that fixes the well-known
-"video does not autoplay" issue with PowerPoint media inserted via either
-``python-pptx``'s ``shapes.add_movie`` or PowerPoint COM's
-``Shapes.AddMediaObject2``: both pipelines write a ``<p:cTn>`` start
-condition of ``delay="indefinite"`` (click-to-start) on the trigger node
-above the media-play effect, and PowerPoint surfaces that as click-to-start
-in the Animation Pane and in normal mode regardless of what
-``PlaySettings.PlayOnEntry`` reports via COM.
+This module contains:
 
-The fix is a small OOXML rewrite that PowerPoint then preserves on
-subsequent saves.
+- :class:`TextboxSpec`, :class:`MovieSpec`, :class:`SlideSpec`: simple
+  dataclasses describing a slide's textboxes and embedded movies in points.
+- :func:`build_movie_deck_via_com`: builds a deck from those specs using
+  PowerPoint COM (Windows-only) and rewrites the timing tree on disk so each
+  movie autoplays in slideshow mode.
+- :func:`force_autoplay_in_pptx`: low-level OOXML rewrite that fixes the
+  well-known "video does not autoplay" issue produced by both
+  ``python-pptx``'s ``shapes.add_movie`` and PowerPoint COM's
+  ``Shapes.AddMediaObject2``. Both pipelines write a ``<p:cTn>`` start
+  condition of ``delay="indefinite"`` (click-to-start) on the trigger node
+  above the media-play effect; this helper rewrites it to ``delay="0"``.
 """
 
 from __future__ import annotations
 
+import json
 import os
+import subprocess
+import sys
+import tempfile
 import zipfile
-from typing import Tuple
+from dataclasses import dataclass, field
+from typing import Sequence, Tuple
 
 from lxml import etree
 
@@ -26,6 +33,206 @@ P_NAMESPACE = "http://schemas.openxmlformats.org/presentationml/2006/main"
 _CTN_TAG = f"{{{P_NAMESPACE}}}cTn"
 _STCONDLST_TAG = f"{{{P_NAMESPACE}}}stCondLst"
 _COND_TAG = f"{{{P_NAMESPACE}}}cond"
+
+_ALIGN_MAP = {"left": 1, "center": 2, "right": 3, "justify": 4}
+
+
+@dataclass(frozen=True)
+class TextboxSpec:
+    """One textbox to add to a slide. All measurements are in points."""
+
+    text: str
+    left_pt: float
+    top_pt: float
+    width_pt: float
+    height_pt: float
+    font_size_pt: float = 22.0
+    bold: bool = True
+    align: str = "center"
+    font_name: str = "Arial"
+
+
+@dataclass(frozen=True)
+class MovieSpec:
+    """One embedded movie on a slide. All measurements are in points."""
+
+    movie_path: str
+    poster_path: str
+    left_pt: float
+    top_pt: float
+    width_pt: float
+    height_pt: float
+
+
+@dataclass(frozen=True)
+class SlideSpec:
+    """One slide's textboxes and movies."""
+
+    textboxes: Sequence[TextboxSpec] = field(default_factory=tuple)
+    movies: Sequence[MovieSpec] = field(default_factory=tuple)
+
+
+def build_movie_deck_via_com(
+    slides: Sequence[SlideSpec],
+    output_path: str,
+    slide_width_pt: float,
+    slide_height_pt: float,
+) -> int:
+    """Build a PowerPoint deck of textboxes and embedded movies via COM.
+
+    Each slide gets its textboxes added via ``Shapes.AddTextbox`` and each
+    movie inserted via ``Shapes.AddMediaObject2`` with a poster frame from
+    ``MediaFormat.SetDisplayPictureFromFile``. A media-play effect (effect
+    id 83) is attached on the slide's main timeline sequence; the trigger
+    condition is then rewritten on disk by :func:`force_autoplay_in_pptx`
+    so the movie autoplays in slideshow mode.
+
+    Args:
+        slides: The slides to build, in order.
+        output_path: Where to save the .pptx. Overwritten if it exists.
+        slide_width_pt: Slide width in points (e.g. 13.333 in * 72 = 960).
+        slide_height_pt: Slide height in points (e.g. 7.5 in * 72 = 540).
+
+    Returns:
+        The number of slides whose autoplay trigger was rewritten on disk.
+    """
+    if sys.platform != "win32":
+        raise RuntimeError(
+            "PowerPoint COM deck generation is only available on Windows"
+        )
+
+    manifest = {
+        "slide_width_pt": slide_width_pt,
+        "slide_height_pt": slide_height_pt,
+        "slides": [_slide_to_manifest(slide) for slide in slides],
+    }
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".manifest.json", delete=False, encoding="utf-8"
+    ) as tmp:
+        json.dump(manifest, tmp)
+        manifest_path = tmp.name
+
+    try:
+        normalized_manifest_path = manifest_path.replace("'", "''")
+        normalized_output_path = os.path.abspath(output_path).replace("'", "''")
+        powershell_script = _POWERSHELL_TEMPLATE.format(
+            manifest_path=normalized_manifest_path,
+            output_path=normalized_output_path,
+        )
+
+        try:
+            subprocess.run(
+                ["powershell", "-NoProfile", "-Command", powershell_script],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as exc:
+            raise RuntimeError(
+                "PowerPoint COM build failed.\n"
+                f"stdout:\n{exc.stdout}\n"
+                f"stderr:\n{exc.stderr}"
+            ) from exc
+    finally:
+        try:
+            os.unlink(manifest_path)
+        except OSError:
+            pass
+
+    return force_autoplay_in_pptx(output_path)
+
+
+def _slide_to_manifest(slide: SlideSpec) -> dict:
+    return {
+        "textboxes": [
+            {
+                "text": tb.text,
+                "left_pt": tb.left_pt,
+                "top_pt": tb.top_pt,
+                "width_pt": tb.width_pt,
+                "height_pt": tb.height_pt,
+                "font_size_pt": tb.font_size_pt,
+                "bold": bool(tb.bold),
+                "align": _ALIGN_MAP[tb.align.lower()],
+                "font_name": tb.font_name,
+            }
+            for tb in slide.textboxes
+        ],
+        "movies": [
+            {
+                "movie_path": os.path.abspath(mv.movie_path),
+                "poster_path": os.path.abspath(mv.poster_path),
+                "left_pt": mv.left_pt,
+                "top_pt": mv.top_pt,
+                "width_pt": mv.width_pt,
+                "height_pt": mv.height_pt,
+            }
+            for mv in slide.movies
+        ],
+    }
+
+
+_POWERSHELL_TEMPLATE = r"""
+$ErrorActionPreference = 'Stop'
+$manifestPath = '{manifest_path}'
+$outputPath = '{output_path}'
+$data = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+$app = New-Object -ComObject PowerPoint.Application
+$app.Visible = -1
+$presentation = $app.Presentations.Add()
+$buildError = $null
+try {{
+    $presentation.PageSetup.SlideWidth = [int][math]::Round($data.slide_width_pt)
+    $presentation.PageSetup.SlideHeight = [int][math]::Round($data.slide_height_pt)
+    foreach ($slideSpec in $data.slides) {{
+        $slide = $presentation.Slides.Add($presentation.Slides.Count + 1, 12)
+        foreach ($tb in $slideSpec.textboxes) {{
+            $textShape = $slide.Shapes.AddTextbox(
+                1,
+                [single]$tb.left_pt,
+                [single]$tb.top_pt,
+                [single]$tb.width_pt,
+                [single]$tb.height_pt
+            )
+            $textRange = $textShape.TextFrame.TextRange
+            $textRange.Text = $tb.text
+            $textRange.ParagraphFormat.Alignment = [int]$tb.align
+            $textRange.Font.Size = [single]$tb.font_size_pt
+            if ($tb.bold) {{ $textRange.Font.Bold = -1 }} else {{ $textRange.Font.Bold = 0 }}
+            $textRange.Font.Name = $tb.font_name
+        }}
+        foreach ($mv in $slideSpec.movies) {{
+            $mediaShape = $slide.Shapes.AddMediaObject2(
+                $mv.movie_path,
+                $false,
+                $true,
+                [single]$mv.left_pt,
+                [single]$mv.top_pt,
+                [single]$mv.width_pt,
+                [single]$mv.height_pt
+            )
+            $mediaShape.MediaFormat.SetDisplayPictureFromFile($mv.poster_path)
+            # Add Media Play (effect 83) on the main sequence; force_autoplay_in_pptx
+            # then flips the trigger from delay="indefinite" to delay="0" on disk.
+            $slide.TimeLine.MainSequence.AddEffect($mediaShape, 83, 0, 2) | Out-Null
+        }}
+    }}
+    $presentation.SaveAs($outputPath, 24)
+}} catch {{
+    $buildError = $_
+    throw
+}} finally {{
+    try {{
+        if ($presentation -and -not $buildError) {{ $presentation.Close() }}
+    }} catch {{
+    }}
+    try {{
+        if ($app) {{ $app.Quit() }}
+    }} catch {{
+    }}
+}}
+"""
 
 
 def force_autoplay_in_pptx(pptx_path: str) -> int:

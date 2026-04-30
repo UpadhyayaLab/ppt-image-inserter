@@ -44,6 +44,10 @@ from .workflow import (
 )
 
 from .movies import (
+    MovieSpec,
+    SlideSpec,
+    TextboxSpec,
+    build_movie_deck_via_com,
     force_autoplay_in_pptx,
 )
 
@@ -78,5 +82,9 @@ __all__ = [
     'add_label_to_existing_slide',
 
     # Movie helpers
+    'TextboxSpec',
+    'MovieSpec',
+    'SlideSpec',
+    'build_movie_deck_via_com',
     'force_autoplay_in_pptx',
 ]

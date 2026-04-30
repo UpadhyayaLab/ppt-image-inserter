@@ -85,7 +85,14 @@
       "Bash(unzip -p _autoplay_e2e_test.pptx ppt/slides/slide1.xml)",
       "Read(//c/Users/Upadhyaya_Lab/AppData/Local/Temp/**)",
       "Bash(unzip -p _autoplay_e2e_test.pptx ppt/slides/slide2.xml)",
-      "Bash(powershell -NoProfile -Command \"Get-Process POWERPNT -ErrorAction SilentlyContinue | Select-Object Id, StartTime\")"
+      "Bash(powershell -NoProfile -Command \"Get-Process POWERPNT -ErrorAction SilentlyContinue | Select-Object Id, StartTime\")",
+      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 136808 -Force; Start-Sleep -Seconds 2; Get-Process POWERPNT -ErrorAction SilentlyContinue | Measure-Object | Select-Object -ExpandProperty Count\")",
+      "Bash(powershell -NoProfile -Command \"Get-Process POWERPNT -ErrorAction SilentlyContinue | Measure-Object | Select-Object -ExpandProperty Count\")",
+      "Bash(tasklist)",
+      "Bash(taskkill /F /PID 104572)",
+      "Bash(taskkill //F //PID 104572)",
+      "Bash(taskkill //F //PID 111368 //PID 66428)",
+      "Bash(taskkill //F //PID 120672)"
     ]
   }
 }

@@ -1,14 +1,20 @@
 #!/usr/bin/env python
 """
-Build a PowerPoint deck with two movie slides per cell.
+Build a PowerPoint deck of CTL raw-with-meshes movies (four slides per cell).
 
-For each cell number N present in all four source folders, this script creates:
+For each cell number N present in all eight required folders within an
+experiment, this script creates:
 
-1. A "panel_1x3" slide with xz on top and yz on bottom
-2. A "panel_raw_cent" slide with xz on top and yz on bottom
+1. A "panel_1x3 xz" slide pairing xz on top with xz_rev on bottom
+2. A "panel_1x3 yz" slide pairing yz on top with yz_rev on bottom
+3. A "panel_raw_cent xz" slide pairing xz on top with xz_rev on bottom
+4. A "panel_raw_cent yz" slide pairing yz on top with yz_rev on bottom
 
-Movies are inserted via PowerPoint COM (Windows-only); after saving, the
-timing-tree trigger on disk is rewritten so videos autoplay in slideshow mode.
+Three CTL experiments are combined into a single deck:
+20210928 OTI CTL Activated, 20211221 OTI CTL Activated, and 20220614 OT1
+CTLs antiCD3. Movies are inserted via PowerPoint COM (Windows-only); after
+saving, the timing-tree trigger on disk is rewritten so videos autoplay in
+slideshow mode.
 """
 
 from __future__ import annotations
@@ -41,48 +47,16 @@ except ImportError:
     iio = None
 
 
-DEFAULT_PANEL_1X3_XZ = Path(
-    "F:/FF/nucleus_live_cell/jurkat_nucleus_centrosome/NaBu800 Experiments/"
-    "Control_3D_CD3/all_cells_together/prog_live_cells/raw_with_meshes_movies/"
-    "panel_1x3/xz_white_grey_blue"
-)
-DEFAULT_PANEL_1X3_YZ = Path(
-    "F:/FF/nucleus_live_cell/jurkat_nucleus_centrosome/NaBu800 Experiments/"
-    "Control_3D_CD3/all_cells_together/prog_live_cells/raw_with_meshes_movies/"
-    "panel_1x3/yz_white_grey_blue"
-)
-DEFAULT_RAW_CENT_XZ = Path(
-    "F:/FF/nucleus_live_cell/jurkat_nucleus_centrosome/NaBu800 Experiments/"
-    "Control_3D_CD3/all_cells_together/prog_live_cells/raw_with_meshes_movies/"
-    "panel_raw_cent/xz"
-)
-DEFAULT_RAW_CENT_YZ = Path(
-    "F:/FF/nucleus_live_cell/jurkat_nucleus_centrosome/NaBu800 Experiments/"
-    "Control_3D_CD3/all_cells_together/prog_live_cells/raw_with_meshes_movies/"
-    "panel_raw_cent/yz"
-)
-SECOND_PANEL_1X3_XZ = Path(
-    "F:/FF/nucleus_live_cell/jurkat_nucleus_centrosome/GFP-Centrin_SiR-DNA/"
-    "Control/cells/all_cells_together/prog_live_cells/raw_with_meshes_movies/"
-    "panel_1x3/xz_white_grey_blue"
-)
-SECOND_PANEL_1X3_YZ = Path(
-    "F:/FF/nucleus_live_cell/jurkat_nucleus_centrosome/GFP-Centrin_SiR-DNA/"
-    "Control/cells/all_cells_together/prog_live_cells/raw_with_meshes_movies/"
-    "panel_1x3/yz_white_grey_blue"
-)
-SECOND_RAW_CENT_XZ = Path(
-    "F:/FF/nucleus_live_cell/jurkat_nucleus_centrosome/GFP-Centrin_SiR-DNA/"
-    "Control/cells/all_cells_together/prog_live_cells/raw_with_meshes_movies/"
-    "panel_raw_cent/xz"
-)
-SECOND_RAW_CENT_YZ = Path(
-    "F:/FF/nucleus_live_cell/jurkat_nucleus_centrosome/GFP-Centrin_SiR-DNA/"
-    "Control/cells/all_cells_together/prog_live_cells/raw_with_meshes_movies/"
-    "panel_raw_cent/yz"
-)
-DEFAULT_OUTPUT = Path("K:/FF/PPT/PPT_autogeneration/Live Cells/Jurkat raw mesh movies.pptx")
-DEFAULT_POSTER_DIR = Path(__file__).resolve().parent / "_movie_posters_tmp"
+CTL_BASE = Path("F:/FF/nucleus_live_cell/ctl_nucleus_centrosome")
+
+EXPT_0928_BASE = CTL_BASE / "20210928_OTI_CTL_Activated/combined/frames/prog_live_cells/raw_with_meshes_movies"
+EXPT_1221_BASE = CTL_BASE / "20211221_OTI_CTL_Activated_already_cropped/combined/channels/frames/prog_live_cells/raw_with_meshes_movies"
+EXPT_0614_BASE = CTL_BASE / "20220614_OT1_CTLs_Centrin_SiR-DNA/antiCD3/Cells/channels/frames/prog_live_cells/raw_with_meshes_movies"
+
+DEFAULT_OUTPUT = Path("K:/FF/PPT/PPT_autogeneration/Live Cells/CTL raw, mesh movies.pptx")
+DEFAULT_POSTER_DIR = Path(__file__).resolve().parent / "_movie_posters_tmp_ctl_raw_mesh"
+
+PER_EXPT_OUTPUT_DIR = Path("K:/FF/PPT/PPT_autogeneration/Live Cells")
 
 CELL_PATTERN = re.compile(r"^Cell(?P<cell>\d+)_.*\.mp4$", re.IGNORECASE)
 
@@ -109,14 +83,18 @@ POINTS_PER_INCH = 72.0
 
 @dataclass(frozen=True)
 class CellMovieSet:
-    """All four movie paths needed to build the two slides for one cell."""
+    """All eight movie paths needed to build the four slides for one cell."""
 
     experiment_label: str
     cell_number: int
     panel_1x3_xz: Path
+    panel_1x3_xz_rev: Path
     panel_1x3_yz: Path
+    panel_1x3_yz_rev: Path
     raw_cent_xz: Path
+    raw_cent_xz_rev: Path
     raw_cent_yz: Path
+    raw_cent_yz_rev: Path
 
 
 @dataclass(frozen=True)
@@ -125,48 +103,95 @@ class ExperimentSource:
 
     experiment_label: str
     panel_1x3_xz: Path
+    panel_1x3_xz_rev: Path
     panel_1x3_yz: Path
+    panel_1x3_yz_rev: Path
     raw_cent_xz: Path
+    raw_cent_xz_rev: Path
     raw_cent_yz: Path
+    raw_cent_yz_rev: Path
+
+
+DEFAULT_EXPERIMENT_SOURCES: Tuple[ExperimentSource, ...] = (
+    ExperimentSource(
+        experiment_label="20210928 OTI CTL Activated",
+        panel_1x3_xz=EXPT_0928_BASE / "panel_1x3/xz_white_grey_blue",
+        panel_1x3_xz_rev=EXPT_0928_BASE / "panel_1x3/xz_rev_white_grey_blue",
+        panel_1x3_yz=EXPT_0928_BASE / "panel_1x3/yz_white_grey_blue",
+        panel_1x3_yz_rev=EXPT_0928_BASE / "panel_1x3/yz_rev_white_grey_blue",
+        raw_cent_xz=EXPT_0928_BASE / "panel_raw_cent/xz",
+        raw_cent_xz_rev=EXPT_0928_BASE / "panel_raw_cent/xz_rev",
+        raw_cent_yz=EXPT_0928_BASE / "panel_raw_cent/yz",
+        raw_cent_yz_rev=EXPT_0928_BASE / "panel_raw_cent/yz_rev",
+    ),
+    ExperimentSource(
+        experiment_label="20211221 OTI CTL Activated",
+        panel_1x3_xz=EXPT_1221_BASE / "panel_1x3/xz_white_grey_blue",
+        panel_1x3_xz_rev=EXPT_1221_BASE / "panel_1x3/xz_rev_white_grey_blue",
+        panel_1x3_yz=EXPT_1221_BASE / "panel_1x3/yz_white_grey_blue",
+        panel_1x3_yz_rev=EXPT_1221_BASE / "panel_1x3/yz_rev_white_grey_blue",
+        raw_cent_xz=EXPT_1221_BASE / "panel_raw_cent/xz",
+        raw_cent_xz_rev=EXPT_1221_BASE / "panel_raw_cent/xz_rev",
+        raw_cent_yz=EXPT_1221_BASE / "panel_raw_cent/yz",
+        raw_cent_yz_rev=EXPT_1221_BASE / "panel_raw_cent/yz_rev",
+    ),
+    ExperimentSource(
+        experiment_label="20220614 OT1 CTLs antiCD3",
+        panel_1x3_xz=EXPT_0614_BASE / "panel_1x3/xz_white_grey_blue",
+        panel_1x3_xz_rev=EXPT_0614_BASE / "panel_1x3/xz_rev_white_grey_blue",
+        panel_1x3_yz=EXPT_0614_BASE / "panel_1x3/yz_white_grey_blue",
+        panel_1x3_yz_rev=EXPT_0614_BASE / "panel_1x3/yz_rev_white_grey_blue",
+        raw_cent_xz=EXPT_0614_BASE / "panel_raw_cent/xz",
+        raw_cent_xz_rev=EXPT_0614_BASE / "panel_raw_cent/xz_rev",
+        raw_cent_yz=EXPT_0614_BASE / "panel_raw_cent/yz",
+        raw_cent_yz_rev=EXPT_0614_BASE / "panel_raw_cent/yz_rev",
+    ),
+)
+
+
+FOLDER_FIELDS: Tuple[str, ...] = (
+    "panel_1x3_xz",
+    "panel_1x3_xz_rev",
+    "panel_1x3_yz",
+    "panel_1x3_yz_rev",
+    "raw_cent_xz",
+    "raw_cent_xz_rev",
+    "raw_cent_yz",
+    "raw_cent_yz_rev",
+)
 
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
         description=(
-            "Create a PowerPoint deck with two movie slides per cell: "
-            "panel_1x3 (xz over yz) and panel_raw_cent (xz over yz)."
+            "Create a PowerPoint deck of CTL raw-with-meshes movies, four "
+            "slides per cell pairing each direction with its _rev variant: "
+            "panel_1x3 xz pair, panel_1x3 yz pair, panel_raw_cent xz pair, "
+            "panel_raw_cent yz pair. Combines 20210928, 20211221, and "
+            "20220614 CTL experiments."
         )
-    )
-    parser.add_argument(
-        "--panel-1x3-xz",
-        type=Path,
-        default=DEFAULT_PANEL_1X3_XZ,
-        help=f"Folder containing CellN panel_1x3 xz movies. Default: {DEFAULT_PANEL_1X3_XZ}",
-    )
-    parser.add_argument(
-        "--panel-1x3-yz",
-        type=Path,
-        default=DEFAULT_PANEL_1X3_YZ,
-        help=f"Folder containing CellN panel_1x3 yz movies. Default: {DEFAULT_PANEL_1X3_YZ}",
-    )
-    parser.add_argument(
-        "--raw-cent-xz",
-        type=Path,
-        default=DEFAULT_RAW_CENT_XZ,
-        help=f"Folder containing CellN panel_raw_cent xz movies. Default: {DEFAULT_RAW_CENT_XZ}",
-    )
-    parser.add_argument(
-        "--raw-cent-yz",
-        type=Path,
-        default=DEFAULT_RAW_CENT_YZ,
-        help=f"Folder containing CellN panel_raw_cent yz movies. Default: {DEFAULT_RAW_CENT_YZ}",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=DEFAULT_OUTPUT,
-        help=f"Output PowerPoint path. Default: {DEFAULT_OUTPUT}",
+        default=None,
+        help=(
+            "Output PowerPoint path. If omitted, defaults to the combined deck "
+            f"({DEFAULT_OUTPUT}) when --experiment is not used, or to a "
+            "per-experiment file in K:/FF/PPT/PPT_autogeneration/Live Cells/ "
+            "when --experiment is set."
+        ),
+    )
+    parser.add_argument(
+        "--experiment",
+        type=str,
+        default=None,
+        choices=["20210928", "20211221", "20220614"],
+        help=(
+            "Build a deck for just one experiment (by date prefix). "
+            "Useful when the combined deck is too large for PowerPoint COM."
+        ),
     )
     parser.add_argument(
         "--cells",
@@ -175,6 +200,30 @@ def parse_args() -> argparse.Namespace:
         help="Optional comma-separated list of cell numbers to include, e.g. 1,2,5,10",
     )
     return parser.parse_args()
+
+
+def select_experiment_sources(experiment: Optional[str]) -> Tuple[ExperimentSource, ...]:
+    """Filter DEFAULT_EXPERIMENT_SOURCES to a single experiment if requested."""
+    if experiment is None:
+        return DEFAULT_EXPERIMENT_SOURCES
+    matched = tuple(
+        source for source in DEFAULT_EXPERIMENT_SOURCES
+        if experiment in source.experiment_label
+    )
+    if not matched:
+        raise ValueError(f"No experiment matches: {experiment}")
+    return matched
+
+
+def resolve_output_path(
+    output_arg: Optional[Path], experiment: Optional[str]
+) -> Path:
+    """Pick the output path based on --output / --experiment."""
+    if output_arg is not None:
+        return output_arg.resolve()
+    if experiment is None:
+        return DEFAULT_OUTPUT.resolve()
+    return (PER_EXPT_OUTPUT_DIR / f"CTL raw, mesh movies ({experiment}).pptx").resolve()
 
 
 def parse_requested_cells(cells_arg: str) -> Optional[Set[int]]:
@@ -233,19 +282,13 @@ def collect_movies(folder: Path, label: str) -> Dict[int, Path]:
 
 def build_complete_cell_sets(
     experiment_label: str,
-    panel_1x3_xz: Dict[int, Path],
-    panel_1x3_yz: Dict[int, Path],
-    raw_cent_xz: Dict[int, Path],
-    raw_cent_yz: Dict[int, Path],
+    folder_maps: Dict[str, Dict[int, Path]],
     requested_cells: Optional[Set[int]] = None,
 ) -> List[CellMovieSet]:
-    """Build complete four-movie records for cells present in all required folders."""
-    available_in_all = (
-        set(panel_1x3_xz)
-        & set(panel_1x3_yz)
-        & set(raw_cent_xz)
-        & set(raw_cent_yz)
-    )
+    """Build complete eight-movie records for cells present in all required folders."""
+    available_in_all: Set[int] = set(folder_maps[FOLDER_FIELDS[0]])
+    for field in FOLDER_FIELDS[1:]:
+        available_in_all &= set(folder_maps[field])
 
     if requested_cells is not None:
         available_in_all &= requested_cells
@@ -254,10 +297,7 @@ def build_complete_cell_sets(
         CellMovieSet(
             experiment_label=experiment_label,
             cell_number=cell_number,
-            panel_1x3_xz=panel_1x3_xz[cell_number],
-            panel_1x3_yz=panel_1x3_yz[cell_number],
-            raw_cent_xz=raw_cent_xz[cell_number],
-            raw_cent_yz=raw_cent_yz[cell_number],
+            **{field: folder_maps[field][cell_number] for field in FOLDER_FIELDS},
         )
         for cell_number in sorted(available_in_all)
     ]
@@ -303,11 +343,12 @@ def collect_cell_sets_for_experiment(
     requested_cells: Optional[Set[int]] = None,
 ) -> List[CellMovieSet]:
     """Collect complete cell movie sets for one experiment."""
-    folder_maps = {
-        "panel_1x3_xz": collect_movies(source.panel_1x3_xz, f"{source.experiment_label} panel_1x3_xz"),
-        "panel_1x3_yz": collect_movies(source.panel_1x3_yz, f"{source.experiment_label} panel_1x3_yz"),
-        "raw_cent_xz": collect_movies(source.raw_cent_xz, f"{source.experiment_label} raw_cent_xz"),
-        "raw_cent_yz": collect_movies(source.raw_cent_yz, f"{source.experiment_label} raw_cent_yz"),
+    folder_maps: Dict[str, Dict[int, Path]] = {
+        field: collect_movies(
+            getattr(source, field),
+            f"{source.experiment_label} {field}",
+        )
+        for field in FOLDER_FIELDS
     }
 
     report_missing_cells(
@@ -318,10 +359,7 @@ def collect_cell_sets_for_experiment(
 
     return build_complete_cell_sets(
         source.experiment_label,
-        folder_maps["panel_1x3_xz"],
-        folder_maps["panel_1x3_yz"],
-        folder_maps["raw_cent_xz"],
-        folder_maps["raw_cent_yz"],
+        folder_maps,
         requested_cells=requested_cells,
     )
 
@@ -364,14 +402,32 @@ def fit_within_box(
     return final_left, final_top, final_width, final_height
 
 
-def format_panel_1x3_title(cell_number: int, experiment_label: str) -> str:
-    """Return the title for the panel_1x3 slide."""
-    return f"Raw, invag depth, min curvature: Cell {cell_number} ({experiment_label})"
+def format_experiment_suffix(experiment_label: str) -> str:
+    """Strip the verbose experiment description, keep the date as `YYYYMMDD expt`."""
+    match = re.search(r"\b(\d{8})\b", experiment_label)
+    if match:
+        return f"{match.group(1)} expt"
+    return experiment_label
 
 
-def format_raw_cent_title(cell_number: int, experiment_label: str) -> str:
-    """Return the title for the panel_raw_cent slide."""
-    return f"Raw, region near centrosome: Cell {cell_number} ({experiment_label})"
+def format_panel_1x3_title(
+    cell_number: int, experiment_label: str, direction: str
+) -> str:
+    """Return the title for a panel_1x3 slide."""
+    return (
+        f"Raw, invag depth, min curvature ({direction}): "
+        f"Cell {cell_number} ({format_experiment_suffix(experiment_label)})"
+    )
+
+
+def format_raw_cent_title(
+    cell_number: int, experiment_label: str, direction: str
+) -> str:
+    """Return the title for a panel_raw_cent slide."""
+    return (
+        f"Raw, region near centrosome ({direction}): "
+        f"Cell {cell_number} ({format_experiment_suffix(experiment_label)})"
+    )
 
 
 def _to_points(inches: float) -> float:
@@ -435,17 +491,19 @@ def _build_movie_pair_slide(
     title: str,
     top_movie: Path,
     bottom_movie: Path,
+    top_label: str,
+    bottom_label: str,
     poster_dir: Path,
     suffix: str,
 ) -> SlideSpec:
-    """Build one slide with title + xz/yz labels + xz/yz movies."""
+    """Build one slide with title + top/bottom labels + top/bottom movies."""
     top_poster = poster_dir / f"{top_movie.stem}_{suffix}_top_poster.png"
     bottom_poster = poster_dir / f"{bottom_movie.stem}_{suffix}_bottom_poster.png"
     return SlideSpec(
         textboxes=(
             _make_title_textbox(title),
-            _make_region_label("xz", TOP_LABEL_TOP_IN),
-            _make_region_label("yz", BOTTOM_LABEL_TOP_IN),
+            _make_region_label(top_label, TOP_LABEL_TOP_IN),
+            _make_region_label(bottom_label, BOTTOM_LABEL_TOP_IN),
         ),
         movies=(
             _make_movie_spec(top_movie, top_poster, TOP_MOVIE_TOP_IN),
@@ -458,25 +516,61 @@ def build_slide_specs(
     cell_sets: Sequence[CellMovieSet],
     poster_dir: Path,
 ) -> List[SlideSpec]:
-    """Build two SlideSpecs per cell (panel_1x3 and panel_raw_cent)."""
+    """Build four SlideSpecs per cell, pairing each direction with its _rev variant."""
     slide_specs: List[SlideSpec] = []
     for cell_set in cell_sets:
+        slug = f"cell{cell_set.cell_number}_{cell_set.experiment_label.replace(' ', '_')}"
+
         slide_specs.append(
             _build_movie_pair_slide(
-                format_panel_1x3_title(cell_set.cell_number, cell_set.experiment_label),
+                format_panel_1x3_title(
+                    cell_set.cell_number, cell_set.experiment_label, "xz"
+                ),
                 cell_set.panel_1x3_xz,
-                cell_set.panel_1x3_yz,
+                cell_set.panel_1x3_xz_rev,
+                "xz",
+                "xz_rev",
                 poster_dir,
-                f"cell{cell_set.cell_number}_{cell_set.experiment_label.replace(' ', '_')}_panel1x3",
+                f"{slug}_panel1x3_xz",
             )
         )
         slide_specs.append(
             _build_movie_pair_slide(
-                format_raw_cent_title(cell_set.cell_number, cell_set.experiment_label),
-                cell_set.raw_cent_xz,
-                cell_set.raw_cent_yz,
+                format_panel_1x3_title(
+                    cell_set.cell_number, cell_set.experiment_label, "yz"
+                ),
+                cell_set.panel_1x3_yz,
+                cell_set.panel_1x3_yz_rev,
+                "yz",
+                "yz_rev",
                 poster_dir,
-                f"cell{cell_set.cell_number}_{cell_set.experiment_label.replace(' ', '_')}_rawcent",
+                f"{slug}_panel1x3_yz",
+            )
+        )
+        slide_specs.append(
+            _build_movie_pair_slide(
+                format_raw_cent_title(
+                    cell_set.cell_number, cell_set.experiment_label, "xz"
+                ),
+                cell_set.raw_cent_xz,
+                cell_set.raw_cent_xz_rev,
+                "xz",
+                "xz_rev",
+                poster_dir,
+                f"{slug}_rawcent_xz",
+            )
+        )
+        slide_specs.append(
+            _build_movie_pair_slide(
+                format_raw_cent_title(
+                    cell_set.cell_number, cell_set.experiment_label, "yz"
+                ),
+                cell_set.raw_cent_yz,
+                cell_set.raw_cent_yz_rev,
+                "yz",
+                "yz_rev",
+                poster_dir,
+                f"{slug}_rawcent_yz",
             )
         )
     return slide_specs
@@ -499,22 +593,6 @@ def prepare_poster_dir(poster_dir: Path) -> Path:
 def main() -> int:
     """Run the movie deck generation workflow."""
     args = parse_args()
-    experiment_sources = [
-        ExperimentSource(
-            experiment_label="032022 expt",
-            panel_1x3_xz=args.panel_1x3_xz,
-            panel_1x3_yz=args.panel_1x3_yz,
-            raw_cent_xz=args.raw_cent_xz,
-            raw_cent_yz=args.raw_cent_yz,
-        ),
-        ExperimentSource(
-            experiment_label="04142022 expt",
-            panel_1x3_xz=SECOND_PANEL_1X3_XZ,
-            panel_1x3_yz=SECOND_PANEL_1X3_YZ,
-            raw_cent_xz=SECOND_RAW_CENT_XZ,
-            raw_cent_yz=SECOND_RAW_CENT_YZ,
-        ),
-    ]
 
     try:
         requested_cells = parse_requested_cells(args.cells)
@@ -523,8 +601,14 @@ def main() -> int:
         return 1
 
     try:
+        sources = select_experiment_sources(args.experiment)
+    except ValueError as exc:
+        print(f"[ERROR] {exc}")
+        return 1
+
+    try:
         cell_sets: List[CellMovieSet] = []
-        for source in experiment_sources:
+        for source in sources:
             experiment_cell_sets = collect_cell_sets_for_experiment(
                 source,
                 requested_cells=requested_cells,
@@ -536,13 +620,13 @@ def main() -> int:
         return 1
 
     if not cell_sets:
-        print("[ERROR] No cells have a complete set of all four required movies")
+        print("[ERROR] No cells have a complete set of all eight required movies")
         return 1
 
     print(f"Found {len(cell_sets)} complete cell set(s) across all experiments")
-    print(f"Will create {len(cell_sets) * 2} slide(s)")
+    print(f"Will create {len(cell_sets) * 4} slide(s)")
 
-    output_path = args.output.resolve()
+    output_path = resolve_output_path(args.output, args.experiment)
     ensure_parent_dir(output_path)
 
     if output_path.exists():

@@ -15,10 +15,8 @@ The output file is backed up before being overwritten.
 from __future__ import annotations
 
 import argparse
-import json
 import re
 import shutil
-import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -31,7 +29,13 @@ from PIL import Image
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from ppt_image_inserter import backup_presentation, force_autoplay_in_pptx
+from ppt_image_inserter import (
+    MovieSpec,
+    SlideSpec,
+    TextboxSpec,
+    backup_presentation,
+    build_movie_deck_via_com,
+)
 
 
 DEFAULT_MOVIE_DIR = Path(
@@ -43,16 +47,16 @@ DEFAULT_OUTPUT = DEFAULT_MOVIE_DIR / "invag_cent_panels_movies.pptx"
 DEFAULT_POSTER_DIR = DEFAULT_MOVIE_DIR / "_movie_posters_tmp"
 DEFAULT_EXPERIMENT_LABEL = "20220614 OT1 CTLs antiCD3"
 DEFAULT_COMBINED_OUTPUT = Path(
-    "K:/FF/PPT/PPT_autogeneration/Live Cells/CTL_invag_cent_panels_movies_combined.pptx"
+    "K:/FF/PPT/PPT_autogeneration/Live Cells/CTL invag cent movies.pptx"
 )
 DEFAULT_COMBINED_POSTER_DIR = Path(
-    "K:/FF/PPT/PPT_autogeneration/Live Cells/_movie_posters_tmp_invag_cent_panels_combined"
+    "K:/FF/PPT/PPT_autogeneration/Live Cells/_movie_posters_tmp_ctl_invag_cent_combined"
 )
 DEFAULT_JURKAT_COMBINED_OUTPUT = Path(
-    "K:/FF/PPT/PPT_autogeneration/Live Cells/Jurkat_invag_cent_panels_movies_combined.pptx"
+    "K:/FF/PPT/PPT_autogeneration/Live Cells/Jurkat invag cent movies.pptx"
 )
 DEFAULT_JURKAT_COMBINED_POSTER_DIR = Path(
-    "K:/FF/PPT/PPT_autogeneration/Live Cells/_movie_posters_tmp_jurkat_invag_cent_panels_combined"
+    "K:/FF/PPT/PPT_autogeneration/Live Cells/_movie_posters_tmp_jurkat_invag_cent_combined"
 )
 
 MOVIE_PATTERN = re.compile(r"^Cell(?P<cell>\d+)_invag_cent_panels\.mp4$", re.IGNORECASE)
@@ -150,14 +154,22 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output",
         type=Path,
-        default=DEFAULT_OUTPUT,
-        help=f"Output PowerPoint path. Default: {DEFAULT_OUTPUT}",
+        default=None,
+        help=(
+            "Output PowerPoint path. If omitted, picks a default based on the "
+            f"selected mode: {DEFAULT_OUTPUT} (single), "
+            f"{DEFAULT_COMBINED_OUTPUT} (--combined-defaults), "
+            f"{DEFAULT_JURKAT_COMBINED_OUTPUT} (--jurkat-combined-defaults)."
+        ),
     )
     parser.add_argument(
         "--poster-dir",
         type=Path,
-        default=DEFAULT_POSTER_DIR,
-        help=f"Temporary poster-frame folder. Default: {DEFAULT_POSTER_DIR}",
+        default=None,
+        help=(
+            "Temporary poster-frame folder. If omitted, matches the selected "
+            "mode's default location."
+        ),
     )
     parser.add_argument(
         "--experiment-label",
@@ -349,38 +361,17 @@ def _to_points(inches: float) -> float:
     return inches * POINTS_PER_INCH
 
 
-def build_presentation_with_powerpoint_com(
+def build_slide_specs(
     movies: Sequence[MovieRecord],
     poster_dir: Path,
-    output_path: Path,
-) -> None:
-    """Build the presentation using native PowerPoint media objects via COM.
-
-    Inserts each movie via ``Shapes.AddMediaObject2`` with autoplay+loop flags
-    set, and attaches the poster frame via ``MediaFormat.SetDisplayPictureFromFile``.
-    Autoplay-trigger correctness is enforced separately by
-    :func:`force_autoplay_in_pptx` after the file is saved, since PowerPoint
-    COM does not write the required ``<p:cond delay="0"/>`` start condition
-    on its own.
-    """
-    if sys.platform != "win32":
-        raise RuntimeError("PowerPoint COM deck generation is only available on Windows")
-
-    manifest = {
-        "slide_width_pt": _to_points(SLIDE_WIDTH_IN),
-        "slide_height_pt": _to_points(SLIDE_HEIGHT_IN),
-        "title_left_pt": _to_points(TITLE_LEFT_IN),
-        "title_top_pt": _to_points(TITLE_TOP_IN),
-        "title_width_pt": _to_points(TITLE_WIDTH_IN),
-        "title_height_pt": _to_points(TITLE_HEIGHT_IN),
-        "slides": [],
-    }
-
+) -> List[SlideSpec]:
+    """Convert MovieRecords into SlideSpecs (one slide per movie)."""
+    slide_specs: List[SlideSpec] = []
     for movie in movies:
         poster_name = f"{movie.experiment_label.replace(' ', '_')}_{movie.movie_path.stem}_poster.png"
         poster_path = poster_dir / poster_name
         frame_width, frame_height = extract_first_frame(movie.movie_path, poster_path)
-        left_inches, top_inches, width_inches, height_inches = fit_within_box(
+        left_in, top_in, width_in, height_in = fit_within_box(
             frame_width,
             frame_height,
             MOVIE_BOX_LEFT_IN,
@@ -388,100 +379,27 @@ def build_presentation_with_powerpoint_com(
             MOVIE_BOX_WIDTH_IN,
             MOVIE_BOX_HEIGHT_IN,
         )
-        manifest["slides"].append(
-            {
-                "title": format_slide_title(movie.cell_number, movie.experiment_label),
-                "movie_path": str(movie.movie_path.resolve()),
-                "poster_path": str(poster_path.resolve()),
-                "left_pt": _to_points(left_inches),
-                "top_pt": _to_points(top_inches),
-                "width_pt": _to_points(width_inches),
-                "height_pt": _to_points(height_inches),
-            }
+        title = TextboxSpec(
+            text=format_slide_title(movie.cell_number, movie.experiment_label),
+            left_pt=_to_points(TITLE_LEFT_IN),
+            top_pt=_to_points(TITLE_TOP_IN),
+            width_pt=_to_points(TITLE_WIDTH_IN),
+            height_pt=_to_points(TITLE_HEIGHT_IN),
+            font_size_pt=22.0,
+            bold=True,
+            align="center",
+            font_name="Arial",
         )
-
-    manifest_path = poster_dir / "_ppt_manifest.json"
-    with open(manifest_path, "w", encoding="utf-8") as f:
-        json.dump(manifest, f, indent=2)
-
-    normalized_manifest_path = str(manifest_path.resolve()).replace("'", "''")
-    normalized_output_path = str(output_path.resolve()).replace("'", "''")
-    powershell_script = rf"""
-$ErrorActionPreference = 'Stop'
-$manifestPath = '{normalized_manifest_path}'
-$outputPath = '{normalized_output_path}'
-$data = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-$app = New-Object -ComObject PowerPoint.Application
-$app.Visible = -1
-$presentation = $app.Presentations.Add()
-$buildError = $null
-try {{
-    $presentation.PageSetup.SlideWidth = [int][math]::Round($data.slide_width_pt)
-    $presentation.PageSetup.SlideHeight = [int][math]::Round($data.slide_height_pt)
-    foreach ($item in $data.slides) {{
-        $slide = $presentation.Slides.Add($presentation.Slides.Count + 1, 12)
-        $titleShape = $slide.Shapes.AddTextbox(
-            1,
-            [single]$item.title_left_pt,
-            [single]$item.title_top_pt,
-            [single]$data.title_width_pt,
-            [single]$data.title_height_pt
+        movie_spec = MovieSpec(
+            movie_path=str(movie.movie_path.resolve()),
+            poster_path=str(poster_path.resolve()),
+            left_pt=_to_points(left_in),
+            top_pt=_to_points(top_in),
+            width_pt=_to_points(width_in),
+            height_pt=_to_points(height_in),
         )
-        $titleRange = $titleShape.TextFrame.TextRange
-        $titleRange.Text = $item.title
-        $titleRange.ParagraphFormat.Alignment = 2
-        $titleRange.Font.Size = 22
-        $titleRange.Font.Bold = -1
-        $titleRange.Font.Name = 'Arial'
-
-        $mediaShape = $slide.Shapes.AddMediaObject2(
-            $item.movie_path,
-            $false,
-            $true,
-            [single]$item.left_pt,
-            [single]$item.top_pt,
-            [single]$item.width_pt,
-            [single]$item.height_pt
-        )
-        $mediaShape.MediaFormat.SetDisplayPictureFromFile($item.poster_path)
-        # Add Media Play (effect 83) on the main sequence; force_autoplay_in_pptx
-        # then flips the trigger from delay="indefinite" to delay="0" on disk.
-        $slide.TimeLine.MainSequence.AddEffect($mediaShape, 83, 0, 2) | Out-Null
-    }}
-    $presentation.SaveAs($outputPath, 24)
-}} catch {{
-    $buildError = $_
-    throw
-}} finally {{
-    try {{
-        if ($presentation -and -not $buildError) {{ $presentation.Close() }}
-    }} catch {{
-    }}
-    try {{
-        if ($app) {{ $app.Quit() }}
-    }} catch {{
-    }}
-}}
-"""
-
-    try:
-        subprocess.run(
-            [
-                "powershell",
-                "-NoProfile",
-                "-Command",
-                powershell_script,
-            ],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        raise RuntimeError(
-            "PowerPoint COM build failed.\n"
-            f"stdout:\n{exc.stdout}\n"
-            f"stderr:\n{exc.stderr}"
-        ) from exc
+        slide_specs.append(SlideSpec(textboxes=(title,), movies=(movie_spec,)))
+    return slide_specs
 
 
 def main() -> int:
@@ -515,7 +433,24 @@ def main() -> int:
 
     print(f"Found {len(movies)} movie(s)")
 
-    output_path = args.output.resolve()
+    if args.output is not None:
+        output_path = args.output.resolve()
+    elif args.combined_defaults:
+        output_path = DEFAULT_COMBINED_OUTPUT.resolve()
+    elif args.jurkat_combined_defaults:
+        output_path = DEFAULT_JURKAT_COMBINED_OUTPUT.resolve()
+    else:
+        output_path = DEFAULT_OUTPUT.resolve()
+
+    if args.poster_dir is not None:
+        poster_dir_path = args.poster_dir
+    elif args.combined_defaults:
+        poster_dir_path = DEFAULT_COMBINED_POSTER_DIR
+    elif args.jurkat_combined_defaults:
+        poster_dir_path = DEFAULT_JURKAT_COMBINED_POSTER_DIR
+    else:
+        poster_dir_path = DEFAULT_POSTER_DIR
+
     ensure_parent_dir(output_path)
 
     if output_path.exists():
@@ -526,10 +461,17 @@ def main() -> int:
         except Exception as exc:
             print(f"[WARNING] Could not back up existing output: {exc}")
 
-    poster_dir = prepare_poster_dir(args.poster_dir.resolve())
+    poster_dir = prepare_poster_dir(poster_dir_path.resolve())
 
     try:
-        build_presentation_with_powerpoint_com(movies, poster_dir, output_path)
+        slide_specs = build_slide_specs(movies, poster_dir)
+        rewritten = build_movie_deck_via_com(
+            slide_specs,
+            str(output_path),
+            slide_width_pt=_to_points(SLIDE_WIDTH_IN),
+            slide_height_pt=_to_points(SLIDE_HEIGHT_IN),
+        )
+        print(f"Set {rewritten} slide(s) to autoplay")
     except PermissionError:
         print(
             f"[ERROR] Permission denied when saving {output_path}. "
@@ -539,12 +481,6 @@ def main() -> int:
     except Exception as exc:
         print(f"[ERROR] Failed while building/saving slides: {exc}")
         return 1
-
-    try:
-        rewritten = force_autoplay_in_pptx(str(output_path))
-        print(f"Set {rewritten} slide(s) to autoplay")
-    except Exception as exc:
-        print(f"[WARNING] Could not set autoplay timing: {exc}")
 
     print(f"[SUCCESS] Saved presentation: {output_path}")
     return 0
