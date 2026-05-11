@@ -5,7 +5,6 @@ Backup system for PowerPoint presentations.
 import os
 import shutil
 import datetime
-import glob
 from typing import Dict
 
 
@@ -14,9 +13,10 @@ def backup_presentation(ppt_path: str, backup_base: str = 'PPT/backups') -> Dict
     Create backups in multiple time-interval categories (one per category).
 
     This function implements a smart backup strategy that maintains ONE backup
-    per time interval category. When a backup is created, it overwrites any
-    existing backup in that category. Backups are only created if the time
-    threshold has been exceeded.
+    per presentation in each time interval category. When a backup is created,
+    it overwrites the existing backup for that presentation in that category.
+    Interval backups are only created if the time threshold has been exceeded
+    for that presentation.
 
     Args:
         ppt_path (str): Path to the PowerPoint file to backup
@@ -61,14 +61,16 @@ def backup_presentation(ppt_path: str, backup_base: str = 'PPT/backups') -> Dict
 
     created_backups = {}
     timestamp = datetime.datetime.now()
+    filename = os.path.basename(ppt_path)
 
     for category, threshold_seconds in intervals.items():
         # Create category directory
         category_dir = os.path.join(backup_base, category)
         os.makedirs(category_dir, exist_ok=True)
+        backup_path = os.path.join(category_dir, filename)
 
-        # Check most recent backup in this category
-        existing_backups = glob.glob(os.path.join(category_dir, '*.pptx'))
+        # Check the existing backup for this presentation in this category
+        existing_backups = [backup_path] if os.path.exists(backup_path) else []
         should_backup = True
 
         if existing_backups and threshold_seconds > 0:
@@ -81,10 +83,6 @@ def backup_presentation(ppt_path: str, backup_base: str = 'PPT/backups') -> Dict
             should_backup = time_diff >= threshold_seconds
 
         if should_backup:
-            # Use original filename (will overwrite existing backup)
-            filename = os.path.basename(ppt_path)
-            backup_path = os.path.join(category_dir, filename)
-
             # Copy the file (preserving metadata)
             shutil.copy2(ppt_path, backup_path)
             created_backups[category] = backup_path

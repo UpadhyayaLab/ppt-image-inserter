@@ -90,6 +90,13 @@ from ppt_image_inserter import insert_image, copy_slide_replace_image
 2. **Scripts**: User-written Python scripts that use the core module
 3. **Examples**: Template configs and scripts in `examples_and_configs/`
 
+**Config location rule**: Reusable YAML configs should live inside this
+repo under `examples_and_configs/configs/`, grouped by project/domain
+(for example, `examples_and_configs/configs/live/nuc_rotation/`). Do not
+leave generated or reusable configs beside output `.pptx` files in
+`K:/FF/PPT/PPT_autogeneration/...`; those output folders should contain
+decks, backups, and other generated presentation artifacts only.
+
 ### YAML Configuration Structure
 
 Since you'll frequently help users create and modify configs, here's the structure:

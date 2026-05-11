@@ -33,6 +33,64 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ppt_image_inserter import delete_slide, copy_slide_replace_image, copy_slide_replace_images, backup_presentation, get_all_image_positions, add_label_to_existing_slide
 
 
+def validate_slide_index(slide_index, field_name):
+    """Validate a slide index value from the config."""
+    if not isinstance(slide_index, int):
+        print(f"[ERROR] {field_name} must be an integer (0-based index)")
+        print(f"Found: {slide_index} ({type(slide_index).__name__})")
+        sys.exit(1)
+
+    if slide_index < 0:
+        print(f"[ERROR] {field_name} must be non-negative (found: {slide_index})")
+        sys.exit(1)
+
+
+def normalize_preserve_slides(preserve_slides):
+    """Validate preserve_slides and return it as a set."""
+    if not isinstance(preserve_slides, list):
+        print(f"[ERROR] preserve_slides must be a list of slide indices")
+        print(f"Found: {preserve_slides} ({type(preserve_slides).__name__})")
+        sys.exit(1)
+
+    normalized = set()
+    for slide_index in preserve_slides:
+        validate_slide_index(slide_index, "preserve_slides entry")
+        normalized.add(slide_index)
+
+    return normalized
+
+
+def get_image_spec_template_slide(image_spec, default_template_slide):
+    """Return the original template slide index for an image spec."""
+    if isinstance(image_spec, dict) and 'images' in image_spec:
+        return image_spec.get('template_slide', default_template_slide)
+    return default_template_slide
+
+
+def collect_template_slide_indices(images, default_template_slide):
+    """Collect all original template slide indices needed by the config."""
+    template_slide_indices = {default_template_slide}
+
+    for image_number, image_spec in enumerate(images, start=1):
+        template_slide = get_image_spec_template_slide(image_spec, default_template_slide)
+        validate_slide_index(template_slide, f"images[{image_number}].template_slide")
+        template_slide_indices.add(template_slide)
+
+    return template_slide_indices
+
+
+def build_slide_index_remap(total_slides, preserve_slides):
+    """Map original slide indices to their indices after non-preserved slides are deleted."""
+    preserved_existing_slides = [
+        idx for idx in range(total_slides)
+        if idx in preserve_slides
+    ]
+    return {
+        original_index: new_index
+        for new_index, original_index in enumerate(preserved_existing_slides)
+    }
+
+
 def validate_config(config, config_path):
     """
     Validate configuration file has all required fields with valid values.
@@ -53,16 +111,7 @@ def validate_config(config, config_path):
             print(f"Config must include: {', '.join(required_fields)}")
             sys.exit(1)
 
-    # Validate template_slide is integer
-    if not isinstance(config['template_slide'], int):
-        print(f"[ERROR] template_slide must be an integer (0-based index)")
-        print(f"Found: {config['template_slide']} ({type(config['template_slide']).__name__})")
-        sys.exit(1)
-
-    # Validate template_slide is non-negative
-    if config['template_slide'] < 0:
-        print(f"[ERROR] template_slide must be non-negative (found: {config['template_slide']})")
-        sys.exit(1)
+    validate_slide_index(config['template_slide'], 'template_slide')
 
     # Validate images is a list
     if not isinstance(config['images'], list):
@@ -120,11 +169,15 @@ def main(config_path):
     base_dir = config.get('base_dir', '')
     images = config['images']
     template_slide_index = config.get('template_slide', 1)
+    original_template_slide_index = template_slide_index
     add_label = config.get('add_label', True)
     label_side = config.get('label_side', 'right')
 
     # Get preserve_slides, default to [0, template_slide] if not specified
-    preserve_slides = config.get('preserve_slides', [0, template_slide_index])
+    preserve_slides = normalize_preserve_slides(
+        config.get('preserve_slides', [0, original_template_slide_index])
+    )
+    template_slide_indices = collect_template_slide_indices(images, original_template_slide_index)
 
     # Get backup directory, default to 'backups' subfolder in presentation's directory
     if 'backup_dir' in config:
@@ -178,28 +231,35 @@ def main(config_path):
             except Exception as e:
                 print(f"[WARNING] Could not add label to template slide: {e}")
 
-    # Validate template slide exists and has images
+    # Validate all template slides exist and have images
     prs = Presentation(ppt_file)
-    if template_slide_index >= len(prs.slides):
-        print(f"[ERROR] template_slide index {template_slide_index} out of range")
-        print(f"Presentation has {len(prs.slides)} slide(s) (indices 0-{len(prs.slides)-1})")
-        print(f"Note: Slide indices are 0-based (Slide 1 in UI = index 0)")
-        sys.exit(1)
+    total_slides = len(prs.slides)
 
-    try:
-        positions = get_all_image_positions(ppt_file, template_slide_index)
-        if not positions:
-            print(f"[ERROR] Template slide {template_slide_index} has no images")
-            print("Add placeholder images to the template slide for auto-positioning")
+    for slide_index in sorted(template_slide_indices):
+        if slide_index >= total_slides:
+            print(f"[ERROR] template_slide index {slide_index} out of range")
+            print(f"Presentation has {total_slides} slide(s) (indices 0-{total_slides-1})")
+            print(f"Note: Slide indices are 0-based (Slide 1 in UI = index 0)")
             sys.exit(1)
-        print(f"Template slide validated: {len(positions)} placeholder image(s) found")
-    except Exception as e:
-        print(f"[ERROR] Could not read template slide: {e}")
-        sys.exit(1)
 
-    # Ensure template_slide is in preserve_slides if not explicitly excluded
-    if template_slide_index not in preserve_slides:
-        print(f"[WARNING] template_slide {template_slide_index} not in preserve_slides")
+        try:
+            positions = get_all_image_positions(ppt_file, slide_index)
+            if not positions:
+                print(f"[ERROR] Template slide {slide_index} has no images")
+                print("Add placeholder images to the template slide for auto-positioning")
+                sys.exit(1)
+            print(f"Template slide {slide_index} validated: {len(positions)} placeholder image(s) found")
+        except Exception as e:
+            print(f"[ERROR] Could not read template slide {slide_index}: {e}")
+            sys.exit(1)
+
+    auto_preserved_templates = template_slide_indices - preserve_slides
+    if auto_preserved_templates:
+        print(f"Preserving template slide(s) used by config: {sorted(auto_preserved_templates)}")
+        preserve_slides.update(auto_preserved_templates)
+
+    template_slide_remap = build_slide_index_remap(total_slides, preserve_slides)
+    template_slide_index = template_slide_remap[original_template_slide_index]
 
     # Step 0: Pre-validate ALL images exist before any destructive operations
     print("Validating all images exist...")
@@ -317,7 +377,11 @@ def main(config_path):
         elif isinstance(image_spec, dict):
             if 'images' in image_spec:
                 # New: multi-image dict with optional per-entry template_slide override
-                slide_template = image_spec.get('template_slide', template_slide_index)
+                original_slide_template = get_image_spec_template_slide(
+                    image_spec,
+                    original_template_slide_index,
+                )
+                slide_template = template_slide_remap[original_slide_template]
                 image_paths = [
                     img if os.path.isabs(img) else os.path.join(base_dir, img)
                     for img in image_spec['images']
@@ -347,7 +411,7 @@ def main(config_path):
                         label_side=label_side,
                     )
                     success_count += 1
-                    print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}, template {slide_template}): {[os.path.basename(p) for p in image_paths]}")
+                    print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}, template {original_slide_template}): {[os.path.basename(p) for p in image_paths]}")
                 except Exception as e:
                     print(f"[ERROR] Failed on multi-image dict slide: {e}")
                     error_count += 1

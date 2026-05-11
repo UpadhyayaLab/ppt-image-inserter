@@ -1,0 +1,36 @@
+﻿presentation: "K:/FF/PPT/PPT_autogeneration/CTL_Glass_Nucleus_Centrosome/CTL_Glass_Nucleus_Centrosome_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Live Cells/nuc_rotation/nuclear_rotation_paper_figures.pptx"
+template_slide: 0
+preserve_slides: [0]
+base_dir: "F:/FF/nucleus_live_cell/nuclear_rotation_run_logs/paper_figures"
+auto_position: true
+add_label: false
+label_side: left
+
+images:
+  - path: fig1_cumulative_rotation_toward_synapse_elevation.png
+    title: "PRIMARY READOUT. Cumulative rotation toward synapse-plane elevation per cell"
+  - path: fig2_invagination_angle_to_synapse.png
+    title: "Invagination angle to synapse over time per cell"
+  - path: fig3_invag_surface_rotation.png
+    title: "Local rotation at the invagination surface per cell"
+  - path: fig4_cumulative_rotation_toward_synapse.png
+    title: "Cumulative rotation toward synapse - non-elevation form"
+  - path: fig5_invagination_global_rotation_vs_observed_residual.png
+    title: "Residual invagination motion not explained by whole-nucleus rotation"
+  - path: fig6_per_pair_dice_distribution.png
+    title: "Accepted Dice per pair, per dataset"
+  - path: fig7_per_pair_rotation_magnitude.png
+    title: "Accepted rotation magnitude per pair, per dataset"
+  - path: fig_qc_pair_status_stacked.png
+    title: "Pair-level PASS/WARN/FAIL counts per dataset"
+  - path: fig_qc_trajectory_status_stacked.png
+    title: "Per-cell trajectory status counts per dataset"
+  - path: fig_supp_synthetic_validation.png
+    title: "Synthetic validation: PASS rate and plane error"
+  - path: fig_supp_synthetic_per_dataset_grid.png
+    title: "Synthetic validation: median plane error by dataset"
+  - path: fig_supp_chain_residual_distribution.png
+    title: "Chain-check residual distribution per dataset"
+  - path: fig_supp_chain_residual_vs_dice.png
+    title: "Chain-check residual vs skip-frame Dice"

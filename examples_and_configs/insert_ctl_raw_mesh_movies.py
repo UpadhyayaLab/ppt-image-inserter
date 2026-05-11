@@ -60,6 +60,44 @@ PER_EXPT_OUTPUT_DIR = Path("K:/FF/PPT/PPT_autogeneration/Live Cells")
 
 CELL_PATTERN = re.compile(r"^Cell(?P<cell>\d+)_.*\.mp4$", re.IGNORECASE)
 
+PANEL_1X3_VARIANT_PATTERNS: Dict[str, "re.Pattern[str]"] = {
+    "xz": re.compile(
+        r"^Cell(?P<cell>\d+)_rwm_panel_1x3_xz_white_grey_blue\.mp4$",
+        re.IGNORECASE,
+    ),
+    "xz_rev": re.compile(
+        r"^Cell(?P<cell>\d+)_rwm_panel_1x3_xz_rev_white_grey_blue\.mp4$",
+        re.IGNORECASE,
+    ),
+    "yz": re.compile(
+        r"^Cell(?P<cell>\d+)_rwm_panel_1x3_yz_white_grey_blue\.mp4$",
+        re.IGNORECASE,
+    ),
+    "yz_rev": re.compile(
+        r"^Cell(?P<cell>\d+)_rwm_panel_1x3_yz_rev_white_grey_blue\.mp4$",
+        re.IGNORECASE,
+    ),
+}
+
+PANEL_RAW_CENT_VARIANT_PATTERNS: Dict[str, "re.Pattern[str]"] = {
+    "xz": re.compile(
+        r"^Cell(?P<cell>\d+)_rwm_panel_raw_cent_xz\.mp4$",
+        re.IGNORECASE,
+    ),
+    "xz_rev": re.compile(
+        r"^Cell(?P<cell>\d+)_rwm_panel_raw_cent_xz_rev\.mp4$",
+        re.IGNORECASE,
+    ),
+    "yz": re.compile(
+        r"^Cell(?P<cell>\d+)_rwm_panel_raw_cent_yz\.mp4$",
+        re.IGNORECASE,
+    ),
+    "yz_rev": re.compile(
+        r"^Cell(?P<cell>\d+)_rwm_panel_raw_cent_yz_rev\.mp4$",
+        re.IGNORECASE,
+    ),
+}
+
 SLIDE_WIDTH_IN = 13.333
 SLIDE_HEIGHT_IN = 7.5
 TITLE_LEFT_IN = 0.45
@@ -99,52 +137,34 @@ class CellMovieSet:
 
 @dataclass(frozen=True)
 class ExperimentSource:
-    """Folder configuration for one experiment to add into the deck."""
+    """Folder configuration for one experiment to add into the deck.
+
+    Each source points at the two parent folders (panel_1x3 and
+    panel_raw_cent); cells are classified into xz / xz_rev / yz / yz_rev
+    by filename suffix. Older runs read from per-direction subfolders that
+    are now stale; do not bring those back.
+    """
 
     experiment_label: str
-    panel_1x3_xz: Path
-    panel_1x3_xz_rev: Path
-    panel_1x3_yz: Path
-    panel_1x3_yz_rev: Path
-    raw_cent_xz: Path
-    raw_cent_xz_rev: Path
-    raw_cent_yz: Path
-    raw_cent_yz_rev: Path
+    panel_1x3_dir: Path
+    panel_raw_cent_dir: Path
 
 
 DEFAULT_EXPERIMENT_SOURCES: Tuple[ExperimentSource, ...] = (
     ExperimentSource(
         experiment_label="20210928 OTI CTL Activated",
-        panel_1x3_xz=EXPT_0928_BASE / "panel_1x3/xz_white_grey_blue",
-        panel_1x3_xz_rev=EXPT_0928_BASE / "panel_1x3/xz_rev_white_grey_blue",
-        panel_1x3_yz=EXPT_0928_BASE / "panel_1x3/yz_white_grey_blue",
-        panel_1x3_yz_rev=EXPT_0928_BASE / "panel_1x3/yz_rev_white_grey_blue",
-        raw_cent_xz=EXPT_0928_BASE / "panel_raw_cent/xz",
-        raw_cent_xz_rev=EXPT_0928_BASE / "panel_raw_cent/xz_rev",
-        raw_cent_yz=EXPT_0928_BASE / "panel_raw_cent/yz",
-        raw_cent_yz_rev=EXPT_0928_BASE / "panel_raw_cent/yz_rev",
+        panel_1x3_dir=EXPT_0928_BASE / "panel_1x3",
+        panel_raw_cent_dir=EXPT_0928_BASE / "panel_raw_cent",
     ),
     ExperimentSource(
         experiment_label="20211221 OTI CTL Activated",
-        panel_1x3_xz=EXPT_1221_BASE / "panel_1x3/xz_white_grey_blue",
-        panel_1x3_xz_rev=EXPT_1221_BASE / "panel_1x3/xz_rev_white_grey_blue",
-        panel_1x3_yz=EXPT_1221_BASE / "panel_1x3/yz_white_grey_blue",
-        panel_1x3_yz_rev=EXPT_1221_BASE / "panel_1x3/yz_rev_white_grey_blue",
-        raw_cent_xz=EXPT_1221_BASE / "panel_raw_cent/xz",
-        raw_cent_xz_rev=EXPT_1221_BASE / "panel_raw_cent/xz_rev",
-        raw_cent_yz=EXPT_1221_BASE / "panel_raw_cent/yz",
-        raw_cent_yz_rev=EXPT_1221_BASE / "panel_raw_cent/yz_rev",
+        panel_1x3_dir=EXPT_1221_BASE / "panel_1x3",
+        panel_raw_cent_dir=EXPT_1221_BASE / "panel_raw_cent",
     ),
     ExperimentSource(
         experiment_label="20220614 OT1 CTLs antiCD3",
-        panel_1x3_xz=EXPT_0614_BASE / "panel_1x3/xz_white_grey_blue",
-        panel_1x3_xz_rev=EXPT_0614_BASE / "panel_1x3/xz_rev_white_grey_blue",
-        panel_1x3_yz=EXPT_0614_BASE / "panel_1x3/yz_white_grey_blue",
-        panel_1x3_yz_rev=EXPT_0614_BASE / "panel_1x3/yz_rev_white_grey_blue",
-        raw_cent_xz=EXPT_0614_BASE / "panel_raw_cent/xz",
-        raw_cent_xz_rev=EXPT_0614_BASE / "panel_raw_cent/xz_rev",
-        raw_cent_yz=EXPT_0614_BASE / "panel_raw_cent/yz",
-        raw_cent_yz_rev=EXPT_0614_BASE / "panel_raw_cent/yz_rev",
+        panel_1x3_dir=EXPT_0614_BASE / "panel_1x3",
+        panel_raw_cent_dir=EXPT_0614_BASE / "panel_raw_cent",
     ),
 )
 
@@ -255,29 +275,47 @@ def validate_folder(folder: Path, label: str) -> None:
         raise NotADirectoryError(f"{label} is not a folder: {folder}")
 
 
-def collect_movies(folder: Path, label: str) -> Dict[int, Path]:
-    """Collect CellN movie files from a folder."""
+def collect_movies_by_variant(
+    folder: Path,
+    variant_patterns: Dict[str, "re.Pattern[str]"],
+    label: str,
+) -> Dict[str, Dict[int, Path]]:
+    """Scan a parent folder, classify CellN movies into variant -> cell -> path.
+
+    Files in ``folder`` whose names match any pattern in ``variant_patterns``
+    are added to the matching variant bucket. Files that do not match any
+    pattern (e.g. alternate color variants, or files inside stale per-direction
+    subfolders) are silently ignored. Per-cell duplicates within one variant
+    raise ``ValueError``.
+    """
     validate_folder(folder, label)
 
-    movies: Dict[int, Path] = {}
+    by_variant: Dict[str, Dict[int, Path]] = {
+        variant: {} for variant in variant_patterns
+    }
     for movie_path in sorted(folder.glob("*.mp4")):
-        match = CELL_PATTERN.match(movie_path.name)
-        if not match:
-            print(f"[WARNING] Skipping unmatched filename in {label}: {movie_path.name}")
-            continue
+        for variant, pattern in variant_patterns.items():
+            match = pattern.match(movie_path.name)
+            if not match:
+                continue
+            cell_number = int(match.group("cell"))
+            existing = by_variant[variant].get(cell_number)
+            if existing is not None:
+                raise ValueError(
+                    f"Duplicate Cell{cell_number} {variant} movie in {label}: "
+                    f"{existing.name} and {movie_path.name}"
+                )
+            by_variant[variant][cell_number] = movie_path
+            break
 
-        cell_number = int(match.group("cell"))
-        if cell_number in movies:
-            raise ValueError(
-                f"Duplicate Cell{cell_number} movie found in {label}: "
-                f"{movies[cell_number].name} and {movie_path.name}"
+    for variant, mapping in by_variant.items():
+        if not mapping:
+            print(
+                f"[WARNING] {label}: no CellN .mp4 files matched variant "
+                f"{variant!r} in {folder}"
             )
-        movies[cell_number] = movie_path
 
-    if not movies:
-        raise ValueError(f"No CellN .mp4 files found in {label}: {folder}")
-
-    return movies
+    return by_variant
 
 
 def build_complete_cell_sets(
@@ -343,12 +381,26 @@ def collect_cell_sets_for_experiment(
     requested_cells: Optional[Set[int]] = None,
 ) -> List[CellMovieSet]:
     """Collect complete cell movie sets for one experiment."""
+    panel_1x3_by_variant = collect_movies_by_variant(
+        source.panel_1x3_dir,
+        PANEL_1X3_VARIANT_PATTERNS,
+        f"{source.experiment_label} panel_1x3",
+    )
+    panel_raw_cent_by_variant = collect_movies_by_variant(
+        source.panel_raw_cent_dir,
+        PANEL_RAW_CENT_VARIANT_PATTERNS,
+        f"{source.experiment_label} panel_raw_cent",
+    )
+
     folder_maps: Dict[str, Dict[int, Path]] = {
-        field: collect_movies(
-            getattr(source, field),
-            f"{source.experiment_label} {field}",
-        )
-        for field in FOLDER_FIELDS
+        "panel_1x3_xz": panel_1x3_by_variant["xz"],
+        "panel_1x3_xz_rev": panel_1x3_by_variant["xz_rev"],
+        "panel_1x3_yz": panel_1x3_by_variant["yz"],
+        "panel_1x3_yz_rev": panel_1x3_by_variant["yz_rev"],
+        "raw_cent_xz": panel_raw_cent_by_variant["xz"],
+        "raw_cent_xz_rev": panel_raw_cent_by_variant["xz_rev"],
+        "raw_cent_yz": panel_raw_cent_by_variant["yz"],
+        "raw_cent_yz_rev": panel_raw_cent_by_variant["yz_rev"],
     }
 
     report_missing_cells(
