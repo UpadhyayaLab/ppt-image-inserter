@@ -40,6 +40,13 @@ def duplicate_slide(prs: Presentation, slide_index: int) -> Slide:
     blank_slide_layout = source_slide.slide_layout
     new_slide = prs.slides.add_slide(blank_slide_layout)
 
+    # add_slide() creates layout placeholders; remove them before copying the
+    # source slide's actual shapes so text placeholders are not duplicated.
+    for shape in list(new_slide.shapes):
+        parent = shape._element.getparent()
+        if parent is not None:
+            parent.remove(shape._element)
+
     # Copy all shapes from source to new slide
     for shape in source_slide.shapes:
         # Deep copy the shape's XML element
