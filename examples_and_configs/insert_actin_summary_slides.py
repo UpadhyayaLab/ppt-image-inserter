@@ -1,15 +1,15 @@
 """
 insert_actin_summary_slides.py
 
-Build the accumulating CART actin summary deck. Each slide shows one
-PNG plot from the actin-only timecourse summaries with:
-  - bold title derived from the filename
+Build one CART actin summary deck per dataset listed in DATASETS.
+Each slide shows one PNG plot with:
+  - bold title derived from the filename (with overrides)
   - the plot, full-width, aspect ratio preserved
   - the full source filepath in a small footer (for traceability)
 
-This script is intended to be extended over time by appending entries
-to PNG_FILES. The first batch is the actin_bottom_* timecourse scatter
-plots from grid_panels/timecourse_scatter_plots/.
+To add a new dataset, append an entry to DATASETS with its grid_panels/
+root, output path, and PNG list. To add slides, extend the relevant
+*_METRICS list. Each run regenerates every deck (idempotent).
 
 Modeled after insert_actin_qc_synapse_mask_xz_mip_slides.py.
 
@@ -28,42 +28,78 @@ from pptx.util import Inches, Pt
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from ppt_image_inserter import backup_presentation  # noqa: E402
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
-OUTPUT_PATH = Path(
-    "K:/FF/PPT/PPT_autogeneration/CART_actin_only/CART_actin_summary.pptx"
+# Subfolder names — identical across every dataset's grid_panels/ tree.
+SUB_SCATTER    = "timecourse_scatter_plots"
+SUB_CAT_VS_FMC = "CAT_vs_FMC_by_timepoint"
+
+# Slide entries: (subfolder, png_filename). Joined with each dataset's
+# compiled_root at deck-build time. Missing files render "(missing)".
+
+SLICE_METRICS = [
+    (SUB_SCATTER, "actin_bottom_MFI_grid.png"),
+    (SUB_SCATTER, "actin_bottom_mask_area_grid.png"),
+    (SUB_SCATTER, "actin_bottom_total_sig_grid.png"),
+    (SUB_SCATTER, "actin_bottom_slice_inner_outer_ratio_50pct_grid.png"),
+    (SUB_SCATTER, "actin_bottom_slice_inner_outer_ratio_70pct_grid.png"),
+    (SUB_SCATTER, "actin_bottom_slice_perimeter_grid.png"),
+    (SUB_SCATTER, "actin_bottom_slice_circularity_grid.png"),
+    (SUB_SCATTER, "actin_bottom_slice_solidity_grid.png"),
+    (SUB_SCATTER, "actin_bottom_slice_eccentricity_grid.png"),
+]
+RAD_PROFILE_SLICE = (
+    SUB_CAT_VS_FMC,
+    "actin_bottom_slice_rad_profile_auc1_all_cells_with_average_grid.png",
 )
 
-SOURCE_DIR_TIMECOURSE_SCATTER = Path(
-    "Y:/User_data/Kiet/results_compiled/actin_only/"
-    "compiled_20260312_20260414_20260510_20260604/"
-    "grid_panels/timecourse_scatter_plots"
+THREE_SLICE_METRICS = [
+    (SUB_SCATTER, "actin_bottom_3slice_MFI_grid.png"),
+    (SUB_SCATTER, "actin_bottom_3slice_mask_area_grid.png"),
+    (SUB_SCATTER, "actin_bottom_3slice_total_sig_grid.png"),
+    (SUB_SCATTER, "actin_bottom_3slice_mip_inner_outer_ratio_50pct_grid.png"),
+    (SUB_SCATTER, "actin_bottom_3slice_mip_inner_outer_ratio_70pct_grid.png"),
+    (SUB_SCATTER, "actin_bottom_3slice_perimeter_grid.png"),
+    (SUB_SCATTER, "actin_bottom_3slice_circularity_grid.png"),
+    (SUB_SCATTER, "actin_bottom_3slice_solidity_grid.png"),
+    (SUB_SCATTER, "actin_bottom_3slice_eccentricity_grid.png"),
+]
+RAD_PROFILE_3SLICE = (
+    SUB_CAT_VS_FMC,
+    "actin_bottom_3slice_mip_rad_profile_auc1_all_cells_with_average_grid.png",
 )
 
-# Each entry: (source_dir, png_filename). Order = slide order. Append
-# entries to extend the deck; the script is idempotent.
-PNG_FILES = [
-    # --- actin_bottom_* timecourse scatter plots (round 1) -----------------
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_MFI_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_mask_area_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_total_sig_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_slice_inner_outer_ratio_50pct_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_slice_inner_outer_ratio_70pct_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_slice_perimeter_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_slice_circularity_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_slice_solidity_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_slice_eccentricity_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_3slice_MFI_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_3slice_mask_area_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_3slice_total_sig_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_3slice_mip_inner_outer_ratio_50pct_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_3slice_mip_inner_outer_ratio_70pct_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_3slice_perimeter_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_3slice_circularity_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_3slice_solidity_grid.png"),
-    (SOURCE_DIR_TIMECOURSE_SCATTER, "actin_bottom_3slice_eccentricity_grid.png"),
+# Each dataset -> one deck. compiled_root points at the grid_panels/ folder.
+OUTPUT_DIR = Path("K:/FF/PPT/PPT_autogeneration/CART_actin_only")
+
+DATASETS = [
+    {
+        "label": "Kiet 2026",
+        "compiled_root": Path(
+            "Y:/User_data/Kiet/results_compiled/actin_only/"
+            "compiled_20260312_20260414_20260510_20260604/grid_panels"
+        ),
+        "output_path": OUTPUT_DIR / "CART_actin_summary.pptx",
+        # Kiet's CAT_vs_FMC dir has no 3slice rad_profile PNG, so we
+        # leave both rad_profile entries off this deck (18 slides).
+        "png_files": SLICE_METRICS + THREE_SLICE_METRICS,
+    },
+    {
+        "label": "2024-06 data",
+        "compiled_root": Path(
+            "J:/FF/fixed_cell/CAR_TCell/results_compiled/actin_only/"
+            "compiled_20240620_20240624_20260605/grid_panels"
+        ),
+        "output_path": OUTPUT_DIR / "CART_actin_summary_202406_data.pptx",
+        "png_files": (
+            SLICE_METRICS + [RAD_PROFILE_SLICE]
+            + THREE_SLICE_METRICS + [RAD_PROFILE_3SLICE]
+        ),
+    },
 ]
 
 # Colors
@@ -122,6 +158,10 @@ SKIP_TOKENS = {"slice"}
 TITLE_OVERRIDES = {
     "actin_bottom_mask_area_grid.png": "Synapse Area",
     "actin_bottom_3slice_mask_area_grid.png": "Synapse (3-Slice MIP) Area",
+    "actin_bottom_slice_rad_profile_auc1_all_cells_with_average_grid.png":
+        "Actin Synapse Radial Profile AUC₁ (all cells + avg)",
+    "actin_bottom_3slice_mip_rad_profile_auc1_all_cells_with_average_grid.png":
+        "Actin Synapse (3-Slice MIP) Radial Profile AUC₁ (all cells + avg)",
 }
 
 # Optional per-filename subtitle shown under the title (formula / units /
@@ -274,18 +314,26 @@ def build_slide(prs, title_text: str, image_path: Path, footer_text: str,
     return slide, missing
 
 
-def main() -> None:
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+def build_deck(dataset) -> int:
+    """Build one deck for the given dataset entry. Returns missing-file count."""
+    label = dataset["label"]
+    compiled_root = dataset["compiled_root"]
+    output_path = dataset["output_path"]
+    png_files = dataset["png_files"]
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     prs = Presentation()
     prs.slide_width = Inches(SLIDE_W)
     prs.slide_height = Inches(SLIDE_H)
 
-    missing = []
-    print(f"Writing deck to: {OUTPUT_PATH}\n")
+    print(f"\n=== Dataset: {label} ===")
+    print(f"Source root: {compiled_root}")
+    print(f"Writing deck to: {output_path}\n")
 
-    for source_dir, png_name in PNG_FILES:
-        image_path = source_dir / png_name
+    missing = []
+    for sub, png_name in png_files:
+        image_path = compiled_root / sub / png_name
         title = prettify_metric_name(png_name)
         footer = image_path.as_posix()
         subtitle = SUBTITLE_BY_FILENAME.get(png_name)
@@ -297,15 +345,34 @@ def main() -> None:
         if is_missing:
             missing.append(f"{png_name}  ({image_path})")
 
-    prs.save(str(OUTPUT_PATH))
-    print(f"\nDone. {len(PNG_FILES)} slides written to:\n  {OUTPUT_PATH}")
+    # Snapshot the previous deck (if any) into backups/ before overwriting.
+    if output_path.exists():
+        backup_dir = output_path.parent / "backups"
+        created = backup_presentation(str(output_path), backup_base=str(backup_dir))
+        if created:
+            print(f"\nBacked up previous deck to: {backup_dir}")
+            for cat, path in created.items():
+                print(f"  [{cat:6}] {path}")
+
+    prs.save(str(output_path))
+    print(f"\nDone. {len(png_files)} slides written to:\n  {output_path}")
 
     if missing:
         print(f"\nMissing ({len(missing)}):")
         for m in missing:
             print(f"  - {m}")
+    else:
+        print("\nAll images found - no missing items.")
+
+    return len(missing)
+
+
+def main() -> None:
+    total_missing = 0
+    for dataset in DATASETS:
+        total_missing += build_deck(dataset)
+    if total_missing:
         sys.exit(1)
-    print("\nAll images found - no missing items.")
 
 
 if __name__ == "__main__":

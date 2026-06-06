@@ -31,6 +31,7 @@ Usage:
 """
 
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Optional
@@ -162,12 +163,26 @@ def set_slide_background(slide, rgb: RGBColor) -> None:
     fill.fore_color.rgb = rgb
 
 
+def _chunk_start_index(p: Path) -> int:
+    """Extract the first integer after 'montage_cells_' for natural sort.
+    Defensive — lex sort works for zero-padded FOV names like
+    `montage_cells_01_0_07_28.png` but breaks on patterns like
+    `montage_cells_1_25.png` vs `montage_cells_101_117.png` where
+    '0' < '_' would put the 100+ chunk first.
+    """
+    m = re.match(r"montage_cells_(\d+)", p.name)
+    return int(m.group(1)) if m else 0
+
+
 def find_first_chunk(montages_dir: Path) -> Optional[Path]:
-    """Return the lowest-sorted montage_cells_*.png in the dir, or None."""
+    """Return the lowest-numbered montage_cells_*.png in the dir, or None."""
     if not montages_dir.is_dir():
         return None
-    chunks = sorted(montages_dir.glob(CHUNK_GLOB))
-    return chunks[0] if chunks else None
+    chunks = list(montages_dir.glob(CHUNK_GLOB))
+    if not chunks:
+        return None
+    chunks.sort(key=_chunk_start_index)
+    return chunks[0]
 
 
 def build_slide(prs, title_text: str, image_path: Optional[Path]):

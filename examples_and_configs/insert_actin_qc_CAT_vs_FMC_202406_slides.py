@@ -1,36 +1,46 @@
 """
-insert_actin_qc_cat_vs_fmc_slides.py
+insert_actin_qc_CAT_vs_FMC_CTSB_Day3_Day5_slides.py
 
-CAT (left) vs FMC (right) side-by-side comparison deck for the actin-only
-pipeline QC montages, paired by timepoint.
+CAT (left) vs FMC (right) side-by-side deck for the actin-only QC
+montages of the 2024 CTSB-mCherry + βTub fixed-cell dataset, Day 3
+(20240620) and Day 5 (20240624). No 10 min timepoint exists in this
+experiment — only 5 min and 15 min.
 
-For each (kind, dataset, timepoint) triple, builds one slide with two
+For each (kind, dataset, timepoint) we build one slide with two
 labelled cells:
-
-    Slide title — "<Kind>: <timepoint> (<YYYYMMDD>)"
 
        CAT                              FMC
     +---------+                    +---------+
     | montage |                    | montage |
     +---------+                    +---------+
 
-Result: 2 kinds x 3 datasets x 3 timepoints = 18 slides.
+Block 1 (interleaved synapse pair, no-rings then with-rings):
+    Slide order: Day3 5min, Day3 15min, Day5 5min, Day5 15min — Actin
+    at Synapse then Inner-Outer at each (date, tp) = 8 slides.
+Block 2 (XZ MIP alone):
+    Same (date, tp) walk, 1 kind only = 4 slides.
 
-Sources (per condition, same as the per-condition deck):
+Total: 12 slides.
+
+Sources (per condition):
+    <base>/prog_fixed_cells_actin_only/actin/synapse/mask/montages/
     <base>/prog_fixed_cells_actin_only/actin/synapse/inner_outer/bot_combined/montages/
     <base>/prog_fixed_cells_actin_only/actin/xz_mip/montages/
-where <base> = <dataset>/CAT_<tp>/converted/cropped/split_channels/
-          or  <dataset>/FMC_<tp>/converted/cropped/split_channels/
+where <base> resolves to:
+    J:/FF/fixed_cell/CAR_TCell/<dataset>/<CAR>/<condition>/cells/channels/
 
-Within each montages/ directory we glob `montage_cells_*.png` and pick
-the first sorted file (first chunk, ~25 cells).
+Folder naming differs per day:
+    Day 3 (20240620): CAR=CAT  -> condition CAT5min  / CAT15min
+                      CAR=FMC63-> condition FMC5min  / FMC15min
+    Day 5 (20240624): CAR=CAT  -> condition CAT_5min / CAT_15min
+                      CAR=FMC63-> condition FMC63_5min / FMC63_15min
 
-Companion to insert_actin_qc_synapse_mask_xz_mip_slides.py (per-condition,
-36 slides). Aspect-preserving cell-fit helper copied from
-insert_lwi_qc_part1_minEdgeLen_16_p01_slides.py.
+Modeled on insert_actin_qc_cat_vs_fmc_slides.py (the Kiet dataset deck).
+Inline cell-fit helper is the lamin part1 pattern (width-bind first,
+height-fallback with re-centering) so aspect ratios are preserved.
 
 Usage:
-    python examples_and_configs/insert_actin_qc_cat_vs_fmc_slides.py
+    python examples_and_configs/insert_actin_qc_CAT_vs_FMC_CTSB_Day3_Day5_slides.py
 """
 
 import os
@@ -52,39 +62,47 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 OUTPUT_PATH = (
     "K:/FF/PPT/PPT_autogeneration/CART_actin_only/"
-    "CART_actin_QC_CAT_vs_FMC.pptx"
+    "CART_actin_QC_CAT_vs_FMC_202406.pptx"
 )
 
-KIET_ROOT = "Y:/User_data/Kiet"
+CTSB_ROOT = "J:/FF/fixed_cell/CAR_TCell"
 
-# (YYYYMMDD acquisition date, dataset folder name)
-# D1 folder name is MMDDYYYY (03122026 = 12 Mar 2026); D2/D3 are already YYYYMMDD.
+# Per-dataset folder + per-CAR condition-naming template.
+# Each dataset entry: (date_tag, day_label, dataset_folder, cell_templates)
+# where cell_templates maps CAR label -> (CAR_subdir, condition_format).
 DATASETS = [
-    ("20260312", "03122026_pMLC_actin_CAR_T"),
-    ("20260510", "20260510_pMLC_Actin561_nucleus_CAR_Tcell_"),
-    ("20260414", "20260414_p_PKC_theta_Phalloidin561_"),
+    (
+        "20240620", "Day 3",
+        "20240620_day3_Fixed_CAR-Tcells_CTSB-mCherry_bTub",
+        {
+            "CAT": ("CAT",   "CAT{tp}"),
+            "FMC": ("FMC63", "FMC{tp}"),
+        },
+    ),
+    (
+        "20240624", "Day 5",
+        "20240624_day5_Fixed_CAR-Tcells_CTSB-mCherry_bTub",
+        {
+            "CAT": ("CAT",   "CAT_{tp}"),
+            "FMC": ("FMC63", "FMC63_{tp}"),
+        },
+    ),
 ]
 
-TIMEPOINTS = ["5min", "10min", "15min"]
+TIMEPOINTS = ["5min", "15min"]   # no 10 min in this experiment
 
-CONDITION_SUBPATH = "converted/cropped/split_channels"
+CONDITION_SUBPATH = "cells/channels"
 PROG_SUBPATH = "prog_fixed_cells_actin_only/actin"
 
-# Kind blocks. Each block is a list of (kind label, subpath under PROG_SUBPATH/)
-# tuples that get INTERLEAVED at each (dataset, timepoint) — i.e. the inner loop
-# walks the kinds within the block. Between blocks we restart the
-# (dataset, timepoint) walk.
-#
-# Slide order for the current config (3 datasets x 3 timepoints):
-#   Block 1 (18 slides): for each (date, tp): Synapse Mask -> Actin at Synapse
-#   Block 2 ( 9 slides): for each (date, tp): Actin XZ MIP
-# Total: 27 slides.
+# Kind blocks — same convention as the Kiet CAT-vs-FMC deck.
+# Block 1 = the two synapse kinds interleaved at each (date, tp);
+# Block 2 = XZ MIP alone.
 KIND_BLOCKS = [
-    [   # Block 1: interleaved synapse pair (no-rings then with-rings)
+    [
         ("Actin at Synapse",            "synapse/mask/montages"),
         ("Inner-Outer Ratio Definition", "synapse/inner_outer/bot_combined/montages"),
     ],
-    [   # Block 2: XZ MIP on its own
+    [
         ("Actin XZ MIP", "xz_mip/montages"),
     ],
 ]
@@ -109,16 +127,16 @@ TITLE_FONT_PT = 28
 # 1x2 cell grid below the title (label + image per cell)
 GRID_LEFT = 0.10
 GRID_TOP = 0.60
-CELL_W = 6.50          # each cell ~half the slide width
+CELL_W = 6.50
 CELL_H = SLIDE_H - GRID_TOP - 0.10   # 6.80"
 LABEL_H = 0.30
 IMG_H = CELL_H - LABEL_H             # 6.50"
 LABEL_FONT_PT = 16
-COL_GAP = SLIDE_W - 2 * GRID_LEFT - 2 * CELL_W   # gap between left & right cells
+COL_GAP = SLIDE_W - 2 * GRID_LEFT - 2 * CELL_W
 
 CELL_POSITIONS = [
-    (GRID_LEFT,                    GRID_TOP),   # Left  (CAT)
-    (GRID_LEFT + CELL_W + COL_GAP, GRID_TOP),   # Right (FMC)
+    (GRID_LEFT,                    GRID_TOP),
+    (GRID_LEFT + CELL_W + COL_GAP, GRID_TOP),
 ]
 
 # ---------------------------------------------------------------------------
@@ -126,12 +144,11 @@ CELL_POSITIONS = [
 
 def format_timepoint(tp: str) -> str:
     """5min -> '5 min'."""
-    tp_map = {"5min": "5 min", "10min": "10 min", "15min": "15 min"}
+    tp_map = {"5min": "5 min", "15min": "15 min"}
     return tp_map.get(tp.lower(), tp)
 
 
 def add_textbox(slide, text, left, top, width, height, font_pt, color, bold=False):
-    """Add a centered textbox with given text and styling."""
     box = slide.shapes.add_textbox(
         Inches(left), Inches(top), Inches(width), Inches(height)
     )
@@ -153,7 +170,7 @@ def add_textbox(slide, text, left, top, width, height, font_pt, color, bold=Fals
 def add_image_in_cell(slide, image_path, cell_left, cell_top):
     """Place an image inside a labelled cell (below the label area),
     preserving aspect ratio. Width-bind first, fall back to height-bind
-    if the image would overflow vertically. Centers on the non-binding axis.
+    if the image would overflow vertically.
     """
     pic = slide.shapes.add_picture(
         image_path,
@@ -163,7 +180,6 @@ def add_image_in_cell(slide, image_path, cell_left, cell_top):
     )
     actual_h_in = pic.height / 914400.0
     if actual_h_in > IMG_H:
-        # Too tall — refit by height and re-center horizontally.
         sp = pic._element
         sp.getparent().remove(sp)
         pic = slide.shapes.add_picture(
@@ -175,7 +191,6 @@ def add_image_in_cell(slide, image_path, cell_left, cell_top):
         actual_w_in = pic.width / 914400.0
         pic.left = Inches(cell_left + (CELL_W - actual_w_in) / 2)
     else:
-        # Fits width-bound — center vertically.
         pic.top = Inches(cell_top + LABEL_H + (IMG_H - actual_h_in) / 2)
     return pic
 
@@ -188,17 +203,14 @@ def set_slide_background(slide, rgb: RGBColor) -> None:
 
 def _chunk_start_index(p: Path) -> int:
     """Extract the first integer after 'montage_cells_' for natural sort.
-    Defensive — lex sort works for zero-padded FOV names like
-    `montage_cells_01_0_07_28.png` but breaks on patterns like
-    `montage_cells_1_25.png` vs `montage_cells_101_117.png` where
-    '0' < '_' would put the 100+ chunk first.
+    Without this, lex sort puts montage_cells_101_117.png BEFORE
+    montage_cells_1_25.png because '0' < '_' in ASCII.
     """
     m = re.match(r"montage_cells_(\d+)", p.name)
     return int(m.group(1)) if m else 0
 
 
 def find_first_chunk(montages_dir: Path) -> Optional[Path]:
-    """Return the lowest-numbered montage_cells_*.png in the dir, or None."""
     if not montages_dir.is_dir():
         return None
     chunks = list(montages_dir.glob(CHUNK_GLOB))
@@ -209,7 +221,6 @@ def find_first_chunk(montages_dir: Path) -> Optional[Path]:
 
 
 def build_compare_slide(prs, title_text, cat_img, fmc_img):
-    """Build one CAT-vs-FMC slide. Returns (slide, missing_list)."""
     blank_layout = prs.slide_layouts[6]
     slide = prs.slides.add_slide(blank_layout)
     set_slide_background(slide, BLACK)
@@ -251,29 +262,28 @@ def main() -> None:
     prs.slide_width = Inches(SLIDE_W)
     prs.slide_height = Inches(SLIDE_H)
 
-    kiet_root = Path(KIET_ROOT)
+    root = Path(CTSB_ROOT)
     missing_total = []
     slides_added = 0
 
     print(f"Writing deck to: {OUTPUT_PATH}\n")
 
     # Loop order: block -> dataset -> timepoint -> kind (within block).
-    # The two synapse kinds in block 1 interleave at each (date, tp):
-    #   slide 1: Synapse Mask (no rings), slide 2: Actin at Synapse (rings)
-    # Block 2 is XZ MIP on its own — one slide per (date, tp).
     for block in KIND_BLOCKS:
-        for date_tag, dataset_name in DATASETS:
+        for date_tag, day_label, dataset_folder, cell_templates in DATASETS:
             for tp in TIMEPOINTS:
                 tp_pretty = format_timepoint(tp)
                 for kind_label, kind_subpath in block:
-                    cat_dir = (
-                        kiet_root / dataset_name / f"CAT_{tp}"
-                        / CONDITION_SUBPATH / PROG_SUBPATH / kind_subpath
-                    )
-                    fmc_dir = (
-                        kiet_root / dataset_name / f"FMC_{tp}"
-                        / CONDITION_SUBPATH / PROG_SUBPATH / kind_subpath
-                    )
+                    def resolve(cell):
+                        car_sub, cond_template = cell_templates[cell]
+                        cond_folder = cond_template.format(tp=tp)
+                        return (
+                            root / dataset_folder / car_sub / cond_folder
+                            / CONDITION_SUBPATH / PROG_SUBPATH / kind_subpath
+                        )
+
+                    cat_dir = resolve("CAT")
+                    fmc_dir = resolve("FMC")
                     cat_img = find_first_chunk(cat_dir)
                     fmc_img = find_first_chunk(fmc_dir)
 
@@ -285,12 +295,12 @@ def main() -> None:
                         "CAT:OK" if cat_img else "CAT:MISSING",
                         "FMC:OK" if fmc_img else "FMC:MISSING",
                     ]
-                    print(f"[{kind_label}/{date_tag}/{tp}]  " + "  ".join(status_parts))
+                    print(f"[{kind_label}/{day_label}/{tp}]  " + "  ".join(status_parts))
 
                     for cell in missing:
                         src = cat_dir if cell == "CAT" else fmc_dir
                         missing_total.append(
-                            f"{kind_label}/{date_tag}/{tp}/{cell}  ({src})"
+                            f"{kind_label}/{day_label}/{tp}/{cell}  ({src})"
                         )
 
     prs.save(str(out_path))
