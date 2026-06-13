@@ -100,6 +100,19 @@ DATASETS = [
             + THREE_SLICE_METRICS + [RAD_PROFILE_3SLICE]
         ),
     },
+    {
+        "label": "Kiet 20260607",
+        # Compile name: <dataset_folder>_<compile_date> (no `_test_` segment).
+        "compiled_root": Path(
+            "Y:/User_data/Kiet/results_compiled/actin_only/"
+            "compiled_20260607_pMLC_CART_actin_hoescht_20260612/grid_panels"
+        ),
+        "output_path": OUTPUT_DIR / "CART_actin_summary_20260607.pptx",
+        "png_files": (
+            SLICE_METRICS + [RAD_PROFILE_SLICE]
+            + THREE_SLICE_METRICS + [RAD_PROFILE_3SLICE]
+        ),
+    },
 ]
 
 # Colors

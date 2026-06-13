@@ -26,7 +26,7 @@ import os
 # profiles/ and polarization/ folders are siblings of grid_panels/.
 RESULTS_ROOT = (
     "L:/FF/Naive_CTLs/GzB_bTub/06172025_naiveCTLs_grzmB_bTub_/compiled_results/"
-    "naiveCTLs_grzmB_bTub_06172025_12conditions_20260608"
+    "naiveCTLs_grzmB_bTub_06172025_12conditions_20260611"
 )
 
 PRESENTATION = (
@@ -62,6 +62,8 @@ METRICS = [
     # Concise label matches the analysis ylabel convention "<Channel> Z_{50} (um)".
     ("GzmB_z50_cell_bottom_distance", "Granzyme B Z₅₀"),
     ("GzmB_z50_cell_bottom_distance_norm_cell_height", "Granzyme B Z₅₀ (norm. cell height)"),
+    ("GzmB_z75_cell_bottom_distance", "Granzyme B Z₇₅"),
+    ("GzmB_z75_cell_bottom_distance_norm_cell_height", "Granzyme B Z₇₅ (norm. cell height)"),
     # Actin synapse footprint
     ("actin_bottom_mask_area", "Synapse area"),
 ]
@@ -83,33 +85,38 @@ GRID_LAYOUT = [
 ]
 
 # ---------------------------------------------------------------------------
-# All-conditions-only profile(s): one square slide each, read from profiles/.
-# (No per-comparison breakdown -- user asked only autocorr + polarization to be
-# broken out across comparisons.)
+# Profiles (axial + autocorrelation) and polarization shown ACROSS comparisons
+# (same GRID_LAYOUT as the metrics: all conditions + substrate trio + timecourse
+# trio + activation). The all-conditions panel falls back to the FLAT profiles/
+# or polarization/ file when grid_panels/all_conditions/<raw>.png is absent; the
+# per-comparison panels are read from grid_panels/<comparison>/<raw>.png and are
+# skipped until they exist (some empty at 2 h due to low Granzyme B signal).
+# Each entry: (raw filename stem, pretty title).
 # ---------------------------------------------------------------------------
-AXIAL_PROFILES = [
+# profiles -> all-conditions square (live in profiles/)
+PROFILE_EXTRAS = [
     ("GzmB_axial_profile_auc1", "Granzyme B: axial intensity profile"),
+    ("GzmB_axial_profile_auc1_all_cells_with_average", "Granzyme B: axial intensity profile (all cells)"),
+    ("GzmB_synapse_autocorr_c", "Granzyme B: pair autocorrelation at synapse"),
+    ("GzmB_synapse_autocorr_c_all_cells_with_average", "Granzyme B: pair autocorrelation at synapse (all cells)"),
+    ("GzmB_synapse_autocorr_c_3mip", "Granzyme B: pair autocorrelation at synapse, 3-slice MIP"),
+    ("GzmB_synapse_autocorr_c_3mip_all_cells_with_average", "Granzyme B: pair autocorrelation at synapse, 3-slice MIP (all cells)"),
 ]
-
-# ---------------------------------------------------------------------------
-# Autocorrelation + polarization shown ACROSS comparisons (same GRID_LAYOUT as
-# the metrics: all conditions + substrate trio + timecourse trio + activation).
-# The all-conditions panel currently lives FLAT in profiles/ or polarization/;
-# the per-comparison panels are read from grid_panels/<comparison>/<raw>.png and
-# are SKIPPED until the pipeline writes them there (some will be empty at 2 h
-# due to low Granzyme B signal). Each entry: (raw filename stem, pretty title).
-# ---------------------------------------------------------------------------
-# autocorrelation -> all-conditions square (lives in profiles/)
-AUTOCORR_EXTRAS = [
-    ("GzmB_synapse_autocorr_c", "Granzyme B: autocorrelation at synapse"),
-    ("GzmB_synapse_autocorr_c_all_cells_with_average", "Granzyme B: autocorrelation at synapse (all cells)"),
-    ("GzmB_synapse_autocorr_c_3mip", "Granzyme B: autocorrelation at synapse, 3-slice MIP"),
-    ("GzmB_synapse_autocorr_c_3mip_all_cells_with_average", "Granzyme B: autocorrelation at synapse, 3-slice MIP (all cells)"),
-]
-# polarization -> all-conditions wide (lives in polarization/)
+# SPATIAL polarization -> all-conditions wide (lives in polarization/). These are
+# true spatial-polarization plots (granule height / centrosome distance) and keep
+# the *_polarization suffix.
 POLARIZATION_EXTRAS = [
     ("GzmB_z50_cell_bottom_distance_polarization", "Granzyme B Z₅₀: fraction polarized"),
     ("GzmB_z50_cell_bottom_distance_3um_polarization", "Granzyme B Z₅₀: fraction polarized (3 µm)"),
+    ("GzmB_z75_cell_bottom_distance_polarization", "Granzyme B Z₇₅: fraction polarized"),
+    ("GzmB_z75_cell_bottom_distance_3um_polarization", "Granzyme B Z₇₅: fraction polarized (3 µm)"),
+]
+# ABUNDANCE (% of cells; NOT spatial) -> all-conditions wide (lives in polarization/).
+# Stacked "% of cells" bars: positive vs negative / high vs low total. These use the
+# *_fraction suffix (renamed from the old *_sig_polarization files, now removed).
+ABUNDANCE_EXTRAS = [
+    ("GzmB_peak_sig_fraction", "Granzyme B: % positive cells (peak > 20)"),
+    ("GzmB_total_sig_fraction", "Granzyme B: % cells with high total signal (> 1M)"),
 ]
 
 
@@ -214,30 +221,34 @@ def main():
         lines.append("")
         n += emit_across_layout(lines, skipped, raw, pretty, allcond_dir=None, allcond_wide=True)
 
-    # ----- section 2: profiles -----
+    # ----- section 2: profiles (axial + autocorrelation, across comparisons) -----
     lines.append("  # =========================================================================")
-    lines.append("  # PROFILES  (axial = all conditions; autocorrelation = across comparisons)")
+    lines.append("  # PROFILES  (axial + autocorrelation; across comparisons, square)")
     lines.append("  # =========================================================================")
     lines.append("")
-    for raw, pretty in AXIAL_PROFILES:
-        rel = "profiles/{}.png".format(raw)
-        if exists(rel):
-            emit_entry(lines, rel, pretty, wide=False)
-            n += 1
-        else:
-            skipped.append(rel)
-    for raw, pretty in AUTOCORR_EXTRAS:
+    for raw, pretty in PROFILE_EXTRAS:
         lines.append("  # --- {} ---".format(raw))
         lines.append("")
         n += emit_across_layout(lines, skipped, raw, pretty,
                                 allcond_dir="profiles", allcond_wide=False)
 
-    # ----- section 3: polarization (across comparisons) -----
+    # ----- section 3: spatial polarization (across comparisons) -----
     lines.append("  # =========================================================================")
-    lines.append("  # POLARIZATION  (across comparisons; all-conditions panel is wide)")
+    lines.append("  # POLARIZATION  (spatial; across comparisons; all-conditions panel is wide)")
     lines.append("  # =========================================================================")
     lines.append("")
     for raw, pretty in POLARIZATION_EXTRAS:
+        lines.append("  # --- {} ---".format(raw))
+        lines.append("")
+        n += emit_across_layout(lines, skipped, raw, pretty,
+                                allcond_dir="polarization", allcond_wide=True)
+
+    # ----- section 4: abundance (% of cells; across comparisons) -----
+    lines.append("  # =========================================================================")
+    lines.append("  # ABUNDANCE  (% of cells; across comparisons; all-conditions panel is wide)")
+    lines.append("  # =========================================================================")
+    lines.append("")
+    for raw, pretty in ABUNDANCE_EXTRAS:
         lines.append("  # --- {} ---".format(raw))
         lines.append("")
         n += emit_across_layout(lines, skipped, raw, pretty,

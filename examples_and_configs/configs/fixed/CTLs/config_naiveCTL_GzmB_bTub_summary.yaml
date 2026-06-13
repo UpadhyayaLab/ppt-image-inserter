@@ -11,7 +11,7 @@ presentation: "K:/FF/PPT/PPT_autogeneration/Naive_CTL/NaiveCTL_GzmB_bTub_summary
 output_path: "K:/FF/PPT/PPT_autogeneration/Naive_CTL/NaiveCTL_GzmB_bTub_summary.pptx"
 template_slide: 1
 preserve_slides: [0, 1, 2, 3]
-base_dir: "L:/FF/Naive_CTLs/GzB_bTub/06172025_naiveCTLs_grzmB_bTub_/compiled_results/naiveCTLs_grzmB_bTub_06172025_12conditions_20260608"
+base_dir: "L:/FF/Naive_CTLs/GzB_bTub/06172025_naiveCTLs_grzmB_bTub_/compiled_results/naiveCTLs_grzmB_bTub_06172025_12conditions_20260611"
 auto_position: true
 add_label: false
 
@@ -106,6 +106,40 @@ images:
   - images: ["grid_panels/activation_2h/GzmB_z50_cell_bottom_distance_norm_cell_height.png"]
     title: "Granzyme B Z₅₀ (norm. cell height) — effects of activation: aCD3 vs PLL (2 h)"
 
+  # --- GzmB_z75_cell_bottom_distance ---
+
+  - images: ["grid_panels/all_conditions/GzmB_z75_cell_bottom_distance.png"]
+    template_slide: 2
+    title: "Granzyme B Z₇₅ — all conditions"
+
+  - images: ["grid_panels/substrate_24h/GzmB_z75_cell_bottom_distance.png", "grid_panels/substrate_48h/GzmB_z75_cell_bottom_distance.png", "grid_panels/substrate_72h/GzmB_z75_cell_bottom_distance.png"]
+    template_slide: 3
+    title: "Granzyme B Z₇₅ — substrate comparison (24 / 48 / 72 h)"
+
+  - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_z75_cell_bottom_distance.png", "grid_panels/gel_12kPa_timecourse/GzmB_z75_cell_bottom_distance.png", "grid_panels/glass_timecourse/GzmB_z75_cell_bottom_distance.png"]
+    template_slide: 3
+    title: "Granzyme B Z₇₅ — timecourses: 1.5 kPa, 12 kPa, glass"
+
+  - images: ["grid_panels/activation_2h/GzmB_z75_cell_bottom_distance.png"]
+    title: "Granzyme B Z₇₅ — effects of activation: aCD3 vs PLL (2 h)"
+
+  # --- GzmB_z75_cell_bottom_distance_norm_cell_height ---
+
+  - images: ["grid_panels/all_conditions/GzmB_z75_cell_bottom_distance_norm_cell_height.png"]
+    template_slide: 2
+    title: "Granzyme B Z₇₅ (norm. cell height) — all conditions"
+
+  - images: ["grid_panels/substrate_24h/GzmB_z75_cell_bottom_distance_norm_cell_height.png", "grid_panels/substrate_48h/GzmB_z75_cell_bottom_distance_norm_cell_height.png", "grid_panels/substrate_72h/GzmB_z75_cell_bottom_distance_norm_cell_height.png"]
+    template_slide: 3
+    title: "Granzyme B Z₇₅ (norm. cell height) — substrate comparison (24 / 48 / 72 h)"
+
+  - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_z75_cell_bottom_distance_norm_cell_height.png", "grid_panels/gel_12kPa_timecourse/GzmB_z75_cell_bottom_distance_norm_cell_height.png", "grid_panels/glass_timecourse/GzmB_z75_cell_bottom_distance_norm_cell_height.png"]
+    template_slide: 3
+    title: "Granzyme B Z₇₅ (norm. cell height) — timecourses: 1.5 kPa, 12 kPa, glass"
+
+  - images: ["grid_panels/activation_2h/GzmB_z75_cell_bottom_distance_norm_cell_height.png"]
+    title: "Granzyme B Z₇₅ (norm. cell height) — effects of activation: aCD3 vs PLL (2 h)"
+
   # --- actin_bottom_mask_area ---
 
   - images: ["grid_panels/all_conditions/actin_bottom_mask_area.png"]
@@ -124,78 +158,107 @@ images:
     title: "Synapse area — effects of activation: aCD3 vs PLL (2 h)"
 
   # =========================================================================
-  # PROFILES  (axial = all conditions; autocorrelation = across comparisons)
+  # PROFILES  (axial + autocorrelation; across comparisons, square)
   # =========================================================================
 
-  - images: ["profiles/GzmB_axial_profile_auc1.png"]
-    title: "Granzyme B: axial intensity profile"
+  # --- GzmB_axial_profile_auc1 ---
+
+  - images: ["grid_panels/all_conditions/GzmB_axial_profile_auc1.png"]
+    title: "Granzyme B: axial intensity profile — all conditions"
+
+  - images: ["grid_panels/substrate_24h/GzmB_axial_profile_auc1.png", "grid_panels/substrate_48h/GzmB_axial_profile_auc1.png", "grid_panels/substrate_72h/GzmB_axial_profile_auc1.png"]
+    template_slide: 3
+    title: "Granzyme B: axial intensity profile — substrate comparison (24 / 48 / 72 h)"
+
+  - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_axial_profile_auc1.png", "grid_panels/gel_12kPa_timecourse/GzmB_axial_profile_auc1.png", "grid_panels/glass_timecourse/GzmB_axial_profile_auc1.png"]
+    template_slide: 3
+    title: "Granzyme B: axial intensity profile — timecourses: 1.5 kPa, 12 kPa, glass"
+
+  - images: ["grid_panels/activation_2h/GzmB_axial_profile_auc1.png"]
+    title: "Granzyme B: axial intensity profile — effects of activation: aCD3 vs PLL (2 h)"
+
+  # --- GzmB_axial_profile_auc1_all_cells_with_average ---
+
+  - images: ["grid_panels/all_conditions/GzmB_axial_profile_auc1_all_cells_with_average.png"]
+    title: "Granzyme B: axial intensity profile (all cells) — all conditions"
+
+  - images: ["grid_panels/substrate_24h/GzmB_axial_profile_auc1_all_cells_with_average.png", "grid_panels/substrate_48h/GzmB_axial_profile_auc1_all_cells_with_average.png", "grid_panels/substrate_72h/GzmB_axial_profile_auc1_all_cells_with_average.png"]
+    template_slide: 3
+    title: "Granzyme B: axial intensity profile (all cells) — substrate comparison (24 / 48 / 72 h)"
+
+  - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_axial_profile_auc1_all_cells_with_average.png", "grid_panels/gel_12kPa_timecourse/GzmB_axial_profile_auc1_all_cells_with_average.png", "grid_panels/glass_timecourse/GzmB_axial_profile_auc1_all_cells_with_average.png"]
+    template_slide: 3
+    title: "Granzyme B: axial intensity profile (all cells) — timecourses: 1.5 kPa, 12 kPa, glass"
+
+  - images: ["grid_panels/activation_2h/GzmB_axial_profile_auc1_all_cells_with_average.png"]
+    title: "Granzyme B: axial intensity profile (all cells) — effects of activation: aCD3 vs PLL (2 h)"
 
   # --- GzmB_synapse_autocorr_c ---
 
   - images: ["grid_panels/all_conditions/GzmB_synapse_autocorr_c.png"]
-    title: "Granzyme B: autocorrelation at synapse — all conditions"
+    title: "Granzyme B: pair autocorrelation at synapse — all conditions"
 
   - images: ["grid_panels/substrate_24h/GzmB_synapse_autocorr_c.png", "grid_panels/substrate_48h/GzmB_synapse_autocorr_c.png", "grid_panels/substrate_72h/GzmB_synapse_autocorr_c.png"]
     template_slide: 3
-    title: "Granzyme B: autocorrelation at synapse — substrate comparison (24 / 48 / 72 h)"
+    title: "Granzyme B: pair autocorrelation at synapse — substrate comparison (24 / 48 / 72 h)"
 
   - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_synapse_autocorr_c.png", "grid_panels/gel_12kPa_timecourse/GzmB_synapse_autocorr_c.png", "grid_panels/glass_timecourse/GzmB_synapse_autocorr_c.png"]
     template_slide: 3
-    title: "Granzyme B: autocorrelation at synapse — timecourses: 1.5 kPa, 12 kPa, glass"
+    title: "Granzyme B: pair autocorrelation at synapse — timecourses: 1.5 kPa, 12 kPa, glass"
 
   - images: ["grid_panels/activation_2h/GzmB_synapse_autocorr_c.png"]
-    title: "Granzyme B: autocorrelation at synapse — effects of activation: aCD3 vs PLL (2 h)"
+    title: "Granzyme B: pair autocorrelation at synapse — effects of activation: aCD3 vs PLL (2 h)"
 
   # --- GzmB_synapse_autocorr_c_all_cells_with_average ---
 
   - images: ["grid_panels/all_conditions/GzmB_synapse_autocorr_c_all_cells_with_average.png"]
-    title: "Granzyme B: autocorrelation at synapse (all cells) — all conditions"
+    title: "Granzyme B: pair autocorrelation at synapse (all cells) — all conditions"
 
   - images: ["grid_panels/substrate_24h/GzmB_synapse_autocorr_c_all_cells_with_average.png", "grid_panels/substrate_48h/GzmB_synapse_autocorr_c_all_cells_with_average.png", "grid_panels/substrate_72h/GzmB_synapse_autocorr_c_all_cells_with_average.png"]
     template_slide: 3
-    title: "Granzyme B: autocorrelation at synapse (all cells) — substrate comparison (24 / 48 / 72 h)"
+    title: "Granzyme B: pair autocorrelation at synapse (all cells) — substrate comparison (24 / 48 / 72 h)"
 
   - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_synapse_autocorr_c_all_cells_with_average.png", "grid_panels/gel_12kPa_timecourse/GzmB_synapse_autocorr_c_all_cells_with_average.png", "grid_panels/glass_timecourse/GzmB_synapse_autocorr_c_all_cells_with_average.png"]
     template_slide: 3
-    title: "Granzyme B: autocorrelation at synapse (all cells) — timecourses: 1.5 kPa, 12 kPa, glass"
+    title: "Granzyme B: pair autocorrelation at synapse (all cells) — timecourses: 1.5 kPa, 12 kPa, glass"
 
   - images: ["grid_panels/activation_2h/GzmB_synapse_autocorr_c_all_cells_with_average.png"]
-    title: "Granzyme B: autocorrelation at synapse (all cells) — effects of activation: aCD3 vs PLL (2 h)"
+    title: "Granzyme B: pair autocorrelation at synapse (all cells) — effects of activation: aCD3 vs PLL (2 h)"
 
   # --- GzmB_synapse_autocorr_c_3mip ---
 
   - images: ["grid_panels/all_conditions/GzmB_synapse_autocorr_c_3mip.png"]
-    title: "Granzyme B: autocorrelation at synapse, 3-slice MIP — all conditions"
+    title: "Granzyme B: pair autocorrelation at synapse, 3-slice MIP — all conditions"
 
   - images: ["grid_panels/substrate_24h/GzmB_synapse_autocorr_c_3mip.png", "grid_panels/substrate_48h/GzmB_synapse_autocorr_c_3mip.png", "grid_panels/substrate_72h/GzmB_synapse_autocorr_c_3mip.png"]
     template_slide: 3
-    title: "Granzyme B: autocorrelation at synapse, 3-slice MIP — substrate comparison (24 / 48 / 72 h)"
+    title: "Granzyme B: pair autocorrelation at synapse, 3-slice MIP — substrate comparison (24 / 48 / 72 h)"
 
   - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_synapse_autocorr_c_3mip.png", "grid_panels/gel_12kPa_timecourse/GzmB_synapse_autocorr_c_3mip.png", "grid_panels/glass_timecourse/GzmB_synapse_autocorr_c_3mip.png"]
     template_slide: 3
-    title: "Granzyme B: autocorrelation at synapse, 3-slice MIP — timecourses: 1.5 kPa, 12 kPa, glass"
+    title: "Granzyme B: pair autocorrelation at synapse, 3-slice MIP — timecourses: 1.5 kPa, 12 kPa, glass"
 
   - images: ["grid_panels/activation_2h/GzmB_synapse_autocorr_c_3mip.png"]
-    title: "Granzyme B: autocorrelation at synapse, 3-slice MIP — effects of activation: aCD3 vs PLL (2 h)"
+    title: "Granzyme B: pair autocorrelation at synapse, 3-slice MIP — effects of activation: aCD3 vs PLL (2 h)"
 
   # --- GzmB_synapse_autocorr_c_3mip_all_cells_with_average ---
 
   - images: ["grid_panels/all_conditions/GzmB_synapse_autocorr_c_3mip_all_cells_with_average.png"]
-    title: "Granzyme B: autocorrelation at synapse, 3-slice MIP (all cells) — all conditions"
+    title: "Granzyme B: pair autocorrelation at synapse, 3-slice MIP (all cells) — all conditions"
 
   - images: ["grid_panels/substrate_24h/GzmB_synapse_autocorr_c_3mip_all_cells_with_average.png", "grid_panels/substrate_48h/GzmB_synapse_autocorr_c_3mip_all_cells_with_average.png", "grid_panels/substrate_72h/GzmB_synapse_autocorr_c_3mip_all_cells_with_average.png"]
     template_slide: 3
-    title: "Granzyme B: autocorrelation at synapse, 3-slice MIP (all cells) — substrate comparison (24 / 48 / 72 h)"
+    title: "Granzyme B: pair autocorrelation at synapse, 3-slice MIP (all cells) — substrate comparison (24 / 48 / 72 h)"
 
   - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_synapse_autocorr_c_3mip_all_cells_with_average.png", "grid_panels/gel_12kPa_timecourse/GzmB_synapse_autocorr_c_3mip_all_cells_with_average.png", "grid_panels/glass_timecourse/GzmB_synapse_autocorr_c_3mip_all_cells_with_average.png"]
     template_slide: 3
-    title: "Granzyme B: autocorrelation at synapse, 3-slice MIP (all cells) — timecourses: 1.5 kPa, 12 kPa, glass"
+    title: "Granzyme B: pair autocorrelation at synapse, 3-slice MIP (all cells) — timecourses: 1.5 kPa, 12 kPa, glass"
 
   - images: ["grid_panels/activation_2h/GzmB_synapse_autocorr_c_3mip_all_cells_with_average.png"]
-    title: "Granzyme B: autocorrelation at synapse, 3-slice MIP (all cells) — effects of activation: aCD3 vs PLL (2 h)"
+    title: "Granzyme B: pair autocorrelation at synapse, 3-slice MIP (all cells) — effects of activation: aCD3 vs PLL (2 h)"
 
   # =========================================================================
-  # POLARIZATION  (across comparisons; all-conditions panel is wide)
+  # POLARIZATION  (spatial; across comparisons; all-conditions panel is wide)
   # =========================================================================
 
   # --- GzmB_z50_cell_bottom_distance_polarization ---
@@ -231,3 +294,75 @@ images:
 
   - images: ["grid_panels/activation_2h/GzmB_z50_cell_bottom_distance_3um_polarization.png"]
     title: "Granzyme B Z₅₀: fraction polarized (3 µm) — effects of activation: aCD3 vs PLL (2 h)"
+
+  # --- GzmB_z75_cell_bottom_distance_polarization ---
+
+  - images: ["grid_panels/all_conditions/GzmB_z75_cell_bottom_distance_polarization.png"]
+    template_slide: 2
+    title: "Granzyme B Z₇₅: fraction polarized — all conditions"
+
+  - images: ["grid_panels/substrate_24h/GzmB_z75_cell_bottom_distance_polarization.png", "grid_panels/substrate_48h/GzmB_z75_cell_bottom_distance_polarization.png", "grid_panels/substrate_72h/GzmB_z75_cell_bottom_distance_polarization.png"]
+    template_slide: 3
+    title: "Granzyme B Z₇₅: fraction polarized — substrate comparison (24 / 48 / 72 h)"
+
+  - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_z75_cell_bottom_distance_polarization.png", "grid_panels/gel_12kPa_timecourse/GzmB_z75_cell_bottom_distance_polarization.png", "grid_panels/glass_timecourse/GzmB_z75_cell_bottom_distance_polarization.png"]
+    template_slide: 3
+    title: "Granzyme B Z₇₅: fraction polarized — timecourses: 1.5 kPa, 12 kPa, glass"
+
+  - images: ["grid_panels/activation_2h/GzmB_z75_cell_bottom_distance_polarization.png"]
+    title: "Granzyme B Z₇₅: fraction polarized — effects of activation: aCD3 vs PLL (2 h)"
+
+  # --- GzmB_z75_cell_bottom_distance_3um_polarization ---
+
+  - images: ["grid_panels/all_conditions/GzmB_z75_cell_bottom_distance_3um_polarization.png"]
+    template_slide: 2
+    title: "Granzyme B Z₇₅: fraction polarized (3 µm) — all conditions"
+
+  - images: ["grid_panels/substrate_24h/GzmB_z75_cell_bottom_distance_3um_polarization.png", "grid_panels/substrate_48h/GzmB_z75_cell_bottom_distance_3um_polarization.png", "grid_panels/substrate_72h/GzmB_z75_cell_bottom_distance_3um_polarization.png"]
+    template_slide: 3
+    title: "Granzyme B Z₇₅: fraction polarized (3 µm) — substrate comparison (24 / 48 / 72 h)"
+
+  - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_z75_cell_bottom_distance_3um_polarization.png", "grid_panels/gel_12kPa_timecourse/GzmB_z75_cell_bottom_distance_3um_polarization.png", "grid_panels/glass_timecourse/GzmB_z75_cell_bottom_distance_3um_polarization.png"]
+    template_slide: 3
+    title: "Granzyme B Z₇₅: fraction polarized (3 µm) — timecourses: 1.5 kPa, 12 kPa, glass"
+
+  - images: ["grid_panels/activation_2h/GzmB_z75_cell_bottom_distance_3um_polarization.png"]
+    title: "Granzyme B Z₇₅: fraction polarized (3 µm) — effects of activation: aCD3 vs PLL (2 h)"
+
+  # =========================================================================
+  # ABUNDANCE  (% of cells; across comparisons; all-conditions panel is wide)
+  # =========================================================================
+
+  # --- GzmB_peak_sig_fraction ---
+
+  - images: ["grid_panels/all_conditions/GzmB_peak_sig_fraction.png"]
+    template_slide: 2
+    title: "Granzyme B: % positive cells (peak > 20) — all conditions"
+
+  - images: ["grid_panels/substrate_24h/GzmB_peak_sig_fraction.png", "grid_panels/substrate_48h/GzmB_peak_sig_fraction.png", "grid_panels/substrate_72h/GzmB_peak_sig_fraction.png"]
+    template_slide: 3
+    title: "Granzyme B: % positive cells (peak > 20) — substrate comparison (24 / 48 / 72 h)"
+
+  - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_peak_sig_fraction.png", "grid_panels/gel_12kPa_timecourse/GzmB_peak_sig_fraction.png", "grid_panels/glass_timecourse/GzmB_peak_sig_fraction.png"]
+    template_slide: 3
+    title: "Granzyme B: % positive cells (peak > 20) — timecourses: 1.5 kPa, 12 kPa, glass"
+
+  - images: ["grid_panels/activation_2h/GzmB_peak_sig_fraction.png"]
+    title: "Granzyme B: % positive cells (peak > 20) — effects of activation: aCD3 vs PLL (2 h)"
+
+  # --- GzmB_total_sig_fraction ---
+
+  - images: ["grid_panels/all_conditions/GzmB_total_sig_fraction.png"]
+    template_slide: 2
+    title: "Granzyme B: % cells with high total signal (> 1M) — all conditions"
+
+  - images: ["grid_panels/substrate_24h/GzmB_total_sig_fraction.png", "grid_panels/substrate_48h/GzmB_total_sig_fraction.png", "grid_panels/substrate_72h/GzmB_total_sig_fraction.png"]
+    template_slide: 3
+    title: "Granzyme B: % cells with high total signal (> 1M) — substrate comparison (24 / 48 / 72 h)"
+
+  - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_total_sig_fraction.png", "grid_panels/gel_12kPa_timecourse/GzmB_total_sig_fraction.png", "grid_panels/glass_timecourse/GzmB_total_sig_fraction.png"]
+    template_slide: 3
+    title: "Granzyme B: % cells with high total signal (> 1M) — timecourses: 1.5 kPa, 12 kPa, glass"
+
+  - images: ["grid_panels/activation_2h/GzmB_total_sig_fraction.png"]
+    title: "Granzyme B: % cells with high total signal (> 1M) — effects of activation: aCD3 vs PLL (2 h)"
