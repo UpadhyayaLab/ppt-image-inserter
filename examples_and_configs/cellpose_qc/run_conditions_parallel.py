@@ -24,6 +24,9 @@ HERE = Path(__file__).resolve().parent
 DEFAULT_CONFIG_GLOB = "configs/cart_*.yaml"
 PYTHON = sys.executable
 BUILD_SCRIPT = HERE / "build_cellpose_qc_deck.py"
+# Logs live alongside the generated decks, NOT in the repo. Override with
+# --log-dir if you want them somewhere else.
+DEFAULT_LOG_DIR = Path("K:/FF/PPT/PPT_autogeneration/CART_actin_only/cellpose_qc/logs")
 
 
 def discover_configs(args_configs: List[str]) -> List[Path]:
@@ -41,8 +44,8 @@ def main(argv: List[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("configs", nargs="*", help="YAML configs to run")
     parser.add_argument(
-        "--log-dir", default=str(HERE / "logs"),
-        help="Directory for per-condition log files (default: ./logs)",
+        "--log-dir", default=str(DEFAULT_LOG_DIR),
+        help=f"Directory for per-condition log files (default: {DEFAULT_LOG_DIR})",
     )
     args = parser.parse_args(argv)
 

@@ -64,3 +64,6 @@ _movie_posters*/
 
 # Zip dev artifacts (e.g. extracted .pptx slide XML for inspection)
 *.zip
+
+# Runtime / job logs (should live under PPT_autogeneration/.../logs, not the repo)
+*.log
