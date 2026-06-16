@@ -1,8 +1,8 @@
 # Batch Image Replacement Configuration
 # LatA: PLL vs aCD3 comparison across 2 experiments
 
-presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Effects of LatA (PLL vs aCD3), Fixed Cells_template.pptx"
-output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Effects of LatA (PLL vs aCD3), Fixed Cells.pptx"
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/LatA/Effects of LatA (PLL vs aCD3), Fixed Cells_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/LatA/Effects of LatA (PLL vs aCD3), Fixed Cells.pptx"
 
 # Template slide to copy (0-based index)
 template_slide: 0
@@ -14,7 +14,7 @@ auto_position: true
 label_side: left
 
 # Base directory containing all images
-base_dir: "J:/FF/fixed_cell/Vimentin/LatA_PLL_combined/results_compilation/LatA_PLL_combined_20260414/grid_panels"
+base_dir: "J:/FF/fixed_cell/Vimentin/LatA_PLL_combined/results_compilation/LatA_PLL_combined_20260615/grid_panels"
 
 images:
   # --- Nuclear morphology ---

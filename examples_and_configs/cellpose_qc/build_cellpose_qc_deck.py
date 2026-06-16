@@ -114,11 +114,17 @@ def _with_nuc_path(p: Path) -> Path:
 
 
 def resolve_fov_ids(cfg: Dict[str, Any]) -> List[str]:
-    """If fov_ids == 'auto', glob raw_dir for files matching raw_pattern."""
+    """If fov_ids == 'auto', glob raw_dir for files matching raw_pattern.
+
+    Optional ``fov_id_filter`` (regex) further restricts auto-discovered
+    IDs — e.g. ``"^\\d+$"`` to drop stray non-numeric files in the raw dir.
+    """
     fov_ids = cfg["fov_ids"]
+    fov_filter = cfg.get("fov_id_filter")
+    filt_re = re.compile(fov_filter) if fov_filter else None
     if isinstance(fov_ids, list):
-        return [str(f) for f in fov_ids]
-    if isinstance(fov_ids, str) and fov_ids.lower() == "auto":
+        ids = [str(f) for f in fov_ids]
+    elif isinstance(fov_ids, str) and fov_ids.lower() == "auto":
         raw_dir = Path(cfg["raw_dir"])
         pattern = cfg["raw_pattern"]
         if "{fov}" not in pattern:
@@ -126,15 +132,18 @@ def resolve_fov_ids(cfg: Dict[str, Any]) -> List[str]:
                 f"fov_ids: auto requires '{{fov}}' in raw_pattern (got {pattern!r})"
             )
         regex = re.compile("^" + re.escape(pattern).replace(r"\{fov\}", r"(?P<fov>.+)") + "$")
-        ids: List[str] = []
+        ids = []
         for p in sorted(raw_dir.iterdir()):
             if not p.is_file():
                 continue
             m = regex.match(p.name)
             if m:
                 ids.append(m.group("fov"))
-        return ids
-    raise TypeError(f"fov_ids must be a list or 'auto', got {fov_ids!r}")
+    else:
+        raise TypeError(f"fov_ids must be a list or 'auto', got {fov_ids!r}")
+    if filt_re:
+        ids = [i for i in ids if filt_re.match(i)]
+    return ids
 
 
 def add_textbox(slide, text, left, top, width, height, font_pt, color, bold=False):

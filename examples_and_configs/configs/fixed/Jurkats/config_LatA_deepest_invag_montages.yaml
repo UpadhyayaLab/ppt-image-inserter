@@ -2,8 +2,8 @@
 # Expt 1 (Mar 2023) has no vim channel -> centrosome/ folder
 # Expts 2-4 have vim -> vimentin/ folder, with _with_cent filename variant
 
-presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/LatA, Deepest Invag Montages_template.pptx"
-output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/LatA, Deepest Invag Montages.pptx"
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/LatA/LatA, Deepest Invag Montages_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/LatA/LatA, Deepest Invag Montages.pptx"
 
 template_slide: 0
 preserve_slides: [0]
