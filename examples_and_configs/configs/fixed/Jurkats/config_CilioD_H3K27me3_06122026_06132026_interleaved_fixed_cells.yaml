@@ -1,0 +1,133 @@
+presentation: K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/CilioD/Effects of CilioD, Fixed Cells_template.pptx
+output_path: K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/CilioD/Effects of CilioD, H3K27me3, 06122026 and 06132026 interleaved.pptx
+template_slide: 1
+preserve_slides:
+- 0
+- 1
+auto_position: true
+label_side: left
+images:
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_deform_ratio_grid.tif
+  title: Cell Aspect Ratio (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_deform_ratio_grid.tif
+  title: Cell Aspect Ratio (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/nuc_aspect_ratio_grid.tif
+  title: Nuclear aspect ratio (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/nuc_aspect_ratio_grid.tif
+  title: Nuclear aspect ratio (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/nuc_solidity_grid.tif
+  title: Nuclear solidity (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/nuc_solidity_grid.tif
+  title: Nuclear solidity (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/nuc_volume_mesh_grid.tif
+  title: Nuclear volume (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/nuc_volume_mesh_grid.tif
+  title: Nuclear volume (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/nuc_SA_mesh_grid.tif
+  title: Nuclear surface area (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/nuc_SA_mesh_grid.tif
+  title: Nuclear surface area (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/chull_max_D_grid.tif
+  title: Max invag depth over full nucleus (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/chull_max_D_grid.tif
+  title: Max invag depth over full nucleus (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/chull_max_D_by_cent_grid.tif
+  title: Invag depth near centrosome (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/chull_max_D_by_cent_grid.tif
+  title: Invag depth near centrosome (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/chull_mean_D_cent_ratio_grid.tif
+  title: Centrosomal Invagination Index (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/chull_mean_D_cent_ratio_grid.tif
+  title: Centrosomal Invagination Index (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/centrosome_dist_deepest_real_avg_periphery_ratio_grid.tif
+  title: Centrosome distance to deepest invag vs avg periphery ratio (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/centrosome_dist_deepest_real_avg_periphery_ratio_grid.tif
+  title: Centrosome distance to deepest invag vs avg periphery ratio (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/concavity_index_around_cent_grid.tif
+  title: Concavity index around centrosome (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/concavity_index_around_cent_grid.tif
+  title: Concavity index around centrosome (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/deepest_invag_volume_grid.tif
+  title: Deepest invagination volume (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/deepest_invag_volume_grid.tif
+  title: Deepest invagination volume (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/deepest_invag_fraction_chull_volume_grid.tif
+  title: 'Deepest invag: frac of convex hull volume (06/12/2026)'
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/deepest_invag_fraction_chull_volume_grid.tif
+  title: 'Deepest invag: frac of convex hull volume (06/13/2026)'
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/deepest_region_periph_ratio_025um_grid.tif
+  title: DNA levels near invag (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/deepest_region_periph_ratio_025um_grid.tif
+  title: DNA levels near invag (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/avg_normal_angle_adaptive_region_growth_grid.tif
+  title: Deepest Invag Orientation (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/avg_normal_angle_adaptive_region_growth_grid.tif
+  title: Deepest Invag Orientation (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/avg_normal_angle_adaptive_region_growth_by_cent_grid.tif
+  title: Invag orientation (near centrosome) (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/avg_normal_angle_adaptive_region_growth_by_cent_grid.tif
+  title: Invag orientation (near centrosome) (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/avg_normal_angle_by_cent_grid.tif
+  title: Invag Orientation (by centrosome) (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/avg_normal_angle_by_cent_grid.tif
+  title: Invag Orientation (by centrosome) (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/centrosome_center_z_rel_bottom_actin_plane_grid.tif
+  title: Centrosome-synapse distance (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/centrosome_center_z_rel_bottom_actin_plane_grid.tif
+  title: Centrosome-synapse distance (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/nuc_cent_closest_dist_grid.tif
+  title: Nucleus-centrosome closest distance (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/nuc_cent_closest_dist_grid.tif
+  title: Nucleus-centrosome closest distance (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/centrosome_r_norm_bottom_plane_grid.tif
+  title: Centrosome radial position (bottom plane) (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/centrosome_r_norm_bottom_plane_grid.tif
+  title: Centrosome radial position (bottom plane) (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_MFI_around_cent_1um_grid.tif
+  title: Actin MFI around centrosome (1 µm) (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_MFI_around_cent_1um_grid.tif
+  title: Actin MFI around centrosome (1 µm) (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_MFI_around_cent_2um_grid.tif
+  title: Actin MFI around centrosome (2 µm) (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_MFI_around_cent_2um_grid.tif
+  title: Actin MFI around centrosome (2 µm) (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_frac_around_cent_1um_grid.tif
+  title: Actin fraction around centrosome (1 µm) (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_frac_around_cent_1um_grid.tif
+  title: Actin fraction around centrosome (1 µm) (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_frac_around_cent_2um_grid.tif
+  title: Actin fraction around centrosome (2 µm) (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_frac_around_cent_2um_grid.tif
+  title: Actin fraction around centrosome (2 µm) (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_depletion_ratio_around_cent_bot_plane_1um_grid.tif
+  title: Actin depletion ratio near centrosome, bottom plane (1 µm) (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_depletion_ratio_around_cent_bot_plane_1um_grid.tif
+  title: Actin depletion ratio near centrosome, bottom plane (1 µm) (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_depletion_ratio_around_cent_bot_plane_2um_grid.tif
+  title: Actin depletion ratio near centrosome, bottom plane (2 µm) (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_depletion_ratio_around_cent_bot_plane_2um_grid.tif
+  title: Actin depletion ratio near centrosome, bottom plane (2 µm) (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/H3K27me3_MFI_grid.tif
+  title: H3K27me3 MFI (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/H3K27me3_MFI_grid.tif
+  title: H3K27me3 MFI (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/H3K27me3_deepest_region_periph_ratio_025um_grid.tif
+  title: H3K27me3 deepest-invag / periphery ratio (0.25 µm) (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/H3K27me3_deepest_region_periph_ratio_025um_grid.tif
+  title: H3K27me3 deepest-invag / periphery ratio (0.25 µm) (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_bottom_mask_area_grid.tif
+  title: Synapse Area (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_bottom_mask_area_grid.tif
+  title: Synapse Area (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_bottom_MFI_grid.tif
+  title: Actin MFI at synapse (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_bottom_MFI_grid.tif
+  title: Actin MFI at synapse (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_bottom_inner_outer_ratio_grid.tif
+  title: Actin inner/outer synapse ratio (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_bottom_inner_outer_ratio_grid.tif
+  title: Actin inner/outer synapse ratio (06/13/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_50uM30minCilio_7min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260612_20260617/grid_panels/actin_bottom_circularity_grid.tif
+  title: Synapse Circularity (06/12/2026)
+- path: L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06132026_50uM30minCilio_7-12min_h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_/results_compilation/Jurkats_Ciliobrevin_H3K27me3_20260613_20260617/grid_panels/actin_bottom_circularity_grid.tif
+  title: Synapse Circularity (06/13/2026)

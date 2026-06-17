@@ -20,8 +20,9 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional, Tuple
 
+from PIL import Image
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
@@ -55,8 +56,9 @@ CONDITION_SUBPATH = "converted/cropped/split_channels"
 PROG_SUBPATH = "prog_fixed_cells_actin_only/actin"
 
 # (kind label, subpath under PROG_SUBPATH/)
+# Stage AG path mapping: synapse/inner_outer/bot_combined/ -> 1slice_combined/
 KINDS = [
-    ("Actin at Synapse", "synapse/inner_outer/bot_combined/montages"),
+    ("Actin at Synapse", "synapse/inner_outer/1slice_combined/montages"),
     ("Actin XZ MIP",     "xz_mip/montages"),
 ]
 
@@ -80,6 +82,14 @@ IMG_LEFT = 0.10
 IMG_TOP = 0.60
 IMG_BOX_W = SLIDE_W - 2 * 0.10           # 13.13"
 IMG_BOX_H = SLIDE_H - IMG_TOP - 0.10     # 6.80"
+
+# Scalebar invariant from the MATLAB CART_fixed_cell_analysis pipeline (Stage AF).
+# Every per-cell tile is rendered at PPUM_SOURCE px/μm in its data area; the
+# 5 μm scalebar is therefore SCALEBAR_PX pixels in every montage tile.
+# If the MATLAB constants change, update these and rerun all decks.
+PPUM_SOURCE = 30          # px/μm in source PNGs
+SCALEBAR_UM = 5           # μm
+SCALEBAR_PX = PPUM_SOURCE * SCALEBAR_UM  # 150 px
 
 # ---------------------------------------------------------------------------
 
@@ -114,30 +124,43 @@ def add_textbox(slide, text, left, top, width, height, font_pt, color, bold=Fals
     return box
 
 
-def add_image_in_box(slide, image_path, box_left, box_top, box_w, box_h):
-    """Place an image inside the given bounding box, preserving aspect
-    ratio and centering on the dimension that is < box."""
-    pic = slide.shapes.add_picture(
-        image_path,
-        Inches(box_left),
-        Inches(box_top),
-        width=Inches(box_w),
+def _png_dims(path: Path) -> Tuple[int, int]:
+    """Return (width_px, height_px) of a PNG without fully decoding it."""
+    with Image.open(str(path)) as im:
+        return im.size
+
+
+def compute_deck_ppi(image_paths: List[Path], max_w_in: float, max_h_in: float) -> float:
+    """Smallest ppi such that every image fits in (max_w_in x max_h_in).
+
+    Used to pin px/inch across an entire deck so the 5 μm scalebar in every
+    inserted montage lands at the same cm on every slide.
+    """
+    ppi = 0.0
+    for p in image_paths:
+        w_px, h_px = _png_dims(p)
+        ppi = max(ppi, w_px / max_w_in, h_px / max_h_in)
+    return ppi
+
+
+def add_image_at_ppi(slide, image_path: Path, ppi: float,
+                     box_left: float, box_top: float,
+                     box_w: float, box_h: float):
+    """Insert image at width_in = w_px / ppi, height_in = h_px / ppi, centered
+    in the (box_left, box_top, box_w, box_h) bounding box. Every slide that
+    shares `ppi` therefore has the same slide px/inch, which keeps the
+    embedded 5 μm scalebar at the same cm across the deck."""
+    w_px, h_px = _png_dims(image_path)
+    w_in = w_px / ppi
+    h_in = h_px / ppi
+    left_in = box_left + (box_w - w_in) / 2
+    top_in  = box_top  + (box_h - h_in) / 2
+    return slide.shapes.add_picture(
+        str(image_path),
+        Inches(left_in),
+        Inches(top_in),
+        width=Inches(w_in),
     )
-    actual_h_in = pic.height / 914400.0
-    if actual_h_in > box_h:
-        sp = pic._element
-        sp.getparent().remove(sp)
-        pic = slide.shapes.add_picture(
-            image_path,
-            Inches(box_left),
-            Inches(box_top),
-            height=Inches(box_h),
-        )
-        actual_w_in = pic.width / 914400.0
-        pic.left = Inches(box_left + (box_w - actual_w_in) / 2)
-    else:
-        pic.top = Inches(box_top + (box_h - actual_h_in) / 2)
-    return pic
 
 
 def set_slide_background(slide, rgb: RGBColor) -> None:
@@ -163,7 +186,7 @@ def find_first_chunk(montages_dir: Path) -> Optional[Path]:
     return chunks[0]
 
 
-def build_slide(prs, title_text: str, image_path: Optional[Path]):
+def build_slide(prs, title_text: str, image_path: Optional[Path], deck_ppi: float):
     """Build one full-image slide with title. Returns (slide, missing_flag)."""
     blank_layout = prs.slide_layouts[6]
     slide = prs.slides.add_slide(blank_layout)
@@ -176,7 +199,8 @@ def build_slide(prs, title_text: str, image_path: Optional[Path]):
     )
 
     if image_path is not None and image_path.exists():
-        add_image_in_box(slide, str(image_path), IMG_LEFT, IMG_TOP, IMG_BOX_W, IMG_BOX_H)
+        add_image_at_ppi(slide, image_path, deck_ppi,
+                         IMG_LEFT, IMG_TOP, IMG_BOX_W, IMG_BOX_H)
         return slide, False
 
     add_textbox(
@@ -191,36 +215,59 @@ def main() -> None:
     out_path = Path(OUTPUT_PATH)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    prs = Presentation()
-    prs.slide_width = Inches(SLIDE_W)
-    prs.slide_height = Inches(SLIDE_H)
-
     kiet_root = Path(KIET_ROOT)
-    missing = []
-    slides_added = 0
 
-    print(f"Writing deck to: {OUTPUT_PATH}\n")
-
+    # Pre-pass: resolve every (kind, dataset, condition) montage and collect
+    # the present images so we can pin deck-wide px/inch BEFORE slide build.
+    slide_specs: List[Tuple[str, Optional[Path], str]] = []  # (title, image_path, log_key)
     for kind_label, kind_subpath in KINDS:
         for date_tag, dataset_name in DATASETS:
             for cond in CONDITIONS:
                 cond_pretty = format_condition(cond)
                 montages_dir = (
-                    kiet_root
-                    / dataset_name
-                    / cond
-                    / CONDITION_SUBPATH
-                    / PROG_SUBPATH
-                    / kind_subpath
+                    kiet_root / dataset_name / cond
+                    / CONDITION_SUBPATH / PROG_SUBPATH / kind_subpath
                 )
                 chunk = find_first_chunk(montages_dir)
                 title = f"{kind_label}: {cond_pretty} ({date_tag})"
-                _, is_missing = build_slide(prs, title, chunk)
-                slides_added += 1
-                status = "OK" if not is_missing else "MISSING"
-                print(f"[{kind_label}/{date_tag}/{cond}]  {status}")
-                if is_missing:
-                    missing.append(f"{kind_label}/{date_tag}/{cond}  ({montages_dir})")
+                log_key = f"{kind_label}/{date_tag}/{cond}"
+                slide_specs.append((title, chunk, log_key))
+
+    present = [p for (_, p, _) in slide_specs if p is not None and p.exists()]
+    if not present:
+        print("WARNING: no real images found — using fallback PPI=100.")
+        deck_ppi = 100.0
+    else:
+        deck_ppi = compute_deck_ppi(present, IMG_BOX_W, IMG_BOX_H)
+
+    bar_in = SCALEBAR_PX / deck_ppi
+    print(
+        f"Deck-wide PPI = {deck_ppi:.2f} (pinned across all {len(present)}/"
+        f"{len(slide_specs)} present slides).\n"
+        f"  Scalebar invariant: {SCALEBAR_UM} μm = {SCALEBAR_PX} px in source "
+        f"=> {bar_in:.3f} in = {bar_in * 2.54:.3f} cm on every slide.\n"
+        f"  Source PPUM = {PPUM_SOURCE} px/μm (locked; update if MATLAB pipeline changes).\n"
+    )
+    print(f"Writing deck to: {OUTPUT_PATH}\n")
+
+    prs = Presentation()
+    prs.slide_width = Inches(SLIDE_W)
+    prs.slide_height = Inches(SLIDE_H)
+
+    missing = []
+    slides_added = 0
+    for (title, chunk, log_key) in slide_specs:
+        _, is_missing = build_slide(prs, title, chunk, deck_ppi)
+        slides_added += 1
+        if is_missing:
+            print(f"[{log_key}]  MISSING")
+            missing.append(log_key)
+        else:
+            w_px, h_px = _png_dims(chunk)
+            print(
+                f"[{log_key}]  OK ({chunk.name}, {w_px}x{h_px} px "
+                f"-> {w_px/deck_ppi:.2f}x{h_px/deck_ppi:.2f} in)"
+            )
 
     prs.save(str(out_path))
     print(f"\nDone. {slides_added} slides written to:\n  {out_path}")

@@ -20,8 +20,9 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional, Tuple
 
+from PIL import Image
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
@@ -53,10 +54,13 @@ PROG_SUBPATH = "prog_fixed_cells_actin_only/actin"
 # Kind blocks. Block 1 (interleaved synapse pair: no-rings then with-rings)
 # is followed by Block 2 (XZ MIP alone).
 # Slide order: 6 synapse interleaved + 3 XZ MIP = 9 slides.
+# Stage AG path mappings:
+#   synapse/mask/                      -> synapse/1slice/mask/
+#   synapse/inner_outer/bot_combined/  -> synapse/inner_outer/1slice_combined/
 KIND_BLOCKS = [
     [
-        ("Actin at Synapse",             "synapse/mask/montages"),
-        ("Inner-Outer Ratio Definition", "synapse/inner_outer/bot_combined/montages"),
+        ("Actin at Synapse",             "synapse/1slice/mask/montages"),
+        ("Inner-Outer Ratio Definition", "synapse/inner_outer/1slice_combined/montages"),
     ],
     [
         ("Actin XZ MIP", "xz_mip/montages"),
@@ -94,6 +98,13 @@ CELL_POSITIONS = [
     (GRID_LEFT + CELL_W + COL_GAP, GRID_TOP),
 ]
 
+# Scalebar invariant from the MATLAB CART_fixed_cell_analysis pipeline (Stage AF).
+# Every per-cell tile is rendered at PPUM_SOURCE px/μm in its data area; the
+# 5 μm scalebar is therefore SCALEBAR_PX pixels in every montage tile.
+PPUM_SOURCE = 30          # px/μm in source PNGs
+SCALEBAR_UM = 5           # μm
+SCALEBAR_PX = PPUM_SOURCE * SCALEBAR_UM  # 150 px
+
 # ---------------------------------------------------------------------------
 
 
@@ -121,29 +132,41 @@ def add_textbox(slide, text, left, top, width, height, font_pt, color, bold=Fals
     return box
 
 
-def add_image_in_cell(slide, image_path, cell_left, cell_top):
-    """Place an image inside a labelled cell, preserving aspect ratio."""
-    pic = slide.shapes.add_picture(
-        image_path,
-        Inches(cell_left),
-        Inches(cell_top + LABEL_H),
-        width=Inches(CELL_W),
+def _png_dims(path: Path) -> Tuple[int, int]:
+    """Return (width_px, height_px) of a PNG without fully decoding it."""
+    with Image.open(str(path)) as im:
+        return im.size
+
+
+def compute_deck_ppi(image_paths: List[Path], max_w_in: float, max_h_in: float) -> float:
+    """Smallest ppi such that every image fits in (max_w_in x max_h_in).
+    Used to pin px/inch across the deck so the 5 μm scalebar lands at the
+    same cm on every slide."""
+    ppi = 0.0
+    for p in image_paths:
+        w_px, h_px = _png_dims(p)
+        ppi = max(ppi, w_px / max_w_in, h_px / max_h_in)
+    return ppi
+
+
+def add_image_in_cell_at_ppi(slide, image_path: Path, ppi: float,
+                             cell_left: float, cell_top: float):
+    """Place an image inside a labelled cell using a uniform deck px/inch.
+    Image is centered in the (CELL_W x IMG_H) image area below the label;
+    both dims = native_px / ppi inches. Pinning ppi across the deck keeps
+    the embedded 5 μm scalebar at a constant cm on every slide."""
+    w_px, h_px = _png_dims(image_path)
+    w_in = w_px / ppi
+    h_in = h_px / ppi
+    img_area_top = cell_top + LABEL_H
+    left_in = cell_left + (CELL_W - w_in) / 2
+    top_in  = img_area_top + (IMG_H - h_in) / 2
+    return slide.shapes.add_picture(
+        str(image_path),
+        Inches(left_in),
+        Inches(top_in),
+        width=Inches(w_in),
     )
-    actual_h_in = pic.height / 914400.0
-    if actual_h_in > IMG_H:
-        sp = pic._element
-        sp.getparent().remove(sp)
-        pic = slide.shapes.add_picture(
-            image_path,
-            Inches(cell_left),
-            Inches(cell_top + LABEL_H),
-            height=Inches(IMG_H),
-        )
-        actual_w_in = pic.width / 914400.0
-        pic.left = Inches(cell_left + (CELL_W - actual_w_in) / 2)
-    else:
-        pic.top = Inches(cell_top + LABEL_H + (IMG_H - actual_h_in) / 2)
-    return pic
 
 
 def set_slide_background(slide, rgb: RGBColor) -> None:
@@ -167,7 +190,7 @@ def find_first_chunk(montages_dir: Path) -> Optional[Path]:
     return chunks[0]
 
 
-def build_compare_slide(prs, title_text, cat_img, fmc_img):
+def build_compare_slide(prs, title_text, cat_img, fmc_img, deck_ppi):
     blank_layout = prs.slide_layouts[6]
     slide = prs.slides.add_slide(blank_layout)
     set_slide_background(slide, BLACK)
@@ -190,7 +213,7 @@ def build_compare_slide(prs, title_text, cat_img, fmc_img):
             font_pt=LABEL_FONT_PT, color=WHITE, bold=True,
         )
         if img_path is not None and img_path.exists():
-            add_image_in_cell(slide, str(img_path), cell_left, cell_top)
+            add_image_in_cell_at_ppi(slide, img_path, deck_ppi, cell_left, cell_top)
         else:
             add_textbox(
                 slide, "(missing)",
@@ -205,16 +228,11 @@ def main() -> None:
     out_path = Path(OUTPUT_PATH)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    prs = Presentation()
-    prs.slide_width = Inches(SLIDE_W)
-    prs.slide_height = Inches(SLIDE_H)
-
     kiet_root = Path(KIET_ROOT)
-    missing_total = []
-    slides_added = 0
 
-    print(f"Writing deck to: {OUTPUT_PATH}\n")
-
+    # Pre-pass: walk every (block, date, tp, kind) → collect (cat_img, fmc_img)
+    # plus the title so we can pin deck-wide px/inch before slide build.
+    slide_specs: List[Tuple[str, Optional[Path], Optional[Path], Path, Path, str]] = []
     for block in KIND_BLOCKS:
         for date_tag, dataset_name in DATASETS:
             for tp in TIMEPOINTS:
@@ -230,22 +248,51 @@ def main() -> None:
                     )
                     cat_img = find_first_chunk(cat_dir)
                     fmc_img = find_first_chunk(fmc_dir)
-
                     title = f"{kind_label}: {tp_pretty} ({date_tag})"
-                    _, missing = build_compare_slide(prs, title, cat_img, fmc_img)
-                    slides_added += 1
+                    log_key = f"{kind_label}/{date_tag}/{tp}"
+                    slide_specs.append((title, cat_img, fmc_img, cat_dir, fmc_dir, log_key))
 
-                    status_parts = [
-                        "CAT:OK" if cat_img else "CAT:MISSING",
-                        "FMC:OK" if fmc_img else "FMC:MISSING",
-                    ]
-                    print(f"[{kind_label}/{date_tag}/{tp}]  " + "  ".join(status_parts))
+    present: List[Path] = []
+    for (_, cat_img, fmc_img, _, _, _) in slide_specs:
+        for p in (cat_img, fmc_img):
+            if p is not None and p.exists():
+                present.append(p)
 
-                    for cell in missing:
-                        src = cat_dir if cell == "CAT" else fmc_dir
-                        missing_total.append(
-                            f"{kind_label}/{date_tag}/{tp}/{cell}  ({src})"
-                        )
+    if not present:
+        print("WARNING: no real images found — using fallback PPI=100.")
+        deck_ppi = 100.0
+    else:
+        deck_ppi = compute_deck_ppi(present, CELL_W, IMG_H)
+
+    bar_in = SCALEBAR_PX / deck_ppi
+    print(
+        f"Deck-wide PPI = {deck_ppi:.2f} (pinned across all {len(present)} present cells "
+        f"in {len(slide_specs)} slides).\n"
+        f"  Scalebar invariant: {SCALEBAR_UM} μm = {SCALEBAR_PX} px in source "
+        f"=> {bar_in:.3f} in = {bar_in * 2.54:.3f} cm on every cell.\n"
+        f"  Source PPUM = {PPUM_SOURCE} px/μm (locked).\n"
+    )
+    print(f"Writing deck to: {OUTPUT_PATH}\n")
+
+    prs = Presentation()
+    prs.slide_width = Inches(SLIDE_W)
+    prs.slide_height = Inches(SLIDE_H)
+
+    missing_total = []
+    slides_added = 0
+    for (title, cat_img, fmc_img, cat_dir, fmc_dir, log_key) in slide_specs:
+        _, missing = build_compare_slide(prs, title, cat_img, fmc_img, deck_ppi)
+        slides_added += 1
+
+        status_parts = [
+            "CAT:OK" if cat_img else "CAT:MISSING",
+            "FMC:OK" if fmc_img else "FMC:MISSING",
+        ]
+        print(f"[{log_key}]  " + "  ".join(status_parts))
+
+        for cell in missing:
+            src = cat_dir if cell == "CAT" else fmc_dir
+            missing_total.append(f"{log_key}/{cell}  ({src})")
 
     prs.save(str(out_path))
     print(f"\nDone. {slides_added} slides written to:\n  {out_path}")
