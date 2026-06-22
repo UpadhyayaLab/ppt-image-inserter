@@ -1,6 +1,6 @@
 deck_title: "Cellpose QC: CAT_5min (20260607 rerun)"
-output_pptx: "K:/FF/PPT/PPT_autogeneration/CART_actin_only/cellpose_qc/cart_20260607_rerun_CAT_5min.pptx"
-cache_dir:   "K:/FF/PPT/PPT_autogeneration/CART_actin_only/cellpose_qc/cache/cart_20260607_rerun_CAT_5min"
+output_pptx: "K:/FF/PPT/PPT_autogeneration/CART/actin_only/cellpose_qc/cart_20260607_rerun_CAT_5min.pptx"
+cache_dir:   "K:/FF/PPT/PPT_autogeneration/CART/actin_only/cellpose_qc/cache/cart_20260607_rerun_CAT_5min"
 
 raw_dir:    "Y:/User_data/Kiet/20260607_rerun_/CAT_5min/converted"
 mask_dir:   "Y:/User_data/Kiet/20260607_rerun_/CAT_5min/converted/cellpose_masks"

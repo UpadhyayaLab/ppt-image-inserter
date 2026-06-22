@@ -34,7 +34,7 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
@@ -48,7 +48,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # ---------------------------------------------------------------------------
 
 OUTPUT_PATH = (
-    "K:/FF/PPT/PPT_autogeneration/CART_actin_only/"
+    "K:/FF/PPT/PPT_autogeneration/CART/actin_only/"
     "CART_actin_QC_synapse_mask_xz_mip.pptx"
 )
 
@@ -163,26 +163,43 @@ def set_slide_background(slide, rgb: RGBColor) -> None:
     fill.fore_color.rgb = rgb
 
 
-def _chunk_start_index(p: Path) -> int:
-    """Extract the first integer after 'montage_cells_' for natural sort.
-    Defensive — lex sort works for zero-padded FOV names like
-    `montage_cells_01_0_07_28.png` but breaks on patterns like
-    `montage_cells_1_25.png` vs `montage_cells_101_117.png` where
-    '0' < '_' would put the 100+ chunk first.
-    """
-    m = re.match(r"montage_cells_(\d+)", p.name)
-    return int(m.group(1)) if m else 0
+def _parse_chunk_range(p: Path) -> Tuple[int, int]:
+    """Return (start, end) cell-id range for a montage_cells_*.png filename.
+    Handles both the 4-int FOV-padded pattern (e.g. montage_cells_001_0_012_25.png)
+    and the 2-int pattern (e.g. montage_cells_1_26.png)."""
+    m4 = re.match(r"montage_cells_(\d+)_(\d+)_(\d+)_(\d+)\.png$", p.name)
+    if m4:
+        f_a, c_a, f_b, c_b = (int(x) for x in m4.groups())
+        return (f_a * 1000 + c_a, f_b * 1000 + c_b)
+    m2 = re.match(r"montage_cells_(\d+)_(\d+)\.png$", p.name)
+    if m2:
+        return (int(m2.group(1)), int(m2.group(2)))
+    return (0, 0)
 
 
 def find_first_chunk(montages_dir: Path) -> Optional[Path]:
-    """Return the lowest-numbered montage_cells_*.png in the dir, or None."""
+    """Pick the lowest-start chunk, BUT first drop any chunk whose [start, end]
+    range is strictly contained in another chunk's range. Catches leftover
+    smoke chunks (e.g. `montage_cells_1_12.png` shadowed by `montage_cells_1_26.png`)."""
     if not montages_dir.is_dir():
         return None
     chunks = list(montages_dir.glob(CHUNK_GLOB))
     if not chunks:
         return None
-    chunks.sort(key=_chunk_start_index)
-    return chunks[0]
+    parsed = [(p, *_parse_chunk_range(p)) for p in chunks]
+    keep = []
+    for (p, s, e) in parsed:
+        shadowed = any(
+            s2 <= s and e <= e2 and (s2 < s or e < e2)
+            for (p2, s2, e2) in parsed
+            if p2 is not p
+        )
+        if not shadowed:
+            keep.append((p, s, e))
+    if not keep:
+        return None
+    keep.sort(key=lambda x: x[1])
+    return keep[0][0]
 
 
 def build_slide(prs, title_text: str, image_path: Optional[Path]):

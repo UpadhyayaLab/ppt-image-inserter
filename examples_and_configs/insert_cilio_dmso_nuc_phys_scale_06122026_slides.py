@@ -37,7 +37,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 OUTPUT_PATH = (
     "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/CilioD/"
-    "Cilio_Jurkats_DMSO_vs_Cilio_nuc_phys_scale_06122026.pptx"
+    "Cilio_Jurkats_DMSO_vs_Cilio_nuc_phys_scale_06122026_06132026.pptx"
 )
 
 PHYS_SCALE_SUBPATH = "prog_fixed_cells/{cond}/physical_scale_images/{combo}/montages"
@@ -99,11 +99,41 @@ EXPERIMENTS = [
 # pinned scalebar rather than forcing the wider broadest-slice panels to shrink
 # down to match it.
 COMBOS = [
-    # (combo_subfolder, title_template, n_chunks, scale_group)
-    ("cent_nuc_xz",          "Cent + Nuc, XZ MIP ({tp}, {tag})",                         1, "xz"),
-    ("nucleus_bz",           "Nuc (DNA), broadest slice ({tp}, {tag})",                  1, "broad_1c"),
-    ("cent_nuc_bz",          "Cent + Nuc, broadest slice ({tp}, {tag})",                 1, "broad_1c"),
-    ("H3K27me3_nuc_cent_bz", "H3K27me3 + Cent + Nuc, broadest slice ({tp}, {tag})",      2, "broad_4c"),
+    # (combo_subfolder, title_template, n_chunks, scale_group, fallback, opts)
+    # opts is a dict with optional flags:
+    #   "per_exp_scale": bool   — when True, this combo's PPI is computed
+    #                             independently per experiment instead of
+    #                             pinned across all experiments. Lets a
+    #                             single height-bound combo render closer
+    #                             to its own experiment's binding.
+    #   "compact_layout": bool  — when True, render the slide with a smaller
+    #                             title and label band so the image area
+    #                             grows ~0.25" taller.
+    #   "scale_mult":    float  — render the image (and its embedded scalebar)
+    #                             at slide_ppi / scale_mult. >1 makes the
+    #                             image larger and lets it overflow the cell
+    #                             box vertically; <1 shrinks it. Default 1.0.
+    #   "solo_layout":   bool   — split into one-condition-per-slide. Each
+    #                             slide gets a single panel that fills the
+    #                             full slide width (SOLO_CELL_W), so a
+    #                             width-bound combo (e.g. XZ MIP) can grow
+    #                             ~2x without colliding with its other half.
+    # XZ MIP now uses solo_layout: each experiment gets two slides (DMSO,
+    # then Cilio), each filling the full slide width so the image can render
+    # ~1.5x larger than the side-by-side variant without panel collision.
+    ("actin_nuc_xz_nolines", "Actin + Nuc XZ MIP ({tp}, {tag})",                         1, "xz",
+        ("cent_nuc_xz", "Cent + Nuc, XZ MIP ({tp}, {tag})"), {"solo_layout": True}),
+    ("nucleus_bz",           "Nuc (DNA), broadest slice ({tp}, {tag})",                  1, "broad_1c",
+        None, {}),
+    ("cent_nuc_bz",          "Cent + Nuc, broadest slice ({tp}, {tag})",                 1, "broad_1c",
+        None, {}),
+    # H3K27me3 broadest slice: own shared scale group (one PPI / one scalebar
+    # across ALL dates) + compact title/label band. It stays modestly larger
+    # than nucleus/cent because its near-square montages are width-bound at a
+    # lower PPI than the tall nucleus montages — no per_exp_scale or scale_mult
+    # (those made the scalebar differ per date and overflowed the half-cell).
+    ("H3K27me3_nuc_cent_bz", "H3K27me3 + Cent + Nuc, broadest slice ({tp}, {tag})",      1, "broad_h3k27me3",
+        None, {"compact_layout": True}),
 ]
 
 CHUNK_GLOB = "montage_cells_*.png"
@@ -136,6 +166,23 @@ CELL_POSITIONS = [
     (GRID_LEFT,                    GRID_TOP),
     (GRID_LEFT + CELL_W + COL_GAP, GRID_TOP),
 ]
+
+# Compact variant used by combos that opt into compact_layout=True (see COMBOS).
+# Shrinks the title band, lifts the grid, and tightens the per-cell label so
+# the image area gains ~0.30" of vertical room — ~5% larger images for
+# height-bound combos (e.g. H3K27me3 broadest slice).
+COMPACT_TITLE_HEIGHT = 0.35
+COMPACT_TITLE_FONT_PT = 22
+COMPACT_GRID_TOP = 0.40
+COMPACT_LABEL_H = 0.20
+COMPACT_LABEL_FONT_PT = 14
+COMPACT_CELL_H = SLIDE_H - COMPACT_GRID_TOP - 0.10   # 7.00"
+COMPACT_IMG_H = COMPACT_CELL_H - COMPACT_LABEL_H     # 6.80"
+
+# Solo-layout cell: one condition per slide, image spans full slide width.
+# Used by combos that opt into solo_layout=True (see COMBOS) so a wide combo
+# (e.g. XZ MIP) can render ~1.5-2x larger without overlapping its other panel.
+SOLO_CELL_W = SLIDE_W - 2 * GRID_LEFT                # 13.133"
 
 # Scalebar invariant for the H3K27me3 / Jurkat nucleus fixed-cell pipeline.
 # Measured empirically with examples_and_configs/check_scalebar_pixel_widths.py
@@ -273,11 +320,15 @@ def _multichunk_geometry(n_chunks: int):
 def build_compare_slide(prs, title_text,
                         left_label, left_imgs,
                         right_label, right_imgs,
-                        slide_ppi):
+                        slide_ppi, compact=False, solo=False):
     """Render the comparison slide. With n_chunks=1, lay out DMSO|Cilio side
     by side (current 1-row layout). With n_chunks>1, switch to 2-row layout
     (DMSO row on top with all DMSO chunks side by side, Cilio row below).
-    All panels share slide_ppi so embedded scalebars match across the slide."""
+    All panels share slide_ppi so embedded scalebars match across the slide.
+    compact=True shrinks title/label bands so the image area gains ~0.30"
+    of vertical room (1-chunk slides only).
+    solo=True ignores right_label/right_imgs and renders only the left panel
+    at the full slide width (SOLO_CELL_W) — used to enlarge XZ MIPs."""
     n_chunks = len(left_imgs)
     assert len(right_imgs) == n_chunks
 
@@ -285,16 +336,46 @@ def build_compare_slide(prs, title_text,
     slide = prs.slides.add_slide(blank_layout)
     set_slide_background(slide, BLACK)
 
+    title_h    = COMPACT_TITLE_HEIGHT    if compact else TITLE_HEIGHT
+    title_font = COMPACT_TITLE_FONT_PT   if compact else TITLE_FONT_PT
+    grid_top   = COMPACT_GRID_TOP        if compact else GRID_TOP
+    label_h    = COMPACT_LABEL_H         if compact else LABEL_H
+    label_font = COMPACT_LABEL_FONT_PT   if compact else LABEL_FONT_PT
+    img_h      = COMPACT_IMG_H           if compact else IMG_H
+
     add_textbox(
         slide, title_text,
-        TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, TITLE_HEIGHT,
-        font_pt=TITLE_FONT_PT, color=WHITE, bold=True,
+        TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, title_h,
+        font_pt=title_font, color=WHITE, bold=True,
     )
 
     missing = []
 
+    if solo:
+        # Single panel filling the slide width. n_chunks > 1 not supported
+        # for solo combos right now (XZ MIP is always n_chunks=1 here).
+        cell_left = GRID_LEFT
+        add_textbox(
+            slide, left_label,
+            cell_left, grid_top, SOLO_CELL_W, label_h,
+            font_pt=label_font, color=WHITE, bold=True,
+        )
+        img_path = left_imgs[0]
+        if img_path is not None and _exists_long(img_path):
+            add_image_at_ppi(slide, img_path, slide_ppi,
+                             cell_left, grid_top + label_h, SOLO_CELL_W, img_h)
+        else:
+            add_textbox(
+                slide, "(missing)",
+                cell_left, grid_top + label_h + img_h / 2 - 0.15,
+                SOLO_CELL_W, 0.3,
+                font_pt=14, color=WHITE,
+            )
+            missing.append(left_label)
+        return slide, missing
+
     if n_chunks == 1:
-        # Original 1 x 2 column layout: DMSO left, Cilio right, label per column.
+        # 1 x 2 column layout: DMSO left, Cilio right, label per column.
         cells = [
             (left_label,  left_imgs[0],  CELL_POSITIONS[0][0]),
             (right_label, right_imgs[0], CELL_POSITIONS[1][0]),
@@ -302,16 +383,16 @@ def build_compare_slide(prs, title_text,
         for label, img_path, cell_left in cells:
             add_textbox(
                 slide, label,
-                cell_left, GRID_TOP, CELL_W, LABEL_H,
-                font_pt=LABEL_FONT_PT, color=WHITE, bold=True,
+                cell_left, grid_top, CELL_W, label_h,
+                font_pt=label_font, color=WHITE, bold=True,
             )
             if img_path is not None and _exists_long(img_path):
                 add_image_at_ppi(slide, img_path, slide_ppi,
-                                 cell_left, GRID_TOP + LABEL_H, CELL_W, IMG_H)
+                                 cell_left, grid_top + label_h, CELL_W, img_h)
             else:
                 add_textbox(
                     slide, "(missing)",
-                    cell_left, GRID_TOP + LABEL_H + IMG_H / 2 - 0.15,
+                    cell_left, grid_top + label_h + img_h / 2 - 0.15,
                     CELL_W, 0.3,
                     font_pt=14, color=WHITE,
                 )
@@ -363,7 +444,17 @@ def main() -> None:
         tag = exp["tag"]
         tp_label = exp["tp_label"]
         exp_key = f"{tag} {tp_label}"
-        for combo_folder, title_tmpl, n_chunks, scale_group in COMBOS:
+        for combo_folder, title_tmpl, n_chunks, scale_group, fallback, opts in COMBOS:
+            # If the primary combo has no montages in this experiment:
+            #   fallback tuple  -> use the listed (combo_folder, title) instead
+            #   fallback is None -> skip this slide for this experiment
+            primary_dir = root / Path(PHYS_SCALE_SUBPATH.format(
+                cond=left_folder, combo=combo_folder))
+            primary_ok = primary_dir.is_dir() and any(primary_dir.glob(CHUNK_GLOB))
+            if not primary_ok:
+                if fallback is None:
+                    continue
+                combo_folder, title_tmpl = fallback
             title = title_tmpl.format(tp=tp_label, tag=tag)
             left_dir  = root / Path(PHYS_SCALE_SUBPATH.format(
                 cond=left_folder,  combo=combo_folder))
@@ -371,30 +462,64 @@ def main() -> None:
                 cond=right_folder, combo=combo_folder))
             left_imgs  = find_first_chunks(left_dir,  n_chunks)
             right_imgs = find_first_chunks(right_dir, n_chunks)
-            slide_specs.append({
-                "title": title,
-                "left_label": left_label,   "left_imgs": left_imgs,
-                "right_label": right_label, "right_imgs": right_imgs,
-                "left_dir": left_dir,       "right_dir": right_dir,
+            # Per-experiment scaling makes the PPI key unique per experiment,
+            # so this combo's image only sizes against its own experiment's
+            # source dims (not the deck-wide max).
+            sg_key = (f"{scale_group}@{exp_key}"
+                      if opts.get("per_exp_scale") else scale_group)
+            common = {
                 "log_key": f"{exp_key}/{combo_folder}",
                 "n_chunks": n_chunks,
-                "scale_group": scale_group,
+                "scale_group": sg_key,
                 "exp_key": exp_key,
-            })
+                "compact_layout": bool(opts.get("compact_layout")),
+                "scale_mult": float(opts.get("scale_mult", 1.0)),
+            }
+            if opts.get("solo_layout"):
+                # Emit one slide per condition, each rendered with the full
+                # slide width. The "right" side of the spec is unused; the
+                # solo build path reads only left_label / left_imgs / left_dir.
+                for side_label, side_imgs, side_dir in (
+                    (left_label,  left_imgs,  left_dir),
+                    (right_label, right_imgs, right_dir),
+                ):
+                    slide_specs.append({
+                        **common,
+                        "title": f"{title} — {side_label}",
+                        "left_label": side_label, "left_imgs": side_imgs,
+                        "right_label": "",        "right_imgs": [None] * n_chunks,
+                        "left_dir": side_dir,     "right_dir": side_dir,
+                        "is_solo": True,
+                    })
+            else:
+                slide_specs.append({
+                    **common,
+                    "title": title,
+                    "left_label": left_label,   "left_imgs": left_imgs,
+                    "right_label": right_label, "right_imgs": right_imgs,
+                    "left_dir": left_dir,       "right_dir": right_dir,
+                    "is_solo": False,
+                })
 
     # For each slide compute the smallest PPI that fits its images in its cell
     # box; then take the max across every slide in the same scale_group (across
-    # ALL experiments). Every slide in that group is rendered at that pinned
-    # PPI, so all its scalebars match cm-on-page across the whole deck.
-    def _cell_box(n_chunks: int):
+    # ALL experiments unless the spec opted into per-experiment scaling). Every
+    # slide in that group is rendered at that pinned PPI, so all its scalebars
+    # match cm-on-page across the deck within the group.
+    def _cell_box(n_chunks: int, compact: bool, is_solo: bool = False):
+        if is_solo:
+            img_h = COMPACT_IMG_H if compact else IMG_H
+            return SOLO_CELL_W, img_h
         if n_chunks == 1:
-            return CELL_W, IMG_H
+            img_h = COMPACT_IMG_H if compact else IMG_H
+            return CELL_W, img_h
         col_w, img_h, *_ = _multichunk_geometry(n_chunks)
         return col_w, img_h
 
     group_ppi: dict = {}
     for spec in slide_specs:
-        max_w, max_h = _cell_box(spec["n_chunks"])
+        max_w, max_h = _cell_box(spec["n_chunks"], spec["compact_layout"],
+                                 spec.get("is_solo", False))
         imgs = [p for p in (*spec["left_imgs"], *spec["right_imgs"])
                 if p is not None and _exists_long(p)]
         own_ppi = compute_slide_ppi(imgs, max_w, max_h) if imgs else 0.0
@@ -430,13 +555,15 @@ def main() -> None:
         log_key     = spec["log_key"]
         n_chunks    = spec["n_chunks"]
         scale_group = spec["scale_group"]
-        slide_ppi   = group_ppi[scale_group]
+        slide_ppi   = group_ppi[scale_group] / spec["scale_mult"]
+        compact     = spec["compact_layout"]
+        solo        = spec.get("is_solo", False)
 
         _, missing = build_compare_slide(
             prs, title,
             left_label, left_imgs,
             right_label, right_imgs,
-            slide_ppi,
+            slide_ppi, compact=compact, solo=solo,
         )
         slides_added += 1
 

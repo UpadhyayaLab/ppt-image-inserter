@@ -28,8 +28,10 @@ from build_cellpose_qc_deck import (  # noqa: E402
 )
 
 
-def _fov_sort_key(p: Path) -> Tuple[int, str]:
-    stem = p.stem.replace("_with_nuc", "")
+def _fov_sort_key(p: Path, suffix: str = "_with_nuc") -> Tuple[int, str]:
+    stem = p.stem
+    if suffix and stem.endswith(suffix):
+        stem = stem[: -len(suffix)]
     m = re.match(r"(\d+)", stem)
     if m:
         return (int(m.group(1)), stem)
@@ -58,7 +60,7 @@ def add_section_slide(prs: Presentation, title: str) -> None:
 
 def build_combined(
     caches: List[Path], out_path: Path, deck_title: str,
-    rows: int, cols: int,
+    rows: int, cols: int, suffix: str = "_with_nuc",
 ) -> int:
     prs = Presentation()
     prs.slide_width = Inches(SLIDE_W)
@@ -75,11 +77,24 @@ def build_combined(
         if not cd.is_dir():
             print(f"[{cd.name}] SKIP (not a directory)", flush=True)
             continue
-        nuc_files = sorted(cd.glob("*_with_nuc.jpg"), key=_fov_sort_key)
+        if suffix:
+            jpg_pat, png_pat = f"*{suffix}.jpg", f"*{suffix}.png"
+        else:
+            # Plain mode: only files that are NOT _with_nuc.
+            jpg_pat, png_pat = "*.jpg", "*.png"
+        nuc_files = [
+            p for p in sorted(cd.glob(jpg_pat),
+                              key=lambda x: _fov_sort_key(x, suffix))
+            if suffix or "_with_nuc" not in p.stem
+        ]
         if not nuc_files:
-            nuc_files = sorted(cd.glob("*_with_nuc.png"), key=_fov_sort_key)
+            nuc_files = [
+                p for p in sorted(cd.glob(png_pat),
+                                  key=lambda x: _fov_sort_key(x, suffix))
+                if suffix or "_with_nuc" not in p.stem
+            ]
         if not nuc_files:
-            print(f"[{cd.name}] SKIP (no *_with_nuc.jpg/png in cache)", flush=True)
+            print(f"[{cd.name}] SKIP (no matching composites in cache)", flush=True)
             continue
 
         section_title = _section_label_from_cache_name(cd.name)
@@ -87,7 +102,8 @@ def build_combined(
         total_added += 1
 
         items: List[Tuple[str, Optional[Path]]] = [
-            (p.stem.replace("_with_nuc", ""), p) for p in nuc_files
+            (p.stem[: -len(suffix)] if suffix and p.stem.endswith(suffix) else p.stem, p)
+            for p in nuc_files
         ]
         for start in range(0, len(items), per_slide):
             chunk = items[start:start + per_slide]
@@ -109,11 +125,19 @@ def main(argv: List[str]) -> int:
     parser.add_argument("--title", default="Cellpose QC: all conditions (with Hoechst)")
     parser.add_argument("--rows", type=int, default=3)
     parser.add_argument("--cols", type=int, default=3)
+    parser.add_argument(
+        "--composite-suffix", default="_with_nuc",
+        help="Filename suffix before the extension. Default '_with_nuc'. "
+             "Pass '' (empty) to pick plain {fov}.jpg/png composites.",
+    )
     parser.add_argument("caches", nargs="+", help="One or more cache directories")
     args = parser.parse_args(argv)
 
     caches = [Path(c) for c in args.caches]
-    slides = build_combined(caches, Path(args.out), args.title, args.rows, args.cols)
+    slides = build_combined(
+        caches, Path(args.out), args.title, args.rows, args.cols,
+        suffix=args.composite_suffix,
+    )
     print(f"\nDeck written: {args.out}  ({slides} slides)", flush=True)
     return 0
 

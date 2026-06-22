@@ -99,12 +99,15 @@ def load_config(path: Path) -> Dict[str, Any]:
 
     cfg.setdefault("actin_low_pct", cfg.get("contrast_low_pct", 1.0))
     cfg.setdefault("actin_high_pct", cfg.get("contrast_high_pct", 99.5))
+    cfg.setdefault("skip_plain", False)
     # Hoechst overlay enabled when hoechst_channel is present.
     if "hoechst_channel" in cfg:
         cfg.setdefault("hoechst_low_pct", 2.0)
         cfg.setdefault("hoechst_high_pct", 99.5)
         cfg.setdefault("hoechst_min_lo", 120.0)
         cfg.setdefault("hoechst_color", [255, 0, 0])
+    if cfg["skip_plain"] and "hoechst_channel" not in cfg:
+        raise ValueError("skip_plain: true requires hoechst_channel (otherwise nothing is produced)")
     return cfg
 
 
@@ -238,6 +241,7 @@ def _process_fov(
     """Generate the missing composite(s) for one FOV. Pure, thread-safe."""
     raw_path = raw_dir / cfg["raw_pattern"].format(fov=fov)
     mask_path = mask_dir / cfg["mask_pattern"].format(fov=fov)
+    skip_plain = bool(cfg.get("skip_plain", False)) and has_hoechst
     plain_path = cache_dir / f"{fov}.{ext}"
     nuc_path = (cache_dir / f"{fov}_with_nuc.{ext}") if has_hoechst else None
 
@@ -248,7 +252,7 @@ def _process_fov(
         return {"fov": fov, "status": "missing_mask", "detail": str(mask_path),
                 "plain": None, "with_nuc": None}
 
-    need_plain = not plain_path.exists()
+    need_plain = (not skip_plain) and (not plain_path.exists())
     need_nuc = has_hoechst and not nuc_path.exists()
 
     if not need_plain and not need_nuc:
@@ -351,11 +355,13 @@ def build_deck(cfg: Dict[str, Any]) -> Dict[str, List[str]]:
                                     "plain": None, "with_nuc": None}
 
     # Preserve original fov_ids order for slides.
-    plain_items: List[Tuple[str, Optional[Path]]] = [
-        (fov, results[fov]["plain"]) for fov in fov_ids
-    ]
-    plain_slides = _assemble_deck(out_pptx, cfg["deck_title"], plain_items, rows, cols)
-    _log(f"\nDeck written: {out_pptx}  ({plain_slides} slides)")
+    skip_plain = bool(cfg.get("skip_plain", False)) and has_hoechst
+    if not skip_plain:
+        plain_items: List[Tuple[str, Optional[Path]]] = [
+            (fov, results[fov]["plain"]) for fov in fov_ids
+        ]
+        plain_slides = _assemble_deck(out_pptx, cfg["deck_title"], plain_items, rows, cols)
+        _log(f"\nDeck written: {out_pptx}  ({plain_slides} slides)")
 
     if has_hoechst:
         nuc_items: List[Tuple[str, Optional[Path]]] = [

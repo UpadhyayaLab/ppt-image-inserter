@@ -1,0 +1,30 @@
+deck_title: "Cellpose QC: W1 DMSO 30 min (Centrosome E6-1 Cilio-D 20240612)"
+output_pptx: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/CilioD/Cellpose_qc/centrosome_20240612_W1_aCD3_E6-1_0p5pcDMSO_30min_AF488Pericentrin_535Actin.pptx"
+cache_dir:   "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/CilioD/Cellpose_qc/cache/centrosome_20240612_W1_aCD3_E6-1_0p5pcDMSO_30min_AF488Pericentrin_535Actin"
+
+raw_dir:    "L:/FF/Centrosome_Jurkats/20240612_E6-1_Cilio-D_Test/W1_aCD3_E6-1_0p5pcDMSO_30min_AF488Pericentrin_535Actin"
+mask_dir:   "L:/FF/Centrosome_Jurkats/20240612_E6-1_Cilio-D_Test/W1_aCD3_E6-1_0p5pcDMSO_30min_AF488Pericentrin_535Actin/cellpose_masks"
+
+raw_pattern:  "{fov}.tif"
+mask_pattern: "cellpose_mask_{fov}.tif"
+
+actin_channel: 0   # 535 phalloidin (per user; the dataset config.yaml comment was wrong)
+
+# No nucleus / Hoechst channel in this dataset (2 channels total).
+
+pixel_size_um: 0.065
+scalebar_um:   10
+
+actin_low_pct:    1.0
+actin_high_pct:   99.5
+
+grid_rows: 3
+grid_cols: 3
+
+image_format: "jpg"
+jpeg_quality: 90
+
+concurrent_fovs: 3
+
+fov_ids: auto
+fov_id_filter: '^\d+$'

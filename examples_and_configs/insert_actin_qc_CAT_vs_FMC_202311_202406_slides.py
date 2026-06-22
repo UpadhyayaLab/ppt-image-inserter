@@ -1,19 +1,32 @@
 """
-insert_actin_qc_cat_vs_fmc_20260607_slides.py
+insert_actin_qc_CAT_vs_FMC_202311_202406_slides.py
 
-CAT (left) vs FMC (right) side-by-side actin QC compare deck SCOPED TO
-the 20260607 Kiet CART dataset only
-(Y:/User_data/Kiet/20260607_pMLC_CART_actin_hoescht). Same layout as
-insert_actin_qc_cat_vs_fmc_slides.py but trimmed to one dataset.
+CAT (left) vs FMC (right) side-by-side actin QC compare deck for the
+J: drive CART experiments using the new Stage AG pipeline output
+(`prog_fixed_cells_foci/actin/` with `synapse/1slice/...` layout).
 
-Result: 1 dataset x 3 timepoints x (2 synapse interleaved + 1 XZ MIP) =
-9 slides.
+Three experiments:
+    20231127 — 1 timepoint (15 min)              -> 2 + 1 = 3 slides
+    20240620 — 2 timepoints (5 min, 15 min)      -> 4 + 2 = 6 slides
+    20240624 — 2 timepoints (5 min, 15 min)      -> 4 + 2 = 6 slides
+Total: 15 slides (10 interleaved synapse + 5 XZ MIP).
 
-Until pipeline results exist, every cell will render as a `(missing)`
-placeholder.
+Folder naming differs per dataset:
+    20231127:  CAR=CAT  -> W3_NA_bCD19_CAT_{tp}_CTSB-mCh_647bTub_488Actin_Hoechst
+               CAR=FMC63-> W1_NA_bCD19_FMC63_{tp}_CTSB-mCh_647bTub_488Actin_Hoechst
+    20240620:  CAR=CAT  -> CAT{tp}      CAR=FMC63-> FMC{tp}
+    20240624:  CAR=CAT  -> CAT_{tp}     CAR=FMC63-> FMC63_{tp}
+
+Deck-wide PPI is pinned across all inserted montages so the 5 μm
+scalebar lands at the same cm on every slide (Stage AF/AG closes the
+within-tile invariant; this script closes the cross-slide one).
+
+Supersedes insert_actin_qc_CAT_vs_FMC_202406_slides.py (which used the
+older `prog_fixed_cells_actin_only/` outputs with old `synapse/mask/`
+paths and constant-slide-width insertion).
 
 Usage:
-    python examples_and_configs/insert_actin_qc_cat_vs_fmc_20260607_slides.py
+    python examples_and_configs/insert_actin_qc_CAT_vs_FMC_202311_202406_slides.py
 """
 
 import os
@@ -36,27 +49,48 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 OUTPUT_PATH = (
     "K:/FF/PPT/PPT_autogeneration/CART/actin_only/"
-    "CART_actin_QC_CAT_vs_FMC_20260607.pptx"
+    "CART_actin_QC_CAT_vs_FMC_202311_202406.pptx"
 )
 
-KIET_ROOT = "Y:/User_data/Kiet"
+CTSB_ROOT = "J:/FF/fixed_cell/CAR_TCell"
 
-# Single dataset scope.
+# (date_tag, dataset_folder, cell_templates, timepoints)
+# Each cell_templates entry: CAR_label -> (CAR_subdir, condition_format)
 DATASETS = [
-    ("20260607", "20260607_pMLC_CART_actin_hoescht"),
+    (
+        "20231127",
+        "20231127_Fixed_CAR-Tcells_CTSB-mCherry_bTub",
+        {
+            "CAT": ("CAT",   "W3_NA_bCD19_CAT_{tp}_CTSB-mCh_647bTub_488Actin_Hoechst"),
+            "FMC": ("FMC63", "W1_NA_bCD19_FMC63_{tp}_CTSB-mCh_647bTub_488Actin_Hoechst"),
+        },
+        ["15min"],
+    ),
+    (
+        "20240620",
+        "20240620_day3_Fixed_CAR-Tcells_CTSB-mCherry_bTub",
+        {
+            "CAT": ("CAT",   "CAT{tp}"),
+            "FMC": ("FMC63", "FMC{tp}"),
+        },
+        ["5min", "15min"],
+    ),
+    (
+        "20240624",
+        "20240624_day5_Fixed_CAR-Tcells_CTSB-mCherry_bTub",
+        {
+            "CAT": ("CAT",   "CAT_{tp}"),
+            "FMC": ("FMC63", "FMC63_{tp}"),
+        },
+        ["5min", "15min"],
+    ),
 ]
 
-TIMEPOINTS = ["5min", "10min", "15min"]
+CONDITION_SUBPATH = "cells/channels"
+# Stage AG: outputs moved from prog_fixed_cells_actin_only/ -> prog_fixed_cells_foci/
+PROG_SUBPATH = "prog_fixed_cells_foci/actin"
 
-CONDITION_SUBPATH = "converted/cropped/split_channels"
-PROG_SUBPATH = "prog_fixed_cells_actin_only/actin"
-
-# Kind blocks. Block 1 (interleaved synapse pair: no-rings then with-rings)
-# is followed by Block 2 (XZ MIP alone).
-# Slide order: 6 synapse interleaved + 3 XZ MIP = 9 slides.
-# Stage AG path mappings:
-#   synapse/mask/                      -> synapse/1slice/mask/
-#   synapse/inner_outer/bot_combined/  -> synapse/inner_outer/1slice_combined/
+# Stage AG kind subpaths (synapse/mask -> synapse/1slice/mask, etc.)
 KIND_BLOCKS = [
     [
         ("Actin at Synapse",             "synapse/1slice/mask/montages"),
@@ -98,18 +132,18 @@ CELL_POSITIONS = [
     (GRID_LEFT + CELL_W + COL_GAP, GRID_TOP),
 ]
 
-# Scalebar invariant from the MATLAB CART_fixed_cell_analysis pipeline (Stage AF).
-# Every per-cell tile is rendered at PPUM_SOURCE px/μm in its data area; the
-# 5 μm scalebar is therefore SCALEBAR_PX pixels in every montage tile.
+# Scalebar invariant from the MATLAB CART_fixed_cell_analysis pipeline
+# (Stage AF + AG). Every per-cell tile is rendered at PPUM_SOURCE px/μm
+# in its data area; the 5 μm scalebar is therefore SCALEBAR_PX pixels.
 PPUM_SOURCE = 30          # px/μm in source PNGs
 SCALEBAR_UM = 5           # μm
-SCALEBAR_PX = PPUM_SOURCE * SCALEBAR_UM  # 150 px
+SCALEBAR_PX = PPUM_SOURCE * SCALEBAR_UM  # 150 px (nominal; measured ~156 due to LineWidth=4)
 
 # ---------------------------------------------------------------------------
 
 
 def format_timepoint(tp: str) -> str:
-    tp_map = {"5min": "5 min", "10min": "10 min", "15min": "15 min"}
+    tp_map = {"5min": "5 min", "15min": "15 min"}
     return tp_map.get(tp.lower(), tp)
 
 
@@ -132,43 +166,6 @@ def add_textbox(slide, text, left, top, width, height, font_pt, color, bold=Fals
     return box
 
 
-def _png_dims(path: Path) -> Tuple[int, int]:
-    """Return (width_px, height_px) of a PNG without fully decoding it."""
-    with Image.open(str(path)) as im:
-        return im.size
-
-
-def compute_deck_ppi(image_paths: List[Path], max_w_in: float, max_h_in: float) -> float:
-    """Smallest ppi such that every image fits in (max_w_in x max_h_in).
-    Used to pin px/inch across the deck so the 5 μm scalebar lands at the
-    same cm on every slide."""
-    ppi = 0.0
-    for p in image_paths:
-        w_px, h_px = _png_dims(p)
-        ppi = max(ppi, w_px / max_w_in, h_px / max_h_in)
-    return ppi
-
-
-def add_image_in_cell_at_ppi(slide, image_path: Path, ppi: float,
-                             cell_left: float, cell_top: float):
-    """Place an image inside a labelled cell using a uniform deck px/inch.
-    Image is centered in the (CELL_W x IMG_H) image area below the label;
-    both dims = native_px / ppi inches. Pinning ppi across the deck keeps
-    the embedded 5 μm scalebar at a constant cm on every slide."""
-    w_px, h_px = _png_dims(image_path)
-    w_in = w_px / ppi
-    h_in = h_px / ppi
-    img_area_top = cell_top + LABEL_H
-    left_in = cell_left + (CELL_W - w_in) / 2
-    top_in  = img_area_top + (IMG_H - h_in) / 2
-    return slide.shapes.add_picture(
-        str(image_path),
-        Inches(left_in),
-        Inches(top_in),
-        width=Inches(w_in),
-    )
-
-
 def set_slide_background(slide, rgb: RGBColor) -> None:
     fill = slide.background.fill
     fill.solid()
@@ -177,7 +174,7 @@ def set_slide_background(slide, rgb: RGBColor) -> None:
 
 def _parse_chunk_range(p: Path) -> Tuple[int, int]:
     """Return (start, end) cell-id range for a montage_cells_*.png filename.
-    Handles both the 4-int FOV-padded pattern and the 2-int pattern."""
+    Handles both the 4-int FOV-padded pattern and the 2-int J:-drive pattern."""
     m4 = re.match(r"montage_cells_(\d+)_(\d+)_(\d+)_(\d+)\.png$", p.name)
     if m4:
         f_a, c_a, f_b, c_b = (int(x) for x in m4.groups())
@@ -191,7 +188,7 @@ def _parse_chunk_range(p: Path) -> Tuple[int, int]:
 def find_first_chunk(montages_dir: Path) -> Optional[Path]:
     """Pick the lowest-start chunk, BUT first drop any chunk whose [start, end]
     range is strictly contained in another chunk's range. Catches leftover
-    smoke chunks (e.g. `montage_cells_1_12.png` shadowed by `montage_cells_1_26.png`)."""
+    smoke chunks (e.g. `montage_cells_1_12.png` next to `montage_cells_1_26.png`)."""
     if not montages_dir.is_dir():
         return None
     chunks = list(montages_dir.glob(CHUNK_GLOB))
@@ -211,6 +208,41 @@ def find_first_chunk(montages_dir: Path) -> Optional[Path]:
         return None
     keep.sort(key=lambda x: x[1])
     return keep[0][0]
+
+
+def _png_dims(path: Path) -> Tuple[int, int]:
+    with Image.open(str(path)) as im:
+        return im.size
+
+
+def compute_deck_ppi(image_paths: List[Path], max_w_in: float, max_h_in: float) -> float:
+    """Smallest ppi such that every image fits in (max_w_in x max_h_in).
+    Pinning ppi across the deck keeps the embedded scalebar at a constant
+    cm on every slide."""
+    ppi = 0.0
+    for p in image_paths:
+        w_px, h_px = _png_dims(p)
+        ppi = max(ppi, w_px / max_w_in, h_px / max_h_in)
+    return ppi
+
+
+def add_image_in_cell_at_ppi(slide, image_path: Path, ppi: float,
+                             cell_left: float, cell_top: float):
+    """Place an image inside a labelled cell using a uniform deck px/inch.
+    Both dims = native_px / ppi inches; image centered in (CELL_W x IMG_H)
+    image area below the label."""
+    w_px, h_px = _png_dims(image_path)
+    w_in = w_px / ppi
+    h_in = h_px / ppi
+    img_area_top = cell_top + LABEL_H
+    left_in = cell_left + (CELL_W - w_in) / 2
+    top_in  = img_area_top + (IMG_H - h_in) / 2
+    return slide.shapes.add_picture(
+        str(image_path),
+        Inches(left_in),
+        Inches(top_in),
+        width=Inches(w_in),
+    )
 
 
 def build_compare_slide(prs, title_text, cat_img, fmc_img, deck_ppi):
@@ -251,24 +283,26 @@ def main() -> None:
     out_path = Path(OUTPUT_PATH)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    kiet_root = Path(KIET_ROOT)
+    root = Path(CTSB_ROOT)
 
-    # Pre-pass: walk every (block, date, tp, kind) → collect (cat_img, fmc_img)
-    # plus the title so we can pin deck-wide px/inch before slide build.
+    # Pre-pass: walk every (block, dataset, tp, kind) -> resolve CAT/FMC
+    # montage paths and pre-load their pixel dimensions to compute deck-wide
+    # ppi BEFORE slide build.
     slide_specs: List[Tuple[str, Optional[Path], Optional[Path], Path, Path, str]] = []
     for block in KIND_BLOCKS:
-        for date_tag, dataset_name in DATASETS:
-            for tp in TIMEPOINTS:
+        for (date_tag, dataset_folder, cell_templates, timepoints) in DATASETS:
+            for tp in timepoints:
                 tp_pretty = format_timepoint(tp)
                 for kind_label, kind_subpath in block:
-                    cat_dir = (
-                        kiet_root / dataset_name / f"CAT_{tp}"
-                        / CONDITION_SUBPATH / PROG_SUBPATH / kind_subpath
-                    )
-                    fmc_dir = (
-                        kiet_root / dataset_name / f"FMC_{tp}"
-                        / CONDITION_SUBPATH / PROG_SUBPATH / kind_subpath
-                    )
+                    def resolve(cell):
+                        car_sub, cond_template = cell_templates[cell]
+                        cond_folder = cond_template.format(tp=tp)
+                        return (
+                            root / dataset_folder / car_sub / cond_folder
+                            / CONDITION_SUBPATH / PROG_SUBPATH / kind_subpath
+                        )
+                    cat_dir = resolve("CAT")
+                    fmc_dir = resolve("FMC")
                     cat_img = find_first_chunk(cat_dir)
                     fmc_img = find_first_chunk(fmc_dir)
                     title = f"{kind_label}: {tp_pretty} ({date_tag})"
@@ -282,7 +316,7 @@ def main() -> None:
                 present.append(p)
 
     if not present:
-        print("WARNING: no real images found — using fallback PPI=100.")
+        print("WARNING: no real images found - using fallback PPI=100.")
         deck_ppi = 100.0
     else:
         deck_ppi = compute_deck_ppi(present, CELL_W, IMG_H)

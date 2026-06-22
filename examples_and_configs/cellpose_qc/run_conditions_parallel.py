@@ -26,7 +26,7 @@ PYTHON = sys.executable
 BUILD_SCRIPT = HERE / "build_cellpose_qc_deck.py"
 # Logs live alongside the generated decks, NOT in the repo. Override with
 # --log-dir if you want them somewhere else.
-DEFAULT_LOG_DIR = Path("K:/FF/PPT/PPT_autogeneration/CART_actin_only/cellpose_qc/logs")
+DEFAULT_LOG_DIR = Path("K:/FF/PPT/PPT_autogeneration/CART/actin_only/cellpose_qc/logs")
 
 
 def discover_configs(args_configs: List[str]) -> List[Path]:
