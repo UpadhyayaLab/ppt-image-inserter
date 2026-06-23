@@ -3,7 +3,7 @@ insert_chromark_h3k27me3_summary_slides.py
 
 Build a condition-comparison summary deck for the fixed activated-CTL nucleus
 "chromark" analysis (tifsCTLsFixed101010aCD3aCD28ICAM_H3K27me3_01292024,
-compiled 2026-06-21). Every metric in the curated grid_panels_curated/ folder
+compiled 2026-06-22). Every metric in the curated grid_panels_curated/ folder
 is included; each is shown across three comparison views:
 
   1. all conditions          - 8-condition overview (wide, no stat brackets)
@@ -47,9 +47,9 @@ from ppt_image_inserter import backup_presentation  # noqa: E402
 # ---------------------------------------------------------------------------
 ROOT = Path(
     "J:/FF/fixed_cell/CTL_nucleus/tifsFixed3SIactivatedCTLs_nucleus/"
-    "tifsCTLsFixed101010aCD3aCD28ICAM_H3K27me3_01292024/chromark/compiled_all_20260621"
+    "tifsCTLsFixed101010aCD3aCD28ICAM_H3K27me3_01292024/chromark/compiled_all_20260622"
 )
-GRID_DIR = ROOT / "grid_panels_curated"   # the curated metric set (~127 features)
+GRID_DIR = ROOT / "grid_panels_curated"   # the curated metric set (~126 features)
 
 OUTPUT_PATH = Path(
     "K:/FF/PPT/PPT_autogeneration/Naive_CTL/chromark_H3K27me3/"
@@ -59,7 +59,7 @@ OUTPUT_PATH = Path(
 DECK_TITLE = "Activated CTLs on stiffness substrates"
 DECK_SUBTITLE = (
     "H3K27me3 / DNA nuclear chromark summary (curated metrics)  -  fixed 01/29/2024  -  "
-    "compiled 2026-06-21"
+    "compiled 2026-06-22"
 )
 
 GRID_SUFFIX = "_grid.png"
@@ -85,7 +85,7 @@ DROP_METRICS = set()  # "include everything" -- nothing dropped
 FAMILIES_ORDER = [
     "Nuclear intensity",
     "Texture (GLCM)",
-    "Texture (GLCM, mid-slice)",
+    "Texture (GLCM, max area slice)",
     "Chromatin organization",
     "Nuclear morphology (3D)",
     "Nuclear morphology (2D)",
@@ -189,8 +189,8 @@ MORPH2D_TITLES = {
     "morph2d_prominance_prominant_neg_curv": "Prominence of prominent negative curvature (2D)",
     "morph2d_width_prominant_pos_curv": "Width of prominent positive curvature (2D)",
     "morph2d_width_prominant_neg_curv": "Width of prominent negative curvature (2D)",
-    "morph2d_npolarity_changes": "Number of polarity changes (2D)",
-    "morph2d_frac_peri_w_polarity_changes": "Fraction of perimeter w/ polarity changes (2D)",
+    "morph2d_npolarity_changes": "Number of curvature sign changes (2D)",
+    "morph2d_frac_peri_w_polarity_changes": "Fraction of perimeter w/ curvature sign changes (2D)",
 }
 MORPH_ORDER = {stem: i for i, stem in enumerate(
     list(MORPH3D_TITLES) + list(MORPH2D_TITLES))}
@@ -198,6 +198,25 @@ MORPH_ORDER = {stem: i for i, stem in enumerate(
 
 def _ch(tok):
     return CH_TITLE[tok]
+
+
+def _periph_dist(tok):
+    """Parse a peripheral chromatin/enrichment distance token -> (display, sortkey).
+    Handles pixel (``10``), micron (``0p5um``, ``1um``, ``2um``) and radial-percent
+    (``r10pct``) forms. sortkey groups px < um < pct, then by value."""
+    m = re.match(r"^(\d+)$", tok)
+    if m:
+        return ("{} px".format(tok), (0, int(tok)))
+    m = re.match(r"^(\d+)(?:p(\d+))?um$", tok)
+    if m:
+        whole, frac = m.group(1), m.group(2)
+        disp = ("{}.{}".format(whole, frac) if frac else whole) + " µm"
+        num = float("{}.{}".format(whole, frac)) if frac else float(whole)
+        return (disp, (1, num))
+    m = re.match(r"^r(\d+)pct$", tok)
+    if m:
+        return ("r{}%".format(m.group(1)), (2, int(m.group(1))))
+    return (tok, (3, 0))
 
 
 def classify(stem):
@@ -250,8 +269,8 @@ def classify(stem):
                  r"(asm|contrast|correlation|dissimilarity|energy|homogeneity)_(\d+)$", stem)
     if m:
         ch, variant, gt, dist = m.groups()
-        fam = "Texture (GLCM)" if variant == "2d" else "Texture (GLCM, mid-slice)"
-        suffix = "2D" if variant == "2d" else "mid-slice"
+        fam = "Texture (GLCM)" if variant == "2d" else "Texture (GLCM, max area slice)"
+        suffix = "2D" if variant == "2d" else "max area slice"
         return dict(fam=fam,
                     sort=(GLCM_RANK[gt], int(dist), stem),
                     channel=_ch(ch), pair=("glcm", variant, gt, dist),
@@ -292,15 +311,18 @@ def classify(stem):
                     channel=_ch(ch), pair=("hc_ec_ratio",),
                     title="{} HC/EC volume ratio (3D)".format(_ch(ch)))
 
-    # --- chromatin: <ch>_2d_peripheral_(chromatin|enrichment)_<n> ---
-    m = re.match(r"^(hoechst|h3k27me3)_2d_peripheral_(chromatin|enrichment)_(\d+)$", stem)
+    # --- chromatin: <ch>_(2d|3d)_peripheral_(chromatin|enrichment)_<dist> ---
+    # dist may be pixels (10), microns (0p5um/1um/2um) or radial-percent (r10pct).
+    m = re.match(r"^(hoechst|h3k27me3)_(2d|3d)_peripheral_(chromatin|enrichment)_(.+)$", stem)
     if m:
-        ch, kind, n = m.groups()
+        ch, dim, kind, tok = m.groups()
+        disp, dsort = _periph_dist(tok)
         sub = 6 if kind == "chromatin" else 7
         return dict(fam="Chromatin organization",
-                    sort=(1, sub, int(n), stem), channel=_ch(ch),
-                    pair=("peripheral", kind, n),
-                    title="{} peripheral {}, {} px (2D)".format(_ch(ch), kind, n))
+                    sort=(0 if dim == "3d" else 1, sub, dsort, stem), channel=_ch(ch),
+                    pair=("peripheral", dim, kind, tok),
+                    title="{} peripheral {}, {} ({})".format(
+                        _ch(ch), kind, disp, "3D" if dim == "3d" else "2D"))
 
     # --- chromatin: named 2D ratios/contents ---
     m = re.match(r"^(hoechst|h3k27me3)_2d_(.+)$", stem)
@@ -547,6 +569,39 @@ def build_item(prs, item, missing, omitted):
             emit_view(prs, view, stem, title, missing, omitted)
 
 
+def build_item_allcond(prs, item, missing):
+    """All-conditions-only variant: one slide per item. A pair shows DNA and
+    H3K27me3 all-conditions panels side by side under a shared metric title; a
+    solo shows its single all-conditions panel."""
+    if item[0] == "pair":
+        _, dna_stem, dna_title, h3_stem, h3_title = item
+        base = dna_title[len("DNA "):] if dna_title.startswith("DNA ") else dna_title
+        cols = []
+        for stem, lab in ((dna_stem, "DNA"), (h3_stem, "H3K27me3")):
+            fn = stem + GRID_SUFFIX
+            p = GRID_DIR / ALL_COND_VIEW / fn
+            if p.exists() and not _excluded(ALL_COND_VIEW, fn):
+                cols.append((p, lab))
+            else:
+                missing.append("{}/{}".format(ALL_COND_VIEW, fn))
+        if not cols:
+            return
+        title = "{} — all conditions".format(base)
+        if len(cols) == 1:
+            build_slide(prs, title, cols[0][0], rel_footer(cols[0][0]))
+        else:
+            build_multi_slide(prs, title, [c[0] for c in cols],
+                               [c[1] for c in cols], [rel_footer(c[0]) for c in cols])
+    else:  # solo
+        _, stem, title = item
+        fn = stem + GRID_SUFFIX
+        p = GRID_DIR / ALL_COND_VIEW / fn
+        if p.exists() and not _excluded(ALL_COND_VIEW, fn):
+            build_slide(prs, "{} — all conditions".format(title), p, rel_footer(p))
+        else:
+            missing.append("{}/{}".format(ALL_COND_VIEW, fn))
+
+
 def _item_stems(item):
     return [item[1], item[3]] if item[0] == "pair" else [item[1]]
 
@@ -611,15 +666,18 @@ def build_families():
 
 def main():
     list_only = "--list" in sys.argv
+    allcond = "--allcond" in sys.argv  # all-conditions-only deck (DNA vs H3K side by side)
     families, unknown = build_families()
 
     n_metrics = sum(len(_item_stems(it)) for _, items in families for it in items)
+    n_items = sum(len(items) for _, items in families)
     n_pairs = sum(1 for _, items in families for it in items if it[0] == "pair")
-    est_slides = 1 + len(families) + n_metrics * 3  # title + dividers + 3 views/metric
+    est_slides = 1 + len(families) + (n_items if allcond else n_metrics * 3)
 
     print("Source: {}".format(GRID_DIR))
-    print("{} metrics ({} pairs), est. {} slides across {} families\n".format(
-        n_metrics, n_pairs, est_slides, len(families)))
+    print("{} metrics ({} pairs), est. {} slides across {} families{}\n".format(
+        n_metrics, n_pairs, est_slides, len(families),
+        "  [all-conditions only]" if allcond else ""))
 
     if list_only:
         for fam, items in families:
@@ -631,31 +689,41 @@ def main():
             print("UNKNOWN (-> Other): {}".format(unknown))
         return
 
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    if allcond:
+        out_path = OUTPUT_PATH.with_name(OUTPUT_PATH.stem + "_all_conditions.pptx")
+        subtitle = DECK_SUBTITLE + "  -  all conditions only (DNA vs H3K27me3)"
+    else:
+        out_path = OUTPUT_PATH
+        subtitle = DECK_SUBTITLE
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     prs = Presentation()
     prs.slide_width = Inches(SLIDE_W)
     prs.slide_height = Inches(SLIDE_H)
-    build_title_slide(prs, DECK_TITLE, DECK_SUBTITLE)
+    build_title_slide(prs, DECK_TITLE, subtitle)
 
     missing, omitted = [], []
     for fam, items in families:
         build_divider_slide(prs, fam)
         print("=== {} ===".format(fam))
         for it in items:
-            build_item(prs, it, missing, omitted)
+            if allcond:
+                build_item_allcond(prs, it, missing)
+            else:
+                build_item(prs, it, missing, omitted)
             print("  {}".format(_item_log(it)))
         print("")
 
-    if OUTPUT_PATH.exists():
-        backup_dir = OUTPUT_PATH.parent / "backups"
-        created = backup_presentation(str(OUTPUT_PATH), backup_base=str(backup_dir))
+    if out_path.exists():
+        backup_dir = out_path.parent / "backups"
+        created = backup_presentation(str(out_path), backup_base=str(backup_dir))
         if created:
             print("Backed up previous deck to: {}\n".format(backup_dir))
 
-    prs.save(str(OUTPUT_PATH))
+    prs.save(str(out_path))
     total = len(prs.slides._sldIdLst)
     print("Done. {} metrics, {} slides written to:\n  {}".format(
-        n_metrics, total, OUTPUT_PATH))
+        n_metrics, total, out_path))
     if unknown:
         print("\n{} unrecognized stem(s) under 'Other metrics': {}".format(
             len(unknown), unknown))

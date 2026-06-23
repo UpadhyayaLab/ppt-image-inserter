@@ -1,18 +1,25 @@
 """
 insert_cilio_jurkats_actin_cent_xz_20240612_slides.py
 
-Cilio-D Jurkats actin + centrosome XZ MIP deck for the 06/12/2024 E6-1
+Cilio-D Jurkats XZ MIP + synapse mask deck for the 06/12/2024 E6-1
 Pericentrin/Actin Cilio-D test
 (L:/FF/Centrosome_Jurkats/20240612_E6-1_Cilio-D_Test).
 
-Two side-by-side slides — DMSO (left) vs CilioD (right) — at each timepoint:
-  1. 30 min αCD3 — W1 DMSO | W2 CilioD
-  2.  1 hr αCD3 — W4 DMSO | W3 CilioD
+Three blocks × two timepoints = 6 slides. Each slide is DMSO (left) vs CilioD
+(right). Timepoints:
+  30 min αCD3 — W1 DMSO | W2 CilioD
+   1 hr αCD3 — W4 DMSO | W3 CilioD
 
-Only the actin_cent_xz_nolines combo is included (no nucleus channel exists in
-this experiment). The combo hasn't landed yet; until the pipeline emits
-prog_fixed_cells/<cond>/physical_scale_images/actin_cent_xz_nolines/montages/,
-each panel renders as "(missing)" and resolves on the next run.
+Blocks:
+  1. Actin synapse mask (bottom slice)  — actin/bottom_slice_seg
+       Scale group 'synapse' — layout-pin only (no embedded scalebar).
+  2. Actin XZ MIP, cell top/bottom marked — physical_scale_images/actin_xz
+       Scale group 'xz_phys' — 5 µm = 104 px embedded scalebar.
+  3. Actin + Cent XZ MIP (no lines) — physical_scale_images/actin_cent_xz_nolines
+       Scale group 'xz_phys' — pinned with the actin XZ above so both render
+       at the same cm-on-page.
+
+No nucleus channel exists in this experiment.
 
 Usage:
     conda run -n PPT_editing python examples_and_configs/insert_cilio_jurkats_actin_cent_xz_20240612_slides.py
@@ -40,28 +47,49 @@ EXPERIMENT_ROOT = "L:/FF/Centrosome_Jurkats/20240612_E6-1_Cilio-D_Test"
 
 OUTPUT_PATH = (
     "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/CilioD/"
-    "Cilio_Jurkats_actin_cent_xz_20240612.pptx"
+    "Cilio_Jurkats_actin_synapse_and_xz_20240612.pptx"
 )
 
-# Side-by-side pairs (DMSO left, CilioD right) per timepoint slide.
-# Each entry is (slide_title, left_cond_folder, left_label, right_cond_folder, right_label).
-SLIDES = [
+# Side-by-side condition pairs per timepoint (DMSO left, CilioD right).
+TIMEPOINTS = [
     (
-        "Actin + Cent XZ MIP — DMSO vs CilioD (30 min αCD3, 06/12/2024)",
+        "30 min αCD3",
         "W1_aCD3_E6-1_0p5pcDMSO_30min_AF488Pericentrin_535Actin",  "0.5% DMSO, 30 min αCD3",
         "W2_aCD3_E6-1_50uMCilioD_30min_AF488Pericentrin_535Actin", "50 µM CilioD, 30 min αCD3",
     ),
     (
-        "Actin + Cent XZ MIP — DMSO vs CilioD (1 hr αCD3, 06/12/2024)",
+        "1 hr αCD3",
         "W4_aCD3_E6-1_0p5pcDMSO_1hr_AF488Pericentrin_535Actin",    "0.5% DMSO, 1 hr αCD3",
         "W3_aCD3_E6-1_50uMCilioD_1hr_AF488Pericentrin_535Actin",   "50 µM CilioD, 1 hr αCD3",
     ),
 ]
 
-# Note: prog_fixed_cells is at the EXP root (not under each cond) — paths are
-#       <root>/prog_fixed_cells/<cond>/physical_scale_images/<combo>/montages/
-PHYS_SCALE_SUBPATH = "prog_fixed_cells/{cond}/physical_scale_images/{combo}/montages"
-COMBO = "actin_cent_xz_nolines"
+# Blocks: each contributes one slide per TIMEPOINT. Title template gets
+# .format(tp=...) at build time. subpath uses {cond}.
+# prog_fixed_cells is at the EXP root (not under each cond):
+#   <root>/prog_fixed_cells/<cond>/<subpath>
+BLOCKS = [
+    (
+        "prog_fixed_cells/{cond}/actin/bottom_slice_raw/montages",
+        "Actin at synapse (bottom slice, raw) — DMSO vs CilioD ({tp}, 06/12/2024)",
+        "synapse",
+    ),
+    (
+        "prog_fixed_cells/{cond}/actin/bottom_slice_seg/montages",
+        "Actin synapse mask (bottom slice, segmented) — DMSO vs CilioD ({tp}, 06/12/2024)",
+        "synapse",
+    ),
+    (
+        "prog_fixed_cells/{cond}/physical_scale_images/actin_xz/montages",
+        "Actin XZ MIP, cell top/bottom marked — DMSO vs CilioD ({tp}, 06/12/2024)",
+        "xz_phys",
+    ),
+    (
+        "prog_fixed_cells/{cond}/physical_scale_images/actin_cent_xz_nolines/montages",
+        "Actin + Cent XZ MIP — DMSO vs CilioD ({tp}, 06/12/2024)",
+        "xz_phys",
+    ),
+]
 
 CHUNK_GLOB = "montage_cells_*.png"
 
@@ -230,41 +258,45 @@ def main() -> None:
 
     root = Path(EXPERIMENT_ROOT)
 
-    # Pre-pass: collect first-chunk image per side per slide.
+    # Pre-pass: walk every (block, timepoint) -> collect slide specs.
+    # Slides are grouped by block first, then timepoint, so the deck reads:
+    # [synapse 30min, synapse 1hr, actin_xz 30min, actin_xz 1hr, ...].
     slide_specs: List[dict] = []
-    for title, l_cond, l_label, r_cond, r_label in SLIDES:
-        l_dir = root / Path(PHYS_SCALE_SUBPATH.format(cond=l_cond, combo=COMBO))
-        r_dir = root / Path(PHYS_SCALE_SUBPATH.format(cond=r_cond, combo=COMBO))
-        slide_specs.append({
-            "title": title,
-            "left_label": l_label,  "left_img": find_first_chunk(l_dir),  "left_dir": l_dir,
-            "right_label": r_label, "right_img": find_first_chunk(r_dir), "right_dir": r_dir,
-        })
+    for subpath_tmpl, title_tmpl, scale_group in BLOCKS:
+        for tp_label, l_cond, l_label, r_cond, r_label in TIMEPOINTS:
+            l_dir = root / Path(subpath_tmpl.format(cond=l_cond))
+            r_dir = root / Path(subpath_tmpl.format(cond=r_cond))
+            slide_specs.append({
+                "title": title_tmpl.format(tp=tp_label),
+                "left_label": l_label,  "left_img": find_first_chunk(l_dir),  "left_dir": l_dir,
+                "right_label": r_label, "right_img": find_first_chunk(r_dir), "right_dir": r_dir,
+                "scale_group": scale_group,
+            })
 
-    present = [p for s in slide_specs
-               for p in (s["left_img"], s["right_img"])
-               if p is not None and _exists_long(p)]
+    # One PPI per scale_group, pinned to the largest source image in that group.
+    group_ppi: dict = {}
+    for spec in slide_specs:
+        imgs = [p for p in (spec["left_img"], spec["right_img"])
+                if p is not None and _exists_long(p)]
+        own = compute_deck_ppi(imgs, CELL_W, IMG_H) if imgs else 0.0
+        sg = spec["scale_group"]
+        group_ppi[sg] = max(group_ppi.get(sg, 0.0), own)
 
-    if present:
-        deck_ppi = compute_deck_ppi(present, CELL_W, IMG_H)
-        bar = SCALEBAR_PX / deck_ppi
-        print(
-            f"Deck-wide PPI = {deck_ppi:.2f} (pinned across {len(present)} present "
-            f"montages in {len(slide_specs)} slides).\n"
-            f"  Scalebar invariant: {SCALEBAR_UM} µm = {SCALEBAR_PX} px in source "
-            f"=> {bar:.3f} in = {bar * 2.54:.3f} cm on every cell.\n"
-            f"  Source PPUM = {PPUM_SOURCE} px/µm (verify SCALEBAR_PX empirically).\n"
-        )
-    else:
-        deck_ppi = 400.0
-        print(
-            f"WARNING: no '{COMBO}' montages present yet — every panel will render "
-            f"as '(missing)'. Rerun this script once the Stage-AF pipeline emits\n"
-            f"  prog_fixed_cells/<W_cond>/physical_scale_images/{COMBO}/montages/\n"
-            f"Using fallback PPI={deck_ppi} for layout only.\n"
-        )
+    # Fallback for any group that had zero present images.
+    for sg in {s["scale_group"] for s in slide_specs}:
+        if group_ppi.get(sg, 0.0) <= 0:
+            group_ppi[sg] = 400.0
 
-    print(f"Writing deck to: {OUTPUT_PATH}\n")
+    PHYS_GROUPS = {"xz_phys"}
+    print(f"Pinned PPI per scale_group ({len(slide_specs)} slides total):")
+    for sg, ppi in sorted(group_ppi.items()):
+        if sg in PHYS_GROUPS:
+            bar = SCALEBAR_PX / ppi
+            note = f"  scalebar = {bar:.3f} in = {bar * 2.54:.3f} cm"
+        else:
+            note = "  (layout-pin only — no embedded scalebar)"
+        print(f"  {sg:>9s}  PPI={ppi:>7.2f}{note}")
+    print(f"\nWriting deck to: {OUTPUT_PATH}\n")
 
     prs = Presentation()
     prs.slide_width = Inches(SLIDE_W)
@@ -272,15 +304,16 @@ def main() -> None:
 
     missing_total = []
     for spec in slide_specs:
+        slide_ppi = group_ppi[spec["scale_group"]]
         _, missing = build_compare_slide(
             prs, spec["title"],
             spec["left_label"],  spec["left_img"],
             spec["right_label"], spec["right_img"],
-            deck_ppi,
+            slide_ppi,
         )
         l = "OK" if spec["left_img"] else "MISSING"
         r = "OK" if spec["right_img"] else "MISSING"
-        print(f"  DMSO:{l}  CilioD:{r}  {spec['title']}")
+        print(f"  [{spec['scale_group']:>7s}]  DMSO:{l}  CilioD:{r}  {spec['title']}")
         for cell in missing:
             src = spec["left_dir"] if cell == spec["left_label"] else spec["right_dir"]
             missing_total.append(f"{spec['title']}/{cell}  ({src})")
