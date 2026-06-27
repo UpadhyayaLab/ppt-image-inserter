@@ -30,38 +30,38 @@ images:
 
   # --- Actin around centrosome ---
   - path: actin_MFI_around_cent_1um_per_experiment_grid.tif
-    title: "Actin MFI around centrosome (1 µm)"
+    title: "Actin MFI around centrosome (1 μm)"
 
   - path: actin_MFI_around_cent_2um_per_experiment_grid.tif
-    title: "Actin MFI around centrosome (2 µm)"
+    title: "Actin MFI around centrosome (2 μm)"
 
   - path: actin_frac_around_cent_1um_per_experiment_grid.tif
-    title: "Actin fraction around centrosome (1 µm)"
+    title: "Actin fraction around centrosome (1 μm)"
 
   - path: actin_frac_around_cent_2um_per_experiment_grid.tif
-    title: "Actin fraction around centrosome (2 µm)"
+    title: "Actin fraction around centrosome (2 μm)"
 
   - path: actin_depletion_ratio_around_cent_bot_plane_1um_per_experiment_grid.tif
-    title: "Actin depletion ratio near centrosome, bottom plane (1 µm)"
+    title: "Actin depletion ratio near centrosome, bottom plane (1 μm)"
 
   - path: actin_depletion_ratio_around_cent_bot_plane_2um_per_experiment_grid.tif
-    title: "Actin depletion ratio near centrosome, bottom plane (2 µm)"
+    title: "Actin depletion ratio near centrosome, bottom plane (2 μm)"
 
   # --- Vimentin ---
   - path: VCRAI_0_2um_per_experiment_grid.tif
-    title: "VCRAI (0-2 µm)"
+    title: "VCRAI (0-2 μm)"
 
   - path: vim_frac_around_cent_1um_per_experiment_grid.tif
-    title: "Vimentin fraction around centrosome (1 µm)"
+    title: "Vimentin fraction around centrosome (1 μm)"
 
   - path: vim_frac_around_cent_2um_per_experiment_grid.tif
-    title: "Vimentin fraction around centrosome (2 µm)"
+    title: "Vimentin fraction around centrosome (2 μm)"
 
   - path: vim_MFI_around_cent_1um_per_experiment_grid.tif
-    title: "Vimentin MFI around centrosome (1 µm)"
+    title: "Vimentin MFI around centrosome (1 μm)"
 
   - path: vim_MFI_around_cent_2um_per_experiment_grid.tif
-    title: "Vimentin MFI around centrosome (2 µm)"
+    title: "Vimentin MFI around centrosome (2 μm)"
 
   # --- Actin at synapse ---
   - path: actin_bottom_mask_area_per_experiment_grid.tif

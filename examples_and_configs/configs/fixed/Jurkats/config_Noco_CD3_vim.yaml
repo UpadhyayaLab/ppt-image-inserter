@@ -33,7 +33,7 @@ images:
   - avg_normal_angle_adaptive_region_growth_grid.tif
   - nuc_cent_closest_dist_grid.tif
   - chull_max_D_grid.tif
-  - chull_mean_D_cent_ratio_grid.tif
+  - chull_mean_D_cent_global_ratio_grid.tif
   - centrosome_dist_deepest_real_avg_periphery_ratio_grid.tif
   - concavity_index_around_cent_grid.tif
   - deepest_invag_fraction_chull_volume_grid.tif
@@ -50,6 +50,8 @@ images:
   - actin_MFI_around_cent_2um_grid.tif
   - actin_frac_around_cent_2um_grid.tif
   - deepest_region_periph_ratio_025um_grid.tif
+  - actin_bottom_mask_area_grid.tif
+  - cent_nuc_norm_dist_sphere_rad_grid.tif
 
 # Notes:
 # - Use forward slashes (/) in paths, even on Windows

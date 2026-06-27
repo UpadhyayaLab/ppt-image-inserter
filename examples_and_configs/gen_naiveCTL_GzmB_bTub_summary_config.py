@@ -107,9 +107,9 @@ PROFILE_EXTRAS = [
 # the *_polarization suffix.
 POLARIZATION_EXTRAS = [
     ("GzmB_z50_cell_bottom_distance_polarization", "Granzyme B Z₅₀: fraction polarized"),
-    ("GzmB_z50_cell_bottom_distance_3um_polarization", "Granzyme B Z₅₀: fraction polarized (3 µm)"),
+    ("GzmB_z50_cell_bottom_distance_3um_polarization", "Granzyme B Z₅₀: fraction polarized (3 μm)"),
     ("GzmB_z75_cell_bottom_distance_polarization", "Granzyme B Z₇₅: fraction polarized"),
-    ("GzmB_z75_cell_bottom_distance_3um_polarization", "Granzyme B Z₇₅: fraction polarized (3 µm)"),
+    ("GzmB_z75_cell_bottom_distance_3um_polarization", "Granzyme B Z₇₅: fraction polarized (3 μm)"),
 ]
 # ABUNDANCE (% of cells; NOT spatial) -> all-conditions wide (lives in polarization/).
 # Stacked "% of cells" bars: positive vs negative / high vs low total. These use the

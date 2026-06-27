@@ -311,7 +311,7 @@ def add_scalebar(
     y0 = margin_px
     draw.rectangle([x0, y0, x0 + bar_w, y0 + bar_thickness_px], fill=color)
 
-    text = label if label is not None else f"{length_um:g} µm"
+    text = label if label is not None else f"{length_um:g} μm"
     font = _load_font(font_size_px)
     text_y = y0 + bar_thickness_px + 8
     draw.text((x0, text_y), text, fill=color, font=font)
@@ -506,7 +506,7 @@ def build_composite_v2(
     """End-to-end v2: actin+Hoechst overlay (left) + colored cellpose mask (right).
 
     Left panel: actin (gray) blended with Hoechst (in ``hoechst_color``),
-    plus a 10 µm scalebar. ``hoechst_min_lo`` floors the Hoechst lower
+    plus a 10 μm scalebar. ``hoechst_min_lo`` floors the Hoechst lower
     clip so dim FOVs don't bleed background red.
     Right panel: the cellpose colored mask RGB (same as v1).
     """

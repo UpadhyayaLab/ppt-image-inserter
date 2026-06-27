@@ -1,28 +1,20 @@
 """
-insert_actin_synapse_mask_all_datasets_chronological_slides.py
+insert_actin_CatB_synapse_qc_chronological_slides.py
 
-CAT (left) vs FMC (right) side-by-side actin-synapse-mask deck across
-every (date, marker, timepoint) group in the compiled manifest at
+CAT (left) vs FMC (right) side-by-side actin-synapse-mask + CatB-at-synapse
+deck across every CatB (date, tp) group in the compiled manifest.
 
-    L:/FF/CAR T/actin_compiled_results/all_datasets_actin/compiled_20260623/
-      dataset_manifest.csv
+Filter: `marker == "CatB"` rows only (5 datasets: 20231018, 20231127,
+20240312, 20240620, 20240624). 9 groups -> 18 slides interleaved:
 
-Manifest rows (67) get grouped by (date, marker_label, timepoint_minutes).
-For each group: CAT row's first chunk -> left cell, FMC row's first chunk
--> right cell, both at the same deck-wide PPI so the 5 μm scalebar is the
-same cm on every slide.
+    Slide 2N+1: Actin at Synapse (CAT | FMC)
+    Slide 2N+2: CatB at Synapse  (CAT | FMC)
 
-For each row, resolves the actin synapse mask montages dir by probing:
-
-    <base_dir>/<progress_folder>/actin/synapse/1slice/mask/montages/   (Stage AG)
-    <base_dir>/<progress_folder>/actin/synapse/mask/montages/          (pre-AG)
-
-Includes a Windows long-path (\\?\) shim — several manifest paths exceed
-260 chars and would otherwise silently fail `.exists()` / `open()` while
-`.glob()` still works.
+Sibling to insert_actin_foci_qc_chronological_slides.py — same per-slide
+PPI, CAT-left/FMC-right cell layout, chronological-by-manifest ordering.
 
 Usage:
-    python examples_and_configs/insert_actin_synapse_mask_all_datasets_chronological_slides.py
+    python examples_and_configs/insert_actin_CatB_synapse_qc_chronological_slides.py
 """
 
 import csv
@@ -50,15 +42,18 @@ MANIFEST_CSV = (
 )
 
 OUTPUT_PATH = (
-    "K:/FF/PPT/PPT_autogeneration/CART/actin_only/"
-    "CART_actin_synapse_mask_all_datasets_20260623.pptx"
+    "K:/FF/PPT/PPT_autogeneration/CART/actin_CatB_synapse/"
+    "CART_actin_CatB_synapse_QC_all_datasets_20260623.pptx"
 )
 
-# Stage AG layout first, pre-AG fallback. Both joined under
-# `<base_dir>/<progress_folder>/actin/synapse/`.
-KIND_SUBPATHS = [
-    "1slice/mask/montages",
-    "mask/montages",
+# Only include manifest rows whose marker matches this set.
+MARKER_FILTER = {"CatB"}
+
+# (kind label, subpath under <base>/<progress_folder>/).
+# Emitted in this order, interleaved per group.
+KINDS = [
+    ("Actin at Synapse", "actin/synapse/1slice/mask/montages"),
+    ("CatB at Synapse",  "CatB/synapse/1slice/raw/montages"),
 ]
 
 CHUNK_GLOB = "montage_cells_*.png"
@@ -67,7 +62,6 @@ CHUNK_GLOB = "montage_cells_*.png"
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 BLACK = RGBColor(0x00, 0x00, 0x00)
 
-# Slide layout (inches). Standard 13.333 x 7.5 widescreen.
 SLIDE_W = 13.333
 SLIDE_H = 7.5
 
@@ -77,38 +71,29 @@ TITLE_WIDTH = SLIDE_W - 2 * 0.05
 TITLE_HEIGHT = 0.40
 TITLE_FONT_PT = 24
 
-# 1x2 cell grid below the title (label + image per cell).
 GRID_LEFT = 0.05
 GRID_TOP = 0.50
 CELL_W = 6.60
-CELL_H = SLIDE_H - GRID_TOP - 0.05    # 6.95"
+CELL_H = SLIDE_H - GRID_TOP - 0.05
 LABEL_H = 0.22
-IMG_H = CELL_H - LABEL_H              # 6.73"
+IMG_H = CELL_H - LABEL_H
 LABEL_FONT_PT = 14
 COL_GAP = SLIDE_W - 2 * GRID_LEFT - 2 * CELL_W
 
 CELL_POSITIONS = [
-    (GRID_LEFT,                    GRID_TOP),  # left = CAT
-    (GRID_LEFT + CELL_W + COL_GAP, GRID_TOP),  # right = FMC
+    (GRID_LEFT,                    GRID_TOP),
+    (GRID_LEFT + CELL_W + COL_GAP, GRID_TOP),
 ]
 
-# Scalebar invariant (Stage AF/AG).
 PPUM_SOURCE = 30
 SCALEBAR_UM = 5
-SCALEBAR_PX = PPUM_SOURCE * SCALEBAR_UM   # 150 px
+SCALEBAR_PX = PPUM_SOURCE * SCALEBAR_UM
 
-# Condition / experiment parsing.
-# `FMC(?!63)` prevents `FMC` from matching at the start of `FMC63` and
-# consuming `63` as the minutes digits.
 _COND_RE = re.compile(r"(CAT|FMC63|FMC(?!63))_?(\d+)(?:min)?", re.IGNORECASE)
 _DTAG_RE = re.compile(r"_D(\d+)_", re.IGNORECASE)
 
 
 def _long_path_str(p: Path) -> str:
-    """Return a path string that bypasses Windows' 260-char MAX_PATH limit.
-    Several manifest entries land 260+ chars deep; `.glob()` works but
-    `.exists()` / `open()` / `Image.open()` silently fail without the
-    `\\?\` prefix."""
     s = str(p)
     if os.name == "nt" and len(s) >= 240 and not s.startswith("\\\\?\\"):
         s = s.replace("/", "\\")
@@ -118,9 +103,6 @@ def _long_path_str(p: Path) -> str:
 
 
 def parse_condition(base_dir: str) -> Tuple[Optional[str], Optional[int]]:
-    """Find the first CAT|FMC63|FMC + digits match in the path. Returns
-    (cell_type_normalized, minutes) or (None, None). FMC63 is normalized
-    to "FMC" — the dataset identity already encodes which CAR variant."""
     m = _COND_RE.search(base_dir)
     if not m:
         return (None, None)
@@ -131,25 +113,16 @@ def parse_condition(base_dir: str) -> Tuple[Optional[str], Optional[int]]:
 
 
 def parse_dtag(base_dir: str) -> str:
-    """Return ' D3' / ' D5' suffix if `_D<n>_` appears in the base_dir."""
     m = _DTAG_RE.search(base_dir)
     return f" D{m.group(1)}" if m else ""
 
 
-def resolve_montages_dir(base_dir: str, progress_folder: str) -> Optional[Path]:
-    """Try Stage-AG layout first, fall back to pre-AG. Returns the first
-    existing dir, or None."""
-    parent = Path(base_dir) / progress_folder / "actin" / "synapse"
-    for kind in KIND_SUBPATHS:
-        cand = parent / kind
-        if os.path.isdir(_long_path_str(cand)):
-            return cand
-    return None
+def resolve_kind_dir(base_dir: str, progress_folder: str, kind_subpath: str) -> Optional[Path]:
+    cand = Path(base_dir) / progress_folder / kind_subpath
+    return cand if os.path.isdir(_long_path_str(cand)) else None
 
 
 def _parse_chunk_range(p: Path) -> Tuple[int, int]:
-    """Return (start, end) cell-id range for a montage_cells_*.png filename.
-    Handles both 4-int FOV-padded and 2-int patterns."""
     m4 = re.match(r"montage_cells_(\d+)_(\d+)_(\d+)_(\d+)\.png$", p.name)
     if m4:
         f_a, c_a, f_b, c_b = (int(x) for x in m4.groups())
@@ -173,9 +146,7 @@ def _list_chunk_files(montages_dir):
             if fnmatch.fnmatch(n, CHUNK_GLOB)]
 
 
-def find_first_chunk(montages_dir: Path) -> Optional[Path]:
-    """Pick the lowest-start chunk, dropping any whose [start, end] range is
-    strictly contained in another chunk's range (smoke-shadow filter)."""
+def find_first_chunk(montages_dir: Optional[Path]) -> Optional[Path]:
     chunks = _list_chunk_files(montages_dir)
     if not chunks:
         return None
@@ -239,9 +210,6 @@ def set_slide_background(slide, rgb: RGBColor) -> None:
 
 def add_image_in_cell_at_ppi(slide, image_path: Path, ppi: float,
                              cell_left: float, cell_top: float):
-    """Place image inside a labelled cell at uniform deck px/inch. Both
-    dims = native_px / ppi; image centered in (CELL_W x IMG_H) area below
-    the label."""
     w_px, h_px = _png_dims(image_path)
     w_in = w_px / ppi
     h_in = h_px / ppi
@@ -304,22 +272,28 @@ def main() -> None:
     with manifest_path.open("r", newline="") as f:
         rows = list(csv.DictReader(f))
 
-    # Per-row parse: derive cell / tp / marker_label / modality / montages_dir / chunk.
+    skipped_marker = 0
     parsed_rows = []
     for idx, row in enumerate(rows):
-        date_tag = row["date"].strip()
         marker = row["marker"].strip()
+        if marker not in MARKER_FILTER:
+            skipped_marker += 1
+            continue
+
+        date_tag = row["date"].strip()
         progress_folder = row["progress_folder"].strip()
         base_dir = row["base_dir"].strip().rstrip("\\/")
-        # single_plane=1 -> TIRF (2D), single_plane=0 -> confocal (3D z-stack).
         modality = "TIRF" if row["single_plane"].strip() == "1" else "confocal"
 
         cell, tp = parse_condition(base_dir)
         dtag = parse_dtag(base_dir)
         marker_label = f"{marker}{dtag}"
 
-        montages_dir = resolve_montages_dir(base_dir, progress_folder)
-        chunk = find_first_chunk(montages_dir) if montages_dir is not None else None
+        per_kind: Dict[str, Tuple[Optional[Path], Optional[Path]]] = {}
+        for kind_label, kind_subpath in KINDS:
+            mdir = resolve_kind_dir(base_dir, progress_folder, kind_subpath)
+            chunk = find_first_chunk(mdir)
+            per_kind[kind_label] = (mdir, chunk)
 
         parsed_rows.append({
             "idx": idx,
@@ -328,11 +302,10 @@ def main() -> None:
             "modality": modality,
             "cell": cell,
             "tp": tp,
-            "montages_dir": montages_dir,
-            "chunk": chunk,
+            "per_kind": per_kind,
         })
 
-    # Group by (date_tag, marker_label, tp). One slide per group.
+    # Group by (date, marker_label, tp).
     groups: Dict[Tuple[str, str, int], Dict] = {}
     for p in parsed_rows:
         if p["cell"] is None or p["tp"] is None:
@@ -340,51 +313,61 @@ def main() -> None:
             continue
         key = (p["date_tag"], p["marker_label"], p["tp"])
         g = groups.setdefault(key, {
-            "cat_chunk": None, "fmc_chunk": None,
-            "cat_dir": None, "fmc_dir": None,
+            "per_kind": {
+                kind_label: {
+                    "cat_chunk": None, "fmc_chunk": None,
+                    "cat_dir": None, "fmc_dir": None,
+                }
+                for kind_label, _ in KINDS
+            },
             "first_idx": p["idx"],
             "modality": p["modality"],
         })
-        if p["cell"] == "CAT":
-            g["cat_chunk"] = p["chunk"]
-            g["cat_dir"] = p["montages_dir"]
-        elif p["cell"] == "FMC":
-            g["fmc_chunk"] = p["chunk"]
-            g["fmc_dir"] = p["montages_dir"]
+        for kind_label, _ in KINDS:
+            mdir, chunk = p["per_kind"][kind_label]
+            slot = g["per_kind"][kind_label]
+            if p["cell"] == "CAT":
+                slot["cat_chunk"] = chunk
+                slot["cat_dir"] = mdir
+            elif p["cell"] == "FMC":
+                slot["fmc_chunk"] = chunk
+                slot["fmc_dir"] = mdir
 
-    # Sort groups chronologically: by date, then by manifest order of the
-    # first row that landed in the group. Preserves the experimenter's
-    # ordering of conditions within a date.
     sorted_groups = sorted(
         groups.items(),
         key=lambda kv: (kv[0][0], kv[1]["first_idx"]),
     )
 
-    # Build slide specs.
     slide_specs = []
     for ((date_tag, marker_label, tp), g) in sorted_groups:
-        title = (
-            f"Actin at Synapse — {date_tag} ({marker_label}, "
-            f"{g['modality']}): {tp} min"
-        )
-        log_key = f"{date_tag}/{marker_label}/{tp}min"
-        slide_specs.append((
-            title, g["cat_chunk"], g["fmc_chunk"],
-            g["cat_dir"], g["fmc_dir"], log_key,
-        ))
+        for kind_label, _ in KINDS:
+            slot = g["per_kind"][kind_label]
+            title = (
+                f"{kind_label} — {date_tag} ({marker_label}, "
+                f"{g['modality']}): {tp} min"
+            )
+            log_key = f"{date_tag}/{marker_label}/{tp}min/{kind_label}"
+            slide_specs.append((
+                title,
+                slot["cat_chunk"], slot["fmc_chunk"],
+                slot["cat_dir"], slot["fmc_dir"],
+                log_key,
+            ))
 
-    # Count present cells just for the banner.
     present_count = sum(
         1 for (_, cat_img, fmc_img, _, _, _) in slide_specs
         for p in (cat_img, fmc_img)
         if p is not None and _path_exists(p)
     )
+    n_groups = len(sorted_groups)
     print(
-        f"Manifest rows: {len(rows)}  -  groups (slides): {len(slide_specs)}\n"
+        f"Manifest rows: {len(rows)}  -  filtered out (marker not in "
+        f"{sorted(MARKER_FILTER)}): {skipped_marker}\n"
+        f"Groups: {n_groups}\n"
+        f"Slides emitted: {len(slide_specs)} ({len(KINDS)} kinds x {n_groups} groups)\n"
         f"Present cells: {present_count} / {2 * len(slide_specs)}\n"
         f"Per-slide PPI: each slide pins its own PPI to the larger of its CAT/FMC\n"
-        f"  montages, so cells fit exactly with no overflow. Within a slide the\n"
-        f"  5 μm scalebar matches; across slides the cm differs.\n"
+        f"  montages so cells fit exactly with no overflow.\n"
         f"Source PPUM = {PPUM_SOURCE} px/μm (locked).\n"
     )
     print(f"Writing deck to: {OUTPUT_PATH}\n")
@@ -396,15 +379,11 @@ def main() -> None:
     missing_total = []
     slides_added = 0
     for (title, cat_img, fmc_img, cat_dir, fmc_dir, log_key) in slide_specs:
-        # Per-slide PPI: fit this slide's CAT+FMC pair to the cell box.
         present_on_slide = [
             p for p in (cat_img, fmc_img)
             if p is not None and _path_exists(p)
         ]
-        if present_on_slide:
-            slide_ppi = compute_deck_ppi(present_on_slide, CELL_W, IMG_H)
-        else:
-            slide_ppi = 100.0
+        slide_ppi = compute_deck_ppi(present_on_slide, CELL_W, IMG_H) if present_on_slide else 100.0
         bar_cm = (SCALEBAR_PX / slide_ppi) * 2.54
 
         _, missing = build_compare_slide(prs, title, cat_img, fmc_img, slide_ppi)

@@ -46,17 +46,17 @@ EXPERIMENTS = [
 
     # --- CK666 100 uM ---
     ("J:/FF/CTL_TFM_granules/TFM_100nm_red_beads/20240813_Activated_CTLs_F-tractin-EGFP_LT-DeepRed/3p0_CK666_100uM/cells",
-     "CK666 100 µM", "2024-08-13"),
+     "CK666 100 μM", "2024-08-13"),
     ("J:/FF/CTL_TFM_granules/TFM_100nm_red_beads/20241123_Activated_CTLs_F-tractin-EGFP_LT-DeepRed/3p0_CK666_100uM/cells",
-     "CK666 100 µM", "2024-11-23"),
+     "CK666 100 μM", "2024-11-23"),
     ("J:/FF/CTL_TFM_granules/TFM_100nm_red_beads/20250128_Activated_CTLs_F-tractin-EGFP_LT-DeepRed/3p0_CK666_100uM/cells",
-     "CK666 100 µM", "2025-01-28"),
+     "CK666 100 μM", "2025-01-28"),
 
     # --- SMIFH2 20 uM ---
     ("J:/FF/CTL_TFM_granules/TFM_100nm_red_beads/20240827_Activated_CTLs_F-tractin-EGFP_LT-DeepRed/3p0_SMIFH2_20uM/cells",
-     "SMIFH2 20 µM", "2024-08-27"),
+     "SMIFH2 20 μM", "2024-08-27"),
     ("J:/FF/CTL_TFM_granules/TFM_100nm_red_beads/20241210_Activated_CTLs_F-tractin-EGFP_LT-DeepRed/3p0_SMIFH2_20uM/cells",
-     "SMIFH2 20 µM", "2024-12-10"),
+     "SMIFH2 20 μM", "2024-12-10"),
 
     # --- DMSO ---
     ("J:/FF/CTL_TFM_granules/TFM_100nm_red_beads/20240827_Activated_CTLs_F-tractin-EGFP_LT-DeepRed/3p0_DMSO/cells",

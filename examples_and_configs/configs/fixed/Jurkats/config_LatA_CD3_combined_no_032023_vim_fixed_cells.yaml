@@ -80,28 +80,28 @@ images:
     title: "Vimentin fraction in nuclear convex hull"
 
   - path: vim_enrichment_within_half_um_nuc_2_um_cent_per_experiment_grid.tif
-    title: "Vimentin enrichment (0.5 µm of nuc, 2 µm of cent)"
+    title: "Vimentin enrichment (0.5 μm of nuc, 2 μm of cent)"
 
   - path: vim_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio_per_experiment_grid.tif
     title: "Vimentin MFI: cytoplasmic (in nuc hull) vs near-convex regions of nuc"
 
   - path: VCRAI_0_2um_per_experiment_grid.tif
-    title: "VCRAI (0-2 µm)"
+    title: "VCRAI (0-2 μm)"
 
   - path: vim_frac_around_cent_1um_per_experiment_grid.tif
-    title: "Vimentin fraction around centrosome (1 µm)"
+    title: "Vimentin fraction around centrosome (1 μm)"
 
   - path: vim_frac_around_cent_2um_per_experiment_grid.tif
-    title: "Vimentin fraction around centrosome (2 µm)"
+    title: "Vimentin fraction around centrosome (2 μm)"
 
   - path: vim_MFI_around_cent_1um_per_experiment_grid.tif
-    title: "Vimentin MFI around centrosome (1 µm)"
+    title: "Vimentin MFI around centrosome (1 μm)"
 
   - path: vim_MFI_around_cent_2um_per_experiment_grid.tif
-    title: "Vimentin MFI around centrosome (2 µm)"
+    title: "Vimentin MFI around centrosome (2 μm)"
 
   - path: vim_ratio_above_below_0_5um_per_experiment_grid.tif
-    title: "Vimentin ratio above/below 0.5 µm"
+    title: "Vimentin ratio above/below 0.5 μm"
 
   # --- Synapse ---
   - path: IRM_mask_area_per_experiment_grid.tif

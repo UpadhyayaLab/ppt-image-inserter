@@ -1,20 +1,52 @@
 """
-insert_cilio_dmso_nuc_phys_scale_06122026_slides.py
+insert_bleb_dmso_vs_bleb_phys_scale_slides.py
 
-DMSO (left) vs Ciliobrevin (right) nucleus physical-scale montage deck for the
-06/12/2026 Ciliobrevin Jurkats experiment
-(L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/06122026_firstReplicate_*).
+DMSO control (left) vs blebbistatin (right) physical-scale montage deck for the
+fixed Jurkat blebbistatin experiment
+(20240123_Fixed_E6-1_blebbistatin_Vimentin). Copied from
+insert_noco_dmso_vs_noco_phys_scale_slides.py and repointed at the blebbistatin
+datasets. Blebbistatin inhibits myosin II, so the actomyosin / actin combos are
+the direct DMSO-vs-bleb readout.
 
-Same deck-wide PPI pinning pattern as insert_actin_qc_cat_vs_fmc_20260607_slides.py:
-all PNGs are inserted at one shared pixels-per-inch so the embedded scalebar
-renders at the same cm-on-page across every panel and slide.
+Same deck-wide PPI pinning pattern as the Noco deck: all PNGs are inserted at one
+shared pixels-per-inch within each scale_group so the embedded scalebar renders
+at the same cm-on-page across every panel and slide. The blebbistatin montages go
+through the same prog_fixed_cells/physical_scale_images pipeline as the Noco/CilioD
+fixed-cell nucleus montages, so the 104 px = 5 um scalebar invariant is reused
+(re-verify against the bleb montages with check_scalebar_pixel_widths.py once they
+exist; SCALEBAR_PX is diagnostic-only and does not affect layout).
 
-Slides (first chunk of each combo only):
-  1. Nucleus (DNA)            -> physical_scale_images/nucleus_bz/montages
-  2. Centrin2 + Nucleus XZ    -> physical_scale_images/cent_nuc_xz/montages
+This is a single-experiment deck: one block, DMSO (Well2) vs blebbistatin (Well1).
+The multi-experiment scaffolding (EXPERIMENTS list, group-major + date-sorted
+ordering, deck-wide PPI pinning) is inherited verbatim from the Noco deck so the
+two stay parallel and so any additional blebbistatin experiment (e.g. a second
+date or concentration) drops in by appending one dict to EXPERIMENTS.
+
+Both wells live under cells/channels (C1=640 Vim, C2=535 Actin, C3=488 Centrin,
+C4=405 Hoechst), so chan_sub is "cells/channels" for both — matching the Noco
+20240123 Vim experiment.
+
+As of writing the montages have NOT been generated yet: prog_fixed_cells does not
+exist under either well, so running this now writes an empty deck without error.
+Each (experiment, combo) renders only once its physical_scale_images/<combo>/
+montages exist; run again after the MATLAB montage pipeline finishes and the
+slides fill in automatically. "Get ready": this is the ready-to-run inserter.
+
+Note: like the Noco physical_scale_images, the blebbistatin montages contain only
+actin/centrosome/nucleus combos — there is no vimentin channel montage (vimentin
+is just the marker), so this deck is marker-agnostic and the DMSO-vs-bleb columns
+carry the comparison.
+
+Slide order is group-major: all of one montage group before the next. Every slide
+is DMSO (left) | Blebbistatin (right), first chunk only. Groups, in order:
+  1. Actin + Nuc XZ MIP
+  2. Actin + Cent XZ MIP
+  3. Nuc (DNA), broadest slice
+  4. Cent + Nuc, broadest slice
+  5. Cent + Nuc, deepest invagination slice
 
 Usage:
-    python examples_and_configs/insert_cilio_dmso_nuc_phys_scale_06122026_slides.py
+    python examples_and_configs/insert_bleb_dmso_vs_bleb_phys_scale_slides.py
 """
 
 import os
@@ -36,107 +68,65 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # ---------------------------------------------------------------------------
 
 OUTPUT_PATH = (
-    "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/CilioD/"
-    "Cilio_Jurkats_DMSO_vs_Cilio_nuc_phys_scale_06122026_06132026.pptx"
+    "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Blebbistatin/"
+    "Bleb_Jurkats_DMSO_vs_Bleb_phys_scale_montages.pptx"
 )
 
-PHYS_SCALE_SUBPATH = "prog_fixed_cells/{cond}/physical_scale_images/{combo}/montages"
-
 # Each experiment contributes one block of slides (one per combo below).
-# tag      — short date tag woven into slide titles (06/12 and 06/13 7min are
-#            different replicates of the same nominal timepoint).
-# root     — experiment root dir.
-# left/right — (condition_folder, display_label) for the DMSO / Cilio columns.
-# tp_label — timepoint string used in slide titles.
+# tag      — short date tag woven into slide titles.
+# root     — dataset root dir.
+# chan_sub — intermediate path inside each condition folder, before
+#            prog_fixed_cells. "cells/channels" for both blebbistatin wells.
+# left/right — (condition_folder, display_label) for the DMSO / Bleb columns.
+# tp_label — activation string used in slide titles.
+# Single blebbistatin experiment for now; append another dict here to add a
+# second date/concentration (it slots into the group-major, date-sorted order).
 EXPERIMENTS = [
     {
-        "tag": "06/12/2026",
+        "tag": "01/23/2024",
         "root": (
-            "L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/"
-            "06122026_firstReplicate_50uM30minCilio_7min_"
-            "h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_"
+            "H:/FF/Nucleus_Data/3D_Nucleus/Fixed/Blebbistatin/"
+            "20240123_Fixed_E6-1_blebbistatin_Vimentin"
         ),
-        "left":  ("A1_DMSO_7min_aCD3_",                 "DMSO, 7 min αCD3"),
-        "right": ("A2_Ciliobrevin50um30min_7min_aCD3_", "Cilio 50 μM, 7 min αCD3"),
-        "tp_label": "7 min αCD3",
-    },
-    {
-        "tag": "06/13/2026",
-        "root": (
-            "L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/"
-            "06132026_50uM30minCilio_7-12min_"
-            "h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_"
-        ),
-        "left":  ("GbA1_DMSO5to1000-30min_7min_aCD3_", "DMSO, 7 min αCD3"),
-        "right": ("GbA2_50uMCilio-30min_7min_aCD3_",   "Cilio 50 μM, 7 min αCD3"),
-        "tp_label": "7 min αCD3",
-    },
-    {
-        "tag": "06/13/2026",
-        "root": (
-            "L:/FF/Nucleus_H3K27me3/Ciliobrevin_Jurkats/"
-            "06132026_50uM30minCilio_7-12min_"
-            "h3k27me3-640LP45_p561LP45_egfpCentrin2-488LP45_h405LP40_"
-        ),
-        "left":  ("GaA1_5to1000DMSO-30min_12min_aCD3_", "DMSO, 12 min αCD3"),
-        "right": ("GaA2_50uMCilio-30min_12min_aCD3_",   "Cilio 50 μM, 12 min αCD3"),
-        "tp_label": "12 min αCD3",
+        "chan_sub": "cells/channels",
+        "left":  ("Well2_aCD3_DMSO_640Vim_535Actin_488Centrin_405Hoechst", "DMSO, αCD3"),
+        "right": ("Well1_aCD3_bleb_640Vim_535Actin_488Centrin_405Hoechst", "Blebbistatin, αCD3"),
+        "tp_label": "αCD3",
     },
 ]
 
-# (combo_subfolder, title_template, n_chunks). Template gets .format()'d with
-# tp= (e.g. "7 min αCD3") and tag= (e.g. "06/13/2026") per experiment.
+# (combo_subfolder, title_template, n_chunks, scale_group, fallback, opts).
+# Template gets .format()'d with tp= (e.g. "αCD3") and tag= (e.g. "01/23/2024").
 # Layout depends on n_chunks:
-#   n_chunks == 1 -> 1 row x 2 cols (DMSO left, Cilio right; labels above).
-#   n_chunks  > 1 -> 1 row x (2 * n_chunks) cols, all in a single row:
-#                    DMSO's n_chunks chunks on the left, Cilio's n_chunks
-#                    chunks on the right, with a banner label spanning each
-#                    condition's group of columns. All panels share one PPI.
+#   n_chunks == 1 -> 1 row x 2 cols (DMSO left, Bleb right; labels above).
+#   n_chunks  > 1 -> 1 row x (2 * n_chunks) cols, all in a single row, with a
+#                    banner label spanning each condition's group of columns.
 # scale_group: slides with the same group key share one pinned PPI across the
-# ENTIRE deck (every experiment), so their embedded scalebars render at the
-# same cm. Distinct groups are intentionally separate — the H3K27me3 1x4 slide
-# has narrower per-panel cells, so it gets its own group and its own (smaller)
-# pinned scalebar rather than forcing the wider broadest-slice panels to shrink
-# down to match it.
+# ENTIRE deck, so their embedded scalebars render at the same cm.
+# opts is a dict with optional flags:
+#   "per_exp_scale": bool   — compute this combo's PPI independently per
+#                             experiment instead of pinning across all.
+#   "compact_layout": bool  — smaller title/label bands so the image area grows.
+#   "scale_mult":    float  — render at slide_ppi / scale_mult (>1 enlarges).
+#   "solo_layout":   bool   — one condition per slide, image spans the full
+#                             slide width (SOLO_CELL_W) so a wide combo (XZ MIP)
+#                             can grow ~2x without colliding with its other half.
+# Mirrors the Noco physical-scale deck: same actin/cent/nucleus combos (there is
+# no vim/MT combo). fallback is None for every combo: an experiment whose
+# montages aren't generated yet contributes no slides at all (instead of
+# placeholder "(missing)" slides) and fills in automatically once processed.
 COMBOS = [
-    # (combo_subfolder, title_template, n_chunks, scale_group, fallback, opts)
-    # opts is a dict with optional flags:
-    #   "per_exp_scale": bool   — when True, this combo's PPI is computed
-    #                             independently per experiment instead of
-    #                             pinned across all experiments. Lets a
-    #                             single height-bound combo render closer
-    #                             to its own experiment's binding.
-    #   "compact_layout": bool  — when True, render the slide with a smaller
-    #                             title and label band so the image area
-    #                             grows ~0.25" taller.
-    #   "scale_mult":    float  — render the image (and its embedded scalebar)
-    #                             at slide_ppi / scale_mult. >1 makes the
-    #                             image larger and lets it overflow the cell
-    #                             box vertically; <1 shrinks it. Default 1.0.
-    #   "solo_layout":   bool   — split into one-condition-per-slide. Each
-    #                             slide gets a single panel that fills the
-    #                             full slide width (SOLO_CELL_W), so a
-    #                             width-bound combo (e.g. XZ MIP) can grow
-    #                             ~2x without colliding with its other half.
-    # XZ MIP now uses solo_layout: each experiment gets two slides (DMSO,
-    # then Cilio), each filling the full slide width so the image can render
-    # ~1.5x larger than the side-by-side variant without panel collision.
-    ("actin_nuc_xz_nolines", "Actin + Nuc XZ MIP ({tp}, {tag})",                         1, "xz",
-        ("cent_nuc_xz", "Cent + Nuc, XZ MIP ({tp}, {tag})"), {"solo_layout": True}),
-    ("nucleus_bz",           "Nuc (DNA), broadest slice ({tp}, {tag})",                  1, "broad_1c",
+    ("actin_nuc_xz_nolines",  "Actin + Nuc XZ MIP ({tp}, {tag})",         1, "xz",
         None, {}),
-    ("cent_nuc_bz",          "Cent + Nuc, broadest slice ({tp}, {tag})",                 1, "broad_1c",
+    ("actin_cent_xz_nolines", "Actin + Cent XZ MIP ({tp}, {tag})",        1, "xz",
         None, {}),
-    # H3K27me3 broadest slice: own shared scale group (one PPI / one scalebar
-    # across ALL dates) + compact title/label band. It stays modestly larger
-    # than nucleus/cent because its near-square montages are width-bound at a
-    # lower PPI than the tall nucleus montages — no per_exp_scale or scale_mult
-    # (those made the scalebar differ per date and overflowed the half-cell).
-    ("H3K27me3_nuc_cent_bz", "H3K27me3 + Cent + Nuc, broadest slice ({tp}, {tag})",      1, "broad_h3k27me3",
-        None, {"compact_layout": True}),
+    ("nucleus_bz",           "Nuc (DNA), broadest slice ({tp}, {tag})",  1, "broad_1c",
+        None, {}),
+    ("cent_nuc_bz",          "Cent + Nuc, broadest slice ({tp}, {tag})", 1, "broad_1c",
+        None, {}),
+    ("cent_nuc",             "Cent + Nuc, deepest invagination slice ({tp}, {tag})", 1, "broad_1c",
+        None, {}),
 ]
-
-CHUNK_GLOB = "montage_cells_*.png"
 
 # Colors
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
@@ -170,7 +160,7 @@ CELL_POSITIONS = [
 # Compact variant used by combos that opt into compact_layout=True (see COMBOS).
 # Shrinks the title band, lifts the grid, and tightens the per-cell label so
 # the image area gains ~0.30" of vertical room — ~5% larger images for
-# height-bound combos (e.g. H3K27me3 broadest slice).
+# height-bound combos.
 COMPACT_TITLE_HEIGHT = 0.35
 COMPACT_TITLE_FONT_PT = 22
 COMPACT_GRID_TOP = 0.40
@@ -184,11 +174,13 @@ COMPACT_IMG_H = COMPACT_CELL_H - COMPACT_LABEL_H     # 6.80"
 # (e.g. XZ MIP) can render ~1.5-2x larger without overlapping its other panel.
 SOLO_CELL_W = SLIDE_W - 2 * GRID_LEFT                # 13.133"
 
-# Scalebar invariant for the H3K27me3 / Jurkat nucleus fixed-cell pipeline.
-# Measured empirically with examples_and_configs/check_scalebar_pixel_widths.py
-# against this dataset's montages: every scalebar is exactly 104 px wide, which
-# means the rendered PPUM is 104 / 5 = 20.8 px/μm (different from the actin
-# pipeline's 30 px/μm).
+# Scalebar invariant for the Jurkat nucleus/actin fixed-cell physical-scale
+# pipeline. Measured empirically (Noco / CilioD nucleus pipeline): every
+# scalebar is exactly 104 px wide, i.e. the rendered PPUM is 104 / 5 = 20.8
+# px/μm. The blebbistatin montages use the same pipeline; re-verify with
+# examples_and_configs/check_scalebar_pixel_widths.py once they land. This
+# value is diagnostic-only (the printed scalebar-cm); the layout itself uses
+# measured PNG dims + PPI pinning, so the deck renders correctly regardless.
 SCALEBAR_PX = 104                            # px (measured)
 SCALEBAR_UM = 5                              # μm
 PPUM_SOURCE = SCALEBAR_PX / SCALEBAR_UM      # 20.8 px/μm in the rendered PNG
@@ -211,6 +203,18 @@ def _winlong(p) -> str:
 def _exists_long(p) -> bool:
     """MAX_PATH-safe existence check (pathlib.Path.exists() trips on long paths)."""
     return os.path.exists(_winlong(p))
+
+
+def montage_dir(root, cond_folder: str, chan_sub: str, combo: str) -> Path:
+    """Build the montages dir for one (experiment, condition, combo).
+
+    Each condition folder has its own intermediate `chan_sub` (here
+    "cells/channels" for both blebbistatin wells) before `prog_fixed_cells`,
+    so the path is built per experiment rather than from a single shared
+    subpath template (kept parallel with the Noco deck, where chan_sub varies
+    per dataset)."""
+    return (Path(root) / cond_folder / chan_sub /
+            "prog_fixed_cells" / "physical_scale_images" / combo / "montages")
 
 
 def add_textbox(slide, text, left, top, width, height, font_pt, color, bold=False):
@@ -281,29 +285,30 @@ def _chunk_start_index(p: Path) -> int:
     return int(m.group(1)) if m else 0
 
 
-def _list_chunk_files(montages_dir):
-    """Long-path-safe list of montage chunk PNGs (unsorted); [] if dir absent.
-    pathlib .is_dir()/.glob() silently return False/empty past Windows MAX_PATH
-    (260) even when the dir exists, so enumerate via os.listdir over the
-    \\?\-prefixed path."""
-    import fnmatch
-    long_dir = _winlong(montages_dir)
-    if not os.path.isdir(long_dir):
+def list_chunks(montages_dir) -> List[Path]:
+    """Return the montage chunk PNGs in a dir, sorted by chunk-start index.
+    Long-path-safe: pathlib's is_dir()/glob() silently fail on Windows paths
+    past MAX_PATH (260) — they return False / empty even when the dir exists.
+    os.listdir on the \\\\?\\-prefixed path enumerates them correctly.
+    Returns [] if absent (so a not-yet-generated experiment is simply skipped)."""
+    d = _winlong(montages_dir)
+    if not os.path.isdir(d):
         return []
-    return [montages_dir / n for n in os.listdir(long_dir)
-            if fnmatch.fnmatch(n, CHUNK_GLOB)]
+    names = [f for f in os.listdir(d)
+             if f.startswith("montage_cells_") and f.endswith(".png")]
+    return sorted((Path(montages_dir) / n for n in names), key=_chunk_start_index)
 
 
 def find_first_chunks(montages_dir: Path, n: int) -> List[Optional[Path]]:
     """Return the first n chunks sorted by chunk-start index. Pads with None
     if the folder has fewer chunks (or doesn't exist)."""
-    chunks = sorted(_list_chunk_files(montages_dir), key=_chunk_start_index)
+    chunks = list_chunks(montages_dir)
     return (chunks + [None] * n)[:n]
 
 
 def _multichunk_geometry(n_chunks: int):
     """1 row x (2 * n_chunks) columns. DMSO's n_chunks chunks sit on the left,
-    Cilio's n_chunks chunks sit on the right, all in a single row. A banner
+    Bleb's n_chunks chunks sit on the right, all in a single row. A banner
     label spans each condition's group of n_chunks columns above the images.
     Returns (col_w, img_h, col_lefts, img_top, banner_lefts, banner_widths)."""
     h_margin = GRID_LEFT          # slide left/right inset
@@ -332,10 +337,10 @@ def build_compare_slide(prs, title_text,
                         left_label, left_imgs,
                         right_label, right_imgs,
                         slide_ppi, compact=False, solo=False):
-    """Render the comparison slide. With n_chunks=1, lay out DMSO|Cilio side
-    by side (current 1-row layout). With n_chunks>1, switch to 2-row layout
-    (DMSO row on top with all DMSO chunks side by side, Cilio row below).
-    All panels share slide_ppi so embedded scalebars match across the slide.
+    """Render the comparison slide. With n_chunks=1, lay out DMSO|Bleb side
+    by side (1-row layout). With n_chunks>1, switch to a single row with all
+    DMSO chunks then all Bleb chunks. All panels share slide_ppi so embedded
+    scalebars match across the slide.
     compact=True shrinks title/label bands so the image area gains ~0.30"
     of vertical room (1-chunk slides only).
     solo=True ignores right_label/right_imgs and renders only the left panel
@@ -386,7 +391,7 @@ def build_compare_slide(prs, title_text,
         return slide, missing
 
     if n_chunks == 1:
-        # 1 x 2 column layout: DMSO left, Cilio right, label per column.
+        # 1 x 2 column layout: DMSO left, Bleb right, label per column.
         cells = [
             (left_label,  left_imgs[0],  CELL_POSITIONS[0][0]),
             (right_label, right_imgs[0], CELL_POSITIONS[1][0]),
@@ -410,7 +415,7 @@ def build_compare_slide(prs, title_text,
                 missing.append(label)
         return slide, missing
 
-    # n_chunks > 1: single row with DMSO chunks then Cilio chunks side by side
+    # n_chunks > 1: single row with DMSO chunks then Bleb chunks side by side
     # (2 * n_chunks columns total). One banner label per condition group.
     col_w, img_h, col_lefts, img_top, banner_lefts, banner_widths = \
         _multichunk_geometry(n_chunks)
@@ -440,6 +445,14 @@ def build_compare_slide(prs, title_text,
     return slide, missing
 
 
+def _exp_date_key(exp):
+    """(year, month, day) from the tag's MM/DD/YYYY prefix, for date-sorting
+    experiments within each combo group. Stable sort keeps EXPERIMENTS list
+    order for same-date entries."""
+    m = re.match(r"(\d{2})/(\d{2})/(\d{4})", exp["tag"])
+    return (int(m.group(3)), int(m.group(1)), int(m.group(2))) if m else (9999, 99, 99)
+
+
 def main() -> None:
     out_path = Path(OUTPUT_PATH)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -448,29 +461,33 @@ def main() -> None:
     # where each list has length n_chunks. Also stash scale_group + exp_key so
     # we can pin PPI across all slides in the same (experiment, scale_group).
     slide_specs: List[dict] = []
-    for exp in EXPERIMENTS:
-        root = Path(exp["root"])
-        left_folder, left_label = exp["left"]
-        right_folder, right_label = exp["right"]
-        tag = exp["tag"]
-        tp_label = exp["tp_label"]
-        exp_key = f"{tag} {tp_label}"
-        for combo_folder, title_tmpl, n_chunks, scale_group, fallback, opts in COMBOS:
+    # Group-major order: emit all of one combo across experiments before the
+    # next combo, so the deck shows each montage group in turn. Experiments are
+    # date-sorted within the group (stable, so same-date entries keep list order).
+    for base_combo, base_title, n_chunks, scale_group, fallback, opts in COMBOS:
+        for exp in sorted(EXPERIMENTS, key=_exp_date_key):
+            root = Path(exp["root"])
+            chan_sub = exp["chan_sub"]
+            left_folder, left_label = exp["left"]
+            right_folder, right_label = exp["right"]
+            tag = exp["tag"]
+            tp_label = exp["tp_label"]
+            exp_key = f"{tag} {tp_label}"
+            # Fresh per (combo, experiment) so a fallback swap can't leak to the
+            # next experiment in this group.
+            combo_folder, title_tmpl = base_combo, base_title
             # If the primary combo has no montages in this experiment:
             #   fallback tuple  -> use the listed (combo_folder, title) instead
             #   fallback is None -> skip this slide for this experiment
-            primary_dir = root / Path(PHYS_SCALE_SUBPATH.format(
-                cond=left_folder, combo=combo_folder))
-            primary_ok = bool(_list_chunk_files(primary_dir))
+            primary_dir = montage_dir(root, left_folder, chan_sub, combo_folder)
+            primary_ok = bool(list_chunks(primary_dir))
             if not primary_ok:
                 if fallback is None:
                     continue
                 combo_folder, title_tmpl = fallback
             title = title_tmpl.format(tp=tp_label, tag=tag)
-            left_dir  = root / Path(PHYS_SCALE_SUBPATH.format(
-                cond=left_folder,  combo=combo_folder))
-            right_dir = root / Path(PHYS_SCALE_SUBPATH.format(
-                cond=right_folder, combo=combo_folder))
+            left_dir  = montage_dir(root, left_folder,  chan_sub, combo_folder)
+            right_dir = montage_dir(root, right_folder, chan_sub, combo_folder)
             left_imgs  = find_first_chunks(left_dir,  n_chunks)
             right_imgs = find_first_chunks(right_dir, n_chunks)
             # Per-experiment scaling makes the PPI key unique per experiment,
@@ -544,6 +561,9 @@ def main() -> None:
     )
     print("Pinned PPI per scale_group:")
     for sg, ppi in sorted(group_ppi.items()):
+        if ppi <= 0:
+            print(f"  {sg:>9s}  PPI=   0.00  (no montages found yet)")
+            continue
         bar = SCALEBAR_PX / ppi
         print(f"  {sg:>9s}  PPI={ppi:>7.2f}  "
               f"scalebar={bar:.3f} in = {bar * 2.54:.3f} cm")
@@ -566,6 +586,9 @@ def main() -> None:
         log_key     = spec["log_key"]
         n_chunks    = spec["n_chunks"]
         scale_group = spec["scale_group"]
+        # group_ppi can be 0 if no experiment in this group has montages yet;
+        # add_image_at_ppi is only called for images that exist, so a 0 here is
+        # harmless (every panel renders "(missing)").
         slide_ppi   = group_ppi[scale_group] / spec["scale_mult"]
         compact     = spec["compact_layout"]
         solo        = spec.get("is_solo", False)
@@ -592,11 +615,18 @@ def main() -> None:
     prs.save(str(out_path))
     print(f"\nDone. {slides_added} slides written to:\n  {out_path}")
 
+    if slides_added == 0:
+        print(
+            "\nNo slides written — no blebbistatin montages found yet. This is "
+            "expected until the MATLAB pipeline produces\n  "
+            "<well>/cells/channels/prog_fixed_cells/physical_scale_images/<combo>/montages/ .\n"
+            "Re-run this script after the montages land and the slides fill in."
+        )
     if missing_total:
         print(f"\nMissing ({len(missing_total)}):")
         for m in missing_total:
             print(f"  - {m}")
-    else:
+    elif slides_added:
         print("\nAll images found - no missing items.")
 
 

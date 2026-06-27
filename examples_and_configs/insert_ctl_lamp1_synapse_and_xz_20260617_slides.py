@@ -14,7 +14,7 @@ Blocks (4 slides):
   2. MT + Nuc XZ MIP                 — physical_scale_images/MT_nuc_xz
   3. LAMP1 + Nuc XZ MIP              — physical_scale_images/Lamp1_nuc_xz
   4. LAMP1 + MT + Nuc XZ MIP         — physical_scale_images/Lamp1_MT_nuc_xz
-     All XZ blocks: scale group 'xz_phys' (one shared 5 µm scalebar, 104 px).
+     All XZ blocks: scale group 'xz_phys' (one shared 5 μm scalebar, 104 px).
 
 (No actin XZ blocks — those combos are absent for this experiment.)
 
@@ -153,8 +153,8 @@ EXTRA_BLOCKS = [
 ]
 
 # Scalebar invariant for physical_scale_images/ XZ montages. Measured empirically
-# on this dataset: every white bar is 104 px wide (same as CilioD => 5 µm bar at
-# 20.8 px/µm).
+# on this dataset: every white bar is 104 px wide (same as CilioD => 5 μm bar at
+# 20.8 px/μm).
 SCALEBAR_PX = 104
 SCALEBAR_UM = 5
 PPUM_SOURCE = SCALEBAR_PX / SCALEBAR_UM

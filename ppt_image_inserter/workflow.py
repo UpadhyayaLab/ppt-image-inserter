@@ -146,8 +146,21 @@ def _add_text_label(
     if isinstance(image_paths, str):
         image_paths = [image_paths]
 
-    label_text = "\n".join(image_paths)
-    n_lines = len(image_paths)
+    # Show paths relative to base_dir when provided — the label is provenance,
+    # not a full filesystem path. Long absolute paths otherwise span the whole
+    # slide. Falls back to the basename if an image isn't under base_dir.
+    if base_dir:
+        display_paths = []
+        for p in image_paths:
+            try:
+                display_paths.append(os.path.relpath(p, base_dir))
+            except ValueError:
+                display_paths.append(os.path.basename(p))
+    else:
+        display_paths = list(image_paths)
+
+    label_text = "\n".join(display_paths)
+    n_lines = len(display_paths)
 
     # Compute height from number of lines (~0.13" per line at 8pt + small buffer)
     height = n_lines * 0.13 + 0.1

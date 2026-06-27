@@ -233,10 +233,21 @@ def _chunk_range(p: Path) -> Tuple[int, int]:
     return (int(m.group(1)), int(m.group(2)))
 
 
-def list_chunks_sorted(montages_dir: Path) -> List[Path]:
-    if not montages_dir.is_dir():
+def _list_chunk_files(montages_dir):
+    """Long-path-safe list of montage chunk PNGs (unsorted); [] if dir absent.
+    pathlib .is_dir()/.glob() silently return False/empty past Windows MAX_PATH
+    (260) even when the dir exists, so enumerate via os.listdir over the
+    \\?\-prefixed path."""
+    import fnmatch
+    long_dir = _winlong(montages_dir)
+    if not os.path.isdir(long_dir):
         return []
-    return sorted(montages_dir.glob(CHUNK_GLOB), key=lambda p: _chunk_range(p)[0])
+    return [montages_dir / n for n in os.listdir(long_dir)
+            if fnmatch.fnmatch(n, CHUNK_GLOB)]
+
+
+def list_chunks_sorted(montages_dir: Path) -> List[Path]:
+    return sorted(_list_chunk_files(montages_dir), key=lambda p: _chunk_range(p)[0])
 
 
 def build_compare_slide(prs, title_text, left_label, left_img,

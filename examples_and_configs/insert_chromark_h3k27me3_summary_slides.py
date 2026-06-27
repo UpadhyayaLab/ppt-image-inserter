@@ -210,7 +210,7 @@ def _periph_dist(tok):
     m = re.match(r"^(\d+)(?:p(\d+))?um$", tok)
     if m:
         whole, frac = m.group(1), m.group(2)
-        disp = ("{}.{}".format(whole, frac) if frac else whole) + " µm"
+        disp = ("{}.{}".format(whole, frac) if frac else whole) + " μm"
         num = float("{}.{}".format(whole, frac)) if frac else float(whole)
         return (disp, (1, num))
     m = re.match(r"^r(\d+)pct$", tok)

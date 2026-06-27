@@ -282,18 +282,18 @@ images:
 
   - images: ["grid_panels/all_conditions/GzmB_z50_cell_bottom_distance_3um_polarization.png"]
     template_slide: 2
-    title: "Granzyme B Z₅₀: fraction polarized (3 µm) — all conditions"
+    title: "Granzyme B Z₅₀: fraction polarized (3 μm) — all conditions"
 
   - images: ["grid_panels/substrate_24h/GzmB_z50_cell_bottom_distance_3um_polarization.png", "grid_panels/substrate_48h/GzmB_z50_cell_bottom_distance_3um_polarization.png", "grid_panels/substrate_72h/GzmB_z50_cell_bottom_distance_3um_polarization.png"]
     template_slide: 3
-    title: "Granzyme B Z₅₀: fraction polarized (3 µm) — substrate comparison (24 / 48 / 72 h)"
+    title: "Granzyme B Z₅₀: fraction polarized (3 μm) — substrate comparison (24 / 48 / 72 h)"
 
   - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_z50_cell_bottom_distance_3um_polarization.png", "grid_panels/gel_12kPa_timecourse/GzmB_z50_cell_bottom_distance_3um_polarization.png", "grid_panels/glass_timecourse/GzmB_z50_cell_bottom_distance_3um_polarization.png"]
     template_slide: 3
-    title: "Granzyme B Z₅₀: fraction polarized (3 µm) — timecourses: 1.5 kPa, 12 kPa, glass"
+    title: "Granzyme B Z₅₀: fraction polarized (3 μm) — timecourses: 1.5 kPa, 12 kPa, glass"
 
   - images: ["grid_panels/activation_2h/GzmB_z50_cell_bottom_distance_3um_polarization.png"]
-    title: "Granzyme B Z₅₀: fraction polarized (3 µm) — effects of activation: aCD3 vs PLL (2 h)"
+    title: "Granzyme B Z₅₀: fraction polarized (3 μm) — effects of activation: aCD3 vs PLL (2 h)"
 
   # --- GzmB_z75_cell_bottom_distance_polarization ---
 
@@ -316,18 +316,18 @@ images:
 
   - images: ["grid_panels/all_conditions/GzmB_z75_cell_bottom_distance_3um_polarization.png"]
     template_slide: 2
-    title: "Granzyme B Z₇₅: fraction polarized (3 µm) — all conditions"
+    title: "Granzyme B Z₇₅: fraction polarized (3 μm) — all conditions"
 
   - images: ["grid_panels/substrate_24h/GzmB_z75_cell_bottom_distance_3um_polarization.png", "grid_panels/substrate_48h/GzmB_z75_cell_bottom_distance_3um_polarization.png", "grid_panels/substrate_72h/GzmB_z75_cell_bottom_distance_3um_polarization.png"]
     template_slide: 3
-    title: "Granzyme B Z₇₅: fraction polarized (3 µm) — substrate comparison (24 / 48 / 72 h)"
+    title: "Granzyme B Z₇₅: fraction polarized (3 μm) — substrate comparison (24 / 48 / 72 h)"
 
   - images: ["grid_panels/gel_1p5kPa_timecourse/GzmB_z75_cell_bottom_distance_3um_polarization.png", "grid_panels/gel_12kPa_timecourse/GzmB_z75_cell_bottom_distance_3um_polarization.png", "grid_panels/glass_timecourse/GzmB_z75_cell_bottom_distance_3um_polarization.png"]
     template_slide: 3
-    title: "Granzyme B Z₇₅: fraction polarized (3 µm) — timecourses: 1.5 kPa, 12 kPa, glass"
+    title: "Granzyme B Z₇₅: fraction polarized (3 μm) — timecourses: 1.5 kPa, 12 kPa, glass"
 
   - images: ["grid_panels/activation_2h/GzmB_z75_cell_bottom_distance_3um_polarization.png"]
-    title: "Granzyme B Z₇₅: fraction polarized (3 µm) — effects of activation: aCD3 vs PLL (2 h)"
+    title: "Granzyme B Z₇₅: fraction polarized (3 μm) — effects of activation: aCD3 vs PLL (2 h)"
 
   # =========================================================================
   # ABUNDANCE  (% of cells; across comparisons; all-conditions panel is wide)

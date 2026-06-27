@@ -1,16 +1,23 @@
 # Batch Image Replacement Configuration
 # This YAML file specifies which images to insert into PowerPoint slides
 
-# Path to the PowerPoint presentation
-presentation: "PPT/Effects of Noco, Fixed Cells_MT.pptx"
+# Source template (title + template slide only) and output deck.
+# Template preservation mode: the original deck is written as output_path
+# (backed up first), the template is never mutated.
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Effects of Noco, Fixed Cells_MT_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Effects of Noco, Fixed Cells_MT.pptx"
 
 # Template slide to copy (0-based index)
 # Slide 2 in PowerPoint UI = index 1
 template_slide: 1
+preserve_slides: [0, 1]
 
 # Auto-detect position from the first image in the template slide
 # Set to false to manually specify position below
 auto_position: true
+
+# Provenance label in the bottom-left corner (matches the CilioD decks)
+label_side: left
 
 # Manual position (only used if auto_position is false)
 # Uncomment and set values if you want to override auto-detection
@@ -21,34 +28,81 @@ auto_position: true
 #   height: 2.72    # image height in inches
 
 # Base directory containing all images
-base_dir: "L:/FF/FF_4TB_2_Backup_fullHD/Nucleus Project_2ndharddrive/Nucleus deformations analysis/Nucleus - Fixed Cell Data/20240123_E6-1_Nocodazole_Vimentin/results_compilation_MT_20260210/grid_panels"
+base_dir: "M:/FF/FF_4TB_2_Backup_fullHD/Nucleus Project_2ndharddrive/Nucleus deformations analysis/Nucleus - Fixed Cell Data/20240123_E6-1_Nocodazole_Vimentin/results_compilation_MT_20260626/grid_panels"
 
 # List of image filenames (each creates a new slide)
 # Images are processed in the order listed
 # Includes MT (microtubule) metrics analogous to vimentin metrics
 images:
-  - nuc_aspect_ratio_grid.tif
-  - actin_deform_ratio_grid.tif
-  - centrosome_center_z_rel_bottom_actin_plane_grid.tif
-  - avg_normal_angle_adaptive_region_growth_grid.tif
-  - nuc_cent_closest_dist_grid.tif
-  - chull_max_D_grid.tif
-  - chull_mean_D_cent_ratio_grid.tif
-  - centrosome_dist_deepest_real_avg_periphery_ratio_grid.tif
-  - concavity_index_around_cent_grid.tif
-  - deepest_invag_fraction_chull_volume_grid.tif
-  - nuc_resized_solidity_grid.tif
-  - nuc_SA_mesh_grid.tif
-  - nuc_volume_mesh_grid.tif
-  - MT_frac_in_nuc_convex_hull_grid.tif
-  - MT_enrichment_within_half_um_nuc_2_um_cent_grid.tif
-  - MT_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio_grid.tif
-  - MT_ratio_by_cent_away_1um_grid.tif
-  - MT_ratio_by_cent_away_0_5um_grid.tif
-  - MT_ratio_above_below_0_5um_grid.tif
-  - actin_MFI_around_cent_2um_grid.tif
-  - actin_frac_around_cent_2um_grid.tif
-  - deepest_region_periph_ratio_025um_grid.tif
+  # --- Lead slide (Centrosome-synapse distance, as in the CilioD decks) ---
+  - path: centrosome_center_z_rel_bottom_actin_plane_grid.tif
+    title: "Centrosome-synapse distance"
+
+  # --- Cell/nuclear morphology ---
+  - path: nuc_aspect_ratio_grid.tif
+    title: "Nuclear aspect ratio"
+  - path: actin_deform_ratio_grid.tif
+    title: "Cell Aspect Ratio"
+  - path: nuc_solidity_grid.tif
+    title: "Nuclear solidity"
+  - path: nuc_volume_mesh_grid.tif
+    title: "Nuclear volume"
+  - path: nuc_SA_mesh_grid.tif
+    title: "Nuclear surface area"
+
+  # --- Nuclear invaginations ---
+  - path: chull_max_D_grid.tif
+    title: "Max invag depth over full nucleus"
+  - path: chull_max_D_by_cent_grid.tif
+    title: "Invagination depth near centrosome"
+  - path: chull_max_D_by_cent_from_MT_grid.tif
+    title: "Invagination depth near centrosome (from MT signal)"
+  - path: chull_mean_D_cent_global_ratio_grid.tif
+    title: "Centrosomal Invagination Index (global)"
+  - path: centrosome_dist_deepest_real_avg_periphery_ratio_grid.tif
+    title: "Centrosome distance to deepest invag vs avg periphery ratio"
+  - path: concavity_index_around_cent_grid.tif
+    title: "Concavity index around centrosome"
+  - path: deepest_invag_fraction_chull_volume_grid.tif
+    title: "Deepest invag: frac of convex hull volume"
+  - path: deepest_region_periph_ratio_025um_grid.tif
+    title: "DNA levels near invag"
+  - path: avg_normal_angle_adaptive_region_growth_grid.tif
+    title: "Deepest Invag Orientation"
+
+  # --- Centrosome ---
+  - path: nuc_cent_closest_dist_grid.tif
+    title: "Nucleus-centrosome closest distance"
+  - path: cent_nuc_norm_dist_sphere_rad_grid.tif
+    title: "Centrosome-nucleus distance (norm. to nuclear sphere radius)"
+
+  # --- Actin around centrosome ---
+  - path: actin_MFI_around_cent_2um_grid.tif
+    title: "Actin MFI around centrosome (2 μm)"
+  - path: actin_frac_around_cent_2um_grid.tif
+    title: "Actin fraction around centrosome (2 μm)"
+
+  # --- Microtubules (β-tubulin) ---
+  - path: MT_total_sig_grid.tif
+    title: "Microtubule total signal"
+  - path: MT_cyto_in_nuc_hull_MFI_grid.tif
+    title: "Microtubule MFI (cytoplasmic, in nuc hull)"
+  - path: MT_frac_in_nuc_convex_hull_grid.tif
+    title: "Microtubule fraction in nuclear convex hull"
+  - path: MT_enrichment_within_half_um_nuc_2_um_cent_grid.tif
+    title: "Microtubule enrichment (0.5 μm of nuc, 2 μm of cent)"
+  - path: MT_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio_grid.tif
+    title: "Microtubule MFI: cytoplasmic (in nuc hull) vs near-convex regions of nuc"
+  - path: MT_ratio_by_cent_away_1um_grid.tif
+    title: "Microtubule ratio toward vs away from centrosome (1 μm)"
+  - path: MT_ratio_by_cent_away_0_5um_grid.tif
+    title: "Microtubule ratio toward vs away from centrosome (0.5 μm)"
+  - path: MT_ratio_above_below_0_5um_grid.tif
+    title: "Microtubule ratio above/below 0.5 μm"
+
+  # --- Actin at synapse ---
+  - path: actin_bottom_mask_area_grid.tif
+    title: "Synapse Area"
 
 # Notes:
 # - Use forward slashes (/) in paths, even on Windows

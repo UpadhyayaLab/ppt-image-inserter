@@ -61,7 +61,7 @@ images:
       - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/05312022 - KDs Validation N2/results_compilation/Jurkats_KDsValidation_SUN1_N2_20220531_20260326/grid_panels/siCtrl_vs_siSUN1/SUN1_deepest_invag_ratio_outer_shell.tiff"
 
   # ============================================================
-  # SUN1 -Ratio by Deepest Invagination (Away 0.5 µm)
+  # SUN1 -Ratio by Deepest Invagination (Away 0.5 μm)
   # ============================================================
   - title: "SUN1 Cyto: Near/Away Deepest Invag - N1 (siCtrl vs siSUN1, 20220518)"
     images:
@@ -116,7 +116,7 @@ images:
       - "L:/FF_backup/Jurkat_nucleus/from_Ivan_HD/0704-2022 - Sun2 AND Ycomp/results_compilation/Jurkats_KDsValidation_SUN2_20220704_20260326/grid_panels/siCtrl_vs_siSUN2/SUN2_deepest_invag_ratio_outer_shell.tiff"
 
   # ============================================================
-  # SUN2 -Ratio by Deepest Invagination (Away 0.5 µm)
+  # SUN2 -Ratio by Deepest Invagination (Away 0.5 μm)
   # ============================================================
   - title: "SUN2 Cyto: Near/Away Deepest Invag (siCtrl vs siSUN2, 20220704)"
     images:

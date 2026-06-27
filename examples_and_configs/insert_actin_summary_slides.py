@@ -105,6 +105,179 @@ ALL_CONDITIONS_PNG_FILES = [
     ("", fn) for _, fn in (SLICE_METRICS_WITH_RAD + THREE_SLICE_METRICS_WITH_RAD)
 ]
 
+# Same shape but slice-only (for compiles with no 3-slice MIP variants).
+SLICE_ONLY_PNG_FILES = [("", fn) for _, fn in SLICE_METRICS_WITH_RAD]
+
+# L: drive `all_datasets_actin` by-timepoint compile (different naming
+# than the prior J: drive one: separate `compiled_<date>` segment).
+ALL_DATASETS_BY_TIMEPOINT_ROOT = Path(
+    "L:/FF/CAR T/actin_compiled_results/all_datasets_actin/by_timepoint"
+)
+
+
+PLAT_TIRF_ROOT = Path(
+    "L:/FF/CAR T/CAR T data for actin area trouble shoot/"
+    "CAR T Actin Fixed using PLAT data 5 15min/"
+    "results_compiled_tirf/compiled_plat_tirf_timecourse_20260625/grid_panels"
+)
+OUTPUT_DIR_PLAT = Path("K:/FF/PPT/PPT_autogeneration/CART/pLAT")
+
+PZAP70_TIRF_ROOT = Path(
+    "L:/FF/CAR T/CAR T data for actin area trouble shoot/"
+    "results_compiled_tirf/compiled_pzap70_tirf_timecourse_20260625/grid_panels"
+)
+OUTPUT_DIR_PZAP70 = Path("K:/FF/PPT/PPT_autogeneration/CART/pZap70")
+
+# 10 pZap70 metrics (9 from timecourse_scatter_plots, 1 from
+# CAT_vs_FMC for the rad_profile AUC1).
+PZAP70_METRICS = [
+    (SUB_SCATTER,    "pZap70_synapse_MFI_grid.png"),
+    (SUB_SCATTER,    "pZap70_synapse_total_sig_grid.png"),
+    (SUB_SCATTER,    "pZap70_total_sig_grid.png"),
+    (SUB_SCATTER,    "pZap70_peak_sig_grid.png"),
+    (SUB_SCATTER,    "pZap70_synapse_inner_outer_ratio_50pct_grid.png"),
+    (SUB_SCATTER,    "pZap70_synapse_inner_outer_ratio_70pct_grid.png"),
+    (SUB_SCATTER,    "pZap70_synapse_inner_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "pZap70_synapse_outer_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "pZap70_synapse_r_eff_grid.png"),
+    (SUB_CAT_VS_FMC, "pZap70_synapse_rad_profile_auc1_all_cells_with_average_grid.png"),
+]
+
+# 9 foci metrics: 4 actin foci + 5 foci x pZap70 colocalization.
+FOCI_METRICS_PZAP70 = [
+    (SUB_SCATTER, "actin_foci_count_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_um2_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_fraction_grid.png"),
+    (SUB_SCATTER, "actin_foci_mean_intensity_grid.png"),
+    (SUB_SCATTER, "foci_pZap70_enrichment_ratio_grid.png"),
+    (SUB_SCATTER, "foci_pZap70_mean_intensity_in_foci_grid.png"),
+    (SUB_SCATTER, "foci_pZap70_mean_intensity_out_foci_grid.png"),
+    (SUB_SCATTER, "foci_pZap70_m1_intensity_in_foci_grid.png"),
+    (SUB_SCATTER, "foci_pZap70_pearsons_coeff_grid.png"),
+]
+
+# pZap70 MFI binned by distance to nearest actin focus, per acquisition
+# date. Same shape as PLAT_DIST_BIN_PER_DATE (3-tuple title-suffix entry);
+# this compile has 4 date subdirs (Sep 21 2023, Oct 3 2023, Feb 17 2025
+# D3, Feb 17 2025 D5 — chronological in the deck).
+PZAP70_DIST_BIN_PER_DATE = [
+    ("binned_distribution_plots/Sep_21,_2023_(6_min)",
+     "foci_pZap70_dist_bin_mfi_norm_grid.png", "(Sep 21, 2023 — 6 min)"),
+    ("binned_distribution_plots/Oct_03,_2023_(6_min)",
+     "foci_pZap70_dist_bin_mfi_norm_grid.png", "(Oct 3, 2023 — 6 min)"),
+    ("binned_distribution_plots/Feb_17,_2025_(D3)",
+     "foci_pZap70_dist_bin_mfi_norm_grid.png", "(Feb 17, 2025 — D3)"),
+    ("binned_distribution_plots/Feb_17,_2025_(D5)",
+     "foci_pZap70_dist_bin_mfi_norm_grid.png", "(Feb 17, 2025 — D5)"),
+]
+
+# 10 pLAT-specific metrics (9 from timecourse_scatter_plots, 1 from
+# CAT_vs_FMC for the rad_profile AUC1).
+PLAT_METRICS = [
+    (SUB_SCATTER,    "pLAT_synapse_MFI_grid.png"),
+    (SUB_SCATTER,    "pLAT_synapse_total_sig_grid.png"),
+    (SUB_SCATTER,    "pLAT_total_sig_grid.png"),
+    (SUB_SCATTER,    "pLAT_peak_sig_grid.png"),
+    (SUB_SCATTER,    "pLAT_synapse_inner_outer_ratio_50pct_grid.png"),
+    (SUB_SCATTER,    "pLAT_synapse_inner_outer_ratio_70pct_grid.png"),
+    (SUB_SCATTER,    "pLAT_synapse_inner_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "pLAT_synapse_outer_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "pLAT_synapse_r_eff_grid.png"),
+    (SUB_CAT_VS_FMC, "pLAT_synapse_rad_profile_auc1_all_cells_with_average_grid.png"),
+]
+
+# 9 foci metrics for the pLAT deck: 4 actin foci + 5 foci x pLAT
+# colocalization (mirrors the foci_CathepsinB family from MT_CatB).
+FOCI_METRICS_PLAT = [
+    (SUB_SCATTER, "actin_foci_count_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_um2_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_fraction_grid.png"),
+    (SUB_SCATTER, "actin_foci_mean_intensity_grid.png"),
+    (SUB_SCATTER, "foci_pLAT_enrichment_ratio_grid.png"),
+    (SUB_SCATTER, "foci_pLAT_mean_intensity_in_foci_grid.png"),
+    (SUB_SCATTER, "foci_pLAT_mean_intensity_out_foci_grid.png"),
+    (SUB_SCATTER, "foci_pLAT_m1_intensity_in_foci_grid.png"),
+    (SUB_SCATTER, "foci_pLAT_pearsons_coeff_grid.png"),
+]
+
+# pLAT MFI binned by distance to nearest actin focus, per acquisition
+# date. 3-tuple (sub, fn, title_suffix) — same base filename across 3
+# date subdirs; the title_suffix differentiates them on the slide title.
+PLAT_DIST_BIN_PER_DATE = [
+    ("binned_distribution_plots/Apr_18,_2025",
+     "foci_pLAT_dist_bin_mfi_norm_grid.png", "(Apr 18, 2025)"),
+    ("binned_distribution_plots/May_09,_2025",
+     "foci_pLAT_dist_bin_mfi_norm_grid.png", "(May 9, 2025)"),
+    ("binned_distribution_plots/Jun_11,_2025",
+     "foci_pLAT_dist_bin_mfi_norm_grid.png", "(Jun 11, 2025)"),
+]
+
+CONFOCAL_3SLICE_ROOT = Path(
+    "L:/FF/CAR T/actin_compiled_results/all_datasets_actin/"
+    "confocal_3slice/compiled_20260625/all_conditions"
+)
+
+# All 20 PNGs from the confocal_3slice/compiled_20260625/all_conditions dir.
+# Subfolder is "" because PNGs sit directly under compiled_root. Canonical
+# `_grid.png` names so TITLE_OVERRIDES + prettify resolve as elsewhere;
+# strip_grid_suffix=True on the dataset entry strips it for disk lookup.
+CONFOCAL_3SLICE_METRICS = [
+    # area + spatial
+    ("", "actin_bottom_3slice_mask_area_grid.png"),
+    ("", "actin_bottom_3slice_mip_inner_outer_ratio_50pct_grid.png"),
+    ("", "actin_bottom_3slice_mip_inner_outer_ratio_50pct_ylim_0_3_grid.png"),
+    ("", "actin_bottom_3slice_mip_inner_outer_ratio_70pct_grid.png"),
+    ("", "actin_bottom_3slice_mip_inner_outer_ratio_70pct_ylim_0_3_grid.png"),
+    # radial profile variants
+    ("", "actin_bottom_3slice_mip_rad_profile_grid.png"),
+    ("", "actin_bottom_3slice_mip_rad_profile_all_cells_grid.png"),
+    ("", "actin_bottom_3slice_mip_rad_profile_all_cells_with_average_grid.png"),
+    ("", "actin_bottom_3slice_mip_rad_profile_auc1_grid.png"),
+    ("", "actin_bottom_3slice_mip_rad_profile_auc1_all_cells_grid.png"),
+    ("", "actin_bottom_3slice_mip_rad_profile_auc1_all_cells_with_average_grid.png"),
+    # intensity
+    ("", "actin_bottom_3slice_MFI_grid.png"),
+    ("", "actin_bottom_3slice_total_sig_grid.png"),
+    # shape
+    ("", "actin_bottom_3slice_perimeter_grid.png"),
+    ("", "actin_bottom_3slice_circularity_grid.png"),
+    ("", "actin_bottom_3slice_solidity_grid.png"),
+    ("", "actin_bottom_3slice_eccentricity_grid.png"),
+    # whole-cell MIP
+    ("", "actin_MIP_area_grid.png"),
+    ("", "actin_MIP_major_axis_length_grid.png"),
+    ("", "actin_MIP_minor_axis_length_grid.png"),
+]
+
+
+def _by_timepoint_all_datasets(tp_short: str, date: str = "20260625") -> Path:
+    """Path to one timepoint's all_conditions/ dir in the L: drive
+    `all_datasets_actin` compile."""
+    return (
+        ALL_DATASETS_BY_TIMEPOINT_ROOT
+        / f"all_{tp_short}"
+        / f"compiled_{date}"
+        / "all_conditions"
+    )
+
+
+def _by_timepoint_confocal_3slice(tp_short: str, date: str = "20260625") -> Path:
+    """Path to one timepoint's all_conditions/ dir under the confocal_3slice
+    by_timepoint tree (TIRF datasets are excluded — no 3-slice MIP for them)."""
+    return (
+        Path("L:/FF/CAR T/actin_compiled_results/all_datasets_actin/confocal_3slice/by_timepoint")
+        / f"all_{tp_short}"
+        / f"compiled_{date}"
+        / "all_conditions"
+    )
+
+
+# Flat png_files for the 3-slice-only stacked deck. 10 metrics — same
+# shape and order as SLICE_ONLY_PNG_FILES but for the 3-slice MIP block.
+THREE_SLICE_ONLY_PNG_FILES = [
+    ("", fn) for _, fn in THREE_SLICE_METRICS_WITH_RAD
+]
+
 # ---------------------------------------------------------------------------
 # MT/CatB compile (CART_summary_MT_CatB deck)
 
@@ -196,7 +369,7 @@ CATB_METRICS_CONCISE = [
     (SUB_SCATTER, "CathepsinB_synapse_MFI_grid.png"),
     (SUB_SCATTER, "CathepsinB_synapse_total_sig_grid.png"),
     (SUB_SCATTER, "CathepsinB_total_sig_grid.png"),
-    # centrosome-proximity (fraction of CatB signal within N µm of centrosome)
+    # centrosome-proximity (fraction of CatB signal within N μm of centrosome)
     (SUB_SCATTER, "CathepsinB_frac_around_cent_1um_grid.png"),
     (SUB_SCATTER, "CathepsinB_frac_around_cent_2um_grid.png"),
     (SUB_SCATTER, "CathepsinB_frac_around_cent_3um_grid.png"),
@@ -283,16 +456,88 @@ DATASETS = [
     },
     {
         "label": "All timepoints",
-        # 60 slides: 20 metrics x 3 timepoints, interleaved per-metric.
-        # Each metric gets 3 consecutive slides (5/10/15 min).
+        # 30 slides: 10 metrics x 3 timepoints, interleaved per-metric.
+        # Each metric gets 3 consecutive slides (5/10/15 min). Sourced
+        # from the L: drive `all_datasets_actin` compile. Single-slice
+        # metrics only — the new compile has no 3-slice MIP PNGs.
         "timepoints": [
-            ("5 min",  _by_timepoint("5min")),
-            ("10 min", _by_timepoint("10min")),
-            ("15 min", _by_timepoint("15min")),
+            ("5 min",  _by_timepoint_all_datasets("5min")),
+            ("10 min", _by_timepoint_all_datasets("10min")),
+            ("15 min", _by_timepoint_all_datasets("15min")),
         ],
         "output_path": OUTPUT_DIR / "CART_actin_summary_all_timepoints.pptx",
-        "png_files": ALL_CONDITIONS_PNG_FILES,
+        "png_files": SLICE_ONLY_PNG_FILES,
         "strip_grid_suffix": True,
+    },
+    {
+        "label": "pZap70 TIRF",
+        # 33 slides: 10 actin + 10 pZap70 + 9 foci + 4 per-date dist-bin.
+        # Mirrors the pLAT TIRF deck shape with pZap70 swapped for pLAT
+        # and one extra per-date plot.
+        "compiled_root": PZAP70_TIRF_ROOT,
+        "output_path": OUTPUT_DIR_PZAP70 / "CART_pZap70_summary.pptx",
+        "png_files": (
+            SLICE_METRICS_WITH_RAD       # 10 actin
+            + PZAP70_METRICS             # 10 pZap70
+            + FOCI_METRICS_PZAP70        # 9 foci
+            + PZAP70_DIST_BIN_PER_DATE   # 4 per-date dist-bin
+        ),
+    },
+    {
+        "label": "pLAT TIRF",
+        # 32 slides: 10 actin + 10 pLAT + 9 foci + 3 per-date binned
+        # pLAT-MFI-vs-distance-to-actin-foci plots. Single condition-
+        # collapsed compile (no timepoint split — TIRF data).
+        "compiled_root": PLAT_TIRF_ROOT,
+        "output_path": OUTPUT_DIR_PLAT / "CART_pLAT_summary.pptx",
+        "png_files": (
+            SLICE_METRICS_WITH_RAD     # 10 actin
+            + PLAT_METRICS             # 10 pLAT
+            + FOCI_METRICS_PLAT        # 9 foci
+            + PLAT_DIST_BIN_PER_DATE   # 3 per-date dist-bin
+        ),
+    },
+    {
+        "label": "Confocal 3-slice",
+        # 20 slides: every PNG from the confocal_3slice compile, all
+        # condition-collapsed (no timepoint split). Includes the
+        # canonical 10 3-slice metrics + IOR ylim variants + extra
+        # rad_profile variants + 3 whole-cell MIP metrics.
+        "compiled_root": CONFOCAL_3SLICE_ROOT,
+        "output_path": OUTPUT_DIR / "CART_actin_summary_3slice_confocal.pptx",
+        "png_files": CONFOCAL_3SLICE_METRICS,
+        "strip_grid_suffix": True,
+    },
+    {
+        "label": "Confocal 3-slice (stacked)",
+        # 10 slides: one per 3-slice metric, with 3 timepoints stacked
+        # vertically (5 min top, 10 min middle, 15 min bottom). Sourced
+        # from the confocal_3slice/by_timepoint compile (TIRF datasets
+        # are not represented — no 3-slice MIP for them).
+        "timepoints": [
+            ("5 min",  _by_timepoint_confocal_3slice("5min")),
+            ("10 min", _by_timepoint_confocal_3slice("10min")),
+            ("15 min", _by_timepoint_confocal_3slice("15min")),
+        ],
+        "output_path": OUTPUT_DIR / "CART_actin_summary_3slice_confocal_stacked.pptx",
+        "png_files": THREE_SLICE_ONLY_PNG_FILES,
+        "strip_grid_suffix": True,
+        "stack_timepoints": True,
+    },
+    {
+        "label": "All timepoints (stacked)",
+        # 10 slides: one per metric, with 3 timepoints stacked vertically
+        # (5 min top, 10 min middle, 15 min bottom). 1/3 the slide count
+        # of the per-timepoint version above; same source data.
+        "timepoints": [
+            ("5 min",  _by_timepoint_all_datasets("5min")),
+            ("10 min", _by_timepoint_all_datasets("10min")),
+            ("15 min", _by_timepoint_all_datasets("15min")),
+        ],
+        "output_path": OUTPUT_DIR / "CART_actin_summary_all_timepoints_stacked.pptx",
+        "png_files": SLICE_ONLY_PNG_FILES,
+        "strip_grid_suffix": True,
+        "stack_timepoints": True,
     },
     {
         "label": "MT_CatB",
@@ -350,6 +595,21 @@ FOOTER_WIDTH = SLIDE_W - 2 * MARGIN
 FOOTER_HEIGHT = 0.40
 FOOTER_FONT_PT = 9
 
+# Stacked-timepoint layout: 1 metric per slide, 3 timepoint images
+# stacked vertically (5 min on top, 10 in middle, 15 on bottom).
+# Title smaller + footer smaller so each row gets more vertical space.
+STACK_TITLE_HEIGHT = 0.40
+STACK_TITLE_FONT_PT = 22
+STACK_FOOTER_TOP = 7.22
+STACK_FOOTER_HEIGHT = 0.25
+STACK_FOOTER_FONT_PT = 8
+STACK_ROW_AREA_TOP = TITLE_TOP + STACK_TITLE_HEIGHT + 0.05   # 0.50
+STACK_ROW_AREA_BOTTOM = STACK_FOOTER_TOP - 0.02              # 7.20
+STACK_ROW_H = (STACK_ROW_AREA_BOTTOM - STACK_ROW_AREA_TOP) / 3  # ~2.23
+STACK_ROW_LABEL_H = 0.20
+STACK_ROW_LABEL_FONT_PT = 13
+STACK_ROW_IMG_H = STACK_ROW_H - STACK_ROW_LABEL_H            # ~2.03
+
 # Per-token substitutions for prettify_metric_name (keys are lowercase).
 TOKEN_MAP = {
     "mfi": "MFI",
@@ -363,14 +623,18 @@ TOKEN_MAP = {
     # MT_CatB additions
     "cathepsinb": "CatB",
     "3mip": "(3-Slice MIP)",
-    "um": "µm",
-    "um2": "µm²",
+    "um": "μm",
+    "um2": "μm²",
     "cent": "Centrosome",
     "frac": "Fraction",
     "fdd": "FDD",
     "3d": "3D",
     "rms": "RMS",
     "zcof": "Z-COF",
+    "rad": "Radial",
+    "auc1": "AUC₁",
+    "plat": "pLAT",
+    "pzap70": "pZap70",
 }
 
 # Tokens dropped entirely from the title.
@@ -384,19 +648,35 @@ TITLE_OVERRIDES = {
         "Actin Synapse Radial Profile AUC₁ (all cells + avg)",
     "actin_bottom_3slice_mip_rad_profile_auc1_all_cells_with_average_grid.png":
         "Actin Synapse (3-Slice MIP) Radial Profile AUC₁ (all cells + avg)",
+    "actin_bottom_3slice_mip_inner_outer_ratio_50pct_ylim_0_3_grid.png":
+        "Actin Synapse (3-Slice MIP) Inner/Outer Ratio (50% Eff Rad Thresh, y-limit 0–3)",
+    "actin_bottom_3slice_mip_inner_outer_ratio_70pct_ylim_0_3_grid.png":
+        "Actin Synapse (3-Slice MIP) Inner/Outer Ratio (70% Eff Rad Thresh, y-limit 0–3)",
+    # --- pLAT TIRF deck overrides ---------------------------------------
+    "pLAT_synapse_r_eff_grid.png": "pLAT Synapse Effective Radius",
+    "pLAT_synapse_rad_profile_auc1_all_cells_with_average_grid.png":
+        "pLAT Synapse Radial Profile AUC₁ (all cells + avg)",
+    "foci_pLAT_dist_bin_mfi_norm_grid.png":
+        "pLAT MFI by Distance Bin to Actin Foci (norm. to synapse mean)",
+    # --- pZap70 TIRF deck overrides -------------------------------------
+    "pZap70_synapse_r_eff_grid.png": "pZap70 Synapse Effective Radius",
+    "pZap70_synapse_rad_profile_auc1_all_cells_with_average_grid.png":
+        "pZap70 Synapse Radial Profile AUC₁ (all cells + avg)",
+    "foci_pZap70_dist_bin_mfi_norm_grid.png":
+        "pZap70 MFI by Distance Bin to Actin Foci (norm. to synapse mean)",
     # --- MT_CatB compile overrides ----------------------------------------
     "centrosome_center_z_cell_bottom_distance_grid.png":
         "Centrosome-Synapse Distance",
     "centrosome_center_z_cell_bottom_distance_polarization_grid.png":
         "Centrosome-Synapse Distance: Fraction Polarized",
     "CathepsinB_z50_rel_cell_bottom_grid.png":
-        "CatB Z₅₀ (µm from cell bottom)",
+        "CatB Z₅₀ (μm from cell bottom)",
     "CathepsinB_z50_norm_cell_height_grid.png":
         "CatB Z₅₀ (fraction of cell height)",
     "CathepsinB_z50_rel_cell_bottom_polarization_grid.png":
         "CatB Z₅₀: Fraction Polarized",
     "CathepsinB_z75_rel_cell_bottom_grid.png":
-        "CatB Z₇₅ (µm from cell bottom)",
+        "CatB Z₇₅ (μm from cell bottom)",
     "CathepsinB_z75_norm_cell_height_grid.png":
         "CatB Z₇₅ (fraction of cell height)",
     "CathepsinB_z75_rel_cell_bottom_polarization_grid.png":
@@ -409,7 +689,7 @@ TITLE_OVERRIDES = {
     "CathepsinB_synapse_r_eff_3mip_grid.png":
         "CatB Synapse Effective Radius (3-Slice MIP)",
     "CathepsinB_synapse_autocorr_rmax_um_grid.png":
-        "CatB Synapse Autocorrelation: r_max (µm)",
+        "CatB Synapse Autocorrelation: r_max (μm)",
     "CathepsinB_synapse_autocorr_smoothSig_grid.png":
         "CatB Synapse Autocorrelation: smoothed σ",
     "CathepsinB_zCOF_grid.png": "CatB Z-Center of Fluorescence",
@@ -465,9 +745,9 @@ def prettify_metric_name(filename: str) -> str:
         elif low.endswith("pct") and low[:-3].isdigit():
             out.append(f"({low[:-3]}% Eff Rad Thresh)")
         elif low.endswith("um2") and low[:-3].isdigit():
-            out.append(f"{low[:-3]} µm²")
+            out.append(f"{low[:-3]} μm²")
         elif low.endswith("um") and low[:-2].isdigit():
-            out.append(f"{low[:-2]} µm")
+            out.append(f"{low[:-2]} μm")
         else:
             out.append(tok.capitalize())
         i += 1
@@ -575,12 +855,57 @@ def build_slide(prs, title_text: str, image_path: Path, footer_text: str,
     return slide, missing
 
 
+def build_stacked_slide(prs, title_text: str,
+                        rows: list, footer_text: str):
+    """Build one slide with N timepoint images stacked vertically.
+    `rows` is a list of (label, image_path) tuples (typically 3).
+    Returns (slide, list_of_missing_paths)."""
+    blank_layout = prs.slide_layouts[6]
+    slide = prs.slides.add_slide(blank_layout)
+    set_slide_background(slide, WHITE)
+
+    add_textbox(
+        slide, title_text,
+        TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, STACK_TITLE_HEIGHT,
+        font_pt=STACK_TITLE_FONT_PT, color=BLACK, bold=True,
+    )
+
+    missing_paths = []
+    row_w = SLIDE_W - 2 * MARGIN
+    for i, (label, image_path) in enumerate(rows):
+        row_top = STACK_ROW_AREA_TOP + i * STACK_ROW_H
+        add_textbox(
+            slide, label,
+            MARGIN, row_top, row_w, STACK_ROW_LABEL_H,
+            font_pt=STACK_ROW_LABEL_FONT_PT, color=BLACK, bold=True,
+        )
+        img_top = row_top + STACK_ROW_LABEL_H
+        if image_path.exists():
+            add_image_in_box(slide, str(image_path),
+                             MARGIN, img_top, row_w, STACK_ROW_IMG_H)
+        else:
+            add_textbox(
+                slide, "(missing)",
+                MARGIN, img_top + STACK_ROW_IMG_H / 2 - 0.15,
+                row_w, 0.3, font_pt=14, color=BLACK,
+            )
+            missing_paths.append(image_path)
+
+    add_textbox(
+        slide, footer_text,
+        FOOTER_LEFT, STACK_FOOTER_TOP, FOOTER_WIDTH, STACK_FOOTER_HEIGHT,
+        font_pt=STACK_FOOTER_FONT_PT, color=BLACK, bold=False,
+    )
+    return slide, missing_paths
+
+
 def build_deck(dataset) -> int:
     """Build one deck for the given dataset entry. Returns missing-file count."""
     label = dataset["label"]
     output_path = dataset["output_path"]
     png_files = dataset["png_files"]
     strip_grid = dataset.get("strip_grid_suffix", False)
+    stack_timepoints = dataset.get("stack_timepoints", False)
     # Either a list of (timepoint_label, root) pairs (combined deck),
     # or fall back to the single compiled_root field. The single-root
     # case is modeled as a 1-element list with empty timepoint label.
@@ -596,28 +921,62 @@ def build_deck(dataset) -> int:
     if len(timepoints) == 1 and not timepoints[0][0]:
         print(f"Source root: {timepoints[0][1]}")
     else:
-        print(f"Timepoints: {', '.join(tp for tp, _ in timepoints)}")
+        print(f"Timepoints: {', '.join(tp for tp, _ in timepoints)}{' (stacked)' if stack_timepoints else ''}")
     print(f"Writing deck to: {output_path}\n")
 
     missing = []
     slides_written = 0
-    for sub, png_name in png_files:
-        for tp_label, tp_root in timepoints:
+    for entry in png_files:
+        # Entries are either (sub, png_name) or (sub, png_name, title_suffix).
+        # title_suffix is appended to the prettified title (useful when the
+        # same filename appears in multiple subfolders, e.g. per-date variants).
+        sub, png_name = entry[0], entry[1]
+        title_suffix = entry[2] if len(entry) >= 3 else None
+        if stack_timepoints:
+            # One slide per metric, all timepoints stacked vertically.
             disk_name = png_name.replace("_grid.png", ".png") if strip_grid else png_name
-            image_path = tp_root / sub / disk_name
-            base_title = prettify_metric_name(png_name)
-            title = f"{base_title} ({tp_label})" if tp_label else base_title
-            footer = image_path.as_posix()
-            subtitle = SUBTITLE_BY_FILENAME.get(png_name)
-            _, is_missing = build_slide(
-                prs, title, image_path, footer, subtitle_text=subtitle
+            rows = [
+                (tp_label, tp_root / sub / disk_name)
+                for tp_label, tp_root in timepoints
+            ]
+            title = prettify_metric_name(png_name)
+            if title_suffix:
+                title = f"{title} {title_suffix}"
+            # Footer uses {tp1,tp2,...} brace notation to denote the timepoint dirs.
+            tp_brace = "{" + ",".join(
+                str(tp_root).split("\\all_")[-1].split("/all_")[-1].split("\\")[0].split("/")[0]
+                for _, tp_root in timepoints
+            ) + "}"
+            first_path_parts = rows[0][1].as_posix()
+            # Replace the first timepoint dir name with the brace expansion.
+            footer = first_path_parts.replace(
+                f"/all_{timepoints[0][0].replace(' ', '')}/", f"/all_{tp_brace}/"
             )
+            _, missing_paths = build_stacked_slide(prs, title, rows, footer)
             slides_written += 1
-            status = "OK" if not is_missing else "MISSING"
-            tag = f"{png_name} @ {tp_label}" if tp_label else png_name
-            print(f"[{tag}]  {status}  -> {title!r}")
-            if is_missing:
-                missing.append(f"{png_name}  ({image_path})")
+            status = "OK" if not missing_paths else f"MISSING ({len(missing_paths)}/{len(rows)})"
+            print(f"[{png_name}]  {status}  -> {title!r}")
+            for p in missing_paths:
+                missing.append(f"{png_name}  ({p})")
+        else:
+            for tp_label, tp_root in timepoints:
+                disk_name = png_name.replace("_grid.png", ".png") if strip_grid else png_name
+                image_path = tp_root / sub / disk_name
+                base_title = prettify_metric_name(png_name)
+                if title_suffix:
+                    base_title = f"{base_title} {title_suffix}"
+                title = f"{base_title} ({tp_label})" if tp_label else base_title
+                footer = image_path.as_posix()
+                subtitle = SUBTITLE_BY_FILENAME.get(png_name)
+                _, is_missing = build_slide(
+                    prs, title, image_path, footer, subtitle_text=subtitle
+                )
+                slides_written += 1
+                status = "OK" if not is_missing else "MISSING"
+                tag = f"{png_name} @ {tp_label}" if tp_label else png_name
+                print(f"[{tag}]  {status}  -> {title!r}")
+                if is_missing:
+                    missing.append(f"{png_name}  ({image_path})")
 
     # Snapshot the previous deck (if any) into backups/ before overwriting.
     if output_path.exists():

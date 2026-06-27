@@ -299,6 +299,33 @@ from ppt_image_inserter import cm_to_inches
 width = cm_to_inches(15.24)  # 15.24 cm = 6 inches
 ```
 
+### Greek mu — use the actual μ (U+03BC), NOT the micro sign µ (U+00B5)
+
+In any user-facing string (slide titles, YAML config titles, console
+output, docstrings) write the Greek small letter mu — **μ (U+03BC)** —
+not the legacy "micro sign" — **µ (U+00B5)**. They render identically
+in most fonts but they are different code points, so deduplicating /
+greping / searching across the repo only works if usage is consistent.
+
+```python
+# ✅ GOOD — Greek mu (U+03BC)
+"actin foci area μm²"
+"5 μm scalebar"
+
+# ❌ BAD — micro sign (U+00B5)
+"actin foci area µm²"
+"5 µm scalebar"
+```
+
+When writing new strings: type Alt+956 (Windows) or the Greek mu from
+an IME — both yield U+03BC. If you paste a "µ" from elsewhere, double-
+check the code point. A quick repo-wide check:
+
+```bash
+# Find any straggler µ (U+00B5):
+grep -rln $'\xc2\xb5' examples_and_configs/
+```
+
 ## Testing Checklist
 
 Before suggesting code to users, verify:

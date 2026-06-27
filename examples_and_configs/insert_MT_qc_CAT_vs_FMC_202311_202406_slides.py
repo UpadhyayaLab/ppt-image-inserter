@@ -80,7 +80,7 @@ DATASETS = [
 ]
 
 CONDITION_SUBPATH = "cells/channels"
-PROG_SUBPATH = "prog_fixed_cells_foci/MT"
+PROG_SUBPATH = "prog_fixed_cells/MT"
 
 KIND_BLOCKS = [
     [

@@ -14,7 +14,7 @@ Blocks:
   1. Actin synapse mask (bottom slice)  — actin/bottom_slice_seg
        Scale group 'synapse' — layout-pin only (no embedded scalebar).
   2. Actin XZ MIP, cell top/bottom marked — physical_scale_images/actin_xz
-       Scale group 'xz_phys' — 5 µm = 104 px embedded scalebar.
+       Scale group 'xz_phys' — 5 μm = 104 px embedded scalebar.
   3. Actin + Cent XZ MIP (no lines) — physical_scale_images/actin_cent_xz_nolines
        Scale group 'xz_phys' — pinned with the actin XZ above so both render
        at the same cm-on-page.
@@ -55,12 +55,12 @@ TIMEPOINTS = [
     (
         "30 min αCD3",
         "W1_aCD3_E6-1_0p5pcDMSO_30min_AF488Pericentrin_535Actin",  "0.5% DMSO, 30 min αCD3",
-        "W2_aCD3_E6-1_50uMCilioD_30min_AF488Pericentrin_535Actin", "50 µM CilioD, 30 min αCD3",
+        "W2_aCD3_E6-1_50uMCilioD_30min_AF488Pericentrin_535Actin", "50 μM CilioD, 30 min αCD3",
     ),
     (
         "1 hr αCD3",
         "W4_aCD3_E6-1_0p5pcDMSO_1hr_AF488Pericentrin_535Actin",    "0.5% DMSO, 1 hr αCD3",
-        "W3_aCD3_E6-1_50uMCilioD_1hr_AF488Pericentrin_535Actin",   "50 µM CilioD, 1 hr αCD3",
+        "W3_aCD3_E6-1_50uMCilioD_1hr_AF488Pericentrin_535Actin",   "50 μM CilioD, 1 hr αCD3",
     ),
 ]
 
@@ -95,7 +95,7 @@ CHUNK_GLOB = "montage_cells_*.png"
 
 # Scalebar invariant — measure with check_scalebar_pixel_widths.py against an
 # emitted montage to verify. The CilioD-pipeline convention has been 104 px =
-# 5 µm; if this dataset's render differs, adjust SCALEBAR_PX here.
+# 5 μm; if this dataset's render differs, adjust SCALEBAR_PX here.
 SCALEBAR_PX = 104
 SCALEBAR_UM = 5
 PPUM_SOURCE = SCALEBAR_PX / SCALEBAR_UM

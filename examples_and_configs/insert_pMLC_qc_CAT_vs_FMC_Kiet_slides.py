@@ -1,25 +1,35 @@
 """
-insert_CatB_qc_CAT_vs_FMC_202311_202406_slides.py
+insert_pMLC_qc_CAT_vs_FMC_Kiet_slides.py
 
-CAT (left) vs FMC (right) side-by-side CatB (cathepsin B-mCherry) QC
-deck for the J: drive CART experiments. Stage AG pipeline output under
-`prog_fixed_cells_foci/CatB/`.
+CAT (left) vs FMC (right) side-by-side pMLC QC compare deck for the 3
+Kiet Y:-drive datasets using the new unified `prog_fixed_cells/` layout.
 
-Same DATASETS + helpers as
-insert_actin_qc_CAT_vs_FMC_202311_202406_slides.py; the only deltas
-are PROG_SUBPATH, KIND_BLOCKS, and OUTPUT_PATH.
+Three datasets (Y:/User_data/Kiet/...), each with 6 conditions
+(CAT_5/10/15min, FMC_5/10/15min):
 
-Kinds (3 per deck):
-    Block 1 (interleaved):
-        CatB at Synapse    -> synapse/1slice/raw/montages
-        CatB Axial Binning -> axial/binning/montages (CatB-specific QC)
-    Block 2:
-        CatB XZ MIP        -> xz_mip/montages
+    20260312  03122026_pMLC_actin_CAR_T
+    20260510  20260510_pMLC_Actin561_nucleus_CAR_Tcell_
+    20260607  20260607_pMLC_CART_actin_hoescht
 
-Slide math: (1 + 2 + 2) timepoints × 3 kinds = 15 slides.
+Per condition, the pMLC montage tree is:
+
+    <dataset>/<COND>/converted/cropped/split_channels/prog_fixed_cells/pMLC/
+        synapse/1slice/raw/montages/
+        synapse/3slice/raw/montages/
+        xz_mip/montages/
+
+Result: 2 synapse kinds (interleaved) + 1 XZ MIP kind, × 3 datasets × 3
+timepoints = 27 slides.
+
+Per-kind PPI: each kind has its own PPI tuned to its widest montage so
+the synapse kinds (more square aspect) don't drag the XZ MIP kind (wide
+aspect) down to a tighter scale.
+
+Modeled on insert_actin_qc_cat_vs_fmc_20260607_slides.py (path layout)
+and insert_MT_qc_CAT_vs_FMC_202311_202406_slides.py (per-kind PPI).
 
 Usage:
-    python examples_and_configs/insert_CatB_qc_CAT_vs_FMC_202311_202406_slides.py
+    python examples_and_configs/insert_pMLC_qc_CAT_vs_FMC_Kiet_slides.py
 """
 
 import os
@@ -41,52 +51,34 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # ---------------------------------------------------------------------------
 
 OUTPUT_PATH = (
-    "K:/FF/PPT/PPT_autogeneration/CART/MT_CatB/"
-    "CART_CatB_QC_CAT_vs_FMC_202311_202406.pptx"
+    "K:/FF/PPT/PPT_autogeneration/CART/pMLC/"
+    "CART_pMLC_QC_CAT_vs_FMC_Kiet.pptx"
 )
 
-CTSB_ROOT = "J:/FF/fixed_cell/CAR_TCell"
+KIET_ROOT = "Y:/User_data/Kiet"
 
+# (YYYYMMDD acquisition date, dataset folder name).
+# 20260312 folder is MMDDYYYY (03122026); the other two are already YYYYMMDD.
 DATASETS = [
-    (
-        "20231127",
-        "20231127_Fixed_CAR-Tcells_CTSB-mCherry_bTub",
-        {
-            "CAT": ("CAT",   "W3_NA_bCD19_CAT_{tp}_CTSB-mCh_647bTub_488Actin_Hoechst"),
-            "FMC": ("FMC63", "W1_NA_bCD19_FMC63_{tp}_CTSB-mCh_647bTub_488Actin_Hoechst"),
-        },
-        ["15min"],
-    ),
-    (
-        "20240620",
-        "20240620_day3_Fixed_CAR-Tcells_CTSB-mCherry_bTub",
-        {
-            "CAT": ("CAT",   "CAT{tp}"),
-            "FMC": ("FMC63", "FMC{tp}"),
-        },
-        ["5min", "15min"],
-    ),
-    (
-        "20240624",
-        "20240624_day5_Fixed_CAR-Tcells_CTSB-mCherry_bTub",
-        {
-            "CAT": ("CAT",   "CAT_{tp}"),
-            "FMC": ("FMC63", "FMC63_{tp}"),
-        },
-        ["5min", "15min"],
-    ),
+    ("20260312", "03122026_pMLC_actin_CAR_T"),
+    ("20260510", "20260510_pMLC_Actin561_nucleus_CAR_Tcell_"),
+    ("20260607", "20260607_pMLC_CART_actin_hoescht"),
 ]
 
-CONDITION_SUBPATH = "cells/channels"
-PROG_SUBPATH = "prog_fixed_cells/CatB"
+TIMEPOINTS = ["5min", "10min", "15min"]
 
+CONDITION_SUBPATH = "converted/cropped/split_channels"
+PROG_SUBPATH = "prog_fixed_cells/pMLC"
+
+# pMLC has no segmentation mask. Block 1 pairs the two synapse depth views
+# (single z-slice and 3-slice slab MIP); block 2 is the XZ MIP.
 KIND_BLOCKS = [
     [
-        ("CatB at Synapse",    "synapse/1slice/raw/montages"),
-        ("CatB Axial Binning", "axial/binning/montages"),
+        ("pMLC at Synapse",         "synapse/1slice/raw/montages"),
+        ("pMLC 3-Slice at Synapse", "synapse/3slice/raw/montages"),
     ],
     [
-        ("CatB XZ MIP", "xz_mip/montages"),
+        ("pMLC XZ MIP", "xz_mip/montages"),
     ],
 ]
 
@@ -96,6 +88,7 @@ CHUNK_GLOB = "montage_cells_*.png"
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 BLACK = RGBColor(0x00, 0x00, 0x00)
 
+# Slide layout (inches). 13.333 x 7.5 widescreen.
 SLIDE_W = 13.333
 SLIDE_H = 7.5
 
@@ -105,20 +98,22 @@ TITLE_WIDTH = SLIDE_W - 2 * 0.10
 TITLE_HEIGHT = 0.50
 TITLE_FONT_PT = 28
 
+# 1x2 cell grid below the title (label + image per cell).
 GRID_LEFT = 0.10
 GRID_TOP = 0.60
 CELL_W = 6.50
-CELL_H = SLIDE_H - GRID_TOP - 0.10
+CELL_H = SLIDE_H - GRID_TOP - 0.10    # 6.80"
 LABEL_H = 0.30
-IMG_H = CELL_H - LABEL_H
+IMG_H = CELL_H - LABEL_H              # 6.50"
 LABEL_FONT_PT = 16
 COL_GAP = SLIDE_W - 2 * GRID_LEFT - 2 * CELL_W
 
 CELL_POSITIONS = [
-    (GRID_LEFT,                    GRID_TOP),
-    (GRID_LEFT + CELL_W + COL_GAP, GRID_TOP),
+    (GRID_LEFT,                    GRID_TOP),  # left = CAT
+    (GRID_LEFT + CELL_W + COL_GAP, GRID_TOP),  # right = FMC
 ]
 
+# Scalebar invariant (Stage AF/AG): per-tile 5 μm bar = 150 px nominal.
 PPUM_SOURCE = 30
 SCALEBAR_UM = 5
 SCALEBAR_PX = PPUM_SOURCE * SCALEBAR_UM
@@ -127,7 +122,7 @@ SCALEBAR_PX = PPUM_SOURCE * SCALEBAR_UM
 
 
 def format_timepoint(tp: str) -> str:
-    tp_map = {"5min": "5 min", "15min": "15 min"}
+    tp_map = {"5min": "5 min", "10min": "10 min", "15min": "15 min"}
     return tp_map.get(tp.lower(), tp)
 
 
@@ -158,7 +153,7 @@ def set_slide_background(slide, rgb: RGBColor) -> None:
 
 def _parse_chunk_range(p: Path) -> Tuple[int, int]:
     """Return (start, end) cell-id range for a montage_cells_*.png filename.
-    Handles both the 4-int FOV-padded pattern and the 2-int J:-drive pattern."""
+    Handles both the 4-int FOV-padded pattern and the 2-int pattern."""
     m4 = re.match(r"montage_cells_(\d+)_(\d+)_(\d+)_(\d+)\.png$", p.name)
     if m4:
         f_a, c_a, f_b, c_b = (int(x) for x in m4.groups())
@@ -170,9 +165,8 @@ def _parse_chunk_range(p: Path) -> Tuple[int, int]:
 
 
 def find_first_chunk(montages_dir: Path) -> Optional[Path]:
-    """Pick the lowest-start chunk, BUT first drop any chunk whose [start, end]
-    range is strictly contained in another chunk's range. Catches leftover
-    smoke chunks (e.g. `montage_cells_1_12.png` next to `montage_cells_1_26.png`)."""
+    """Pick the lowest-start chunk, dropping any whose [start, end] range is
+    strictly contained in another chunk's range (smoke-shadow filter)."""
     if not montages_dir.is_dir():
         return None
     chunks = list(montages_dir.glob(CHUNK_GLOB))
@@ -261,28 +255,24 @@ def main() -> None:
     out_path = Path(OUTPUT_PATH)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    root = Path(CTSB_ROOT)
+    kiet_root = Path(KIET_ROOT)
 
-    # slide_specs entries now carry kind_label so we can pin a PER-KIND PPI.
-    # Within a kind, every slide shares the same px/inch (scalebar consistent
-    # across all slides of that kind). Across kinds the PPI can differ — that
-    # lets wide-aspect kinds like axial binning and XZ MIP fill more of the
-    # slide without dragging the more-square synapse kind down to their size.
+    # Pre-pass: walk every (block, dataset, tp, kind) → resolve CAT/FMC paths
+    # and pre-load montage pixel dims to compute per-kind PPI BEFORE slide build.
     slide_specs: List[Tuple[str, Optional[Path], Optional[Path], Path, Path, str, str]] = []
     for block in KIND_BLOCKS:
-        for (date_tag, dataset_folder, cell_templates, timepoints) in DATASETS:
-            for tp in timepoints:
+        for date_tag, dataset_name in DATASETS:
+            for tp in TIMEPOINTS:
                 tp_pretty = format_timepoint(tp)
                 for kind_label, kind_subpath in block:
-                    def resolve(cell):
-                        car_sub, cond_template = cell_templates[cell]
-                        cond_folder = cond_template.format(tp=tp)
-                        return (
-                            root / dataset_folder / car_sub / cond_folder
-                            / CONDITION_SUBPATH / PROG_SUBPATH / kind_subpath
-                        )
-                    cat_dir = resolve("CAT")
-                    fmc_dir = resolve("FMC")
+                    cat_dir = (
+                        kiet_root / dataset_name / f"CAT_{tp}"
+                        / CONDITION_SUBPATH / PROG_SUBPATH / kind_subpath
+                    )
+                    fmc_dir = (
+                        kiet_root / dataset_name / f"FMC_{tp}"
+                        / CONDITION_SUBPATH / PROG_SUBPATH / kind_subpath
+                    )
                     cat_img = find_first_chunk(cat_dir)
                     fmc_img = find_first_chunk(fmc_dir)
                     title = f"{kind_label}: {tp_pretty} ({date_tag})"
@@ -312,7 +302,7 @@ def main() -> None:
         bar_in = SCALEBAR_PX / ppi
         n = len(present_by_kind.get(kind_label, []))
         print(
-            f"  {kind_label:<22} -> PPI {ppi:7.2f}  "
+            f"  {kind_label:<26} -> PPI {ppi:7.2f}  "
             f"(5 μm = {bar_in:.3f} in = {bar_in * 2.54:.3f} cm)  [{n} cells]"
         )
     print(f"\nSource PPUM = {PPUM_SOURCE} px/μm (locked).\n")
