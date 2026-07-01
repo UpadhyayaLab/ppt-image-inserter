@@ -1,22 +1,36 @@
 """
 insert_ctl_lamp1_synapse_and_xz_20260617_slides.py
 
-Synapse mask + XZ MIP combined deck for the 20260617 fixed CTL experiment
+Combined montage deck for the 20260617 fixed CTL experiment
 (L:/FF/Nucleus_granules/CTL_fixed/20260617_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus_3min_12min).
 
 LAMP1 plays the role H3K27me3 did in the Ciliobrevin Jurkat decks; MT (β-tubulin)
-plays the centrosome-context role. The two conditions are TIMEPOINTS — C1 = 3 min
-(left) and C2 = 12 min (right) — shown side by side, one FOV (first chunk) per block.
+plays the centrosome-context role (this experiment has no dedicated centrosome
+stain — the centrosome is the β-tubulin focus). The two conditions are
+TIMEPOINTS — C1 = 3 min (left) and C2 = 12 min (right) — shown side by side, one
+FOV (first chunk) per block.
 
-Blocks (4 slides):
-  1. Actin synapse mask (bottom-slice actin segmentation) — actin/bottom_slice_seg
-     Scale group: 'synapse' (layout-pin only — no embedded scalebar).
-  2. MT + Nuc XZ MIP                 — physical_scale_images/MT_nuc_xz
-  3. LAMP1 + Nuc XZ MIP              — physical_scale_images/Lamp1_nuc_xz
-  4. LAMP1 + MT + Nuc XZ MIP         — physical_scale_images/Lamp1_MT_nuc_xz
-     All XZ blocks: scale group 'xz_phys' (one shared 5 μm scalebar, 104 px).
+As of 20260701, only the 3 min (C1) montages have landed; every 12 min (C2)
+montage folder exists but is empty, so 12 min panels render as "(missing)" and
+auto-fill on a rerun once those montages generate.
 
-(No actin XZ blocks — those combos are absent for this experiment.)
+Block sections (each block = one slide):
+  - Broadest-slice XY merge           — physical_scale_images/Lamp1_MT_nuc_bz
+    (3-channel combined only; group 'broad')
+  - Centrosome-slice XY merge         — physical_scale_images/Lamp1_MT_nuc_com
+    (3-channel LAMP1+MT+Nuc at the centrosome's Z; group 'xy_phys')
+  - Actin synapse mask                — actin/bottom_slice_seg      (group 'synapse',
+    layout-pin only — no embedded scalebar)
+  - XZ MIPs (MT/LAMP1/actin + nuc)    — physical_scale_images/*_xz  (group 'xz_phys')
+  - 3-panel XZ (MT / LAMP1 / merge)   — physical_scale_images/Lamp1_MT_xz_panel[_nolines]
+    (stacked full-width, 3 min over 12 min; group 'xzpanel_phys')
+  - LAMP1 + MT synapse-plane XY       — physical_scale_images/Lamp1_MT_syn (group 'syn_phys')
+  - Deepest-invagination slice merges — EXTRA_BLOCKS (group 'invag_slice')
+
+  (Per-channel XY panel breakdowns (*_3p) are intentionally omitted — the user
+   wants only the 3-channel combined at each flat slice; XZ panels are kept.)
+
+All physical_scale_images/ groups share the 5 μm / 104 px scalebar.
 
 Usage:
     conda run -n PPT_editing python examples_and_configs/insert_ctl_lamp1_synapse_and_xz_20260617_slides.py
@@ -51,33 +65,30 @@ OUTPUT_PATH = (
 )
 
 CONDITIONS = [
-    ("C1_3min_aCD3_ICAM1_3SI_660bTub_535Actin_488LAMP1_405Nuc",  "3 min αCD3/ICAM1"),
-    ("C2_12min_aCD3_ICAM1_3SI_660bTub_535Actin_488LAMP1_405Nuc", "12 min αCD3/ICAM1"),
+    ("C1_3min_aCD3_ICAM1_3SI_660bTub_535Actin_488LAMP1_405Nuc",  "3 min"),
+    ("C2_12min_aCD3_ICAM1_3SI_660bTub_535Actin_488LAMP1_405Nuc", "12 min"),
 ]
 
 # Block list: (subpath_template_with_{cond}, title, scale_group).
 # subpath has extra cropped/channels/ vs CilioD experiments.
 BLOCKS = [
-    # --- Broadest slices (merged in from the former Deck A; share scale group 'broad') ---
-    (
-        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/nucleus_bz/montages",
-        "Nuc (DNA), broadest slice — 3 min vs 12 min",
-        "broad",
-    ),
-    (
-        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/MT_nuc_bz/montages",
-        "MT + Nuc, broadest slice — 3 min vs 12 min",
-        "broad",
-    ),
-    (
-        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_nuc_bz/montages",
-        "LAMP1 + Nuc, broadest slice — 3 min vs 12 min",
-        "broad",
-    ),
+    # --- Broadest slice: the 3-channel combined view only (no single/2-channel
+    # breakdowns — user wants just the three combined at each slice). ---
     (
         "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_MT_nuc_bz/montages",
         "LAMP1 + MT + Nuc, broadest slice — 3 min vs 12 min",
         "broad",
+    ),
+    # --- Single-slice XY merge: the 3-channel combined view AT THE CENTROSOME
+    # SLICE only (rendered at the centrosome's Z; the centrosome is the
+    # β-tubulin/MT focus). The old plain single-slice merges (nucleus, Lamp1_nuc,
+    # MT_nuc, Lamp1_MT_nuc) were dropped — their Z-slice was unspecified — and no
+    # per-channel panels are shown for the single slice. Landed 12 min-only so
+    # far; 3 min renders "(missing)" until it generates. ---
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_MT_nuc_com/montages",
+        "LAMP1 + MT + Nuc, centrosome slice — 3 min vs 12 min",
+        "xy_phys",
     ),
     # --- Actin synapse mask + XZ MIPs ---
     (
@@ -100,6 +111,36 @@ BLOCKS = [
         "LAMP1 + MT + Nuc XZ MIP — 3 min vs 12 min",
         "xz_phys",
     ),
+    # Actin XZ MIPs (recently landed; same 'xz_phys' scale group). The '_planes'
+    # variant overlays dotted cell top/bottom reference lines. The '_nolines'
+    # siblings and the empty 'actin_nuc_xz_planes_nolines' are intentionally
+    # omitted to avoid duplicate slides.
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/actin_xz/montages",
+        "Actin XZ MIP — 3 min vs 12 min",
+        "xz_phys",
+    ),
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/actin_nuc_xz/montages",
+        "Actin + Nuc XZ MIP — 3 min vs 12 min",
+        "xz_phys",
+    ),
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/actin_nuc_xz_planes/montages",
+        "Actin + Nuc XZ MIP, cell top/bottom marked — 3 min vs 12 min",
+        "xz_phys",
+    ),
+    # No-lines variants of the actin XZ MIPs (same views, overlay lines removed).
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/actin_xz_nolines/montages",
+        "Actin XZ MIP (no lines) — 3 min vs 12 min",
+        "xz_phys",
+    ),
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/actin_nuc_xz_planes_nolines/montages",
+        "Actin + Nuc XZ MIP, planes (no lines) — 3 min vs 12 min",
+        "xz_phys",
+    ),
     # No-nucleus XZ MIPs (granules / microtubules alone).
     (
         "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_xz_nolines/montages",
@@ -107,9 +148,18 @@ BLOCKS = [
         "xz_phys",
     ),
     (
-        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_MT_xz_nolines/montages",
-        "LAMP1 + MT XZ MIP — 3 min vs 12 min",
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/MT_xz_nolines/montages",
+        "MT XZ MIP — 3 min vs 12 min",
         "xz_phys",
+    ),
+    # 3-panel XZ MIP: per-cell MT / LAMP1 / merge shown side by side. Much wider
+    # aspect than a single XZ MIP, so its own scale group 'xzpanel_phys' (mixing
+    # it into 'xz_phys' would shrink the single-panel XZ slides). No-lines variant
+    # only. Landed 12 min-only so far — 3 min renders "(missing)" until it generates.
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_MT_xz_panel_nolines/montages",
+        "MT / LAMP1 / merge, XZ MIP panel (no lines) — 3 min vs 12 min",
+        "xzpanel_phys",
     ),
     # XY view of LAMP1 + MT at the synapse plane (no nucleus channel). Lives in
     # physical_scale_images/ so it carries the standard 104-px scalebar; put it
@@ -184,6 +234,16 @@ CELL_POSITIONS = [
     (GRID_LEFT,                    GRID_TOP),
     (GRID_LEFT + CELL_W + COL_GAP, GRID_TOP),
 ]
+
+# Stacked full-width layout for the wide 3-panel XZ slides (scale group
+# PANEL_GROUP): 3 min on top, 12 min on bottom, each spanning the whole slide
+# width. The panels are short-and-wide, so full-width rows render them much
+# larger than the side-by-side cell layout.
+PANEL_GROUP = "xzpanel_phys"
+PANEL_IMG_W = SLIDE_W - 2 * GRID_LEFT
+PANEL_ROW_H = (SLIDE_H - GRID_TOP - 0.10) / 2
+PANEL_ROW_IMG_H = PANEL_ROW_H - LABEL_H
+PANEL_ROW_TOPS = [GRID_TOP, GRID_TOP + PANEL_ROW_H]
 
 # ---------------------------------------------------------------------------
 
@@ -314,6 +374,44 @@ def build_compare_slide(prs, title_text, left_label, left_img,
     return slide, missing
 
 
+def build_stacked_slide(prs, title_text, top_label, top_img,
+                        bottom_label, bottom_img, slide_ppi):
+    """Full-width stacked layout: top_img above bottom_img, each spanning the
+    whole slide width. Used for the wide 3-panel XZ slides so they render large."""
+    blank_layout = prs.slide_layouts[6]
+    slide = prs.slides.add_slide(blank_layout)
+    set_slide_background(slide, BLACK)
+
+    add_textbox(
+        slide, title_text,
+        TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, TITLE_HEIGHT,
+        font_pt=TITLE_FONT_PT, color=WHITE, bold=True,
+    )
+
+    rows = [
+        (top_label,    top_img,    PANEL_ROW_TOPS[0]),
+        (bottom_label, bottom_img, PANEL_ROW_TOPS[1]),
+    ]
+    missing = []
+    for label, img_path, row_top in rows:
+        add_textbox(
+            slide, label,
+            GRID_LEFT, row_top, PANEL_IMG_W, LABEL_H,
+            font_pt=LABEL_FONT_PT, color=WHITE, bold=True,
+        )
+        if img_path is not None and _exists_long(img_path):
+            add_image_at_ppi(slide, img_path, slide_ppi,
+                             GRID_LEFT, row_top + LABEL_H, PANEL_IMG_W, PANEL_ROW_IMG_H)
+        else:
+            add_textbox(
+                slide, "(missing)",
+                GRID_LEFT, row_top + LABEL_H + PANEL_ROW_IMG_H / 2 - 0.15,
+                PANEL_IMG_W, 0.3, font_pt=14, color=WHITE,
+            )
+            missing.append(label)
+    return slide, missing
+
+
 def main() -> None:
     out_path = Path(OUTPUT_PATH)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -350,14 +448,17 @@ def main() -> None:
     for spec in slide_specs:
         imgs = [p for p in (spec["left_img"], spec["right_img"])
                 if p is not None and _exists_long(p)]
-        own = compute_group_ppi(imgs, CELL_W, IMG_H) if imgs else 0.0
         sg = spec["scale_group"]
+        if sg == PANEL_GROUP:
+            own = compute_group_ppi(imgs, PANEL_IMG_W, PANEL_ROW_IMG_H) if imgs else 0.0
+        else:
+            own = compute_group_ppi(imgs, CELL_W, IMG_H) if imgs else 0.0
         group_ppi[sg] = max(group_ppi.get(sg, 0.0), own)
 
     # Groups whose source is physical_scale_images/ carry the embedded 104 px
     # scalebar; the rest (actin/bottom_slice_seg, deepest_invag_slice merges)
     # do not, so we report them as layout-pin only.
-    PHYS_GROUPS = {"xz_phys", "syn_phys", "broad"}
+    PHYS_GROUPS = {"xz_phys", "syn_phys", "broad", "xy_phys", "xzpanel_phys"}
     print(f"Pinned PPI per scale_group ({len(slide_specs)} slides total):")
     for sg, ppi in sorted(group_ppi.items()):
         if sg in PHYS_GROUPS:
@@ -375,7 +476,9 @@ def main() -> None:
     missing_total = []
     for spec in slide_specs:
         slide_ppi = group_ppi[spec["scale_group"]]
-        _, missing = build_compare_slide(
+        builder = (build_stacked_slide if spec["scale_group"] == PANEL_GROUP
+                   else build_compare_slide)
+        _, missing = builder(
             prs, spec["title"],
             left_label,  spec["left_img"],
             right_label, spec["right_img"],

@@ -14,63 +14,69 @@ auto_position: true
 label_side: left
 
 # Base directory containing all images
-base_dir: "J:/FF/fixed_cell/Vimentin/LatA_CD3_combined/results_compilation/LatA_CD3_combined_20260615/grid_panels"
+base_dir: "J:/FF/fixed_cell/Vimentin/LatA_CD3_combined/results_compilation/LatA_CD3_combined_20260628/grid_panels"
 
 images:
+  # --- Centrosome ↔ nucleus (lead-off) ---
+  - path: nuc_cent_closest_dist_per_experiment_grid.png
+    title: "Nucleus-centrosome closest distance"
+
+  - path: centrosome_center_z_rel_bottom_actin_plane_per_experiment_grid.png
+    title: "Centrosome-synapse distance"
+
+  - path: cent_nuc_norm_dist_sphere_rad_per_experiment_grid.png
+    title: "Centrosome-nucleus distance (norm. to nuclear sphere radius)"
+
   # --- Nuclear morphology ---
-  - path: nuc_aspect_ratio_per_experiment_grid.tif
+  - path: nuc_aspect_ratio_per_experiment_grid.png
     title: "Nuclear aspect ratio"
 
-  - path: nuc_solidity_per_experiment_grid.tif
+  - path: nuc_solidity_per_experiment_grid.png
     title: "Nuclear solidity"
 
-  - path: nuc_volume_mesh_per_experiment_grid.tif
+  - path: nuc_volume_mesh_per_experiment_grid.png
     title: "Nuclear volume"
 
-  - path: nuc_SA_mesh_per_experiment_grid.tif
+  - path: nuc_SA_mesh_per_experiment_grid.png
     title: "Nuclear surface area"
 
+  - path: nuc_broadest_slice_area_per_experiment_grid.png
+    title: "Broadest nuclear slice area"
+
   # --- Nuclear invaginations ---
-  - path: chull_max_D_per_experiment_grid.tif
+  - path: chull_max_D_per_experiment_grid.png
     title: "Max invag depth over full nucleus"
 
-  - path: chull_max_D_by_cent_per_experiment_grid.tif
+  - path: chull_max_D_by_cent_per_experiment_grid.png
     title: "Invag depth near centrosome"
 
-  - path: chull_mean_D_cent_global_ratio_per_experiment_grid.tif
+  - path: chull_mean_D_cent_global_ratio_per_experiment_grid.png
     title: "Centrosomal Invagination Index"
 
-  - path: centrosome_dist_deepest_real_avg_periphery_ratio_per_experiment_grid.tif
+  - path: centrosome_dist_deepest_real_avg_periphery_ratio_per_experiment_grid.png
     title: "Centrosome distance to deepest invag vs avg periphery ratio"
 
-  - path: C_min_F_mean_by_cent_per_experiment_grid.tif
+  - path: C_min_F_mean_by_cent_per_experiment_grid.png
     title: "Curvature near centrosome"
 
-  - path: concavity_index_around_cent_per_experiment_grid.tif
-    title: "Concavity index around centrosome"
+  - path: C_min_F_mean_by_cent_grid.png
+    title: "Curvature near centrosome (combined)"
 
-  - path: deepest_invag_volume_per_experiment_grid.tif
+  - path: deepest_invag_volume_per_experiment_grid.png
     title: "Deepest invagination volume"
 
-  - path: deepest_invag_fraction_chull_volume_per_experiment_grid.tif
+  - path: deepest_invag_fraction_chull_volume_per_experiment_grid.png
     title: "Deepest invag: frac of convex hull volume"
 
-  - path: deepest_region_periph_ratio_025um_per_experiment_grid.tif
+  - path: deepest_region_periph_ratio_025um_per_experiment_grid.png
     title: "DNA levels near invag"
 
   # --- Invagination orientation ---
-  - path: avg_normal_angle_adaptive_region_growth_per_experiment_grid.tif
+  - path: avg_normal_angle_adaptive_region_growth_per_experiment_grid.png
     title: "Deepest Invag Orientation"
 
-  - path: avg_normal_angle_adaptive_region_growth_by_cent_per_experiment_grid.tif
+  - path: avg_normal_angle_adaptive_region_growth_by_cent_per_experiment_grid.png
     title: "Invag orientation (near centrosome)"
 
-  - path: avg_normal_angle_by_cent_per_experiment_grid.tif
+  - path: avg_normal_angle_by_cent_per_experiment_grid.png
     title: "Invag Orientation (by centrosome)"
-
-  # --- Centrosome ---
-  - path: centrosome_center_z_rel_bottom_actin_plane_per_experiment_grid.tif
-    title: "Centrosome-synapse distance"
-
-  - path: nuc_cent_closest_dist_per_experiment_grid.tif
-    title: "Nucleus-centrosome closest distance"
