@@ -1,34 +1,46 @@
 """
-insert_vimkd_MT_phys_scale_slides.py
+insert_vimkd_bTub_nuc_phys_scale_slides.py
 
-siCtrl (left) vs siVim / vimentin-knockdown (right) physical-scale montage deck
-for the fixed Jurkat VimentinKD MT (beta-tubulin / acetylated-tubulin) experiment
-20220523 (config/datasets/fixed/Jurkats/VimentinKD). Copied from
-insert_noco_dmso_vs_noco_phys_scale_slides.py; identical machinery.
+siCtrl (left) vs siVim / vimentin-knockdown (right) physical-scale montage deck of
+beta-tubulin (MT) + nucleus for the fixed Jurkat VimentinKD experiments that image
+beta-tubulin (config/datasets/fixed/Jurkats/VimentinKD). Merges the former MT deck
+(20220523) and AcTub deck (20231024/20240117/20240129) into one bTub deck, since
+all four experiments show the SAME channel: beta-tubulin (the "MT_*" combos). Copied
+from insert_vimkd_pericentrin_phys_scale_slides.py; identical machinery.
 
 Same deck-wide PPI pinning pattern: all PNGs are inserted at one shared
 pixels-per-inch so the embedded 104 px = 5 um scalebar renders at the same
 cm-on-page within each scale group.
 
-One experiment (siCtrl vs siVim):
-  - 05/23/2022   (Vim KD, bTub / AcTub)
-chan_sub is "cells/individual-channels". Channels: actin / MT (beta-tubulin) /
-nucleus -- no centrosome, and no vimentin channel (vim is the knockdown target),
-so the deck is marker-agnostic and the siCtrl-vs-siVim columns carry the comparison.
+Four beta-tubulin experiments (siCtrl vs siVim, chronological):
+  - 05/23/2022  (root J:/..., chan_sub cells/individual-channels)
+  - 10/24/2023  (root L:/..., chan_sub channels)
+  - 01/17/2024  (root L:/..., chan_sub channels)
+  - 01/29/2024  (root L:/..., chan_sub channels)
+(20231024's siCtrl line is commented out in its dataset config, but its montages
+ARE on disk -- processed before the comment -- so it is a full siCtrl-vs-siVim
+comparison here.)
+Channels imaged: beta-tubulin (MT) / actin / nucleus (the three AcTub datasets also
+co-stain acetylated tubulin). This deck shows the beta-tubulin (MT) channel with the
+nucleus -- the "MT_*" combo folders ARE the beta-tubulin channel, NOT acetylated
+tubulin. The acetylated-tubulin channel is not montaged (no AcTub combos exist).
+None of these datasets image the centrosome, so there is no centrosome-plane
+(cent_nuc_com) combo. vim is the knockdown target (not imaged), so the
+siCtrl-vs-siVim columns carry the comparison.
 
-Only experiments whose physical_scale_images exist render; this one is skipped
-until its montages land (rerun to update).
+Only experiments whose physical_scale_images exist render; the rest are skipped
+and appear once their montages land (rerun to update).
 
-Slide order is group-major: all of one montage group before the next group. Every
-slide is siCtrl (left) | siVim (right), first chunk only. Groups, in order:
-  1. Actin + Nuc XZ MIP
-  2. MT + Nuc XZ MIP
-  3. Nuc (DNA), broadest slice
-  4. MT + Nuc, broadest slice
-  5. MT + Nuc, deepest invagination slice
+Slide order is group-major: all of one montage group (across experiments,
+date-sorted) before the next group. Every slide is siCtrl (left) | siVim (right),
+first chunk only. Groups, in order:
+  1. MT + Nuc XZ MIP
+  2. Nuc (DNA), broadest slice
+  3. MT + Nuc, broadest slice
+  4. MT + Nuc, deepest invagination slice
 
 Usage:
-    python examples_and_configs/insert_vimkd_MT_phys_scale_slides.py
+    python examples_and_configs/insert_vimkd_bTub_nuc_phys_scale_slides.py
 """
 
 import os
@@ -51,7 +63,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 OUTPUT_PATH = (
     "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/VimentinKD/"
-    "VimKD_Jurkats_siCtrl_vs_siVim_MT_phys_scale_montages_20220523.pptx"
+    "VimKD_Jurkats_siCtrl_vs_siVim_bTub_nuc_phys_scale_montages.pptx"
 )
 
 # Each experiment contributes one block of slides (one per combo below).
@@ -69,6 +81,39 @@ EXPERIMENTS = [
         "chan_sub": "cells/individual-channels",
         "left":  ("siCtrl", "siCtrl"),
         "right": ("siVim",  "siVim (KD)"),
+        "tp_label": "αCD3",
+    },
+    {
+        "tag": "10/24/2023",
+        "root": (
+            "L:/FF/Nucleus_MT/Jurkat_fixed/vimentinKD_tubulin-acetylation_fixed/"
+            "20231024_MG_AcTub"
+        ),
+        "chan_sub": "channels",
+        "left":  ("siCtrl_aCD3_640BetaTub_535Actin_488AcTub_405Hoechst", "siCtrl"),
+        "right": ("siVim_aCD3_640BetaTub_535Actin_488AcTub_405Hoechst",  "siVim (KD)"),
+        "tp_label": "αCD3",
+    },
+    {
+        "tag": "01/17/2024",
+        "root": (
+            "L:/FF/Nucleus_MT/Jurkat_fixed/vimentinKD_tubulin-acetylation_fixed/"
+            "20240117_MG_AcTub"
+        ),
+        "chan_sub": "channels",
+        "left":  ("siCtrl_aCD3_E6-1_647BTub_535Actin_488AcTub_Hoechst", "siCtrl"),
+        "right": ("siVim_aCD3_E6-1_647BTub_535Actin_488AcTub_Hoechst",  "siVim (KD)"),
+        "tp_label": "αCD3",
+    },
+    {
+        "tag": "01/29/2024",
+        "root": (
+            "L:/FF/Nucleus_MT/Jurkat_fixed/vimentinKD_tubulin-acetylation_fixed/"
+            "20240129_MG_AcTub"
+        ),
+        "chan_sub": "channels",
+        "left":  ("siCtrl_aCD3_E6-1_647BTub_535Actin_488AcTub_Hoechst", "siCtrl"),
+        "right": ("siVim_aCD3_E6-1_647BTub_535Actin_488AcTub_Hoechst",  "siVim (KD)"),
         "tp_label": "αCD3",
     },
 ]
@@ -97,15 +142,13 @@ EXPERIMENTS = [
 # slides) and fills in automatically once processed. actin_nuc_xz_nolines is
 # present in every ready experiment, so the CilioD cent_nuc_xz fallback is unneeded.
 COMBOS = [
-    ("actin_nuc_xz_nolines", "Actin + Nuc XZ MIP ({tp}, {tag})",                 1, "xz",
+    ("MT_nuc_xz",  "MT + Nuc XZ MIP ({tag})",                       1, "xz",
         None, {}),
-    ("MT_nuc_xz",            "MT + Nuc XZ MIP ({tp}, {tag})",                    1, "xz",
+    ("nucleus_bz", "Nuc (DNA), broadest slice ({tag})",            1, "broad_1c",
         None, {}),
-    ("nucleus_bz",           "Nuc (DNA), broadest slice ({tp}, {tag})",         1, "broad_1c",
+    ("MT_nuc_bz",  "MT + Nuc, broadest slice ({tag})",             1, "broad_1c",
         None, {}),
-    ("MT_nuc_bz",            "MT + Nuc, broadest slice ({tp}, {tag})",          1, "broad_1c",
-        None, {}),
-    ("MT_nuc",               "MT + Nuc, deepest invagination slice ({tp}, {tag})", 1, "broad_1c",
+    ("MT_nuc",     "MT + Nuc, deepest invagination slice ({tag})", 1, "broad_1c",
         None, {}),
 ]
 

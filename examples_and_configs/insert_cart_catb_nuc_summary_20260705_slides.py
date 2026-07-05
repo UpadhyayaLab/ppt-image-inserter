@@ -1,35 +1,36 @@
 """
-insert_ctl_granule_nuc_summary_20260617_slides.py
+insert_cart_catb_nuc_summary_20260705_slides.py
 
-Condition-comparison summary deck for the 20260617 fixed activated-CTL experiment
-(20260617_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus_3min_12min),
-compiled into compiled_results/CTL_Glass_nuc_MT_granules_20260617_ncdist_neg0p5_20260701.
-The two conditions are TIMEPOINTS — 3 min (early activation) vs 12 min (established
-polarization) — αCD3/ICAM1/3SI on glass. Channels: LAMP1 (lytic granules), MT
-(β-tubulin; also the centrosome-context stain — no dedicated centrosome marker),
-actin, and Hoechst/DNA. Each grid panel is a 3 min vs 12 min comparison plot.
-Companion to the montage deck (insert_ctl_lamp1_synapse_and_xz_20260617_slides.py).
+Construct-comparison summary deck for the fixed CAR-T dataset compiled into
+compiled_results/CART_MT_CatB_nuc_across_dates_20260705. The two conditions are
+the CAR constructs — CAT vs FMC63 — pooled across 3 experiments / 5 date×
+timepoint groups (Nov 27 2023 15 min; Jun 20 2024 d3 and Jun 24 2024 d5, each at
+5 min and 15 min; CAT n = 432, FMC63 n = 514 from cell_counts.csv). Channels:
+CatB (Cathepsin B, lytic granules), MT (β-tubulin; also the centrosome-context
+stain — no dedicated centrosome marker), actin, and Hoechst/DNA. Each grid panel
+is a CAT vs FMC63 comparison plot.
 
-Modeled on the blebbistatin summary deck (insert_bleb_summary_slides.py) for the
-per-slide layout, title slide, family dividers, and --list dry-run, plus the
-noco-washout deck (insert_noco_washout_summary_slides.py) for the side-by-side
-multi-panel layout. FAMILIES is built around the granule (LAMP1) metrics as the
-focus, carries over the nucleus/centrosome/invagination families from the LatA
-summary decks, and adds MT and actin channel families (MT stands in for the
-vimentin family used in the LatA/bleb decks, since vimentin was not imaged here).
+Direct port of the activated-CTL granule/nucleus deck
+(insert_ctl_granule_nuc_summary_20260617_slides.py): same per-slide layout,
+title slide, family dividers, native PowerPoint sections, and --list dry-run.
+Every curated CTL metric maps 1:1 here after substituting the granule marker
+Lamp1 -> CatB; slide titles name the marker "CatB". The reference deck's pairwise
+scatter section is dropped — this compile's pairwise plots are nested per-date
+and per-construct (date -> suite -> CAT/FMC63), which does not fit the pooled
+single-scatter summary layout.
 
 A FAMILIES entry is (stem, title) for a single panel, or ([(stem, sublabel), ...],
 title) to place related panels (e.g. 1 μm / 2 μm thresholds) side by side on one
-slide with a sublabel above each. The compile has 288 grid panels total; FAMILIES
-is this curated subset — add a row to grow the deck.
+slide with a sublabel above each. The compile has 300+ grid panels total;
+FAMILIES is this curated subset — add a row to grow the deck.
 
 Self-contained: builds a blank deck (no template .pptx). Missing panels render
 "(missing)" rather than failing. A previous deck is backed up before overwrite.
 
 Usage:
-    conda run -n PPT_editing python examples_and_configs/insert_ctl_granule_nuc_summary_20260617_slides.py
+    conda run -n PPT_editing python examples_and_configs/insert_cart_catb_nuc_summary_20260705_slides.py
     # dry run (print planned families/titles, build nothing):
-    conda run -n PPT_editing python examples_and_configs/insert_ctl_granule_nuc_summary_20260617_slides.py --list
+    conda run -n PPT_editing python examples_and_configs/insert_cart_catb_nuc_summary_20260705_slides.py --list
 """
 
 import os
@@ -52,116 +53,103 @@ from ppt_image_inserter import backup_presentation  # noqa: E402
 # Paths
 # ---------------------------------------------------------------------------
 ROOT = Path(
-    "L:/FF/Nucleus_granules/CTL_fixed/"
-    "20260617_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus_3min_12min/"
-    "compiled_results/CTL_Glass_nuc_MT_granules_20260617_ncdist_neg0p5_20260703"
+    "J:/FF/fixed_cell/CAR_TCell/compiled_results/"
+    "CART_MT_CatB_nuc_across_dates_20260705"
 )
-GRID_DIR = ROOT / "grid_panels"
+BYDAY_DIR = ROOT / "by_day_panels"
 CELL_COUNTS_PNG = ROOT / "cell_counts_barplot.png"   # context slide (optional)
 
 OUTPUT_PATH = Path(
-    "K:/FF/PPT/PPT_autogeneration/CTL_Glass_Nucleus_Centrosome/"
-    "CTL_fixed_LAMP1_20260617/"                       # co-located with the LAMP1 montage deck
-    "CTL_fixed_granule_nuc_summary_20260617.pptx"
+    "K:/FF/PPT/PPT_autogeneration/CART/nucleus/"
+    "CART_CATB_MT_nuc_summary_across_dates_20260705.pptx"
 )
 
-GRID_SUFFIX = "_grid.png"
+# Each metric is one single-axis "by day" panel: CAT and FMC63 as an adjacent
+# violin pair per experiment-date/timepoint, with a per-pair significance bracket
+# and a CAT/FMC63 legend (produced by the compile's plot_by_day_condition_violin).
+PANEL_SUFFIX = "_by_day.png"
 
 # Compile date parsed from the dated ROOT folder (…_YYYYMMDD), shown in the footer.
-_d = ROOT.name.rsplit("_", 1)[-1]          # e.g. "20260703"
+_d = ROOT.name.rsplit("_", 1)[-1]          # e.g. "20260705"
 COMPILE_DATE = "{}-{}-{}".format(_d[:4], _d[4:6], _d[6:8])
 
-DECK_TITLE = "Granule polarization and nuclear morphology in activated CTLs"
-# n's from cell_counts.csv (3 min 109, 12 min 95 after the negative-invag QC filter).
+DECK_TITLE = "Granule polarization and nuclear morphology in CAR T cells (CAT vs FMC63)"
 DECK_SUBTITLE = (
-    "3 min (n = 105) vs 12 min (n = 94)  ·  αCD3/ICAM1/3SI, glass  ·  "
-    "LAMP1 / MT / actin / DNA  ·  fixed 06/17/2026  ·  compiled 2026-07-03"
+    "CAT vs FMC63 by date/timepoint  ·  5 experiments (Nov 2023, Jun 2024 d3/d5; 5 & 15 min)  ·  "
+    "CatB / MT / actin / DNA  ·  compiled 2026-07-05"
 )
 
 # ---------------------------------------------------------------------------
 # Curated metrics, grouped into families (divider slide per family). Each entry
-# is (grid-panel stem, slide title) for one panel, or ([(stem, sublabel), ...],
-# slide title) to show related panels side by side on one slide. The stem +
-# GRID_SUFFIX is the PNG under grid_panels/. Titles are for navigation; each plot
-# carries its own authoritative y-axis label and 3 min / 12 min x-labels.
+# is (metric stem, slide title) for ONE by_day panel per slide. The stem +
+# PANEL_SUFFIX is the PNG under by_day_panels/. Titles are for navigation; each
+# panel carries its own authoritative y-axis label, per-date CAT/FMC63 x-labels,
+# significance brackets, and legend.
 # ---------------------------------------------------------------------------
 FAMILIES = [
     ("Cell and nuclear spreading", [
-        ([("nuc_aspect_ratio", "nucleus"),
-          ("actin_deform_ratio", "cell")], "Nuclear and cell aspect ratio"),
-        ([("actin_bottom_mask_area", "synapse area"),
-          ("nuc_broadest_slice_area", "nuclear broadest slice")],
-         "Synapse and nuclear broadest-slice area"),
+        ("nuc_aspect_ratio",        "Nuclear aspect ratio"),
+        ("actin_deform_ratio",      "Cell aspect ratio"),
+        ("actin_bottom_mask_area",  "Synapse area"),
+        ("nuc_broadest_slice_area", "Nuclear broadest-slice area"),
     ]),
-    ("Granules — polarization and synapse delivery", [
-        ([("centrosome_center_z_rel_bottom_actin_plane", "centrosome"),
-          ("Lamp1_zCOF_cell_bottom_distance", "granules")],
-         "Centrosome and granule distance to synapse"),
-        ([("Lamp1_z50_cell_bottom_distance", "z₅₀"),
-          ("Lamp1_z75_cell_bottom_distance", "z₇₅")], "Granule z₅₀ / z₇₅ distance to synapse"),
-        ("Lamp1_synapse_g_ave",              "Granule clustering at synapse (g)"),
-        ("Lamp1_synapse_inner_outer_ratio",  "Granule synapse inner/outer ratio"),
+    ("CatB granules — polarization and synapse delivery", [
+        ("centrosome_center_z_rel_bottom_actin_plane", "Centrosome distance to synapse"),
+        ("CatB_zCOF_cell_bottom_distance",  "CatB distance to synapse (zCOF)"),
+        ("CatB_z50_cell_bottom_distance",   "CatB z₅₀ distance to synapse"),
+        ("CatB_z75_cell_bottom_distance",   "CatB z₇₅ distance to synapse"),
+        ("CatB_synapse_g_ave",              "CatB clustering at synapse (g)"),
+        ("CatB_synapse_inner_outer_ratio",  "CatB synapse inner/outer ratio"),
     ]),
-    ("Granules — dispersion", [
-        ([("Lamp1_FDD_3D", "3D"),
-          ("Lamp1_z_FDD", "axial (z)")], "Granule dispersion (FDD): 3D vs axial"),
-        ([("Lamp1_FDD_3D_rel_cent", "3D"),
-          ("Lamp1_z_FDD_rel_cent", "axial (z)")], "Granule dispersion rel. centrosome: 3D vs axial"),
+    ("CatB granules — dispersion", [
+        ("CatB_FDD_3D",          "CatB dispersion (FDD, 3D)"),
+        ("CatB_z_FDD",           "CatB dispersion (FDD, axial z)"),
+        ("CatB_FDD_3D_rel_cent", "CatB dispersion rel. centrosome (3D)"),
+        ("CatB_z_FDD_rel_cent",  "CatB dispersion rel. centrosome (axial z)"),
     ]),
-    ("Granules — signal and centrosome localization", [
-        ("Lamp1_total_sig",   "Granule total signal (whole cell)"),
-        ("Lamp1_peak_sig",    "Granule peak signal"),
-        ("Lamp1_synapse_MFI", "Granule MFI at synapse"),
-        ([("Lamp1_synapse_total_sig", "single slice"),
-          ("Lamp1_synapse_total_sig_3mip", "3-slice MIP")],
-         "Total granule signal at synapse"),
-        ([("Lamp1_frac_around_cent_1um", "1 μm"),
-          ("Lamp1_frac_around_cent_2um", "2 μm"),
-          ("Lamp1_frac_around_cent_3um", "3 μm")], "Granule fraction around centrosome"),
-        ([("Lamp1_MFI_around_cent_1um", "1 μm"),
-          ("Lamp1_MFI_around_cent_2um", "2 μm"),
-          ("Lamp1_MFI_around_cent_3um", "3 μm")], "Granule MFI around centrosome"),
+    ("CatB granules — signal and centrosome localization", [
+        ("CatB_total_sig",   "CatB total signal (whole cell)"),
+        ("CatB_peak_sig",    "CatB peak signal"),
+        ("CatB_synapse_MFI", "CatB MFI at synapse"),
+        ("CatB_synapse_total_sig",      "Total CatB signal at synapse (single slice)"),
+        ("CatB_synapse_total_sig_3mip", "Total CatB signal at synapse (3-slice MIP)"),
+        ("CatB_frac_around_cent_1um", "CatB fraction around centrosome (1 μm)"),
+        ("CatB_frac_around_cent_2um", "CatB fraction around centrosome (2 μm)"),
+        ("CatB_frac_around_cent_3um", "CatB fraction around centrosome (3 μm)"),
+        ("CatB_MFI_around_cent_1um",  "CatB MFI around centrosome (1 μm)"),
+        ("CatB_MFI_around_cent_2um",  "CatB MFI around centrosome (2 μm)"),
+        ("CatB_MFI_around_cent_3um",  "CatB MFI around centrosome (3 μm)"),
     ]),
-    ("Granules — perinuclear and centrosome enrichment", [
-        # Lamp1_perinuc_sig_fraction is not computed yet, so its panel renders
-        # "no data yet" — the slide appears now (paired with perinuclear MFI) so
-        # it is not lost, and auto-fills once the cells are reprocessed.
-        ([("Lamp1_all_perinuc_MFI", "MFI"),
-          ("Lamp1_perinuc_sig_fraction", "signal fraction")],
-         "Granule perinuclear MFI and signal fraction"),
-        ([("Lamp1_frac_perinuc_within_1_um_cent", "1 μm cent"),
-          ("Lamp1_frac_perinuc_within_2_um_cent", "2 μm cent")],
-         "Granule perinuclear fraction near centrosome"),
-        ([("Lamp1_cyto_in_nuc_hull_MFI", "MFI"),
-          ("Lamp1_cyto_in_nuc_hull_sig_fraction", "signal fraction")],
-         "Granule MFI and fraction in cytoplasm within nuclear hull"),
-        ("Lamp1_frac_in_nuc_convex_hull", "Granule fraction in nuclear convex hull"),
-        ([("Lamp1_enrichment_within_half_um_nuc_2_um_cent", "granule"),
-          ("MT_enrichment_within_half_um_nuc_2_um_cent", "MT")],
-         "Enrichment near centrosome (0.5 μm of nucleus, 2 μm of cent)"),
+    ("CatB granules — perinuclear and centrosome enrichment", [
+        ("CatB_all_perinuc_MFI",             "CatB perinuclear MFI"),
+        ("CatB_perinuc_sig_fraction",        "CatB perinuclear signal fraction"),
+        ("CatB_frac_perinuc_within_1_um_cent", "CatB perinuclear fraction near centrosome (1 μm)"),
+        ("CatB_frac_perinuc_within_2_um_cent", "CatB perinuclear fraction near centrosome (2 μm)"),
+        ("CatB_cyto_in_nuc_hull_MFI",          "CatB MFI in cytoplasm within nuclear hull"),
+        ("CatB_cyto_in_nuc_hull_sig_fraction", "CatB signal fraction in cytoplasm within nuclear hull"),
+        ("CatB_frac_in_nuc_convex_hull",       "CatB fraction in nuclear convex hull"),
+        ("CatB_enrichment_within_half_um_nuc_2_um_cent", "CatB enrichment near centrosome (0.5 μm nuc, 2 μm cent)"),
+        ("MT_enrichment_within_half_um_nuc_2_um_cent",   "MT enrichment near centrosome (0.5 μm nuc, 2 μm cent)"),
     ]),
     ("Centrosome ↔ nucleus", [
         ("nuc_cent_closest_dist",            "Nucleus-centrosome closest distance"),
         ("cent_nuc_norm_dist_sphere_rad",    "Centrosome-to-nuclear-centroid distance (norm. to nuclear sphere radius)"),
         ("centrosome_dist_deepest_real_avg_periphery_ratio", "Centrosome distance to deepest invag vs avg periphery ratio"),
         # Centrosome radial position in the cell footprint (0 = center, 1 = edge),
-        # now computed on the MT-derived centrosome (process_MT_channel.m).
-        ([("centrosome_r_norm_bottom_plane_from_MT", "synapse plane"),
-          ("centrosome_r_norm_MIP_from_MT", "MIP")],
-         "Centrosome radial position (0 = center, 1 = periphery)"),
+        # computed on the MT-derived centrosome (process_MT_channel.m).
+        ("centrosome_r_norm_bottom_plane_from_MT", "Centrosome radial position (synapse plane)"),
+        ("centrosome_r_norm_MIP_from_MT",          "Centrosome radial position (MIP)"),
     ]),
     ("Nuclear deformation and invaginations", [
         ("chull_max_D",                       "Max invag depth over full nucleus"),
         ("chull_max_D_by_cent",               "Invagination depth near centrosome"),
         ("chull_mean_D_cent_global_ratio",    "Centrosomal Invagination Index (global)"),
-        ([("C_min_F_mean_by_cent", "min principal"),
-          ("C_mean_F_mean_by_cent", "mean")],
-         "Nuclear surface curvature near centrosome"),
+        ("C_min_F_mean_by_cent",  "Nuclear surface curvature near centrosome (min principal)"),
+        ("C_mean_F_mean_by_cent", "Nuclear surface curvature near centrosome (mean)"),
         ("deepest_invag_fraction_chull_volume", "Deepest invag: frac of convex hull volume"),
         ("deepest_region_periph_ratio_025um", "DNA levels near invag"),
-        ([("invag_by_cent_centroid_z_syn_from_MT", "centroid"),
-          ("invag_by_cent_tip_z_syn_from_MT", "tip")],
-         "Invagination region (near centrosome): height above synapse"),
+        ("invag_by_cent_centroid_z_syn_from_MT", "Invag region (near cent): centroid height above synapse"),
+        ("invag_by_cent_tip_z_syn_from_MT",      "Invag region (near cent): tip height above synapse"),
     ]),
     ("Invagination orientation", [
         ("avg_normal_angle_adaptive_region_growth",         "Deepest invag orientation"),
@@ -174,23 +162,23 @@ FAMILIES = [
         ("nuc_SA_mesh",     "Nuclear surface area"),
     ]),
     ("Microtubules (β-tubulin)", [
-        ("MT_frac_in_nuc_convex_hull",                  "MT fraction in nuclear convex hull"),
-        ("MT_frac_around_cent_2um",  "MT fraction around centrosome (2 μm)"),
-        ("MT_MFI_around_cent_2um",   "MT MFI around centrosome (2 μm)"),
+        ("MT_frac_in_nuc_convex_hull", "MT fraction in nuclear convex hull"),
+        ("MT_frac_around_cent_2um",    "MT fraction around centrosome (2 μm)"),
+        ("MT_MFI_around_cent_2um",     "MT MFI around centrosome (2 μm)"),
     ]),
     ("Actin — levels and localization", [
-        ("actin_total_sig", "Total actin signal (whole cell)"),
-        ([("actin_bottom_MFI", "single slice"),
-          ("actin_bottom_MFI_3mip", "3-slice MIP")], "Actin MFI at synapse"),
-        ([("actin_bottom_total_sig", "single slice"),
-          ("actin_bottom_total_sig_3mip", "3-slice MIP")], "Total actin signal at synapse"),
+        ("actin_total_sig",              "Total actin signal (whole cell)"),
+        ("actin_bottom_MFI",             "Actin MFI at synapse (single slice)"),
+        ("actin_bottom_MFI_3mip",        "Actin MFI at synapse (3-slice MIP)"),
+        ("actin_bottom_total_sig",       "Total actin signal at synapse (single slice)"),
+        ("actin_bottom_total_sig_3mip",  "Total actin signal at synapse (3-slice MIP)"),
         ("actin_bottom_inner_outer_ratio", "Actin synapse inner/outer ratio"),
-        ([("actin_MFI_around_cent_1um", "1 μm"),
-          ("actin_MFI_around_cent_2um", "2 μm")], "Actin MFI around centrosome"),
-        ([("actin_frac_around_cent_1um", "1 μm"),
-          ("actin_frac_around_cent_2um", "2 μm")], "Actin fraction around centrosome"),
+        ("actin_MFI_around_cent_1um",    "Actin MFI around centrosome (1 μm)"),
+        ("actin_MFI_around_cent_2um",    "Actin MFI around centrosome (2 μm)"),
+        ("actin_frac_around_cent_1um",   "Actin fraction around centrosome (1 μm)"),
+        ("actin_frac_around_cent_2um",   "Actin fraction around centrosome (2 μm)"),
     ]),
-    # --- Appendix: additional context metrics (added 2026-07-01) ---------------
+    # --- Appendix: additional context metrics -----------------------------------
     ("Cell and nuclear flattening (context)", [
         ("actin_height",        "Cell height"),
         ("nuc_height",          "Nuclear height"),
@@ -206,66 +194,8 @@ FAMILIES = [
     ]),
 ]
 
-# Pairwise (scatter) section drawn from the compilation's pairwise_plots/ output
-# (suite 6, GranuleDelivery_vs_InvagZ): the two centrosome-region invagination
-# height metrics, each vs the granule distance-to-synapse metrics, one X-metric
-# per slide with its four scatter plots side by side.
-_PW_INVAGZ = "pairwise_plots/GranuleDelivery_vs_InvagZ"
-_GRANULE_DIST_YS = [
-    ("Lamp1_zCOF_cell_bottom_distance", "zCOF"),
-    ("Lamp1_z50_cell_bottom_distance",  "z₅₀"),
-    ("Lamp1_z75_cell_bottom_distance",  "z₇₅"),
-]
-FAMILIES.append((
-    "Pairwise — invagination-region height vs granule delivery",
-    [([("{}/{}_VS_{}.png".format(_PW_INVAGZ, _x, _ystem), _ylab)
-       for _ystem, _ylab in _GRANULE_DIST_YS], _title)
-     for _x, _title in [
-        ("invag_by_cent_centroid_z_syn_from_MT",
-         "Granule distance to synapse vs invag-region centroid height"),
-     ]],
-))
-
-# Pairwise: granule distance to the centrosome (Lamp1_*_rel_cent = intensity-
-# weighted mean granule-to-centrosome distance) vs invagination depth near the
-# centrosome (chull_max_D_by_cent). From pairwise suite 7 (GranuleCent_vs_
-# InvagDepth) — populates after the next recompile; "no data yet" until then.
-_PW_CENTDEPTH = "pairwise_plots/GranuleCent_vs_InvagDepth"
-
-
-def _pw_centdepth(ys):
-    """Pairwise panels: chull_max_D_by_cent (X) vs each granule y-metric (Y)."""
-    return [("{}/chull_max_D_by_cent_from_MT_VS_{}.png".format(_PW_CENTDEPTH, _y), _lab)
-            for _y, _lab in ys]
-
-
-FAMILIES.append((
-    "Pairwise — granule clustering at centrosome vs invagination depth",
-    [
-        (_pw_centdepth([("Lamp1_FDD_3D_rel_cent", "avg dist to cent"),
-                        ("Lamp1_z_FDD_rel_cent",  "axial dist to cent")]),
-         "Granule distance to centrosome vs invag depth near centrosome"),
-        (_pw_centdepth([("Lamp1_MFI_around_cent_1um", "1 μm"),
-                        ("Lamp1_MFI_around_cent_2um", "2 μm")]),
-         "Granule MFI around centrosome vs invag depth near centrosome"),
-        (_pw_centdepth([("Lamp1_frac_around_cent_1um", "1 μm"),
-                        ("Lamp1_frac_around_cent_2um", "2 μm")]),
-         "Granule fraction around centrosome vs invag depth near centrosome"),
-    ],
-))
-
-# Pairwise: centrosome radial position (x) vs centrosome-facing invagination
-# orientation (y). From pairwise suite 8 (CentRadialPos_vs_InvagOrient) —
-# populates after the next recompile.
-FAMILIES.append((
-    "Pairwise — centrosome radial position vs invagination orientation",
-    [("pairwise_plots/CentRadialPos_vs_InvagOrient/"
-      "centrosome_r_norm_bottom_plane_from_MT_VS_avg_normal_angle_by_cent_from_MT.png",
-      "Invag orientation vs centrosome radial position")],
-))
-
 # ---------------------------------------------------------------------------
-# Colors / layout (matches the bleb/noco/vimkd summary decks)
+# Colors / layout (matches the bleb/noco/vimkd/CTL summary decks)
 # ---------------------------------------------------------------------------
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 BLACK = RGBColor(0x00, 0x00, 0x00)
@@ -390,9 +320,8 @@ def build_divider_slide(prs, family_name):
 def _ext(path):
     """Windows extended-length path (\\\\?\\...) so files whose absolute path
     exceeds the 260-char MAX_PATH are still found and opened. Long metric names
-    (and pairwise <X>_VS_<Y> filenames) under the deep compiled_results tree bust
-    MAX_PATH; without this prefix Path.exists()/PIL.open silently fail. No-op off
-    Windows."""
+    under the deep compiled_results tree bust MAX_PATH; without this prefix
+    Path.exists()/PIL.open silently fail. No-op off Windows."""
     p = os.path.abspath(str(path))
     if os.name == "nt" and not p.startswith("\\\\?\\"):
         p = "\\\\?\\" + p.replace("/", "\\")
@@ -409,38 +338,20 @@ def _place_missing(slide, left, top, width):
 
 
 def build_slide(prs, title_text, panels, footer_text):
-    """Title + one or more panels (aspect preserved) + source-path footer.
-    `panels` is a list of (path, sublabel); a single entry fills the image box,
-    multiple entries are laid out in side-by-side columns with a sublabel above
-    each. Returns the list of missing panel paths (not on disk)."""
+    """Title + one by_day panel (aspect preserved, full width) + source-path
+    footer. `panels` is a single-element list of (path, _). Returns the list of
+    missing panel paths (not on disk)."""
     slide = _new_slide(prs)
     add_textbox(slide, title_text, TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, TITLE_HEIGHT,
                 font_pt=title_font_for(title_text), color=BLACK, bold=True)
 
     missing = []
-    if len(panels) == 1:
-        path, _ = panels[0]
-        if _exists(path):
-            add_image_in_box(slide, _ext(path), IMG_LEFT, IMG_TOP, IMG_BOX_W, IMG_BOX_H)
-        else:
-            _place_missing(slide, IMG_LEFT, IMG_TOP, IMG_BOX_W)
-            missing.append(path)
+    path, _ = panels[0]
+    if _exists(path):
+        add_image_in_box(slide, _ext(path), IMG_LEFT, IMG_TOP, IMG_BOX_W, IMG_BOX_H)
     else:
-        n = len(panels)
-        col_w = (IMG_BOX_W - (n - 1) * COL_GAP) / n
-        band_top = IMG_TOP + SUBLABEL_H + SUBLABEL_GAP
-        band_h = IMG_BOX_H - SUBLABEL_H - SUBLABEL_GAP
-        for i, (path, sublabel) in enumerate(panels):
-            left = IMG_LEFT + i * (col_w + COL_GAP)
-            sub_box = add_textbox(slide, sublabel or "", left, IMG_TOP, col_w, SUBLABEL_H,
-                                  font_pt=SUBLABEL_FONT_PT, color=BLACK, bold=True)
-            # Bottom-align so the label sits just above its plot, not floating high.
-            sub_box.text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
-            if _exists(path):
-                add_image_in_box(slide, _ext(path), left, band_top, col_w, band_h)
-            else:
-                _place_missing(slide, left, band_top, col_w)
-                missing.append(path)
+        _place_missing(slide, IMG_LEFT, IMG_TOP, IMG_BOX_W)
+        missing.append(path)
 
     add_textbox(slide, footer_text, FOOTER_LEFT, FOOTER_TOP, FOOTER_WIDTH,
                 FOOTER_HEIGHT, font_pt=FOOTER_FONT_PT, color=BLACK)
@@ -448,19 +359,14 @@ def build_slide(prs, title_text, panels, footer_text):
 
 
 def _panel_path(stem):
-    """Resolve a panel reference to a file path. A plain metric stem maps to
-    GRID_DIR/<stem>_grid.png; a reference ending in '.png' is taken relative to
-    the compilation ROOT (used for pairwise_plots/<suite>/<X>_VS_<Y>.png)."""
-    if stem.endswith(".png"):
-        return ROOT / stem
-    return GRID_DIR / (stem + GRID_SUFFIX)
+    """Resolve a metric stem to its by_day panel: BYDAY_DIR/<stem>_by_day.png."""
+    return BYDAY_DIR / (stem + PANEL_SUFFIX)
 
 
 def entry_panels(entry_stem):
-    """Normalize a FAMILIES entry's stem field into a list of (path, sublabel)."""
-    if isinstance(entry_stem, str):
-        return [(_panel_path(entry_stem), None)]
-    return [(_panel_path(stem), sublabel) for stem, sublabel in entry_stem]
+    """Normalize a FAMILIES entry's stem field into a list of (path, sublabel).
+    Every entry is one by_day panel per slide, so this is a single-element list."""
+    return [(_panel_path(entry_stem), None)]
 
 
 def add_sections(prs, section_spec):
@@ -501,7 +407,7 @@ def main():
     est_slides = 1 + (1 if CELL_COUNTS_PNG.exists() else 0) + \
         sum(1 + len(items) for _, items in FAMILIES)
 
-    print("Source: {}".format(GRID_DIR))
+    print("Source: {}".format(BYDAY_DIR))
     print("{} metric slides across {} families, est. {} slides\n".format(
         n_metrics, len(FAMILIES), est_slides))
 
@@ -527,7 +433,7 @@ def main():
     build_title_slide(prs, DECK_TITLE, DECK_SUBTITLE)
 
     if CELL_COUNTS_PNG.exists():
-        build_slide(prs, "Cell counts (3 min vs 12 min)",
+        build_slide(prs, "Cell counts (CAT vs FMC63)",
                     [(CELL_COUNTS_PNG, None)], rel_footer(CELL_COUNTS_PNG))
     else:
         print("Note: {} not found - skipping cell-counts slide.\n".format(

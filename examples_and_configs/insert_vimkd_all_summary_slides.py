@@ -1,34 +1,31 @@
 """
-insert_vimkd_by_cent_summary_slides.py
+insert_vimkd_all_summary_slides.py
 
-Metric summary deck for the fixed-Jurkat vimentin-knockdown (VimKD) by-centrosome
+Metric summary deck for the fixed-Jurkat vimentin-knockdown (VimKD) *all-datasets*
 compilation, siCtrl (control) vs siVim (vimentin KD):
     M:/.../VimentinKD_NucleusData_Fixed/results_compilation/
-        VimKD_by_cent_siCtrl_vs_siVim_by_day_violins_20260703
-Each `<metric>_by_day.png` is a single-axis siCtrl-vs-siVim violin grouped by day
-(all 7 datasets on one x-axis, per-day significance). One slide = one metric
-(title + the by-day panel). Companion to the VimKD physical-scale
-MONTAGE decks (insert_vimkd_*_phys_scale_slides.py); this is the first VimKD
-METRIC deck.
+        VimKD_all_siCtrl_vs_siVim_by_day_violins_20260703
+Each `<metric>_by_day.png` is a single-axis siCtrl-vs-siVim violin grouped by day.
 
-Modeled on insert_bleb_summary_slides.py (title slide, family dividers, curated
-FAMILIES, --list dry-run, backup-before-overwrite, blank deck — no template).
+Companion to insert_vimkd_by_cent_summary_slides.py. That "by_cent" deck restricts
+to the 7 datasets that have a centrosome (pericentrin / MT-derived) marker and
+shows centrosome-referenced metrics. This "all" deck spans ALL 10 experiments
+(chronological: Apr6 ×2 / May4 / May20 / May23 / Jun28 2022, Aug4 2023, Oct24 2023,
+Jan17 / Jan29 2024 — the two Apr6 entries are the Vim + Pericentrin runs on that
+date), but consequently CANNOT compute any centrosome-referenced metric. So this
+deck carries only the centrosome-INDEPENDENT subset (11 metrics): cell/nuclear
+spreading, full-nucleus deformation & deepest-invagination, deepest-invag
+orientation, and nuclear morphology. Everything `*_by_cent` / `*_around_cent` /
+`cent_*` / `nuc_cent_*` / `*_cent_global_ratio` is absent here by construction.
 
-Metric selection (per user): the LatA curated set (config_LatA_CD3_combined_*,
-the CilioD-derived "no actin / no vim" morphology + invagination + curvature set)
-PLUS the noco actin metrics (config_Noco_*). Vimentin metrics are excluded (vim is
-the knockdown target) and the IRM synapse-area metric is excluded (no IRM here).
-
-centrosome_center_z_rel_bottom_actin_plane (Centrosome-synapse distance) is the
-lead Centrosome metric — present here as `*_by_day.png` (the upstream shared-
-loader fix emits it for every day, MT included, so no separate MT variant).
-
-One LatA metric stays omitted: nuc_broadest_slice_area — absent here (only
-actin_broadest_slice_area exists).
+Modeled on insert_vimkd_by_cent_summary_slides.py (blank deck, family dividers,
+--list dry-run, backup-before-overwrite); same family order/titles minus the
+centrosome families, for cross-deck consistency with the by_cent deck and
+insert_ctl_granule_nuc_summary_20260617_slides.py.
 
 Usage:
-    conda run -n PPT_editing python examples_and_configs/insert_vimkd_by_cent_summary_slides.py
-    conda run -n PPT_editing python examples_and_configs/insert_vimkd_by_cent_summary_slides.py --list
+    conda run -n PPT_editing python examples_and_configs/insert_vimkd_all_summary_slides.py
+    conda run -n PPT_editing python examples_and_configs/insert_vimkd_all_summary_slides.py --list
 """
 
 import os
@@ -50,36 +47,33 @@ from ppt_image_inserter import backup_presentation  # noqa: E402
 ROOT = Path(
     "M:/FF/FF_4TB_2_Backup_fullHD/Vimentin_Project_2ndharddrive/"
     "VimentinKD_NucleusData_Fixed/results_compilation/"
-    "VimKD_by_cent_siCtrl_vs_siVim_by_day_violins_20260703"
+    "VimKD_all_siCtrl_vs_siVim_by_day_violins_20260703"
 )
-# By-day violin panels: one PNG per metric, flat at the compile root — each a
-# single-axis siCtrl-vs-siVim violin grouped by day, days in CHRONOLOGICAL order
-# (Apr6/May20/May23/Jun28 2022, Oct24 2023, Jan17/Jan29 2024), date-only labels.
-# Rerun of by_day_violin_panels('Jurkats_VimKD_by_cent_compilation') on 2026-07-03
-# wrote this standalone dir; the earlier `..._20260703/by_day_panels/` had the
-# days grouped by assay, not chronological.
+# By-day violin panels, flat at the compile root; one PNG per metric, a single-axis
+# siCtrl-vs-siVim violin grouped by day, days in CHRONOLOGICAL order (date-only
+# x-labels). Written by by_day_violin_panels('Jurkats_VimKD_all_compilation')-style
+# rerun on 2026-07-03. Centrosome-referenced panels do not exist in this compile.
 GRID_DIR = ROOT
 GRID_SUFFIX = "_by_day.png"
 
 OUTPUT_PATH = Path(
     "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/VimentinKD/"
-    "VimKD_Jurkats_siCtrl_vs_siVim_by_cent_summary.pptx"
+    "VimKD_Jurkats_siCtrl_vs_siVim_all_summary.pptx"
 )
 
-DECK_TITLE = "Vimentin knockdown effects on fixed Jurkat nuclei (by centrosome)"
+DECK_TITLE = "Vimentin knockdown effects on fixed Jurkat nuclei (all experiments)"
 DECK_SUBTITLE = (
-    "siCtrl (control) vs siVim (vimentin KD)  ·  fixed Jurkat, αCD3  ·  "
-    "by-centrosome compile  ·  compiled 2026-06-30"
+    "siCtrl (control) vs siVim (vimentin KD)  ·  fixed Jurkat  ·  all 10 experiments  ·  "
+    "centrosome-independent metrics only (no centrosome marker across all runs)  ·  "
+    "compiled 2026-07-03"
 )
 
 # ---------------------------------------------------------------------------
 # Curated metrics, grouped into families (divider slide per family).
-# (panel stem, slide title); stem + GRID_SUFFIX is the PNG under by_day_panels/.
-# Family order + titles mirror insert_ctl_granule_nuc_summary_20260617_slides.py
-# for cross-deck consistency: cell/nuclear spreading first, aspect ratios in the
-# spreading family, centrosome_dist_deepest... under Centrosome, nuclear
-# morphology after the invagination families. (VimKD has no granule/MT metrics,
-# so those CTL families are absent; single panel per metric, not CTL's pairs.)
+# The centrosome-independent subset of the by_cent deck's set — the centrosome
+# families (Centrosome ↔ nucleus, Actin around centrosome) and the *_by_cent
+# invagination/orientation entries are dropped because they don't exist in the
+# all-datasets compile. Family order/titles otherwise match the by_cent deck.
 # ---------------------------------------------------------------------------
 FAMILIES = [
     ("Cell and nuclear spreading", [
@@ -87,25 +81,14 @@ FAMILIES = [
         ("actin_deform_ratio",     "Cell aspect ratio"),
         ("actin_bottom_mask_area", "Synapse area"),
     ]),
-    ("Centrosome ↔ nucleus", [
-        ("centrosome_center_z_rel_bottom_actin_plane", "Centrosome-synapse distance"),
-        ("nuc_cent_closest_dist",         "Nucleus-centrosome closest distance"),
-        ("cent_nuc_norm_dist_sphere_rad", "Centrosome-nuclear centroid distance (norm. to nuclear sphere radius)"),
-        ("centrosome_dist_deepest_real_avg_periphery_ratio", "Centrosome distance to deepest invag vs avg periphery ratio"),
-    ]),
     ("Nuclear deformation and invaginations", [
         ("chull_max_D",                       "Max invag depth over full nucleus"),
-        ("chull_max_D_by_cent",               "Invagination depth near centrosome"),
-        ("chull_mean_D_cent_global_ratio",    "Centrosomal Invagination Index (global)"),
-        ("C_min_F_mean_by_cent",              "Nuclear surface curvature near centrosome"),
         ("deepest_invag_volume",              "Deepest invagination volume"),
         ("deepest_invag_fraction_chull_volume", "Deepest invag: frac of convex hull volume"),
         ("deepest_region_periph_ratio_025um", "DNA levels near invag"),
     ]),
     ("Invagination orientation", [
-        ("avg_normal_angle_adaptive_region_growth",         "Deepest invag orientation"),
-        ("avg_normal_angle_adaptive_region_growth_by_cent", "Invag orientation (adaptive) near centrosome"),
-        ("avg_normal_angle_by_cent",                        "Invag orientation near centrosome"),
+        ("avg_normal_angle_adaptive_region_growth", "Deepest invag orientation"),
     ]),
     ("Nuclear morphology", [
         ("nuc_solidity",        "Nuclear solidity"),
@@ -113,14 +96,10 @@ FAMILIES = [
         ("nuc_volume_mesh",     "Nuclear volume"),
         ("nuc_SA_mesh",         "Nuclear surface area"),
     ]),
-    ("Actin — levels and localization", [
-        ("actin_MFI_around_cent_2um",  "Actin MFI around centrosome (2 μm)"),
-        ("actin_frac_around_cent_2um", "Actin fraction around centrosome (2 μm)"),
-    ]),
 ]
 
 # ---------------------------------------------------------------------------
-# Colors / layout (matches the bleb/washout summary decks)
+# Colors / layout (matches the by_cent / bleb / washout summary decks)
 # ---------------------------------------------------------------------------
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 BLACK = RGBColor(0x00, 0x00, 0x00)
@@ -210,8 +189,8 @@ def build_title_slide(prs, title, subtitle):
     slide = _new_slide(prs)
     add_textbox(slide, title, MARGIN, 2.6, SLIDE_W - 2 * MARGIN, 1.4,
                 font_pt=38, color=BLACK, bold=True)
-    add_textbox(slide, subtitle, MARGIN, 4.1, SLIDE_W - 2 * MARGIN, 1.0,
-                font_pt=18, color=BLACK, italic=True)
+    add_textbox(slide, subtitle, MARGIN, 4.1, SLIDE_W - 2 * MARGIN, 1.2,
+                font_pt=16, color=BLACK, italic=True)
 
 
 def build_divider_slide(prs, family_name):

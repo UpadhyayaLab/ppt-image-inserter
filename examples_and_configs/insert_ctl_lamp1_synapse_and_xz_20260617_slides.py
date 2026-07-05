@@ -90,6 +90,25 @@ BLOCKS = [
         "LAMP1 + MT + Nuc, centrosome slice — 3 min vs 12 min",
         "xy_phys",
     ),
+    # Granules + MT only (no nucleus) at the centrosome slice.
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_MT_com/montages",
+        "LAMP1 + MT, centrosome slice — 3 min vs 12 min",
+        "xy_phys",
+    ),
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_MT_com_adaptive_merge/montages",
+        "LAMP1 + MT, centrosome slice (adaptive) — 3 min vs 12 min",
+        "xy_phys",
+    ),
+    # Panel (per-channel + merge) of granules + MT at the centrosome slice.
+    # Only the adaptive-contrast variant exists; wide 3-panel, so it uses the
+    # stacked full-width layout (3 min over 12 min) via its own group.
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_MT_com_adaptive_panels/montages",
+        "LAMP1 + MT, centrosome slice — channels + merge (adaptive) — 3 min vs 12 min",
+        "companel_phys",
+    ),
     # --- Actin synapse mask + XZ MIPs ---
     (
         "{cond}/cropped/channels/prog_fixed_cells/actin/bottom_slice_seg/montages",
@@ -141,6 +160,11 @@ BLOCKS = [
         "Actin + Nuc XZ MIP, planes (no lines) — 3 min vs 12 min",
         "xz_phys",
     ),
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/actin_MT_xz_nolines/montages",
+        "Actin + MT XZ MIP — 3 min vs 12 min",
+        "xz_phys",
+    ),
     # No-nucleus XZ MIPs (granules / microtubules alone).
     (
         "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_xz_nolines/montages",
@@ -159,6 +183,11 @@ BLOCKS = [
     (
         "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_MT_xz_panel_nolines/montages",
         "MT / LAMP1 / merge, XZ MIP panel (no lines) — 3 min vs 12 min",
+        "xzpanel_phys",
+    ),
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/actin_MT_xz_panel_nolines/montages",
+        "Actin / MT / merge, XZ MIP panel (no lines) — 3 min vs 12 min",
         "xzpanel_phys",
     ),
     # XY view of LAMP1 + MT at the synapse plane (no nucleus channel). Lives in
@@ -239,7 +268,8 @@ CELL_POSITIONS = [
 # PANEL_GROUP): 3 min on top, 12 min on bottom, each spanning the whole slide
 # width. The panels are short-and-wide, so full-width rows render them much
 # larger than the side-by-side cell layout.
-PANEL_GROUP = "xzpanel_phys"
+# Scale groups that use the stacked full-width layout (3 min over 12 min).
+PANEL_GROUPS = {"xzpanel_phys", "companel_phys"}
 PANEL_IMG_W = SLIDE_W - 2 * GRID_LEFT
 PANEL_ROW_H = (SLIDE_H - GRID_TOP - 0.10) / 2
 PANEL_ROW_IMG_H = PANEL_ROW_H - LABEL_H
@@ -449,7 +479,7 @@ def main() -> None:
         imgs = [p for p in (spec["left_img"], spec["right_img"])
                 if p is not None and _exists_long(p)]
         sg = spec["scale_group"]
-        if sg == PANEL_GROUP:
+        if sg in PANEL_GROUPS:
             own = compute_group_ppi(imgs, PANEL_IMG_W, PANEL_ROW_IMG_H) if imgs else 0.0
         else:
             own = compute_group_ppi(imgs, CELL_W, IMG_H) if imgs else 0.0
@@ -458,7 +488,7 @@ def main() -> None:
     # Groups whose source is physical_scale_images/ carry the embedded 104 px
     # scalebar; the rest (actin/bottom_slice_seg, deepest_invag_slice merges)
     # do not, so we report them as layout-pin only.
-    PHYS_GROUPS = {"xz_phys", "syn_phys", "broad", "xy_phys", "xzpanel_phys"}
+    PHYS_GROUPS = {"xz_phys", "syn_phys", "broad", "xy_phys", "xzpanel_phys", "companel_phys"}
     print(f"Pinned PPI per scale_group ({len(slide_specs)} slides total):")
     for sg, ppi in sorted(group_ppi.items()):
         if sg in PHYS_GROUPS:
@@ -476,7 +506,7 @@ def main() -> None:
     missing_total = []
     for spec in slide_specs:
         slide_ppi = group_ppi[spec["scale_group"]]
-        builder = (build_stacked_slide if spec["scale_group"] == PANEL_GROUP
+        builder = (build_stacked_slide if spec["scale_group"] in PANEL_GROUPS
                    else build_compare_slide)
         _, missing = builder(
             prs, spec["title"],

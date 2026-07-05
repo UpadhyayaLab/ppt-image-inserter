@@ -31,6 +31,7 @@ first chunk only. Groups, in order:
   3. Nuc (DNA), broadest slice
   4. Cent + Nuc, broadest slice
   5. Cent + Nuc, deepest invagination slice
+  6. Cent + Nuc, centrosome plane (cent_nuc_com; only where generated so far)
 
 Usage:
     python examples_and_configs/insert_vimkd_pericentrin_phys_scale_slides.py
@@ -129,15 +130,17 @@ EXPERIMENTS = [
 # slides) and fills in automatically once processed. actin_nuc_xz_nolines is
 # present in every ready experiment, so the CilioD cent_nuc_xz fallback is unneeded.
 COMBOS = [
-    ("actin_nuc_xz_nolines",  "Actin + Nuc XZ MIP ({tp}, {tag})",         1, "xz",
+    ("actin_nuc_xz_nolines",  "Actin + Nuc XZ MIP ({tag})",         1, "xz",
         None, {}),
-    ("actin_cent_xz_nolines", "Actin + Cent XZ MIP ({tp}, {tag})",        1, "xz",
+    ("actin_cent_xz_nolines", "Actin + Cent XZ MIP ({tag})",        1, "xz",
         None, {}),
-    ("nucleus_bz",           "Nuc (DNA), broadest slice ({tp}, {tag})",  1, "broad_1c",
+    ("nucleus_bz",           "Nuc (DNA), broadest slice ({tag})",  1, "broad_1c",
         None, {}),
-    ("cent_nuc_bz",          "Cent + Nuc, broadest slice ({tp}, {tag})", 1, "broad_1c",
+    ("cent_nuc_bz",          "Cent + Nuc, broadest slice ({tag})", 1, "broad_1c",
         None, {}),
-    ("cent_nuc",             "Cent + Nuc, deepest invagination slice ({tp}, {tag})", 1, "broad_1c",
+    ("cent_nuc",             "Cent + Nuc, deepest invagination slice ({tag})", 1, "broad_1c",
+        None, {}),
+    ("cent_nuc_com",         "Cent + Nuc, centrosome plane ({tag})",           1, "broad_1c",
         None, {}),
 ]
 

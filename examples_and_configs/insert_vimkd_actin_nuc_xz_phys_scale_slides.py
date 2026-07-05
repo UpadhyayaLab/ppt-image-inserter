@@ -29,6 +29,10 @@ slide title is DATE-ONLY (the staining assay is deliberately not named, so the p
 purely as actin+nucleus). Two runs share 04/06/2022 (a Vim and a pericentrin acquisition),
 so those two slides carry the identical title and simply sit adjacent — accepted by design.
 
+Coloring: actin=RED, nucleus=cyan (combo `actin_nuc_xz_planes_nolines`); the pericentrin
+runs also carry a magenta centrosome overlay from that renderer. (No blue exists in the
+XZ palette — cyan is the nucleus color in every red-actin render.)
+
 Same machinery as the sibling phys-scale decks (noco/bleb/LatA, vimkd MT/pericentrin):
 long-path-safe enumeration, group-major ordering, deck-wide per-scale-group PPI pinning
 (104 px = 5 μm scalebar invariant), one representative montage chunk per condition,
@@ -61,8 +65,15 @@ OUTPUT_PATH = (
     "VimKD_Jurkats_siCtrl_vs_siVim_actin_nuc_xz_phys_scale_montages.pptx"
 )
 
-# Actin + nucleus x-z MIP, no overlay lines (clean variant, matches the sibling decks).
-COMBO = "actin_nuc_xz_nolines"
+# Actin (RED) + nucleus (cyan) x-z MIP, physical-scale, no dashed plane lines.
+# The `_planes` renderer (save_nuc_actin_planes_xz_mip_physical.m) colors actin RED
+# (vs the plain actin_nuc_xz* combo, which uses orange); `_nolines` drops the dashed
+# actin/nucleus plane markers. On the pericentrin runs this renderer also overlays the
+# centrosome in MAGENTA (it adds I_cent when a centrosome channel exists); the
+# Vim/pMLC/AcTub runs have no centrosome, so they're red actin + cyan nucleus only.
+# (There is no blue in the XZ color palette — cyan is the nucleus color for all the
+# red-actin renders.)
+COMBO = "actin_nuc_xz_planes_nolines"
 
 # Drive/experiment roots.
 ROOT_ACTUB = "L:/FF/Nucleus_MT/Jurkat_fixed/vimentinKD_tubulin-acetylation_fixed"
@@ -212,6 +223,15 @@ def montage_dir(root, cond_folder: str, chan_sub: str, combo: str) -> Path:
             "prog_fixed_cells" / "physical_scale_images" / combo / "montages")
 
 
+def mask_montage_dir(root, cond_folder: str, chan_sub: str) -> Path:
+    """Actin synapse-plane segmentation-mask montages (NON-physical-scale):
+    prog_fixed_cells/actin/bottom_slice_seg/montages — grayscale actin at the actin
+    bottom (synapse) plane with the segmented cell outline drawn in red. Appended as a
+    second section at the end of the deck, in its own PPI group (not physical-scale)."""
+    return (Path(root) / cond_folder / chan_sub /
+            "prog_fixed_cells" / "actin" / "bottom_slice_seg" / "montages")
+
+
 def add_textbox(slide, text, left, top, width, height, font_pt, color, bold=False):
     box = slide.shapes.add_textbox(
         Inches(left), Inches(top), Inches(width), Inches(height)
@@ -315,55 +335,68 @@ def _exp_date_key(exp):
     return (int(m.group(3)), int(m.group(1)), int(m.group(2))) if m else (9999, 99, 99)
 
 
-def _make_title(tp_label: str, tag: str) -> str:
-    # Title is date-only — the staining assay is deliberately NOT named, so the panel
-    # reads purely as "actin + nucleus" (naming the other marker, e.g. the pericentrin
-    # run, misleads by implying that marker is in the image).
+def _make_title(prefix: str, marker: str, tp_label: str, tag: str) -> str:
+    # "<prefix> (<tp>, <date>) (<marker> staining)". The staining tag disambiguates the
+    # two acquisitions that share a date (Vim-stain vs pericentrin-stain, both 04/06/2022)
+    # and names which experiment each slide came from.
     sub = f"{tp_label}, {tag}" if tp_label else tag
-    return f"Actin + Nuc XZ MIP ({sub})"
+    return f"{prefix} ({sub}) ({marker} staining)"
 
 
 def main() -> None:
     out_path = Path(OUTPUT_PATH)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
+    def build_section(dir_fn, prefix, scale_group, skip_msg):
+        """One siCtrl|siVim slide per experiment (date-sorted) for a montage source.
+        dir_fn(root, cond_folder, chan_sub) -> montages dir. Skips an experiment when
+        neither condition has montages."""
+        specs = []
+        for exp in sorted(EXPERIMENTS, key=_exp_date_key):
+            root = Path(exp["root"])
+            chan_sub = exp["chan_sub"]
+            left_folder, left_label = exp["left"]
+            right_folder, right_label = exp["right"]
+            log_key = f"{exp['marker']} {exp['tag']}"
+            left_dir  = dir_fn(root, left_folder,  chan_sub)
+            right_dir = dir_fn(root, right_folder, chan_sub)
+            if not list_chunks(left_dir) and not list_chunks(right_dir):
+                print(f"[{scale_group}/{log_key}]  {skip_msg} — skipped")
+                continue
+            specs.append({
+                "log_key": log_key, "scale_group": scale_group,
+                "title": _make_title(prefix, exp["marker"], exp["tp_label"], exp["tag"]),
+                "left_label": left_label,   "left_img": find_first_chunks(left_dir, 1)[0],
+                "right_label": right_label, "right_img": find_first_chunks(right_dir, 1)[0],
+                "left_dir": left_dir, "right_dir": right_dir,
+            })
+        return specs
+
+    # Section 1: actin + nucleus XZ MIP (physical-scale). Section 2 (appended at the
+    # end): actin synapse-plane segmentation masks (non-physical-scale). Each section is
+    # its own PPI group, so the masks size uniformly among themselves and independently
+    # of the XZ MIPs.
     slide_specs: List[dict] = []
-    for exp in sorted(EXPERIMENTS, key=_exp_date_key):
-        root = Path(exp["root"])
-        chan_sub = exp["chan_sub"]
-        left_folder, left_label = exp["left"]
-        right_folder, right_label = exp["right"]
-        log_key = f"{exp['marker']} {exp['tag']}"
+    slide_specs += build_section(
+        lambda r, c, cs: montage_dir(r, c, cs, COMBO),
+        "Actin + Nuc XZ MIP", "xz", "no actin_nuc_xz montages")
+    slide_specs += build_section(
+        mask_montage_dir,
+        "Actin synapse mask", "mask", "no actin synapse-mask montages")
 
-        left_dir  = montage_dir(root, left_folder,  chan_sub, COMBO)
-        right_dir = montage_dir(root, right_folder, chan_sub, COMBO)
-        # Skip the experiment only if NEITHER condition has montages.
-        if not list_chunks(left_dir) and not list_chunks(right_dir):
-            print(f"[{log_key}]  no actin_nuc_xz montages for either condition — skipped")
-            continue
-
-        slide_specs.append({
-            "log_key": log_key,
-            "title": _make_title(exp["tp_label"], exp["tag"]),
-            "left_label": left_label,   "left_img": find_first_chunks(left_dir, 1)[0],
-            "right_label": right_label, "right_img": find_first_chunks(right_dir, 1)[0],
-            "left_dir": left_dir, "right_dir": right_dir,
-        })
-
-    # Deck-wide PPI pinning (single scale_group "xz") → one physical scale across deck.
-    group_ppi = 0.0
+    # PPI pinning per scale_group.
+    group_ppi: dict = {}
     for spec in slide_specs:
         imgs = [p for p in (spec["left_img"], spec["right_img"])
                 if p is not None and _exists_long(p)]
         if imgs:
-            group_ppi = max(group_ppi, compute_slide_ppi(imgs, CELL_W, IMG_H))
+            sg = spec["scale_group"]
+            group_ppi[sg] = max(group_ppi.get(sg, 0.0),
+                                compute_slide_ppi(imgs, CELL_W, IMG_H))
 
-    print(f"Deck-wide PPI pinning across {len(slide_specs)} slides.")
-    if group_ppi > 0:
-        bar = SCALEBAR_PX / group_ppi
-        print(f"  xz  PPI={group_ppi:.2f}  "
-              f"scalebar={bar:.3f} in = {bar * 2.54:.3f} cm "
-              f"(invariant {SCALEBAR_UM} μm = {SCALEBAR_PX} px, {PPUM_SOURCE} px/μm)")
+    print(f"\nPPI pinning per scale_group across {len(slide_specs)} slides:")
+    for sg, ppi in sorted(group_ppi.items()):
+        print(f"  {sg:>5s}  PPI={ppi:.2f}")
     print(f"\nWriting deck to: {OUTPUT_PATH}\n")
 
     prs = Presentation()
@@ -377,12 +410,12 @@ def main() -> None:
             prs, spec["title"],
             spec["left_label"], spec["left_img"],
             spec["right_label"], spec["right_img"],
-            group_ppi,
+            group_ppi[spec["scale_group"]],
         )
         slides_added += 1
         l_ok = 1 if spec["left_img"] is not None else 0
         r_ok = 1 if spec["right_img"] is not None else 0
-        print(f"[{spec['log_key']}]  L:{l_ok}/1  R:{r_ok}/1")
+        print(f"[{spec['scale_group']}/{spec['log_key']}]  L:{l_ok}/1  R:{r_ok}/1")
         for cell in missing:
             src = spec["left_dir"] if cell == spec["left_label"] else spec["right_dir"]
             missing_total.append(f"{spec['log_key']}/{cell}  ({src})")

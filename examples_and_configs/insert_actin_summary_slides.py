@@ -118,15 +118,256 @@ ALL_DATASETS_BY_TIMEPOINT_ROOT = Path(
 PLAT_TIRF_ROOT = Path(
     "L:/FF/CAR T/CAR T data for actin area trouble shoot/"
     "CAR T Actin Fixed using PLAT data 5 15min/"
-    "results_compiled_tirf/compiled_plat_tirf_timecourse_20260625/grid_panels"
+    "results_compiled_tirf/compiled_plat_tirf_20260701/grid_panels"
 )
 OUTPUT_DIR_PLAT = Path("K:/FF/PPT/PPT_autogeneration/CART/pLAT")
 
+# The 20260701 pLAT compile uses different subfolder names than the
+# older timecourse_20260630 compile — timecourse_scatter_plots was
+# renamed to scatter_timecourse_5_vs_15, CAT_vs_FMC_by_timepoint to
+# CAT_vs_FMC, and the binned distribution is a single top-level PNG
+# (no per-date breakdown).
+SUB_PLAT_SCATTER = "scatter_timecourse_5_vs_15"
+SUB_PLAT_CAT     = "CAT_vs_FMC"
+
+# 3 correlation curves — parity with pZap70. g_ave + autocorr live in
+# the pLAT-specific subfolder for this compile.
+PLAT_CORR_METRICS = [
+    (SUB_PLAT_SCATTER,
+     "pLAT_synapse_g_ave_grid.png"),
+    (SUB_PLAT_CAT,
+     "pLAT_synapse_autocorr_c_all_cells_with_average_grid.png"),
+    (SUB_PLAT_CAT,
+     "foci_pLAT_cross_corr_profile_all_cells_with_average_grid.png"),
+]
+
 PZAP70_TIRF_ROOT = Path(
     "L:/FF/CAR T/CAR T data for actin area trouble shoot/"
-    "results_compiled_tirf/compiled_pzap70_tirf_timecourse_20260625/grid_panels"
+    "results_compiled_tirf/compiled_pzap70_tirf_timecourse_20260701/grid_panels"
 )
 OUTPUT_DIR_PZAP70 = Path("K:/FF/PPT/PPT_autogeneration/CART/pZap70")
+
+PMLC_JOINT_ROOT = Path(
+    "Y:/User_data/Kiet/results_compiled/pmlc_joint/"
+    "compiled_pmlc_v2_20260702/grid_panels"
+)
+OUTPUT_DIR_PMLC = Path("K:/FF/PPT/PPT_autogeneration/CART/pMLC")
+
+PKC_ROOT = Path(
+    "Y:/User_data/Kiet/01312026_fixed_CART_PKC_Phalloidin_/"
+    "results_compiled/compiled_pkc_20260702/grid_panels"
+)
+OUTPUT_DIR_PKC = Path("K:/FF/PPT/PPT_autogeneration/CART/PKC")
+
+PPKC_ROOT = Path(
+    "Y:/User_data/Kiet/20260414_p_PKC_theta_Phalloidin561_/"
+    "results_compiled/compiled_ppkc_20260702/grid_panels"
+)
+OUTPUT_DIR_PPKC = Path("K:/FF/PPT/PPT_autogeneration/CART/pPKC")
+
+CTSB_ALL_ROOT = Path(
+    "J:/FF/fixed_cell/CAR_TCell/results_compiled/ctsb_all/"
+    "compiled_2023_2024_20260702/grid_panels"
+)
+OUTPUT_DIR_CTSB = Path("K:/FF/PPT/PPT_autogeneration/CART/MT_CatB")
+
+# 13 CatB metrics — 12 in scatter + 1 rad_profile in CAT_vs_FMC.
+# CatB rad_profile in this compile is `_all_cells_with_average` only
+# (no `_auc1_` variant), so use that.
+CTSB_METRICS = [
+    (SUB_SCATTER,    "CathepsinB_synapse_MFI_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_synapse_total_sig_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_total_sig_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_peak_sig_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_synapse_inner_outer_ratio_50pct_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_synapse_inner_outer_ratio_70pct_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_synapse_inner_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_synapse_outer_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_synapse_r_eff_grid.png"),
+    (SUB_CAT_VS_FMC, "CathepsinB_synapse_rad_profile_all_cells_with_average_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_z50_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_z50_norm_cell_height_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_z75_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_z75_norm_cell_height_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_z90_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER,    "CathepsinB_z90_norm_cell_height_grid.png"),
+]
+
+# 4 CatB Z-center-of-fluorescence variants.
+CTSB_ZCOF = [
+    (SUB_SCATTER, "CathepsinB_zCOF_grid.png"),
+    (SUB_SCATTER, "CathepsinB_zCOF_actin_scale_grid.png"),
+    (SUB_SCATTER, "CathepsinB_zCOF_cell_bottom_distance_grid.png"),
+    (SUB_SCATTER, "CathepsinB_zCOF_cell_bottom_distance_norm_cell_height_grid.png"),
+]
+
+# 6 CatB FDD/structural metrics: 3 z_FDD (1D fluorescence distribution
+# derivative in z) + 3 FDD_3D variants (base, RMS, rel_cent).
+CTSB_FDD = [
+    (SUB_SCATTER, "CathepsinB_z_FDD_grid.png"),
+    (SUB_SCATTER, "CathepsinB_z_FDD_RMS_grid.png"),
+    (SUB_SCATTER, "CathepsinB_z_FDD_rel_cent_grid.png"),
+    (SUB_SCATTER, "CathepsinB_FDD_3D_grid.png"),
+    (SUB_SCATTER, "CathepsinB_FDD_3D_RMS_grid.png"),
+    (SUB_SCATTER, "CathepsinB_FDD_3D_rel_cent_grid.png"),
+]
+
+CTSB_CORR_METRICS = [
+    (SUB_SCATTER,    "CathepsinB_synapse_g_ave_grid.png"),
+    (SUB_CAT_VS_FMC, "CathepsinB_synapse_autocorr_c_all_cells_with_average_grid.png"),
+]
+
+FOCI_METRICS_CTSB = [
+    (SUB_SCATTER, "actin_foci_count_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_um2_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_fraction_grid.png"),
+    (SUB_SCATTER, "actin_foci_mean_intensity_grid.png"),
+]
+
+# Centrosome-Synapse Distance (raw + polarized). Polarization grid lives
+# directly at grid_panels/ top level (subfolder "").
+CTSB_CENTROSOME = [
+    (SUB_SCATTER, "centrosome_center_z_cell_bottom_distance_grid.png"),
+    ("",          "centrosome_center_z_cell_bottom_distance_polarization_grid.png"),
+]
+
+# 3 CatB centrosome-proximity slides (fraction of CatB signal within
+# 1/2/3 μm of the centrosome).
+CTSB_FRAC_AROUND_CENT = [
+    (SUB_CAT_VS_FMC, "CathepsinB_frac_around_cent_1um_grid.png"),
+    (SUB_CAT_VS_FMC, "CathepsinB_frac_around_cent_2um_grid.png"),
+    (SUB_CAT_VS_FMC, "CathepsinB_frac_around_cent_3um_grid.png"),
+]
+
+# CatB Z50 / Z75 polarization grids (top-level grid_panels/).
+CTSB_Z_POLARIZATION = [
+    ("", "CathepsinB_z50_rel_cell_bottom_polarization_grid.png"),
+    ("", "CathepsinB_z75_rel_cell_bottom_polarization_grid.png"),
+]
+
+# Actin single-slice with the non-auc1 rad_profile variant — this
+# compile lacks the `_auc1_all_cells_with_average` variant, only the
+# plain `_all_cells_with_average` exists. 3-slice MIP has NO
+# rad_profile at all in this compile.
+CTSB_ACTIN_METRICS_WITH_RAD = (
+    SLICE_METRICS[:3]
+    + [(SUB_CAT_VS_FMC, "actin_bottom_slice_rad_profile_all_cells_with_average_grid.png")]
+    + SLICE_METRICS[3:]
+)
+
+# 6 Foci x CatB colocalization slides. This compile uses `foci_CatB_*`
+# (short "CatB"), not `foci_CathepsinB_*` like the earlier MT_CatB compile.
+FOCI_CTSB_COLOC = [
+    (SUB_SCATTER, "foci_CatB_enrichment_ratio_grid.png"),
+    (SUB_SCATTER, "foci_CatB_mean_intensity_synapse_grid.png"),
+    (SUB_SCATTER, "foci_CatB_mean_intensity_in_foci_grid.png"),
+    (SUB_SCATTER, "foci_CatB_mean_intensity_out_foci_grid.png"),
+    (SUB_SCATTER, "foci_CatB_m1_intensity_in_foci_grid.png"),
+    (SUB_SCATTER, "foci_CatB_pearsons_coeff_grid.png"),
+]
+
+# 13 pPKC (phospho-PKC theta) metrics — mirrors PMLC_METRICS/PKC_METRICS.
+PPKC_METRICS = [
+    (SUB_SCATTER,    "pPKC_synapse_MFI_grid.png"),
+    (SUB_SCATTER,    "pPKC_synapse_total_sig_grid.png"),
+    (SUB_SCATTER,    "pPKC_total_sig_grid.png"),
+    (SUB_SCATTER,    "pPKC_peak_sig_grid.png"),
+    (SUB_SCATTER,    "pPKC_synapse_inner_outer_ratio_50pct_grid.png"),
+    (SUB_SCATTER,    "pPKC_synapse_inner_outer_ratio_70pct_grid.png"),
+    (SUB_SCATTER,    "pPKC_synapse_inner_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "pPKC_synapse_outer_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "pPKC_synapse_r_eff_grid.png"),
+    (SUB_CAT_VS_FMC, "pPKC_synapse_rad_profile_auc1_all_cells_with_average_grid.png"),
+    (SUB_SCATTER,    "pPKC_z50_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER,    "pPKC_z75_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER,    "pPKC_z90_rel_cell_bottom_grid.png"),
+]
+
+PPKC_CORR_METRICS = [
+    (SUB_SCATTER,    "pPKC_synapse_g_ave_grid.png"),
+    (SUB_CAT_VS_FMC, "pPKC_synapse_autocorr_c_all_cells_with_average_grid.png"),
+]
+
+FOCI_METRICS_PPKC = [
+    (SUB_SCATTER, "actin_foci_count_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_um2_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_fraction_grid.png"),
+    (SUB_SCATTER, "actin_foci_mean_intensity_grid.png"),
+]
+
+# 13 PKC metrics — 12 in scatter, 1 (rad_profile) in CAT_vs_FMC.
+# Same shape as PMLC_METRICS; ends with Z50/Z75/Z90 rel_cell_bottom.
+PKC_METRICS = [
+    (SUB_SCATTER,    "PKC_synapse_MFI_grid.png"),
+    (SUB_SCATTER,    "PKC_synapse_total_sig_grid.png"),
+    (SUB_SCATTER,    "PKC_total_sig_grid.png"),
+    (SUB_SCATTER,    "PKC_peak_sig_grid.png"),
+    (SUB_SCATTER,    "PKC_synapse_inner_outer_ratio_50pct_grid.png"),
+    (SUB_SCATTER,    "PKC_synapse_inner_outer_ratio_70pct_grid.png"),
+    (SUB_SCATTER,    "PKC_synapse_inner_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "PKC_synapse_outer_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "PKC_synapse_r_eff_grid.png"),
+    (SUB_CAT_VS_FMC, "PKC_synapse_rad_profile_auc1_all_cells_with_average_grid.png"),
+    (SUB_SCATTER,    "PKC_z50_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER,    "PKC_z75_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER,    "PKC_z90_rel_cell_bottom_grid.png"),
+]
+
+# 2 PKC correlation curves — cross-corr and foci_PKC not yet generated.
+PKC_CORR_METRICS = [
+    (SUB_SCATTER,    "PKC_synapse_g_ave_grid.png"),
+    (SUB_CAT_VS_FMC, "PKC_synapse_autocorr_c_all_cells_with_average_grid.png"),
+]
+
+FOCI_METRICS_PKC = [
+    (SUB_SCATTER, "actin_foci_count_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_um2_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_fraction_grid.png"),
+    (SUB_SCATTER, "actin_foci_mean_intensity_grid.png"),
+]
+
+# 13 pMLC metrics — 12 in scatter, 1 (rad_profile) in CAT_vs_FMC.
+# Ends with the 3 Z-distribution slides (z50/z75/z90 rel_cell_bottom).
+PMLC_METRICS = [
+    (SUB_SCATTER,    "pMLC_synapse_MFI_grid.png"),
+    (SUB_SCATTER,    "pMLC_synapse_total_sig_grid.png"),
+    (SUB_SCATTER,    "pMLC_total_sig_grid.png"),
+    (SUB_SCATTER,    "pMLC_peak_sig_grid.png"),
+    (SUB_SCATTER,    "pMLC_synapse_inner_outer_ratio_50pct_grid.png"),
+    (SUB_SCATTER,    "pMLC_synapse_inner_outer_ratio_70pct_grid.png"),
+    (SUB_SCATTER,    "pMLC_synapse_inner_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "pMLC_synapse_outer_mask_MFI_grid.png"),
+    (SUB_SCATTER,    "pMLC_synapse_r_eff_grid.png"),
+    (SUB_CAT_VS_FMC, "pMLC_synapse_rad_profile_auc1_all_cells_with_average_grid.png"),
+    (SUB_SCATTER,    "pMLC_z50_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER,    "pMLC_z75_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER,    "pMLC_z90_rel_cell_bottom_grid.png"),
+]
+
+# 2 pMLC correlation curves — cross-corr and foci_pMLC family not yet
+# generated in the 20260702 compile.
+PMLC_CORR_METRICS = [
+    (SUB_SCATTER,    "pMLC_synapse_g_ave_grid.png"),
+    (SUB_CAT_VS_FMC, "pMLC_synapse_autocorr_c_all_cells_with_average_grid.png"),
+]
+
+# 4 actin foci — no `foci_pMLC_*` colocalization PNGs yet, so this
+# block is smaller than pZap70/pLAT (which have 5 more slides here).
+FOCI_METRICS_PMLC = [
+    (SUB_SCATTER, "actin_foci_count_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_um2_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_fraction_grid.png"),
+    (SUB_SCATTER, "actin_foci_mean_intensity_grid.png"),
+]
+
+# Autocorrelation / cross-correlation curves — 3 slides that show the
+# actual g(r) and its scalar summary. `_all_cells_with_average` variants
+# match the rad_profile convention (per-cell overlay + population mean).
+PZAP70_CORR_METRICS = [
+    (SUB_SCATTER,    "pZap70_synapse_g_ave_grid.png"),
+    (SUB_CAT_VS_FMC, "pZap70_synapse_autocorr_c_all_cells_with_average_grid.png"),
+    (SUB_CAT_VS_FMC, "foci_pZap70_cross_corr_profile_all_cells_with_average_grid.png"),
+]
 
 # 10 pZap70 metrics (9 from timecourse_scatter_plots, 1 from
 # CAT_vs_FMC for the rad_profile AUC1).
@@ -171,45 +412,46 @@ PZAP70_DIST_BIN_PER_DATE = [
      "foci_pZap70_dist_bin_mfi_norm_grid.png", "(Feb 17, 2025 — D5)"),
 ]
 
-# 10 pLAT-specific metrics (9 from timecourse_scatter_plots, 1 from
-# CAT_vs_FMC for the rad_profile AUC1).
+# Actin block in the pLAT-20260701 layout (relocated from
+# SLICE_METRICS_WITH_RAD to use SUB_PLAT_SCATTER / SUB_PLAT_CAT).
+PLAT_ACTIN_METRICS_WITH_RAD = (
+    [(SUB_PLAT_SCATTER, fn) for _, fn in SLICE_METRICS[:3]]
+    + [(SUB_PLAT_CAT, RAD_PROFILE_SLICE[1])]
+    + [(SUB_PLAT_SCATTER, fn) for _, fn in SLICE_METRICS[3:]]
+)
+
+# 10 pLAT-specific metrics — 9 from scatter_timecourse_5_vs_15,
+# 1 from CAT_vs_FMC (rad_profile AUC1).
 PLAT_METRICS = [
-    (SUB_SCATTER,    "pLAT_synapse_MFI_grid.png"),
-    (SUB_SCATTER,    "pLAT_synapse_total_sig_grid.png"),
-    (SUB_SCATTER,    "pLAT_total_sig_grid.png"),
-    (SUB_SCATTER,    "pLAT_peak_sig_grid.png"),
-    (SUB_SCATTER,    "pLAT_synapse_inner_outer_ratio_50pct_grid.png"),
-    (SUB_SCATTER,    "pLAT_synapse_inner_outer_ratio_70pct_grid.png"),
-    (SUB_SCATTER,    "pLAT_synapse_inner_mask_MFI_grid.png"),
-    (SUB_SCATTER,    "pLAT_synapse_outer_mask_MFI_grid.png"),
-    (SUB_SCATTER,    "pLAT_synapse_r_eff_grid.png"),
-    (SUB_CAT_VS_FMC, "pLAT_synapse_rad_profile_auc1_all_cells_with_average_grid.png"),
+    (SUB_PLAT_SCATTER, "pLAT_synapse_MFI_grid.png"),
+    (SUB_PLAT_SCATTER, "pLAT_synapse_total_sig_grid.png"),
+    (SUB_PLAT_SCATTER, "pLAT_total_sig_grid.png"),
+    (SUB_PLAT_SCATTER, "pLAT_peak_sig_grid.png"),
+    (SUB_PLAT_SCATTER, "pLAT_synapse_inner_outer_ratio_50pct_grid.png"),
+    (SUB_PLAT_SCATTER, "pLAT_synapse_inner_outer_ratio_70pct_grid.png"),
+    (SUB_PLAT_SCATTER, "pLAT_synapse_inner_mask_MFI_grid.png"),
+    (SUB_PLAT_SCATTER, "pLAT_synapse_outer_mask_MFI_grid.png"),
+    (SUB_PLAT_SCATTER, "pLAT_synapse_r_eff_grid.png"),
+    (SUB_PLAT_CAT,     "pLAT_synapse_rad_profile_auc1_all_cells_with_average_grid.png"),
 ]
 
-# 9 foci metrics for the pLAT deck: 4 actin foci + 5 foci x pLAT
-# colocalization (mirrors the foci_CathepsinB family from MT_CatB).
+# 9 foci metrics: 4 actin foci + 5 foci x pLAT colocalization.
 FOCI_METRICS_PLAT = [
-    (SUB_SCATTER, "actin_foci_count_grid.png"),
-    (SUB_SCATTER, "actin_foci_area_um2_grid.png"),
-    (SUB_SCATTER, "actin_foci_area_fraction_grid.png"),
-    (SUB_SCATTER, "actin_foci_mean_intensity_grid.png"),
-    (SUB_SCATTER, "foci_pLAT_enrichment_ratio_grid.png"),
-    (SUB_SCATTER, "foci_pLAT_mean_intensity_in_foci_grid.png"),
-    (SUB_SCATTER, "foci_pLAT_mean_intensity_out_foci_grid.png"),
-    (SUB_SCATTER, "foci_pLAT_m1_intensity_in_foci_grid.png"),
-    (SUB_SCATTER, "foci_pLAT_pearsons_coeff_grid.png"),
+    (SUB_PLAT_SCATTER, "actin_foci_count_grid.png"),
+    (SUB_PLAT_SCATTER, "actin_foci_area_um2_grid.png"),
+    (SUB_PLAT_SCATTER, "actin_foci_area_fraction_grid.png"),
+    (SUB_PLAT_SCATTER, "actin_foci_mean_intensity_grid.png"),
+    (SUB_PLAT_SCATTER, "foci_pLAT_enrichment_ratio_grid.png"),
+    (SUB_PLAT_SCATTER, "foci_pLAT_mean_intensity_in_foci_grid.png"),
+    (SUB_PLAT_SCATTER, "foci_pLAT_mean_intensity_out_foci_grid.png"),
+    (SUB_PLAT_SCATTER, "foci_pLAT_m1_intensity_in_foci_grid.png"),
+    (SUB_PLAT_SCATTER, "foci_pLAT_pearsons_coeff_grid.png"),
 ]
 
-# pLAT MFI binned by distance to nearest actin focus, per acquisition
-# date. 3-tuple (sub, fn, title_suffix) — same base filename across 3
-# date subdirs; the title_suffix differentiates them on the slide title.
-PLAT_DIST_BIN_PER_DATE = [
-    ("binned_distribution_plots/Apr_18,_2025",
-     "foci_pLAT_dist_bin_mfi_norm_grid.png", "(Apr 18, 2025)"),
-    ("binned_distribution_plots/May_09,_2025",
-     "foci_pLAT_dist_bin_mfi_norm_grid.png", "(May 9, 2025)"),
-    ("binned_distribution_plots/Jun_11,_2025",
-     "foci_pLAT_dist_bin_mfi_norm_grid.png", "(Jun 11, 2025)"),
+# Single combined dist-bin plot at top level of binned_distribution_plots
+# (no per-date breakdown in the 20260701 compile).
+PLAT_DIST_BIN = [
+    ("binned_distribution_plots", "foci_pLAT_dist_bin_mfi_norm_grid.png"),
 ]
 
 CONFOCAL_3SLICE_ROOT = Path(
@@ -283,7 +525,7 @@ THREE_SLICE_ONLY_PNG_FILES = [
 
 MT_CATB_ROOT = Path(
     "J:/FF/fixed_cell/CAR_TCell/results_compiled/"
-    "MT_CATB_20231127_20240620_20240624/compiled_20260618/grid_panels"
+    "MT_CATB_20231127_20240620_20240624/compiled_20260702/grid_panels"
 )
 OUTPUT_DIR_MT_CATB = Path("K:/FF/PPT/PPT_autogeneration/CART/MT_CatB")
 
@@ -387,26 +629,34 @@ POLARIZATION_METRICS = [
     ("", "CathepsinB_z75_rel_cell_bottom_polarization_grid.png"),
 ]
 
-# All 17 foci PNGs: actin foci first, then foci x CatB colocalization.
+# 10 foci PNGs: 4 actin foci + 6 foci x CatB coloc. The 20260702
+# recompile uses `foci_CatB_*` prefix and dropped several older
+# `foci_CathepsinB_granule_*` / `_overlap_fraction` variants.
 FOCI_METRICS = [
-    # --- actin foci (8) ----------------------------------------------------
+    # --- actin foci (4) ----------------------------------------------------
     (SUB_SCATTER, "actin_foci_count_grid.png"),
     (SUB_SCATTER, "actin_foci_area_um2_grid.png"),
     (SUB_SCATTER, "actin_foci_area_fraction_grid.png"),
     (SUB_SCATTER, "actin_foci_mean_intensity_grid.png"),
-    (SUB_SCATTER, "actin_foci_total_intensity_grid.png"),
-    (SUB_SCATTER, "actin_foci_mean_norm_score_grid.png"),
-    (SUB_SCATTER, "actin_foci_max_norm_score_grid.png"),
-    # --- foci x CatB colocalization (9) ------------------------------------
-    (SUB_SCATTER, "foci_CathepsinB_mean_intensity_synapse_grid.png"),
-    (SUB_SCATTER, "foci_CathepsinB_enrichment_ratio_grid.png"),
-    (SUB_SCATTER, "foci_CathepsinB_foci_overlap_fraction_grid.png"),
-    (SUB_SCATTER, "foci_CathepsinB_granule_overlap_fraction_grid.png"),
-    (SUB_SCATTER, "foci_CathepsinB_mean_granule_intensity_in_foci_grid.png"),
-    (SUB_SCATTER, "foci_CathepsinB_mean_granule_intensity_out_foci_grid.png"),
-    (SUB_SCATTER, "foci_CathepsinB_m1_granule_intensity_in_foci_grid.png"),
-    (SUB_SCATTER, "foci_CathepsinB_m2_foci_intensity_in_granules_grid.png"),
-    (SUB_SCATTER, "foci_CathepsinB_pearsons_coeff_grid.png"),
+    # --- foci x CatB colocalization (6) ------------------------------------
+    (SUB_SCATTER, "foci_CatB_enrichment_ratio_grid.png"),
+    (SUB_SCATTER, "foci_CatB_mean_intensity_synapse_grid.png"),
+    (SUB_SCATTER, "foci_CatB_mean_intensity_in_foci_grid.png"),
+    (SUB_SCATTER, "foci_CatB_mean_intensity_out_foci_grid.png"),
+    (SUB_SCATTER, "foci_CatB_m1_intensity_in_foci_grid.png"),
+    (SUB_SCATTER, "foci_CatB_pearsons_coeff_grid.png"),
+]
+
+# 3 per-date binned distribution plots: CatB MFI by distance to nearest
+# actin focus, per acquisition date. Same 3-tuple (sub, fn, title_suffix)
+# pattern as PLAT_DIST_BIN_PER_DATE / PZAP70_DIST_BIN_PER_DATE.
+MT_CATB_DIST_BIN_PER_DATE = [
+    ("binned_distribution_plots/Nov_27,_2023",
+     "foci_CatB_dist_bin_mfi_norm_grid.png", "(Nov 27, 2023)"),
+    ("binned_distribution_plots/Jun_20,_2024",
+     "foci_CatB_dist_bin_mfi_norm_grid.png", "(Jun 20, 2024)"),
+    ("binned_distribution_plots/Jun_24,_2024",
+     "foci_CatB_dist_bin_mfi_norm_grid.png", "(Jun 24, 2024)"),
 ]
 
 # Each dataset -> one deck. compiled_root points at the grid_panels/ folder.
@@ -470,31 +720,107 @@ DATASETS = [
         "strip_grid_suffix": True,
     },
     {
+        "label": "CatB (CTSB all datasets)",
+        # 64 slides: 2 centrosome + 16 CatB (Z rel_cell_bottom + norm_
+        # cell_height interleaved) + 4 CatB Z-COF + 6 CatB FDD + 3 CatB
+        # frac_around_cent + 2 CatB Z-polarization + 10 actin + 9 actin
+        # 3-slice MIP (no rad_profile) + 2 correlation + 4 actin foci
+        # + 6 foci x CatB coloc.
+        "compiled_root": CTSB_ALL_ROOT,
+        "output_path": OUTPUT_DIR_CTSB / "CART_CatB_summary.pptx",
+        "png_files": (
+            CTSB_CENTROSOME                # 2 centrosome dist + polarized
+            + CTSB_METRICS                 # 16 CatB (incl. Z rel + norm)
+            + CTSB_ZCOF                    # 4 Z-COF variants
+            + CTSB_FDD                     # 6 FDD/structural
+            + CTSB_FRAC_AROUND_CENT        # 3 frac around cent
+            + CTSB_Z_POLARIZATION          # 2 Z50/Z75 polarization
+            + CTSB_ACTIN_METRICS_WITH_RAD  # 10 actin (non-auc1 rad)
+            + THREE_SLICE_METRICS          # 9 actin 3-slice MIP (no rad)
+            + CTSB_CORR_METRICS            # 2 correlation
+            + FOCI_METRICS_CTSB            # 4 actin foci
+            + FOCI_CTSB_COLOC              # 6 foci x CatB coloc
+        ),
+    },
+    {
+        "label": "pPKC",
+        # 39 slides: 13 pPKC (leads with Synapse MFI, closes with Z50/
+        # Z75/Z90) + 10 actin + 10 actin 3-slice MIP + 2 correlation +
+        # 4 actin foci. Confocal compile — mirrors pMLC/PKC deck shape.
+        "compiled_root": PPKC_ROOT,
+        "output_path": OUTPUT_DIR_PPKC / "CART_pPKC_summary.pptx",
+        "png_files": (
+            PPKC_METRICS                     # 13 pPKC
+            + SLICE_METRICS_WITH_RAD         # 10 actin
+            + THREE_SLICE_METRICS_WITH_RAD   # 10 actin 3-slice MIP
+            + PPKC_CORR_METRICS              # 2 correlation
+            + FOCI_METRICS_PPKC              # 4 foci
+        ),
+    },
+    {
+        "label": "PKC",
+        # 39 slides: 13 PKC (leads with Synapse MFI, closes with Z50/
+        # Z75/Z90) + 10 actin + 10 actin 3-slice MIP + 2 correlation
+        # (g_ave + autocorr; no cross-corr) + 4 actin foci (no
+        # foci_PKC coloc yet). Confocal compile — mirrors pMLC deck.
+        "compiled_root": PKC_ROOT,
+        "output_path": OUTPUT_DIR_PKC / "CART_PKC_summary.pptx",
+        "png_files": (
+            PKC_METRICS                      # 13 PKC
+            + SLICE_METRICS_WITH_RAD         # 10 actin
+            + THREE_SLICE_METRICS_WITH_RAD   # 10 actin 3-slice MIP
+            + PKC_CORR_METRICS               # 2 correlation
+            + FOCI_METRICS_PKC               # 4 foci
+        ),
+    },
+    {
+        "label": "pMLC joint",
+        # 39 slides: 13 pMLC (leads with Synapse MFI, closes with
+        # z50/z75/z90) + 10 actin + 10 actin 3-slice MIP + 2 correlation
+        # (g_ave + autocorr; cross-corr not yet generated) + 4 actin
+        # foci (no foci_pMLC coloc yet). Confocal compile — includes
+        # the 3-slice MIP block absent from TIRF pZap70/pLAT decks.
+        "compiled_root": PMLC_JOINT_ROOT,
+        "output_path": OUTPUT_DIR_PMLC / "CART_pMLC_summary.pptx",
+        "png_files": (
+            PMLC_METRICS                     # 13 pMLC
+            + SLICE_METRICS_WITH_RAD         # 10 actin
+            + THREE_SLICE_METRICS_WITH_RAD   # 10 actin 3-slice MIP
+            + PMLC_CORR_METRICS              # 2 correlation
+            + FOCI_METRICS_PMLC              # 4 foci
+        ),
+    },
+    {
         "label": "pZap70 TIRF",
-        # 33 slides: 10 actin + 10 pZap70 + 9 foci + 4 per-date dist-bin.
-        # Mirrors the pLAT TIRF deck shape with pZap70 swapped for pLAT
-        # and one extra per-date plot.
+        # 36 slides: 10 pZap70 (leads with Synapse MFI) + 10 actin +
+        # 3 correlation + 9 foci + 4 per-date dist-bin. Sources from
+        # the 20260701 recompile which added g(r) autocorrelation and
+        # foci x pZap70 cross-correlation.
         "compiled_root": PZAP70_TIRF_ROOT,
         "output_path": OUTPUT_DIR_PZAP70 / "CART_pZap70_summary.pptx",
         "png_files": (
-            SLICE_METRICS_WITH_RAD       # 10 actin
-            + PZAP70_METRICS             # 10 pZap70
+            PZAP70_METRICS               # 10 pZap70 (leads with Synapse MFI)
+            + SLICE_METRICS_WITH_RAD     # 10 actin
+            + PZAP70_CORR_METRICS        # 3 g(r) autocorr + cross-corr
             + FOCI_METRICS_PZAP70        # 9 foci
             + PZAP70_DIST_BIN_PER_DATE   # 4 per-date dist-bin
         ),
     },
     {
         "label": "pLAT TIRF",
-        # 32 slides: 10 actin + 10 pLAT + 9 foci + 3 per-date binned
-        # pLAT-MFI-vs-distance-to-actin-foci plots. Single condition-
-        # collapsed compile (no timepoint split — TIRF data).
+        # 33 slides: 10 pLAT (leads with Synapse MFI) + 10 actin +
+        # 3 correlation (g_ave + autocorr + cross-corr) + 9 foci +
+        # 1 combined dist-bin. Sourced from the 20260701 compile which
+        # renamed subfolders (scatter_timecourse_5_vs_15, CAT_vs_FMC)
+        # and consolidated the per-date dist-bin plots into one.
         "compiled_root": PLAT_TIRF_ROOT,
         "output_path": OUTPUT_DIR_PLAT / "CART_pLAT_summary.pptx",
         "png_files": (
-            SLICE_METRICS_WITH_RAD     # 10 actin
-            + PLAT_METRICS             # 10 pLAT
-            + FOCI_METRICS_PLAT        # 9 foci
-            + PLAT_DIST_BIN_PER_DATE   # 3 per-date dist-bin
+            PLAT_METRICS                  # 10 pLAT (leads with Synapse MFI)
+            + PLAT_ACTIN_METRICS_WITH_RAD # 10 actin
+            + PLAT_CORR_METRICS           # 3 g_ave + autocorr + cross-corr
+            + FOCI_METRICS_PLAT           # 9 foci
+            + PLAT_DIST_BIN               # 1 combined dist-bin
         ),
     },
     {
@@ -541,19 +867,22 @@ DATASETS = [
     },
     {
         "label": "MT_CatB",
-        # 30 slides: 1 centrosome + 1 cent-polarization + 9 CatB +
-        # 2 CatB-z-polarization + 17 foci. Polarization slides will
-        # render "(missing)" until the MATLAB compile is rerun with the
-        # newly-enabled polarization flag.
+        # 24 slides: 1 centrosome + 1 cent-polarization + 8 CatB +
+        # 2 Z50 (raw + polarized) + 2 Z75 (raw + polarized) + 10 foci
+        # (4 actin foci + 6 foci_CatB coloc) + 3 per-date dist_bin.
+        # Sourced from the 20260702 recompile which added the per-date
+        # binned distribution plots and renamed foci_CathepsinB_ →
+        # foci_CatB_.
         "compiled_root": MT_CATB_ROOT,
         "output_path": OUTPUT_DIR_MT_CATB / "CART_summary_MT_CatB.pptx",
         "png_files": (
             CENTROSOME_METRICS                              # 1: distance
             + [POLARIZATION_METRICS[0]]                     # 1: centrosome polarized
             + CATB_METRICS_CONCISE                          # 8: CatB analogs
-            + CATB_Z50_METRICS + [POLARIZATION_METRICS[1]]  # 3: Z50 raw + polarized
-            + CATB_Z75_METRICS + [POLARIZATION_METRICS[2]]  # 3: Z75 raw + polarized
-            + FOCI_METRICS                                  # 16 foci
+            + CATB_Z50_METRICS + [POLARIZATION_METRICS[1]]  # 2: Z50 raw + polarized
+            + CATB_Z75_METRICS + [POLARIZATION_METRICS[2]]  # 2: Z75 raw + polarized
+            + FOCI_METRICS                                  # 10 foci
+            + MT_CATB_DIST_BIN_PER_DATE                     # 3 per-date dist_bin
         ),
     },
 ]
@@ -635,6 +964,10 @@ TOKEN_MAP = {
     "auc1": "AUC₁",
     "plat": "pLAT",
     "pzap70": "pZap70",
+    "pmlc": "pMLC",
+    "pkc": "PKC",
+    "ppkc": "pPKC",
+    "catb": "CatB",
 }
 
 # Tokens dropped entirely from the title.
@@ -656,14 +989,73 @@ TITLE_OVERRIDES = {
     "pLAT_synapse_r_eff_grid.png": "pLAT Synapse Effective Radius",
     "pLAT_synapse_rad_profile_auc1_all_cells_with_average_grid.png":
         "pLAT Synapse Radial Profile AUC₁ (all cells + avg)",
+    "pLAT_synapse_g_ave_grid.png":
+        "pLAT Synapse g(r) Average (scalar)",
+    "pLAT_synapse_autocorr_c_all_cells_with_average_grid.png":
+        "pLAT Synapse Autocorrelation g(r) (all cells + avg)",
+    "foci_pLAT_cross_corr_profile_all_cells_with_average_grid.png":
+        "Foci × pLAT Cross-Correlation Profile (all cells + avg)",
     "foci_pLAT_dist_bin_mfi_norm_grid.png":
         "pLAT MFI by Distance Bin to Actin Foci (norm. to synapse mean)",
     # --- pZap70 TIRF deck overrides -------------------------------------
     "pZap70_synapse_r_eff_grid.png": "pZap70 Synapse Effective Radius",
     "pZap70_synapse_rad_profile_auc1_all_cells_with_average_grid.png":
         "pZap70 Synapse Radial Profile AUC₁ (all cells + avg)",
+    # --- pMLC joint deck overrides --------------------------------------
+    "pMLC_synapse_r_eff_grid.png": "pMLC Synapse Effective Radius",
+    "pMLC_synapse_rad_profile_auc1_all_cells_with_average_grid.png":
+        "pMLC Synapse Radial Profile AUC₁ (all cells + avg)",
+    "pMLC_synapse_g_ave_grid.png":
+        "pMLC Synapse g(r) Average (scalar)",
+    "pMLC_synapse_autocorr_c_all_cells_with_average_grid.png":
+        "pMLC Synapse Autocorrelation g(r) (all cells + avg)",
+    "pMLC_z50_rel_cell_bottom_grid.png": "pMLC Z₅₀ (rel. cell bottom)",
+    "pMLC_z75_rel_cell_bottom_grid.png": "pMLC Z₇₅ (rel. cell bottom)",
+    "pMLC_z90_rel_cell_bottom_grid.png": "pMLC Z₉₀ (rel. cell bottom)",
+    # --- PKC deck overrides ---------------------------------------------
+    "PKC_synapse_r_eff_grid.png": "PKC Synapse Effective Radius",
+    "PKC_synapse_rad_profile_auc1_all_cells_with_average_grid.png":
+        "PKC Synapse Radial Profile AUC₁ (all cells + avg)",
+    "PKC_synapse_g_ave_grid.png":
+        "PKC Synapse g(r) Average (scalar)",
+    "PKC_synapse_autocorr_c_all_cells_with_average_grid.png":
+        "PKC Synapse Autocorrelation g(r) (all cells + avg)",
+    "PKC_z50_rel_cell_bottom_grid.png": "PKC Z₅₀ (rel. cell bottom)",
+    "PKC_z75_rel_cell_bottom_grid.png": "PKC Z₇₅ (rel. cell bottom)",
+    "PKC_z90_rel_cell_bottom_grid.png": "PKC Z₉₀ (rel. cell bottom)",
+    # --- pPKC (phospho-PKC θ) deck overrides ----------------------------
+    "pPKC_synapse_r_eff_grid.png": "pPKC Synapse Effective Radius",
+    "pPKC_synapse_rad_profile_auc1_all_cells_with_average_grid.png":
+        "pPKC Synapse Radial Profile AUC₁ (all cells + avg)",
+    "pPKC_synapse_g_ave_grid.png":
+        "pPKC Synapse g(r) Average (scalar)",
+    "pPKC_synapse_autocorr_c_all_cells_with_average_grid.png":
+        "pPKC Synapse Autocorrelation g(r) (all cells + avg)",
+    "pPKC_z50_rel_cell_bottom_grid.png": "pPKC Z₅₀ (rel. cell bottom)",
+    "pPKC_z75_rel_cell_bottom_grid.png": "pPKC Z₇₅ (rel. cell bottom)",
+    "pPKC_z90_rel_cell_bottom_grid.png": "pPKC Z₉₀ (rel. cell bottom)",
+    # --- CTSB (CatB) deck overrides -------------------------------------
+    "CathepsinB_synapse_rad_profile_all_cells_with_average_grid.png":
+        "CatB Synapse Radial Profile (all cells + avg)",
+    "CathepsinB_synapse_autocorr_c_all_cells_with_average_grid.png":
+        "CatB Synapse Autocorrelation g(r) (all cells + avg)",
+    # (Z50/Z75/Z90 rel_cell_bottom + norm_cell_height overrides live in
+    # the MT_CatB block below — consolidated to avoid dict-shadow bugs.)
+    # Non-auc1 actin rad_profile variants (for CTSB compile).
+    "actin_bottom_slice_rad_profile_all_cells_with_average_grid.png":
+        "Actin Synapse Radial Profile (all cells + avg)",
+    "actin_bottom_3slice_mip_rad_profile_all_cells_with_average_grid.png":
+        "Actin Synapse (3-Slice MIP) Radial Profile (all cells + avg)",
+    "pZap70_synapse_g_ave_grid.png":
+        "pZap70 Synapse g(r) Average (scalar)",
+    "pZap70_synapse_autocorr_c_all_cells_with_average_grid.png":
+        "pZap70 Synapse Autocorrelation g(r) (all cells + avg)",
+    "foci_pZap70_cross_corr_profile_all_cells_with_average_grid.png":
+        "Foci × pZap70 Cross-Correlation Profile (all cells + avg)",
     "foci_pZap70_dist_bin_mfi_norm_grid.png":
         "pZap70 MFI by Distance Bin to Actin Foci (norm. to synapse mean)",
+    "foci_CatB_dist_bin_mfi_norm_grid.png":
+        "CatB MFI by Distance Bin to Actin Foci (norm. to synapse mean)",
     # --- MT_CatB compile overrides ----------------------------------------
     "centrosome_center_z_cell_bottom_distance_grid.png":
         "Centrosome-Synapse Distance",
@@ -671,14 +1063,18 @@ TITLE_OVERRIDES = {
         "Centrosome-Synapse Distance: Fraction Polarized",
     "CathepsinB_z50_rel_cell_bottom_grid.png":
         "CatB Z₅₀ (μm from cell bottom)",
-    "CathepsinB_z50_norm_cell_height_grid.png":
-        "CatB Z₅₀ (fraction of cell height)",
-    "CathepsinB_z50_rel_cell_bottom_polarization_grid.png":
-        "CatB Z₅₀: Fraction Polarized",
     "CathepsinB_z75_rel_cell_bottom_grid.png":
         "CatB Z₇₅ (μm from cell bottom)",
+    "CathepsinB_z90_rel_cell_bottom_grid.png":
+        "CatB Z₉₀ (μm from cell bottom)",
+    "CathepsinB_z50_norm_cell_height_grid.png":
+        "CatB Z₅₀ (normalized by cell height)",
     "CathepsinB_z75_norm_cell_height_grid.png":
-        "CatB Z₇₅ (fraction of cell height)",
+        "CatB Z₇₅ (normalized by cell height)",
+    "CathepsinB_z90_norm_cell_height_grid.png":
+        "CatB Z₉₀ (normalized by cell height)",
+    "CathepsinB_z50_rel_cell_bottom_polarization_grid.png":
+        "CatB Z₅₀: Fraction Polarized",
     "CathepsinB_z75_rel_cell_bottom_polarization_grid.png":
         "CatB Z₇₅: Fraction Polarized",
     "CathepsinB_granule_area_um2_grid.png": "CatB Synapse Area",
@@ -698,7 +1094,7 @@ TITLE_OVERRIDES = {
     "CathepsinB_zCOF_cell_bottom_distance_grid.png":
         "CatB Z-COF: Distance from Cell Bottom",
     "CathepsinB_zCOF_cell_bottom_distance_norm_cell_height_grid.png":
-        "CatB Z-COF: Distance from Cell Bottom (norm. cell height)",
+        "CatB Z-COF: Distance from Cell Bottom (normalized by cell height)",
 }
 
 # Optional per-filename subtitle shown under the title (formula / units /
