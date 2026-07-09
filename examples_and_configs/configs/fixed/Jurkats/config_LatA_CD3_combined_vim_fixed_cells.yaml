@@ -25,7 +25,7 @@ images:
     title: "Centrosome-synapse distance"
 
   - path: cent_nuc_norm_dist_sphere_rad_per_experiment_grid.png
-    title: "Centrosome-nucleus distance (norm. to nuclear sphere radius)"
+    title: "Centrosome-to-nuclear-centroid distance (norm. to equiv sphere radius)"
 
   # --- Nuclear morphology ---
   - path: nuc_aspect_ratio_per_experiment_grid.png

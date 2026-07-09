@@ -72,7 +72,7 @@ images:
   - path: nuc_cent_closest_dist_grid.tif
     title: "Nucleus-centrosome closest distance"
   - path: cent_nuc_norm_dist_sphere_rad_grid.tif
-    title: "Centrosome-nucleus distance (norm. to nuclear sphere radius)"
+    title: "Centrosome-to-nuclear-centroid distance (norm. to equiv sphere radius)"
 
   # --- Actin around centrosome ---
   - path: actin_MFI_around_cent_2um_grid.tif

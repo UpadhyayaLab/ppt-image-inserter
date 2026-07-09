@@ -51,6 +51,13 @@ from .movies import (
     force_autoplay_in_pptx,
 )
 
+from .models3d import (
+    Model3DSpec,
+    Model3DSlideSpec,
+    build_model3d_deck_via_com,
+    SUPPORTED_MODEL_EXTENSIONS,
+)
+
 # Define public API
 __all__ = [
     # Core functions
@@ -87,4 +94,10 @@ __all__ = [
     'SlideSpec',
     'build_movie_deck_via_com',
     'force_autoplay_in_pptx',
+
+    # 3D-model helpers
+    'Model3DSpec',
+    'Model3DSlideSpec',
+    'build_model3d_deck_via_com',
+    'SUPPORTED_MODEL_EXTENSIONS',
 ]

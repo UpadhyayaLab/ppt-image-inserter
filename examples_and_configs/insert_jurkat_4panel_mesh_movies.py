@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 from dataclasses import dataclass
@@ -56,6 +57,11 @@ try:
 except ImportError:
     iio = None
 
+try:
+    import imageio_ffmpeg
+except ImportError:
+    imageio_ffmpeg = None
+
 
 JURKAT_BASE = Path("F:/FF/nucleus_live_cell/jurkat_nucleus_centrosome")
 
@@ -72,9 +78,15 @@ DEFAULT_OUTPUT = Path(
     "K:/FF/PPT/PPT_autogeneration/Live Cells/Jurkat 4-panel mesh movies (032022).pptx"
 )
 
-# Poster frames are transient per-run scratch; keep them out of the repo and out
-# of the deck output folder (wiped and recreated each run).
+# Poster frames and padded movie copies are transient per-run scratch; keep them
+# out of the repo and out of the deck output folder (wiped and recreated each run).
 DEFAULT_POSTER_DIR = Path(tempfile.gettempdir()) / "ppt_jurkat_4panel_posters"
+
+# PowerPoint ends video playback a hair before the media's true end, so at low
+# frame rates (these movies are 2 fps) the final timepoint is never displayed on
+# playback. Cloning the last frame for this many seconds pushes the real final
+# frame safely before that cutoff. Set to 0 (via --hold-last 0) to disable.
+HOLD_LAST_FRAME_SEC_DEFAULT = 1.0
 
 VIEWS: Tuple[str, ...] = ("xz", "xz_rev", "yz", "yz_rev")
 
@@ -176,6 +188,22 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default="",
         help="Optional comma-separated list of cell numbers to include, e.g. 1,2,5,10",
+    )
+    parser.add_argument(
+        "--hold-last",
+        type=float,
+        default=HOLD_LAST_FRAME_SEC_DEFAULT,
+        help=(
+            "Seconds to hold (clone) the final frame of each movie so PowerPoint "
+            "does not drop the last timepoint on playback. 0 disables. Default "
+            f"{HOLD_LAST_FRAME_SEC_DEFAULT}."
+        ),
+    )
+    parser.add_argument(
+        "--loop",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Loop each movie until stopped in slideshow (default: on; --no-loop to disable).",
     )
     return parser.parse_args()
 
@@ -327,6 +355,42 @@ def collect_panel_cells(
     }
 
 
+def pad_movie_hold_last(src: Path, dst: Path, hold_seconds: float) -> Path:
+    """Re-encode ``src`` to ``dst``, holding the final frame for ``hold_seconds``.
+
+    PowerPoint ends video playback slightly before the media's true end, so at
+    low frame rates the final timepoint is never shown on playback. Cloning the
+    last frame for ~1s pushes the real final frame safely before that cutoff.
+
+    Critically, the re-encode must NOT introduce B-frames: PowerPoint's decoder
+    drops reordered (B-frame) tails, which makes it swallow *more* than one final
+    frame. The source movies are Main-profile with no B-frames (IPIPIP...); we
+    match that with ``-bf 0`` and a matching keyframe interval so playback drops
+    at most the true last frame (now a clone). The source file is never
+    modified. Requires the bundled ffmpeg from imageio-ffmpeg.
+    """
+    if imageio_ffmpeg is None:
+        raise RuntimeError(
+            "imageio-ffmpeg is required to hold the final movie frame. Install "
+            "imageio-ffmpeg in the active environment, or pass --hold-last 0 to "
+            "disable."
+        )
+    exe = imageio_ffmpeg.get_ffmpeg_exe()
+    cmd = [
+        exe, "-y", "-loglevel", "error",
+        "-i", str(src),
+        "-vf", f"tpad=stop_mode=clone:stop_duration={hold_seconds}",
+        "-c:v", "libx264", "-profile:v", "main", "-pix_fmt", "yuv420p",
+        "-bf", "0", "-g", "2", "-crf", "18",
+        "-movflags", "+faststart",
+        str(dst),
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0 or not dst.exists():
+        raise RuntimeError(f"ffmpeg failed to pad {src.name}:\n{result.stderr}")
+    return dst
+
+
 def extract_first_frame(movie_path: Path, poster_path: Path) -> Tuple[int, int]:
     """Extract the first frame from a movie, save it, and return width/height."""
     if iio is None:
@@ -410,8 +474,16 @@ def _make_movie_spec(
     movie_path: Path,
     poster_path: Path,
     box_top_in: float,
+    hold_seconds: float,
 ) -> MovieSpec:
-    frame_width, frame_height = extract_first_frame(movie_path, poster_path)
+    # Insert a padded copy (final frame held) so PowerPoint does not drop the
+    # last timepoint; the poster (first frame) is unaffected by the padding.
+    movie_to_insert = movie_path
+    if hold_seconds and hold_seconds > 0:
+        held = poster_path.parent / f"{movie_path.stem}_held.mp4"
+        movie_to_insert = pad_movie_hold_last(movie_path, held, hold_seconds)
+
+    frame_width, frame_height = extract_first_frame(movie_to_insert, poster_path)
     left_in, top_in, width_in, height_in = fit_within_box(
         frame_width,
         frame_height,
@@ -421,7 +493,7 @@ def _make_movie_spec(
         MOVIE_BOX_HEIGHT_IN,
     )
     return MovieSpec(
-        movie_path=str(movie_path.resolve()),
+        movie_path=str(movie_to_insert.resolve()),
         poster_path=str(poster_path.resolve()),
         left_pt=_to_points(left_in),
         top_pt=_to_points(top_in),
@@ -438,6 +510,7 @@ def _build_movie_pair_slide(
     bottom_label: str,
     poster_dir: Path,
     suffix: str,
+    hold_seconds: float,
 ) -> SlideSpec:
     """Build one slide with title + top/bottom labels + top/bottom movies."""
     top_poster = poster_dir / f"{top_movie.stem}_{suffix}_top_poster.png"
@@ -449,8 +522,8 @@ def _build_movie_pair_slide(
             _make_region_label(bottom_label, BOTTOM_LABEL_TOP_IN),
         ),
         movies=(
-            _make_movie_spec(top_movie, top_poster, TOP_MOVIE_TOP_IN),
-            _make_movie_spec(bottom_movie, bottom_poster, BOTTOM_MOVIE_TOP_IN),
+            _make_movie_spec(top_movie, top_poster, TOP_MOVIE_TOP_IN, hold_seconds),
+            _make_movie_spec(bottom_movie, bottom_poster, BOTTOM_MOVIE_TOP_IN, hold_seconds),
         ),
     )
 
@@ -458,6 +531,7 @@ def _build_movie_pair_slide(
 def build_slide_specs(
     panel_cells: Dict[str, Dict[int, Dict[str, Path]]],
     poster_dir: Path,
+    hold_seconds: float,
 ) -> List[SlideSpec]:
     """Build two SlideSpecs per cell per present panel (xz pair, yz pair).
 
@@ -485,6 +559,7 @@ def build_slide_specs(
                     "xz_rev",
                     poster_dir,
                     f"{slug}_xz",
+                    hold_seconds,
                 )
             )
             slide_specs.append(
@@ -496,6 +571,7 @@ def build_slide_specs(
                     "yz_rev",
                     poster_dir,
                     f"{slug}_yz",
+                    hold_seconds,
                 )
             )
     return slide_specs
@@ -547,6 +623,13 @@ def main() -> int:
     n_slides = sum(2 * len(cells) for cells in panel_cells.values())
     print(f"Found {len(all_cells)} cell(s) across {len(PANELS)} panel(s)")
     print(f"Will create {n_slides} slide(s)")
+    if args.hold_last and args.hold_last > 0:
+        print(
+            f"Holding final frame {args.hold_last}s per movie "
+            "(PowerPoint last-timepoint fix)"
+        )
+    if args.loop:
+        print("Looping each movie until stopped")
 
     output_path = resolve_output_path(args.output)
     ensure_parent_dir(output_path)
@@ -562,12 +645,13 @@ def main() -> int:
     poster_dir = prepare_poster_dir(DEFAULT_POSTER_DIR)
 
     try:
-        slide_specs = build_slide_specs(panel_cells, poster_dir)
+        slide_specs = build_slide_specs(panel_cells, poster_dir, args.hold_last)
         rewritten = build_movie_deck_via_com(
             slide_specs,
             str(output_path),
             slide_width_pt=_to_points(SLIDE_WIDTH_IN),
             slide_height_pt=_to_points(SLIDE_HEIGHT_IN),
+            loop=args.loop,
         )
         print(f"Set {rewritten} slide(s) to autoplay")
     except PermissionError:

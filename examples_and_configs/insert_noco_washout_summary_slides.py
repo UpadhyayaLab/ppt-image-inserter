@@ -91,7 +91,7 @@ FAMILIES = [
     ("Centrosome ↔ nucleus", [
         ("centrosome_center_z_rel_bottom_actin_plane", "Centrosome-synapse distance"),
         ("nuc_cent_closest_dist",                "Nucleus-centrosome closest distance"),
-        ("cent_nuc_norm_dist_sphere_rad",        "Centrosome-nucleus distance (norm. to nuclear sphere radius)"),
+        ("cent_nuc_norm_dist_sphere_rad",        "Centrosome-to-nuclear-centroid distance (norm. to equiv sphere radius)"),
         ("centrosome_dist_deepest_real_avg_periphery_ratio", "Centrosome distance to deepest invag vs avg periphery ratio"),
     ]),
     ("Nuclear morphology", [

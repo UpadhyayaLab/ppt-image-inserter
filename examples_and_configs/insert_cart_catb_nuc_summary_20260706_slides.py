@@ -1,8 +1,8 @@
 """
-insert_cart_catb_nuc_summary_20260705_slides.py
+insert_cart_catb_nuc_summary_20260706_slides.py
 
 Construct-comparison summary deck for the fixed CAR-T dataset compiled into
-compiled_results/CART_MT_CatB_nuc_across_dates_20260705. The two conditions are
+compiled_results/CART_MT_CatB_nuc_across_dates_20260706. The two conditions are
 the CAR constructs — CAT vs FMC63 — pooled across 3 experiments / 5 date×
 timepoint groups (Nov 27 2023 15 min; Jun 20 2024 d3 and Jun 24 2024 d5, each at
 5 min and 15 min; CAT n = 432, FMC63 n = 514 from cell_counts.csv). Channels:
@@ -28,9 +28,9 @@ Self-contained: builds a blank deck (no template .pptx). Missing panels render
 "(missing)" rather than failing. A previous deck is backed up before overwrite.
 
 Usage:
-    conda run -n PPT_editing python examples_and_configs/insert_cart_catb_nuc_summary_20260705_slides.py
+    conda run -n PPT_editing python examples_and_configs/insert_cart_catb_nuc_summary_20260706_slides.py
     # dry run (print planned families/titles, build nothing):
-    conda run -n PPT_editing python examples_and_configs/insert_cart_catb_nuc_summary_20260705_slides.py --list
+    conda run -n PPT_editing python examples_and_configs/insert_cart_catb_nuc_summary_20260706_slides.py --list
 """
 
 import os
@@ -54,14 +54,14 @@ from ppt_image_inserter import backup_presentation  # noqa: E402
 # ---------------------------------------------------------------------------
 ROOT = Path(
     "J:/FF/fixed_cell/CAR_TCell/compiled_results/"
-    "CART_MT_CatB_nuc_across_dates_20260705"
+    "CART_MT_CatB_nuc_across_dates_20260706"
 )
 BYDAY_DIR = ROOT / "by_day_panels"
 CELL_COUNTS_PNG = ROOT / "cell_counts_barplot.png"   # context slide (optional)
 
 OUTPUT_PATH = Path(
     "K:/FF/PPT/PPT_autogeneration/CART/nucleus/"
-    "CART_CATB_MT_nuc_summary_across_dates_20260705.pptx"
+    "CART_CATB_MT_nuc_summary_across_dates_20260706.pptx"
 )
 
 # Each metric is one single-axis "by day" panel: CAT and FMC63 as an adjacent
@@ -70,13 +70,13 @@ OUTPUT_PATH = Path(
 PANEL_SUFFIX = "_by_day.png"
 
 # Compile date parsed from the dated ROOT folder (…_YYYYMMDD), shown in the footer.
-_d = ROOT.name.rsplit("_", 1)[-1]          # e.g. "20260705"
+_d = ROOT.name.rsplit("_", 1)[-1]          # e.g. "20260706"
 COMPILE_DATE = "{}-{}-{}".format(_d[:4], _d[4:6], _d[6:8])
 
 DECK_TITLE = "Granule polarization and nuclear morphology in CAR T cells (CAT vs FMC63)"
 DECK_SUBTITLE = (
     "CAT vs FMC63 by date/timepoint  ·  5 experiments (Nov 2023, Jun 2024 d3/d5; 5 & 15 min)  ·  "
-    "CatB / MT / actin / DNA  ·  compiled 2026-07-05"
+    "CatB / MT / actin / DNA  ·  compiled 2026-07-06"
 )
 
 # ---------------------------------------------------------------------------
@@ -133,7 +133,7 @@ FAMILIES = [
     ]),
     ("Centrosome ↔ nucleus", [
         ("nuc_cent_closest_dist",            "Nucleus-centrosome closest distance"),
-        ("cent_nuc_norm_dist_sphere_rad",    "Centrosome-to-nuclear-centroid distance (norm. to nuclear sphere radius)"),
+        ("cent_nuc_norm_dist_sphere_rad",    "Centrosome-to-nuclear-centroid distance (norm. to equiv sphere radius)"),
         ("centrosome_dist_deepest_real_avg_periphery_ratio", "Centrosome distance to deepest invag vs avg periphery ratio"),
         # Centrosome radial position in the cell footprint (0 = center, 1 = edge),
         # computed on the MT-derived centrosome (process_MT_channel.m).

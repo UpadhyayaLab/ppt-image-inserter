@@ -9,32 +9,33 @@ role (these bTub datasets have no dedicated centrosome stain); actin and the
 Hoechst/DNA nucleus round out the four channels.
 
 The scientific variable is the CAR construct: CAT (left) vs FMC63 (right), shown
-side by side, one FOV (first chunk) per cell. The 5 min and 15 min timepoints are
-separate slides. Slides are grouped by combo (kind) — all groups of one combo
-consecutively, chronological within each block.
+side by side, one FOV (first chunk) per cell. Each timepoint is its own slide.
+Slides are grouped by combo (kind) — all groups of one combo consecutively,
+chronological within each block. A dataset only appears in a combo whose channels
+it has (a group with no montage on either side is skipped, not left blank), so
+datasets missing MT or CatB simply drop out of those combos.
 
-Datasets (marker == "CatB" rows of the compiled manifest):
+Datasets (marker == "CatB" rows of the compiled manifest, plus EXTRA_DATASET_DATES):
 
     Y: drive AP data (actin + CatB + nuc, no MT):
         20231018    5, 15 min
         20240312    5, 15 min
     J: drive (actin + MT + CatB + nuc):
         20231127    15 min only
-        20240620    5, 15 min   (day3)
-        20240624    5, 15 min   (day5)
+        20240620    5, 15 min       (day3)
+        20240624    5, 15 min       (day5)
+    Y: drive Kiet pMLC (actin + nuc only — no CatB, no MT):
+        20260312    5, 10, 15 min   (03122026_pMLC_actin_CAR_T)
 
 SOURCE — the nucleus pipeline writes a *separate* progress folder,
 `prog_fixed_cells_nuc/`, NOT the per-channel `prog_fixed_cells/` used by
 insert_MT_CatB_actin_synapse_xz_mip_montages_slides.py. Under it,
 `physical_scale_images/<combo>/montages/montage_cells_*.png` holds the CTL-style
 combined overlays (actin_nuc_xz, CatB_MT_nuc_xz, nucleus_bz, ...), all at
-104 px / 5 μm — identical to the CTL LAMP1 deck.
-
-As of 2026-07-03 only the 3 J: (bTub) datasets have the `physical_scale_images/`
-tree; the 2 Y: datasets have nucleus segmentation but that render stage has not
-been run for them (and they have no MT channel), so their cells render
-`(missing)` and auto-fill on a rerun once the stage generates. MT combos likewise
-render `(missing)` for the two Y: (no-MT) datasets.
+104 px / 5 μm — identical to the CTL LAMP1 deck. For the CatB datasets this folder
+sits under base_dir (…/cells/channels); for the Kiet pMLC dataset the manifest
+base_dir is …/converted/cropped/split_channels but prog_fixed_cells_nuc lives one
+level up (…/converted/cropped/), so resolve_nuc_root() checks base_dir then parent.
 
 Usage:
     conda run -n PPT_editing python examples_and_configs/insert_CART_CatB_MT_actin_nuc_montages_slides.py
@@ -73,11 +74,19 @@ OUTPUT_PATH = (
     "CART_CatB_MT_actin_nuc_montages_20260703.pptx"
 )
 
-# Only include manifest rows whose marker matches this set (all 5 CatB datasets).
+# Include manifest rows whose marker is in MARKER_FILTER (the 5 CatB datasets),
+# plus any rows from the dates in EXTRA_DATASET_DATES regardless of marker.
+# 20260312 is a pMLC experiment (marker != CatB) with actin + nucleus but NO
+# CatB and NO MT — it contributes only to the actin/nucleus combos; the CatB/MT
+# combos have no montage folder for it and are silently skipped per group.
 MARKER_FILTER = {"CatB"}
+EXTRA_DATASET_DATES = {"20260312"}
 
-# The nucleus pipeline's progress folder (sibling of the per-channel
-# prog_fixed_cells/). base_dir in the manifest already ends at cells/channels.
+# The nucleus pipeline's progress folder. For the CatB datasets it sits directly
+# under base_dir (…/cells/channels/prog_fixed_cells_nuc). For the Kiet pMLC
+# datasets the manifest base_dir points at …/converted/cropped/split_channels but
+# prog_fixed_cells_nuc lives one level up (…/converted/cropped/prog_fixed_cells_nuc),
+# so resolve_nuc_root() checks base_dir then its parent.
 PROGRESS_FOLDER = "prog_fixed_cells_nuc"
 
 # Combo table: (subpath under <base_dir>/<PROGRESS_FOLDER>/, title, scale_group).
@@ -86,6 +95,13 @@ PROGRESS_FOLDER = "prog_fixed_cells_nuc"
 # `physical_scale_images/` combos carry the embedded 104 px / 5 μm scalebar; the
 # actin synapse mask does not (layout-pin only). CatB = granule; MT = centrosome.
 COMBOS = [
+    # --- Actin (red) + Nucleus (cyan) XZ MIP — lead combo, shown first.
+    # Sourced from actin_nuc_xz_planes_nolines: this variant renders actin in
+    # PURE RED (the plain actin_nuc_xz[_nolines] uses an orange "hot" LUT) with
+    # nucleus in cyan, and the `_nolines` suffix drops the cell top/bottom
+    # reference lines the `_planes` render would otherwise draw. ---
+    ("physical_scale_images/actin_nuc_xz_planes_nolines/montages",
+     "Actin + Nuc XZ MIP", "xz_phys"),
     # --- Broadest / centrosome slice XY (3-channel and nucleus-only) ---
     ("physical_scale_images/CatB_MT_nuc_bz/montages",
      "CatB + MT + Nuc, broadest slice", "broad"),
@@ -100,11 +116,8 @@ COMBOS = [
     # --- Actin synapse mask (no embedded scalebar; layout-pin only) ---
     ("actin/bottom_slice_seg/montages",
      "Actin synapse mask (bottom slice)", "synapse"),
-    # --- XZ MIPs (all share the physical-scale 104 px / 5 μm bar) ---
-    ("physical_scale_images/actin_nuc_xz/montages",
-     "Actin + Nuc XZ MIP", "xz_phys"),
-    ("physical_scale_images/actin_nuc_xz_planes/montages",
-     "Actin + Nuc XZ MIP, cell top/bottom marked", "xz_phys"),
+    # --- XZ MIPs (all share the physical-scale 104 px / 5 μm bar).
+    # actin_nuc_xz / _planes are the lead combos at the top of COMBOS. ---
     ("physical_scale_images/MT_nuc_xz/montages",
      "MT + Nuc XZ MIP", "xz_phys"),
     ("physical_scale_images/CatB_nuc_xz/montages",
@@ -254,8 +267,29 @@ def find_first_chunk(montages_dir: Optional[Path]) -> Optional[Path]:
     return keep[0][0]
 
 
-def resolve_montages_dir(base_dir: str, subpath: str) -> Path:
-    return Path(base_dir) / PROGRESS_FOLDER / subpath
+_NUC_ROOT_CACHE: Dict[str, Optional[Path]] = {}
+
+
+def resolve_nuc_root(base_dir: str) -> Optional[Path]:
+    """Locate the prog_fixed_cells_nuc dir for a condition. It sits directly under
+    base_dir (CatB datasets, …/cells/channels) or one level up (Kiet pMLC
+    datasets, base_dir = …/split_channels but the folder is under …/cropped).
+    Cached per base_dir to spare the network drive repeated isdir() calls."""
+    if base_dir in _NUC_ROOT_CACHE:
+        return _NUC_ROOT_CACHE[base_dir]
+    root = None
+    for cand in (Path(base_dir) / PROGRESS_FOLDER,
+                 Path(base_dir).parent / PROGRESS_FOLDER):
+        if os.path.isdir(_winlong(cand)):
+            root = cand
+            break
+    _NUC_ROOT_CACHE[base_dir] = root
+    return root
+
+
+def resolve_montages_dir(base_dir: str, subpath: str) -> Optional[Path]:
+    root = resolve_nuc_root(base_dir)
+    return (root / subpath) if root else None
 
 
 # ---------------------------------------------------------------------------
@@ -371,11 +405,14 @@ def main() -> None:
     with manifest_path.open("r", newline="") as f:
         rows = list(csv.DictReader(f))
 
-    # Parse the CatB rows into (date, cell, tp, base_dir).
+    # Parse the selected rows into (date, cell, tp, base_dir): CatB datasets plus
+    # any dates in EXTRA_DATASET_DATES (e.g. the 20260312 pMLC actin+nuc dataset).
     parsed = []
     skipped_marker = 0
     for idx, row in enumerate(rows):
-        if row["marker"].strip() not in MARKER_FILTER:
+        marker = row["marker"].strip()
+        date = row["date"].strip()
+        if marker not in MARKER_FILTER and date not in EXTRA_DATASET_DATES:
             skipped_marker += 1
             continue
         base_dir = row["base_dir"].strip().rstrip("\\/")
@@ -383,7 +420,7 @@ def main() -> None:
         if cell is None or tp is None:
             print(f"WARNING: could not parse condition from manifest row {idx}; skipping.")
             continue
-        parsed.append({"date": row["date"].strip(), "cell": cell, "tp": tp,
+        parsed.append({"date": date, "cell": cell, "tp": tp,
                        "base_dir": base_dir})
 
     # Group by (date, tp); each group holds the CAT and FMC base_dirs.
@@ -393,10 +430,14 @@ def main() -> None:
         g[p["cell"]] = p["base_dir"]
     sorted_group_keys = sorted(groups.keys())  # chronological: (date, tp)
 
-    # Build slide specs: for each combo (kind), one slide per group.
+    # Build slide specs: for each combo (kind), one slide per group. A group whose
+    # dataset lacks this combo entirely (neither CAT nor FMC montage on disk — e.g.
+    # a no-MT dataset for an MT combo, or the pMLC dataset for a CatB combo) is
+    # skipped, so datasets only appear in the combos their channels support. A
+    # slide with one side present and the other absent still renders, with
+    # "(missing)" on the empty side.
     slide_specs = []  # (title, scale_group, cat_img, fmc_img, cat_dir, fmc_dir, log_key)
     for subpath, desc, scale_group in COMBOS:
-        combo_has_any = False
         combo_specs = []
         for (date, tp) in sorted_group_keys:
             g = groups[(date, tp)]
@@ -404,13 +445,13 @@ def main() -> None:
             fmc_dir = resolve_montages_dir(g["FMC"], subpath) if g["FMC"] else None
             cat_img = find_first_chunk(cat_dir)
             fmc_img = find_first_chunk(fmc_dir)
-            if cat_img is not None or fmc_img is not None:
-                combo_has_any = True
+            if cat_img is None and fmc_img is None:
+                continue  # dataset has no montage for this combo — no slide
             title = f"{desc} — {date}, {tp} min"
             log_key = f"{desc}/{date}/{tp}min"
             combo_specs.append((title, scale_group, cat_img, fmc_img,
                                 cat_dir, fmc_dir, log_key))
-        if not combo_has_any:
+        if not combo_specs:
             print(f"WARNING: skipping combo '{desc}' — no montages found in any group.")
             continue
         slide_specs.extend(combo_specs)

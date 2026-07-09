@@ -33,6 +33,7 @@ P_NAMESPACE = "http://schemas.openxmlformats.org/presentationml/2006/main"
 _CTN_TAG = f"{{{P_NAMESPACE}}}cTn"
 _STCONDLST_TAG = f"{{{P_NAMESPACE}}}stCondLst"
 _COND_TAG = f"{{{P_NAMESPACE}}}cond"
+_CMEDIANODE_TAG = f"{{{P_NAMESPACE}}}cMediaNode"
 
 _ALIGN_MAP = {"left": 1, "center": 2, "right": 3, "justify": 4}
 
@@ -77,6 +78,7 @@ def build_movie_deck_via_com(
     output_path: str,
     slide_width_pt: float,
     slide_height_pt: float,
+    loop: bool = False,
 ) -> int:
     """Build a PowerPoint deck of textboxes and embedded movies via COM.
 
@@ -92,6 +94,8 @@ def build_movie_deck_via_com(
         output_path: Where to save the .pptx. Overwritten if it exists.
         slide_width_pt: Slide width in points (e.g. 13.333 in * 72 = 960).
         slide_height_pt: Slide height in points (e.g. 7.5 in * 72 = 540).
+        loop: If True, also mark every embedded movie to loop until stopped via
+            :func:`force_loop_in_pptx`. Defaults to False (unchanged behavior).
 
     Returns:
         The number of slides whose autoplay trigger was rewritten on disk.
@@ -140,7 +144,10 @@ def build_movie_deck_via_com(
         except OSError:
             pass
 
-    return force_autoplay_in_pptx(output_path)
+    rewritten = force_autoplay_in_pptx(output_path)
+    if loop:
+        force_loop_in_pptx(output_path)
+    return rewritten
 
 
 def _slide_to_manifest(slide: SlideSpec) -> dict:
@@ -268,6 +275,61 @@ def force_autoplay_in_pptx(pptx_path: str) -> int:
             zout.writestr(item, data)
     os.replace(tmp_path, pptx_path)
     return rewritten
+
+
+def force_loop_in_pptx(pptx_path: str) -> int:
+    """Mark every embedded movie to loop until stopped.
+
+    Opens the .pptx as a zip, walks every ``ppt/slides/slideN.xml``, and for
+    each ``<p:cMediaNode>`` sets ``repeatCount="indefinite"`` on its child
+    ``<p:cTn>``. This is the exact OOXML the PowerPoint UI generates for the
+    video "Loop until Stopped" playback option (verified via COM), so the movie
+    restarts automatically when it reaches the end.
+
+    Args:
+        pptx_path: Path to the .pptx file. The file is rewritten in place.
+
+    Returns:
+        The number of slides whose timing tree was modified.
+    """
+    tmp_path = pptx_path + ".loop.tmp"
+    rewritten = 0
+    with zipfile.ZipFile(pptx_path, "r") as zin, zipfile.ZipFile(
+        tmp_path, "w", zipfile.ZIP_DEFLATED
+    ) as zout:
+        for item in zin.infolist():
+            data = zin.read(item.filename)
+            if _is_slide_xml(item.filename):
+                new_data, changed = _patch_slide_loop_xml(data)
+                if changed:
+                    rewritten += 1
+                data = new_data
+            zout.writestr(item, data)
+    os.replace(tmp_path, pptx_path)
+    return rewritten
+
+
+def _patch_slide_loop_xml(xml_bytes: bytes) -> Tuple[bytes, bool]:
+    """Return slide XML with every media node set to loop, and a changed flag."""
+    root = etree.fromstring(xml_bytes)
+    changed = False
+
+    for media_node in root.iter(_CMEDIANODE_TAG):
+        media_ctn = media_node.find(_CTN_TAG)
+        if media_ctn is None:
+            continue
+        if media_ctn.get("repeatCount") == "indefinite":
+            continue
+        media_ctn.set("repeatCount", "indefinite")
+        changed = True
+
+    if not changed:
+        return xml_bytes, False
+
+    out = etree.tostring(
+        root, xml_declaration=True, encoding="UTF-8", standalone=True
+    )
+    return out, True
 
 
 def _is_slide_xml(name: str) -> bool:

@@ -142,7 +142,7 @@ FAMILIES = [
     ]),
     ("Centrosome ↔ nucleus", [
         ("nuc_cent_closest_dist",            "Nucleus-centrosome closest distance"),
-        ("cent_nuc_norm_dist_sphere_rad",    "Centrosome-to-nuclear-centroid distance (norm. to nuclear sphere radius)"),
+        ("cent_nuc_norm_dist_sphere_rad",    "Centrosome-to-nuclear-centroid distance (norm. to equiv sphere radius)"),
         ("centrosome_dist_deepest_real_avg_periphery_ratio", "Centrosome distance to deepest invag vs avg periphery ratio"),
         # Centrosome radial position in the cell footprint (0 = center, 1 = edge),
         # now computed on the MT-derived centrosome (process_MT_channel.m).
