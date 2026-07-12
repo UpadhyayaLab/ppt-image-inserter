@@ -91,8 +91,8 @@ HOLD_LAST_FRAME_SEC_DEFAULT = 0.0
 # covers the full-range case. Dropping it leaves 3 per row, so each movie is
 # larger. The gamma .mp4s still exist on disk and are simply not enumerated.
 MOVIE_TYPES: Tuple[Tuple[str, str], ...] = (
-    ("masks_linear5-50", "Outlines, linear [5,50]"),
-    ("masks_fullrange_log", "Outlines, full range (log)"),
+    ("masks_linear5-50", "Linear scale [5, 50]"),
+    ("masks_fullrange_log", "Log scale"),
     ("tracks", "Outlines + track IDs + tails"),
 )
 
@@ -111,24 +111,44 @@ LLS_BASE = Path(
     "LLS_MIPs/nucleus_cellpose"
 )
 
+# Whole-FOV first (the LLS analog of the confocal whole-field FOV slides), then
+# the ROI zoom-ins.
 LLS_REGIONS: Tuple[str, ...] = (
+    "WA1_wholeFOV",
+    "WA2_wholeFOV",
     "WA1_ROI1",
     "WA1_ROI2",
     "WA1_ROI3",
     "WA1_ROI4",
-    "WA1_wholeFOV",
-    "WA2_wholeFOV",
 )
 
 # (movie path relative to a region folder, caption) in slide column order. Chosen
-# to mirror the confocal 3-across format; linear_wide and seg-only are omitted.
+# to mirror the confocal 3-across format. For LLS the middle column uses the
+# gamma-corrected display (seg-only, no tracks) instead of the confocal log scale,
+# since gamma reads better on the LLS background; linear_wide / full_range_log are
+# omitted. The LLS linear window is auto-derived per file, so no fixed numbers in
+# the "Linear scale" label (unlike the confocal fixed [5, 50]).
 LLS_MOVIE_TYPES: Tuple[Tuple[str, str], ...] = (
-    ("dim_nuclei_check/linear_tight.mp4", "Outlines, linear tight"),
-    ("dim_nuclei_check/full_range_log.mp4", "Outlines, full range (log)"),
+    ("dim_nuclei_check/linear_tight.mp4", "Linear scale"),
+    ("movies/seg-only_dualtone_gamma.mp4", "Gamma-corrected"),
     ("movies/seg+tracking_dualtone_gamma.mp4", "Outlines + track IDs + tails"),
 )
 
 LLS_MODALITY = "LLS"
+
+# Exact per-WA linear display window shown on the "Linear scale" caption of the
+# WHOLE-FOV slides only. The renderer's --auto samples 12 frames across the whole
+# stack once and sets lo = p1, hi = p92, then maps every frame identically, so a
+# single fixed window is meaningful for the whole field: WA1 ≈ [102, 188],
+# WA2 ≈ [103, 194].
+#
+# The ROI conjugate crops (WA1_ROI1-4) are auto-windowed independently ON EACH
+# CROP (lo≈p1, tight hi=p99), so their linear windows differ per ROI (e.g. ROI1
+# [111, 738], ROI2 [112, 5341] (bright object, ~20x), ROI3 [111, 307], ROI4
+# [108, 285]) and are NOT brightness-comparable. Those slides are therefore
+# labelled with the method, not a fixed intensity window.
+LLS_LINEAR_WINDOW_BY_WA: Dict[int, str] = {1: "[102, 188]", 2: "[103, 194]"}
+LLS_ROI_LINEAR_NOTE = "(per-crop auto, p1–p99)"
 
 
 # --- Low-SNR per-nucleus QC crops --------------------------------------------
@@ -145,20 +165,31 @@ LOWSNR_DIR = MOVIE_DIR.parent / "low_snr_crop_movies_notracks"
 LOWSNR_FILENAME_RE = re.compile(
     r"^FOV(?P<fov>\d+)_MFI(?P<mfi>\d+)_id(?P<id>\d+)_len(?P<len>\d+)\.mp4$"
 )
-# Starter selection: the dimmest (lowest MFI) tracks that are long enough to
-# actually show tracking. Tune with --lowsnr-count (0 disables the section).
-LOWSNR_COUNT_DEFAULT = 8
+# Selection: the dimmest (lowest MFI) tracks long enough to show tracking, taken
+# in ascending-MFI order. The default is large enough to include ALL eligible
+# (len >= LOWSNR_MIN_LEN) crops; lower it with --lowsnr-count (0 disables). At
+# 8 per 4x2 grid page, the eligible set spans several slides.
+LOWSNR_COUNT_DEFAULT = 1000
 LOWSNR_MIN_LEN = 100
 
-# Grid layout for the low-SNR slide(s).
+# Grid layout for the low-SNR slide(s). The crops carry their own baked-in banner
+# (id / per-frame MFI / length), so no per-crop caption is added here.
 LOWSNR_COLS = 4
 LOWSNR_ROWS = 2  # cells per slide = COLS * ROWS
-LOWSNR_BOX_IN = 2.7
+LOWSNR_BOX_IN = 3.0
 LOWSNR_COL_GAP_IN = 0.2
 LOWSNR_ROW_GAP_IN = 0.35
-LOWSNR_CAPTION_H_IN = 0.22
-LOWSNR_CAPTION_GAP_IN = 0.05
-LOWSNR_CAPTION_FONT_PT = 11.0
+
+# --- LLS low-SNR per-nucleus crops (whole-FOV WA1/WA2, outline only) ----------
+# Sibling of the confocal low-SNR crops, from the LLS whole-FOV data. Placed
+# AFTER the LLS region slides (so the whole-FOV region slides precede the crops).
+# Filenames: WA<n>_MFI<mfi>_id<id>_len<frames>.mp4. Same rule as the confocal
+# grid: all crops (both WA) with len >= threshold, dimmest (lowest MFI) first.
+LLS_LOWSNR_DIR = LLS_BASE / "low_snr_crop_movies_notracks"
+LLS_LOWSNR_FILENAME_RE = re.compile(
+    r"^WA(?P<wa>\d+)_MFI(?P<mfi>\d+)_id(?P<id>\d+)_len(?P<len>\d+)\.mp4$"
+)
+LLS_LOWSNR_MIN_LEN = 100
 
 
 SLIDE_WIDTH_IN = 13.333
@@ -195,6 +226,14 @@ CAPTION_TOP_IN = _REGION_TOP_IN + max(
     0.0, (_REGION_BOTTOM_IN - _REGION_TOP_IN - _BLOCK_HEIGHT_IN) / 2
 )
 MOVIE_BOX_TOP_IN = CAPTION_TOP_IN + CAPTION_HEIGHT_IN + _CAPTION_GAP_IN
+
+# LLS whole-FOV movies are tall/narrow (444x1024), so the shared square row box
+# renders them small. Whole-FOV slides get a taller box (caption just under the
+# title, movie spanning most of the slide height) so the field is larger. Width
+# stays the shared 3-column width; the tall movie is height-limited and centered.
+LLS_WHOLEFOV_CAPTION_TOP_IN = 0.58
+LLS_WHOLEFOV_MOVIE_TOP_IN = 0.84
+LLS_WHOLEFOV_BOX_HEIGHT_IN = SLIDE_HEIGHT_IN - LLS_WHOLEFOV_MOVIE_TOP_IN - 0.12
 
 
 def parse_args() -> argparse.Namespace:
@@ -590,11 +629,32 @@ def format_lls_region_label(region: str) -> str:
     return region.replace("_wholeFOV", " whole FOV").replace("_", " ")
 
 
+def _region_wa(region: str) -> int:
+    """Well/acquisition number from a region name, e.g. WA1_ROI1 -> 1."""
+    m = re.match(r"WA(\d+)", region)
+    return int(m.group(1)) if m else 0
+
+
+def _lls_caption(region: str, rel: str, caption: str) -> str:
+    """Annotate the 'Linear scale' caption with the display window.
+
+    Whole-FOV slides use a single stack-wide window (a fixed [lo, hi]); ROI slides
+    are auto-windowed per crop, so they get a method note rather than a fixed
+    window (their windows differ per ROI and are not brightness-comparable).
+    """
+    if "linear_tight" not in rel:
+        return caption
+    if region.endswith("_wholeFOV"):
+        window = LLS_LINEAR_WINDOW_BY_WA.get(_region_wa(region))
+        return f"{caption} {window}" if window else caption
+    return f"{caption} {LLS_ROI_LINEAR_NOTE}"
+
+
 def format_lls_title(region: str) -> str:
-    """Return the slide title for an LLS region."""
+    """Return the (single-line) slide title for an LLS region."""
     return (
-        f"{format_lls_region_label(region)} — B16-OVA + CTL conjugate, "
-        f"nucleus Cellpose seg ({LLS_MODALITY}, {EXPERIMENT_DATE})"
+        f"{format_lls_region_label(region)} — nucleus Cellpose seg "
+        f"({LLS_MODALITY}, {EXPERIMENT_DATE})"
     )
 
 
@@ -631,18 +691,46 @@ def _build_lls_slide(
     poster_dir: Path,
     hold_seconds: float,
 ) -> SlideSpec:
-    """Build one slide: title + a 3-across row of captioned movies for one region."""
+    """Build one slide: title + a 3-across row of captioned movies for one region.
+
+    Whole-FOV regions use a taller movie box so their tall/narrow field fills
+    more of the slide; ROI regions keep the shared square row box.
+    """
+    is_wholefov = region.endswith("_wholeFOV")
+    caption_top_in = (
+        LLS_WHOLEFOV_CAPTION_TOP_IN if is_wholefov else CAPTION_TOP_IN
+    )
+    movie_top_in = LLS_WHOLEFOV_MOVIE_TOP_IN if is_wholefov else MOVIE_BOX_TOP_IN
+    box_height_in = (
+        LLS_WHOLEFOV_BOX_HEIGHT_IN if is_wholefov else MOVIE_BOX_HEIGHT_IN
+    )
+
     textboxes: List[TextboxSpec] = [_make_title_textbox(format_lls_title(region))]
     movies: List[MovieSpec] = []
     for col, ((rel, caption), movie_path) in enumerate(
         zip(LLS_MOVIE_TYPES, movie_paths)
     ):
         box_left_in = _column_left_in(col)
-        textboxes.append(_make_caption_textbox(caption, box_left_in))
+        textboxes.append(
+            _make_caption_box(
+                _lls_caption(region, rel, caption),
+                box_left_in,
+                caption_top_in,
+                MOVIE_BOX_WIDTH_IN,
+            )
+        )
         token = rel.replace("/", "_").replace(".mp4", "")
         poster_path = poster_dir / f"{region}_{token}_poster.png"
         movies.append(
-            _make_movie_spec(movie_path, poster_path, box_left_in, hold_seconds)
+            _make_movie_spec_in_box(
+                movie_path,
+                poster_path,
+                box_left_in,
+                movie_top_in,
+                MOVIE_BOX_WIDTH_IN,
+                box_height_in,
+                hold_seconds,
+            )
         )
     return SlideSpec(textboxes=tuple(textboxes), movies=tuple(movies))
 
@@ -691,16 +779,15 @@ def collect_lowsnr_tracks(folder: Path, count: int) -> List[LowSnrTrack]:
     return eligible[:count]
 
 
-def _lowsnr_caption(track: LowSnrTrack) -> str:
-    mfi, fov, tid, length, _path = track
-    return f"FOV{fov} · id{tid} · MFI {mfi} · {length}f"
-
-
 def _lowsnr_grid_geometry() -> Tuple[float, float, float]:
-    """Return (grid_left0_in, grid_top0_in, cell_height_in), vertically centered."""
+    """Return (grid_left0_in, grid_top0_in, cell_height_in), vertically centered.
+
+    No per-crop caption row: each crop carries its own baked-in banner, so a cell
+    is just the movie box.
+    """
     grid_w = LOWSNR_COLS * LOWSNR_BOX_IN + (LOWSNR_COLS - 1) * LOWSNR_COL_GAP_IN
     grid_left0 = (SLIDE_WIDTH_IN - grid_w) / 2
-    cell_h = LOWSNR_CAPTION_H_IN + LOWSNR_CAPTION_GAP_IN + LOWSNR_BOX_IN
+    cell_h = LOWSNR_BOX_IN
     grid_h = LOWSNR_ROWS * cell_h + (LOWSNR_ROWS - 1) * LOWSNR_ROW_GAP_IN
     region_top = TITLE_TOP_IN + TITLE_HEIGHT_IN + 0.2
     region_bottom = SLIDE_HEIGHT_IN - 0.1
@@ -708,50 +795,39 @@ def _lowsnr_grid_geometry() -> Tuple[float, float, float]:
     return grid_left0, grid_top0, cell_h
 
 
-def build_lowsnr_slide_specs(
-    tracks: Sequence[LowSnrTrack],
+# One grid crop to place: (unique poster token, movie path). The crop's own
+# baked-in banner (id / per-frame MFI / length) is the only label.
+GridCrop = Tuple[str, Path]
+
+
+def _build_crop_grid_slides(
+    title: str,
+    crops: Sequence[GridCrop],
     poster_dir: Path,
     hold_seconds: float,
 ) -> List[SlideSpec]:
-    """Build low-SNR track QC slide(s): a COLS x ROWS grid of captioned crops."""
-    if not tracks:
+    """Build COLS x ROWS grid slide(s) of crop movies (no captions) under ``title``."""
+    if not crops:
         return []
 
     per_page = LOWSNR_COLS * LOWSNR_ROWS
     grid_left0, grid_top0, cell_h = _lowsnr_grid_geometry()
-    pages = [tracks[i : i + per_page] for i in range(0, len(tracks), per_page)]
+    pages = [crops[i : i + per_page] for i in range(0, len(crops), per_page)]
 
     slides: List[SlideSpec] = []
     for page_index, page in enumerate(pages):
-        page_label = "" if len(pages) == 1 else f" ({page_index + 1}/{len(pages)})"
-        title = (
-            f"Low-SNR nucleus crops — dimmest {len(tracks)}, outline only"
-            f"{page_label} ({MODALITY}, {EXPERIMENT_DATE})"
-        )
-        textboxes: List[TextboxSpec] = [_make_title_textbox(title)]
+        page_label = "" if len(pages) == 1 else f" (page {page_index + 1}/{len(pages)})"
+        textboxes: List[TextboxSpec] = [_make_title_textbox(title + page_label)]
         movies: List[MovieSpec] = []
-        for idx, track in enumerate(page):
+        for idx, (token, path) in enumerate(page):
             col = idx % LOWSNR_COLS
             row = idx // LOWSNR_COLS
             left_in = grid_left0 + col * (LOWSNR_BOX_IN + LOWSNR_COL_GAP_IN)
-            caption_top_in = grid_top0 + row * (cell_h + LOWSNR_ROW_GAP_IN)
-            movie_top_in = caption_top_in + LOWSNR_CAPTION_H_IN + LOWSNR_CAPTION_GAP_IN
-            textboxes.append(
-                _make_caption_box(
-                    _lowsnr_caption(track),
-                    left_in,
-                    caption_top_in,
-                    LOWSNR_BOX_IN,
-                    LOWSNR_CAPTION_FONT_PT,
-                    LOWSNR_CAPTION_H_IN,
-                )
-            )
-            _mfi, fov, tid, _length, path = track
-            poster_path = poster_dir / f"lowsnr_FOV{fov}_id{tid}_poster.png"
+            movie_top_in = grid_top0 + row * (cell_h + LOWSNR_ROW_GAP_IN)
             movies.append(
                 _make_movie_spec_in_box(
                     path,
-                    poster_path,
+                    poster_dir / f"{token}_poster.png",
                     left_in,
                     movie_top_in,
                     LOWSNR_BOX_IN,
@@ -761,6 +837,71 @@ def build_lowsnr_slide_specs(
             )
         slides.append(SlideSpec(textboxes=tuple(textboxes), movies=tuple(movies)))
     return slides
+
+
+def build_lowsnr_slide_specs(
+    tracks: Sequence[LowSnrTrack],
+    poster_dir: Path,
+    hold_seconds: float,
+) -> List[SlideSpec]:
+    """Build confocal low-SNR QC grid slide(s) from selected tracks."""
+    if not tracks:
+        return []
+    title = (
+        f"Low-SNR nucleus crops — dim examples, outline only "
+        f"({MODALITY}, {EXPERIMENT_DATE})"
+    )
+    crops: List[GridCrop] = [(f"lowsnr_FOV{t[1]}_id{t[2]}", t[4]) for t in tracks]
+    return _build_crop_grid_slides(title, crops, poster_dir, hold_seconds)
+
+
+# One selected LLS low-SNR crop: (mfi, wa, track_id, length, path). Ordered so a
+# plain sort puts the dimmest (lowest MFI) first, like LowSnrTrack.
+LlsLowSnrCrop = Tuple[int, int, int, int, Path]
+
+
+def collect_lls_lowsnr(folder: Path) -> List[LlsLowSnrCrop]:
+    """Return all LLS low-SNR crops (both WA) with len >= threshold, dimmest first."""
+    if not folder.exists():
+        print(f"[WARNING] LLS low-SNR crop folder not found; skipping ({folder})")
+        return []
+
+    records: List[LlsLowSnrCrop] = []
+    for p in sorted(folder.glob("*.mp4")):
+        m = LLS_LOWSNR_FILENAME_RE.match(p.name)
+        if not m:
+            continue
+        records.append(
+            (int(m["mfi"]), int(m["wa"]), int(m["id"]), int(m["len"]), p)
+        )
+
+    eligible = [r for r in records if r[3] >= LLS_LOWSNR_MIN_LEN]
+    if not eligible:
+        print(
+            f"[WARNING] no LLS low-SNR crops with len>={LLS_LOWSNR_MIN_LEN} in {folder}"
+        )
+        return []
+    eligible.sort(key=lambda r: (r[0], r[1], r[2]))  # MFI asc, then WA, id
+    return eligible
+
+
+def build_lls_lowsnr_slide_specs(
+    crops: Sequence[LlsLowSnrCrop],
+    poster_dir: Path,
+    hold_seconds: float,
+) -> List[SlideSpec]:
+    """Build the LLS low-SNR QC grid slide(s) from the eligible WA1/WA2 crops."""
+    if not crops:
+        return []
+    title = (
+        f"LLS low-SNR nucleus crops — dim examples, outline only "
+        f"({LLS_MODALITY}, {EXPERIMENT_DATE})"
+    )
+    grid_crops: List[GridCrop] = [
+        (f"lls_lowsnr_WA{wa}_id{tid}", path)
+        for _mfi, wa, tid, _length, path in crops
+    ]
+    return _build_crop_grid_slides(title, grid_crops, poster_dir, hold_seconds)
 
 
 def ensure_parent_dir(output_path: Path) -> None:
@@ -781,6 +922,7 @@ def print_plan(
     fov_movies: Dict[int, Dict[str, Path]],
     lowsnr_tracks: Sequence[LowSnrTrack],
     lls_regions: Sequence[Tuple[str, List[Path]]],
+    lls_lowsnr: Sequence[LlsLowSnrCrop],
 ) -> None:
     """Print the FOV/track/region -> movie mapping and slide plan (used by --list)."""
     for fov in sorted(fov_movies):
@@ -788,13 +930,17 @@ def print_plan(
         for token, _caption in MOVIE_TYPES:
             print(f"    {token:24s} {fov_movies[fov][token].name}")
     if lowsnr_tracks:
-        print(f"Slide(s): Low-SNR track QC (confocal) — {len(lowsnr_tracks)} crops")
+        print(f"Slide(s): Low-SNR crop QC (confocal) — {len(lowsnr_tracks)} crops")
         for track in lowsnr_tracks:
             print(f"    {track[4].name}")
     for region, paths in lls_regions:
         print(f"Slide: {format_lls_region_label(region)} (LLS)")
         for (rel, _caption), path in zip(LLS_MOVIE_TYPES, paths):
             print(f"    {rel:40s} {path.name}")
+    if lls_lowsnr:
+        print(f"Slide(s): LLS low-SNR crop QC — {len(lls_lowsnr)} crops")
+        for _mfi, _wa, _tid, _length, path in lls_lowsnr:
+            print(f"    {path.name}")
 
 
 def main() -> int:
@@ -811,23 +957,27 @@ def main() -> int:
         fov_movies = collect_fov_movies(MOVIE_DIR, requested_fovs=requested_fovs)
         lowsnr_tracks = collect_lowsnr_tracks(LOWSNR_DIR, args.lowsnr_count)
         lls_regions = collect_lls_regions(LLS_BASE)
+        lls_lowsnr = collect_lls_lowsnr(LLS_LOWSNR_DIR)
     except Exception as exc:
         print(f"[ERROR] {exc}")
         return 1
 
-    if not fov_movies and not lowsnr_tracks and not lls_regions:
-        print("[ERROR] No confocal FOV, low-SNR track, or LLS region movies found")
+    if not fov_movies and not lowsnr_tracks and not lls_regions and not lls_lowsnr:
+        print("[ERROR] No confocal FOV, low-SNR, or LLS region movies found")
         return 1
 
-    lowsnr_pages = -(-len(lowsnr_tracks) // (LOWSNR_COLS * LOWSNR_ROWS))  # ceil
-    n_slides = len(fov_movies) + lowsnr_pages + len(lls_regions)
+    per_page = LOWSNR_COLS * LOWSNR_ROWS
+    lowsnr_pages = -(-len(lowsnr_tracks) // per_page)  # ceil
+    lls_lowsnr_pages = -(-len(lls_lowsnr) // per_page)
+    n_slides = len(fov_movies) + lowsnr_pages + len(lls_regions) + lls_lowsnr_pages
     print(f"Found {len(fov_movies)} confocal FOV set(s): {sorted(fov_movies)}")
-    print(f"Found {len(lowsnr_tracks)} low-SNR track crop(s) -> {lowsnr_pages} grid slide(s)")
+    print(f"Found {len(lowsnr_tracks)} confocal low-SNR crop(s) -> {lowsnr_pages} grid slide(s)")
     print(f"Found {len(lls_regions)} LLS region(s): {[r for r, _ in lls_regions]}")
+    print(f"Found {len(lls_lowsnr)} LLS low-SNR crop(s) -> {lls_lowsnr_pages} grid slide(s)")
     print(f"Will create {n_slides} slide(s)")
 
     if args.list:
-        print_plan(fov_movies, lowsnr_tracks, lls_regions)
+        print_plan(fov_movies, lowsnr_tracks, lls_regions, lls_lowsnr)
         return 0
 
     if args.hold_last and args.hold_last > 0:
@@ -852,9 +1002,13 @@ def main() -> int:
     poster_dir = prepare_poster_dir(DEFAULT_POSTER_DIR)
 
     try:
+        # Modality-grouped: all confocal (FOV overviews then confocal crops),
+        # then all LLS (region overviews then LLS crops). Within LLS the region
+        # order (whole-FOV first) is set by LLS_REGIONS.
         slide_specs = build_slide_specs(fov_movies, poster_dir, args.hold_last)
         slide_specs += build_lowsnr_slide_specs(lowsnr_tracks, poster_dir, args.hold_last)
         slide_specs += build_lls_slide_specs(lls_regions, poster_dir, args.hold_last)
+        slide_specs += build_lls_lowsnr_slide_specs(lls_lowsnr, poster_dir, args.hold_last)
         rewritten = build_movie_deck_via_com(
             slide_specs,
             str(output_path),
