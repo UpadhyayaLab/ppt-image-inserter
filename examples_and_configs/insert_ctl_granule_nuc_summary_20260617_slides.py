@@ -46,7 +46,7 @@ from pptx.util import Inches, Pt
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ppt_image_inserter import backup_presentation  # noqa: E402
+from ppt_image_inserter import backup_presentation, safe_path, path_exists  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -387,21 +387,6 @@ def build_divider_slide(prs, family_name):
                 font_pt=44, color=BLACK, bold=True)
 
 
-def _ext(path):
-    """Windows extended-length path (\\\\?\\...) so files whose absolute path
-    exceeds the 260-char MAX_PATH are still found and opened. Long metric names
-    (and pairwise <X>_VS_<Y> filenames) under the deep compiled_results tree bust
-    MAX_PATH; without this prefix Path.exists()/PIL.open silently fail. No-op off
-    Windows."""
-    p = os.path.abspath(str(path))
-    if os.name == "nt" and not p.startswith("\\\\?\\"):
-        p = "\\\\?\\" + p.replace("/", "\\")
-    return p
-
-
-def _exists(path):
-    return os.path.exists(_ext(path))
-
 
 def _place_missing(slide, left, top, width):
     add_textbox(slide, "no data yet", left, top + IMG_BOX_H / 2 - 0.2,
@@ -420,8 +405,8 @@ def build_slide(prs, title_text, panels, footer_text):
     missing = []
     if len(panels) == 1:
         path, _ = panels[0]
-        if _exists(path):
-            add_image_in_box(slide, _ext(path), IMG_LEFT, IMG_TOP, IMG_BOX_W, IMG_BOX_H)
+        if path_exists(path):
+            add_image_in_box(slide, safe_path(path), IMG_LEFT, IMG_TOP, IMG_BOX_W, IMG_BOX_H)
         else:
             _place_missing(slide, IMG_LEFT, IMG_TOP, IMG_BOX_W)
             missing.append(path)
@@ -436,8 +421,8 @@ def build_slide(prs, title_text, panels, footer_text):
                                   font_pt=SUBLABEL_FONT_PT, color=BLACK, bold=True)
             # Bottom-align so the label sits just above its plot, not floating high.
             sub_box.text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
-            if _exists(path):
-                add_image_in_box(slide, _ext(path), left, band_top, col_w, band_h)
+            if path_exists(path):
+                add_image_in_box(slide, safe_path(path), left, band_top, col_w, band_h)
             else:
                 _place_missing(slide, left, band_top, col_w)
                 missing.append(path)
@@ -511,10 +496,10 @@ def main():
             for entry_stem, title in items:
                 panels = entry_panels(entry_stem)
                 flags = " ".join(
-                    "{}:{}".format(sub or "-", "OK" if _exists(p) else "MISS")
+                    "{}:{}".format(sub or "-", "OK" if path_exists(p) else "MISS")
                     for p, sub in panels)
                 print("  [{}] {:<50s} {}".format(
-                    "OK " if all(_exists(p) for p, _ in panels) else "MISS",
+                    "OK " if all(path_exists(p) for p, _ in panels) else "MISS",
                     title, flags))
             print("")
         return

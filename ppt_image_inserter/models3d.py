@@ -112,6 +112,7 @@ def build_model3d_deck_via_com(
     output_path: str,
     slide_width_pt: float,
     slide_height_pt: float,
+    background_rgb: Optional[int] = None,
 ) -> int:
     """Build a PowerPoint deck of textboxes and native 3D models via COM.
 
@@ -127,6 +128,10 @@ def build_model3d_deck_via_com(
             error.
         slide_width_pt: Slide width in points (e.g. 13.333 in * 72 = 960).
         slide_height_pt: Slide height in points (e.g. 7.5 in * 72 = 540).
+        background_rgb: Optional solid slide-background color as a BGR integer
+            (as VBA ``RGB()``; e.g. ``0`` for black). ``None`` keeps the default
+            (white) background. When using a dark background, give textboxes a
+            light ``color_rgb`` so their text stays visible.
 
     Returns:
         The total number of 3D models inserted across all slides.
@@ -143,6 +148,7 @@ def build_model3d_deck_via_com(
     manifest = {
         "slide_width_pt": slide_width_pt,
         "slide_height_pt": slide_height_pt,
+        "background_rgb": background_rgb,
         "slides": [_slide_to_manifest(slide) for slide in slides],
     }
     total_models = sum(len(slide.models) for slide in slides)
@@ -196,6 +202,7 @@ def _slide_to_manifest(slide: Model3DSlideSpec) -> dict:
                 "bold": bool(tb.bold),
                 "align": _ALIGN_MAP[tb.align.lower()],
                 "font_name": tb.font_name,
+                "color_rgb": tb.color_rgb,
             }
             for tb in slide.textboxes
         ],
@@ -232,6 +239,11 @@ try {{
     $presentation.PageSetup.SlideHeight = [int][math]::Round($data.slide_height_pt)
     foreach ($slideSpec in $data.slides) {{
         $slide = $presentation.Slides.Add($presentation.Slides.Count + 1, 12)
+        if ($data.background_rgb -ne $null) {{
+            $slide.FollowMasterBackground = 0
+            $slide.Background.Fill.Solid()
+            $slide.Background.Fill.ForeColor.RGB = [int]$data.background_rgb
+        }}
         foreach ($tb in $slideSpec.textboxes) {{
             $textShape = $slide.Shapes.AddTextbox(
                 1,
@@ -246,6 +258,9 @@ try {{
             $textRange.Font.Size = [single]$tb.font_size_pt
             if ($tb.bold) {{ $textRange.Font.Bold = -1 }} else {{ $textRange.Font.Bold = 0 }}
             $textRange.Font.Name = $tb.font_name
+            if ($tb.color_rgb -ne $null) {{
+                $textRange.Font.Color.RGB = [int]$tb.color_rgb
+            }}
         }}
         foreach ($md in $slideSpec.models) {{
             $modelShape = $slide.Shapes.Add3DModel(

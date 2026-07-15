@@ -119,7 +119,6 @@ GRID_GROUPS = [
         "SUN1_max_distance_to_chull",
         "SUN1_cyto_in_nuc_hull_MFI",
         "SUN1_cyto_in_nuc_hull_sig_fraction",
-        "SUN1_cyto_in_nuc_hull_vs_nuc_MFI_ratio",
         "SUN1_invag_within_chull_vs_all_chull_MFI_ratio",
         "SUN1_invag_within_chull_vs_convex_within_chull_MFI_ratio",
     ]),

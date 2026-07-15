@@ -58,6 +58,17 @@ from .models3d import (
     SUPPORTED_MODEL_EXTENSIONS,
 )
 
+from .glb import (
+    build_colored_glb,
+    read_glb_mesh,
+    recolor_glb_for_powerpoint,
+)
+
+from .longpath import (
+    safe_path,
+    path_exists,
+)
+
 # Define public API
 __all__ = [
     # Core functions
@@ -100,4 +111,13 @@ __all__ = [
     'Model3DSlideSpec',
     'build_model3d_deck_via_com',
     'SUPPORTED_MODEL_EXTENSIONS',
+
+    # Colored glTF writer
+    'build_colored_glb',
+    'read_glb_mesh',
+    'recolor_glb_for_powerpoint',
+
+    # Long-path helpers (Windows MAX_PATH workaround)
+    'safe_path',
+    'path_exists',
 ]

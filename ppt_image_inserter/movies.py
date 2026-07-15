@@ -24,7 +24,7 @@ import sys
 import tempfile
 import zipfile
 from dataclasses import dataclass, field
-from typing import Sequence, Tuple
+from typing import Optional, Sequence, Tuple
 
 from lxml import etree
 
@@ -51,6 +51,9 @@ class TextboxSpec:
     bold: bool = True
     align: str = "center"
     font_name: str = "Arial"
+    # PowerPoint font color as a BGR integer (as VBA RGB()), or None for the
+    # theme default (dark text). Use e.g. 0xFFFFFF (white) on dark slides.
+    color_rgb: Optional[int] = None
 
 
 @dataclass(frozen=True)

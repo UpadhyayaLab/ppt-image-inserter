@@ -45,7 +45,7 @@ import argparse
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Sequence
+from typing import List, Optional, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
@@ -156,6 +156,16 @@ def parse_args() -> argparse.Namespace:
         help="Optional text prepended to every slide title.",
     )
     parser.add_argument(
+        "--background",
+        type=str,
+        default=None,
+        help=(
+            "Solid slide background: 'black', 'white', or a #RRGGBB hex. "
+            "Default keeps white. On a dark background titles turn light "
+            "automatically so they stay readable."
+        ),
+    )
+    parser.add_argument(
         "--list",
         action="store_true",
         help="List the meshes that would be inserted and exit (no PowerPoint).",
@@ -229,12 +239,41 @@ def _to_points(inches: float) -> float:
     return inches * POINTS_PER_INCH
 
 
+_NAMED_COLORS = {"black": (0, 0, 0), "white": (255, 255, 255)}
+
+
+def parse_background_color(name: Optional[str]) -> Optional[int]:
+    """Parse 'black'/'white'/'#RRGGBB' into a PowerPoint BGR int (or None)."""
+    if not name:
+        return None
+    s = name.strip().lower()
+    if s in _NAMED_COLORS:
+        r, g, b = _NAMED_COLORS[s]
+    elif s.startswith("#") and len(s) == 7:
+        r, g, b = int(s[1:3], 16), int(s[3:5], 16), int(s[5:7], 16)
+    else:
+        raise ValueError(f"Unrecognized --background color: {name!r}")
+    return r + (g << 8) + (b << 16)  # VBA RGB() byte order
+
+
+def _title_color_for_background(bg_rgb: Optional[int]) -> Optional[int]:
+    """Return white title text on dark backgrounds, else default (None)."""
+    if bg_rgb is None:
+        return None
+    r = bg_rgb & 0xFF
+    g = (bg_rgb >> 8) & 0xFF
+    b = (bg_rgb >> 16) & 0xFF
+    luminance = 0.299 * r + 0.587 * g + 0.114 * b
+    return 0xFFFFFF if luminance < 128 else None
+
+
 def build_slide_specs(
     meshes: Sequence[MeshItem],
     rot_x: float,
     rot_y: float,
     rot_z: float,
     fov: float | None,
+    title_color_rgb: Optional[int] = None,
 ) -> List[Model3DSlideSpec]:
     """Build one slide spec per mesh: a centred model with a title above it."""
     slides: List[Model3DSlideSpec] = []
@@ -249,6 +288,7 @@ def build_slide_specs(
             bold=True,
             align="center",
             font_name="Arial",
+            color_rgb=title_color_rgb,
         )
         model = Model3DSpec(
             model_path=str(mesh.mesh_path),
@@ -283,6 +323,12 @@ def main() -> int:
     args = parse_args()
 
     try:
+        background_rgb = parse_background_color(args.background)
+    except ValueError as exc:
+        print(f"[ERROR] {exc}")
+        return 1
+
+    try:
         meshes = collect_meshes(args.inputs, args.recursive, args.title_prefix)
     except FileNotFoundError as exc:
         print(f"[ERROR] {exc}")
@@ -314,13 +360,19 @@ def main() -> int:
 
     try:
         slide_specs = build_slide_specs(
-            meshes, args.rot_x, args.rot_y, args.rot_z, args.fov
+            meshes,
+            args.rot_x,
+            args.rot_y,
+            args.rot_z,
+            args.fov,
+            title_color_rgb=_title_color_for_background(background_rgb),
         )
         inserted = build_model3d_deck_via_com(
             slide_specs,
             str(output_path),
             slide_width_pt=_to_points(SLIDE_WIDTH_IN),
             slide_height_pt=_to_points(SLIDE_HEIGHT_IN),
+            background_rgb=background_rgb,
         )
         print(f"Inserted {inserted} rotatable 3D model(s).")
     except PermissionError:

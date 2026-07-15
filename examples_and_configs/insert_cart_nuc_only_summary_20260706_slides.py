@@ -43,7 +43,7 @@ from pptx.util import Inches, Pt
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ppt_image_inserter import backup_presentation  # noqa: E402
+from ppt_image_inserter import backup_presentation, safe_path, path_exists  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -211,18 +211,6 @@ def _new_slide(prs, bg=WHITE):
     return slide
 
 
-def _ext(path):
-    """Windows extended-length path (\\\\?\\...) so files whose absolute path
-    exceeds MAX_PATH (260) are still found/opened (the Y: compiled tree is deep).
-    No-op off Windows."""
-    p = os.path.abspath(str(path))
-    if os.name == "nt" and not p.startswith("\\\\?\\"):
-        p = "\\\\?\\" + p.replace("/", "\\")
-    return p
-
-
-def _exists(path):
-    return os.path.exists(_ext(path))
 
 
 def rel_footer(path):
@@ -253,9 +241,9 @@ def build_slide(prs, title_text, image_path, footer_text):
     slide = _new_slide(prs)
     add_textbox(slide, title_text, TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, TITLE_HEIGHT,
                 font_pt=title_font_for(title_text), color=BLACK, bold=True)
-    missing = not _exists(image_path)
+    missing = not path_exists(image_path)
     if not missing:
-        add_image_in_box(slide, _ext(image_path), IMG_LEFT, IMG_TOP, IMG_BOX_W, IMG_BOX_H)
+        add_image_in_box(slide, safe_path(image_path), IMG_LEFT, IMG_TOP, IMG_BOX_W, IMG_BOX_H)
     else:
         add_textbox(slide, "no data yet", IMG_LEFT, IMG_TOP + IMG_BOX_H / 2 - 0.2,
                     IMG_BOX_W, 0.4, font_pt=18, color=BLACK)
@@ -297,7 +285,7 @@ def main():
     list_only = "--list" in sys.argv
 
     n_metrics = sum(len(items) for _, items in FAMILIES)
-    est_slides = 1 + (1 if _exists(CELL_COUNTS_PNG) else 0) + \
+    est_slides = 1 + (1 if path_exists(CELL_COUNTS_PNG) else 0) + \
         sum(1 + len(items) for _, items in FAMILIES)
 
     print("Source: {}".format(BYDAY_DIR))
@@ -308,7 +296,7 @@ def main():
         for fam, items in FAMILIES:
             print("=== {} ({}) ===".format(fam, len(items)))
             for stem, title in items:
-                ok = _exists(_panel_path(stem))
+                ok = path_exists(_panel_path(stem))
                 print("  [{}] {:<50s} {}".format(
                     "OK " if ok else "MISS", title, stem + PANEL_SUFFIX))
             print("")
@@ -321,7 +309,7 @@ def main():
 
     build_title_slide(prs, DECK_TITLE, DECK_SUBTITLE)
 
-    if _exists(CELL_COUNTS_PNG):
+    if path_exists(CELL_COUNTS_PNG):
         build_slide(prs, "Cell counts (CAT vs FMC63)", CELL_COUNTS_PNG,
                     rel_footer(CELL_COUNTS_PNG))
     else:
