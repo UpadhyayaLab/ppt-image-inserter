@@ -41,6 +41,8 @@ python examples_and_configs/batch_insert_images.py examples_and_configs/configs/
 
 **CRITICAL**: The file must be closed in PowerPoint before running the script. The script needs exclusive file access to modify the presentation.
 
+**NEVER kill PowerPoint (`taskkill`, `Stop-Process -Name POWERPNT`, etc.) without explicit user permission.** If the script fails with a `PermissionError` because the file is open in PowerPoint, tell the user and wait — do not close PowerPoint yourself.
+
 ## Architecture
 
 ### Package Structure: `ppt_image_inserter/`
