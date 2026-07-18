@@ -42,7 +42,7 @@ from ppt_image_inserter import backup_presentation, safe_path, path_exists  # no
 # Paths
 # ---------------------------------------------------------------------------
 ROOT = Path(
-    "H:/FF_backup/Jurkat_nucleus/from_Ivan_HD/results_compilation/"
+    "O:/FF_backup/Jurkat_nucleus/from_Ivan_HD/results_compilation/"
     "Jurkats_SUN1_N1vsN2_siControl_geomdensity_20260715"
 )
 CURATED = ROOT / "SUN1_loc_wrto_invag"

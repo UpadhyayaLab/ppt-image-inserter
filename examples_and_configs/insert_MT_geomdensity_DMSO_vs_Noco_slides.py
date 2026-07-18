@@ -10,8 +10,8 @@ by-experiment / matrix layouts — each metric is a single tile. Modeled on
 insert_vim_geomdensity_12min_combined_slides.py (same aspect-aware layout
 engine).
 
-Note: Noco arm is small (n=9) in this compile; expect to re-run once Noco is
-reprocessed. The deck structure will not change.
+Uses the 20260718 compile (DMSO n=77, Noco n=43 after the Noco arm was
+reprocessed — the earlier 20260716 compile had only n=9 Noco).
 
 Sections:
   1. MT density profiles (perinuc 0.5 μm)
@@ -52,7 +52,7 @@ from ppt_image_inserter import backup_presentation, safe_path, path_exists  # no
 # ---------------------------------------------------------------------------
 ROOT = Path(
     "M:/FF/FF_4TB_2_Backup_fullHD/Nucleus Project_2ndharddrive/"
-    "prog_fixed_Noco_MT_20240123/results_compilation_MT_geomdensity_20260716"
+    "prog_fixed_Noco_MT_20240123/results_compilation_MT_geomdensity_20260718"
 )
 SINGLES = ROOT / "geom_density" / "profiles" / "singles"
 ENRICH = ROOT / "geom_density" / "enrichment"
@@ -73,8 +73,8 @@ OUTPUT_PATH = Path(
 DECK_TITLE = "Microtubule density vs nuclear-envelope geometry — DMSO vs Noco"
 DECK_SUBTITLE = (
     "Fixed Jurkats · Nocodazole experiment (Jan 23 2024) · "
-    "DMSO vs Noco 1 μM · MT = perinuc 0.5 μm · single experiment · "
-    "compiled 2026-07-16"
+    "DMSO (n=77) vs Noco 1 μM (n=43) · MT = perinuc 0.5 μm · "
+    "single experiment · compiled 2026-07-18"
 )
 
 # Date tokens vary by directory.

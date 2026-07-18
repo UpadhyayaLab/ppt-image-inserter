@@ -408,6 +408,52 @@ def build_matrix_slide(prs, title, row_labels, matrix, footer_text,
     return slide
 
 
+def build_trio_slide(prs, title, top_entry, bottom_entries, footer_text,
+                     cap_pt=11, cap_h=0.30, top_frac=0.46):
+    """One large plot on top, two plots side by side below. Used for the
+    per-experiment depth + (min, mean) curvature slides, where each image is
+    a dense multi-panel figure that must not be shrunk by tiling many across."""
+    slide = _new_slide(prs)
+    add_textbox(slide, title, TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, TITLE_HEIGHT,
+                font_pt=title_font_for(title), color=BLACK, bold=True)
+    area_top = IMG_TOP
+    area_w = SLIDE_W - 2 * MARGIN
+    area_h = FOOTER_TOP - IMG_TOP - 0.02
+
+    top_band = top_frac * area_h
+    bot_band = area_h - top_band - GAP
+
+    # Top image, centred in its band.
+    tp, tcap = top_entry
+    a = _img_ar(tp)
+    th = top_band - cap_h
+    tw = min(area_w, th * a)
+    th = tw / a
+    left = MARGIN + (area_w - tw) / 2
+    top = area_top + (top_band - (th + cap_h)) / 2
+    add_image_in_box(slide, str(tp), left, top, tw, th)
+    _tile_caption(slide, tcap, tp, left, top + th, tw, cap_h, cap_pt)
+
+    # Bottom images, side by side.
+    n = len(bottom_entries)
+    cell_w = (area_w - (n - 1) * GAP) / n
+    by = area_top + top_band + GAP
+    for i, (p, cap) in enumerate(bottom_entries):
+        a2 = _img_ar(p)
+        ih = bot_band - cap_h
+        iw = min(cell_w, ih * a2)
+        ih = iw / a2
+        cell_left = MARGIN + i * (cell_w + GAP)
+        left = cell_left + (cell_w - iw) / 2
+        top = by + (bot_band - (ih + cap_h)) / 2
+        add_image_in_box(slide, str(p), left, top, iw, ih)
+        _tile_caption(slide, cap, p, cell_left, top + ih, cell_w, cap_h, cap_pt)
+
+    add_textbox(slide, footer_text, MARGIN, FOOTER_TOP, FOOTER_WIDTH,
+                FOOTER_HEIGHT, font_pt=FOOTER_FONT_PT, color=GREY)
+    return slide
+
+
 def rel_footer(path):
     try:
         return Path(path).relative_to(ROOT).as_posix()
@@ -454,55 +500,59 @@ GEOM_LABELS_SHORT = {
 def build_plan():
     plan, missing = [], []
 
+    def add_trio(title, top, bottom, footer):
+        """Add a trio slide (1 top + 2 below) if the top and >=1 bottom
+        image exist; otherwise fall back to a plain grid of whatever exists."""
+        allpairs = [top] + bottom
+        missing.extend(e[0] for e in allpairs if not path_exists(e[0]))
+        if path_exists(top[0]) and any(path_exists(b[0]) for b in bottom):
+            plan.append(("trio", title, top,
+                         [b for b in bottom if path_exists(b[0])], footer))
+        else:
+            avail = [e for e in allpairs if path_exists(e[0])]
+            if avail:
+                plan.append(("grid", title, avail, footer, 2, 11, 0.30))
+
     # ===================================================================
-    # Sec 1: Vim density profiles — by-experiment (1x2: Apr 29 | Jan 23 | Feb 27)
-    #        Each 1x2 panel already overlays DMSO vs Noco for BOTH
-    #        experiments, so no separate OVERLAY slides are needed.
+    # Sec 1: Vim density profiles — by experiment (BYEXP 1×3 strips).
+    #        hull dist on top, min & mean curvature below (trio layout).
     # ===================================================================
     plan.append(("divider",
                  "Vimentin density profiles",
                  "perinuc 0.5 μm shell · DMSO vs Noco, by experiment"))
 
-    byexp = []
-    for geom in ["hulldist", "mincurv", "meancurv"]:
-        byexp.append((
-            SINGLES / "vim_geomdens_{}_perinuc05_BYEXP_line.png".format(geom),
-            GEOM_LABELS_SHORT[geom]))
-    kept, miss = _tiles(byexp)
-    missing += miss
-    if kept:
-        plan.append(("grid",
-                     "Vim density profiles — by experiment",
-                     kept,
-                     "each 1×2: Ctrl/DMSO (blue) vs Noco 1 μM (yellow), "
-                     "Apr 29 | Jan 23 | Feb 27 · perinuc 0.5 μm",
-                     3, 10, 0.28))
+    def _vimdens(geom):
+        return (SINGLES / "vim_geomdens_{}_perinuc05_BYEXP_line.png".format(
+            geom), GEOM_LABELS_SHORT[geom])
+
+    add_trio(
+        "Vim density profiles — by experiment",
+        _vimdens("hulldist"),
+        [_vimdens("mincurv"), _vimdens("meancurv")],
+        "each strip: Ctrl/DMSO (blue) vs Noco 1 μM (yellow), "
+        "Apr 29 | Jan 23 | Feb 27 · perinuc 0.5 μm")
 
     # ===================================================================
-    # Sec 2: DNA density profiles — one slide per geometry (3 shells)
+    # Sec 2: DNA density profiles — one slide per geometry (3 shells).
+    #        boundary on top, the two perinuc shells below (trio layout).
     # ===================================================================
     plan.append(("divider",
                  "DNA density profiles",
                  "boundary / perinuc 0.25 μm / perinuc 0.5 μm · "
                  "DMSO vs Noco, by experiment"))
 
+    def _dnadens(geom, shell):
+        return (SINGLES / "DNA_geomdens_{}_{}_BYEXP_line.png".format(
+            geom, shell), DNA_SHELL_DISP[shell])
+
     for geom in ["hulldist", "mincurv", "meancurv"]:
-        dna = []
-        for shell in DNA_SHELLS:
-            dna.append((
-                SINGLES / "DNA_geomdens_{}_{}_BYEXP_line.png".format(
-                    geom, shell),
-                DNA_SHELL_DISP[shell]))
-        kept, miss = _tiles(dna)
-        missing += miss
-        if kept:
-            plan.append(("grid",
-                         "DNA density vs {} — by experiment".format(
-                             GEOM_LABELS_SHORT[geom]),
-                         kept,
-                         "each 1×2: Ctrl/DMSO (blue) vs Noco 1 μM (yellow), "
-                         "Apr 29 | Jan 23 | Feb 27 · rows = shell",
-                         1, 10, 0.28))
+        add_trio(
+            "DNA density vs {} — by experiment".format(
+                GEOM_LABELS_SHORT[geom]),
+            _dnadens(geom, "boundary"),
+            [_dnadens(geom, "inperinuc025"), _dnadens(geom, "inperinuc05")],
+            "each strip: Ctrl/DMSO (blue) vs Noco 1 μM (yellow), "
+            "Apr 29 | Jan 23 | Feb 27")
 
     # ===================================================================
     # Sec 3: Vim enrichment & correlation
@@ -557,57 +607,77 @@ def build_plan():
         "rows = experiment")
 
     # ===================================================================
-    # Sec 4: Invag depth profiles — by-experiment (1x2) only
+    # Sec 4+5: Depth & curvature profiles — one slide per experiment.
+    #   Each of these is a dense 3-row x 2-col figure, so we give each its
+    #   own space: invagination depth large on top, min & mean curvature
+    #   (unstratified) side by side below. Cent-stratified curvature and the
+    #   BYEXP strips are dropped (too small when tiled across experiments).
     # ===================================================================
     plan.append(("divider",
-                 "Vimentin in invaginations — depth profiles",
-                 "centrosome-stratified · DMSO vs Noco, by experiment"))
+                 "Depth & curvature profiles",
+                 "invagination depth + min/mean curvature · "
+                 "one slide per experiment · DMSO vs Noco"))
 
-    byexp_depth = []
-    for thresh, tlbl in [("0_5um", "0.5 μm"), ("1um", "1 μm")]:
-        for xlim, xlbl in [("", ""), ("_xlim_0_2", " (x-lim 0–2)")]:
-            byexp_depth.append((
-                DEPTH_SINGLES / "vim_invag_depth_{}_BYEXP_line{}.png".format(
-                    thresh, xlim),
-                "{} threshold{}".format(tlbl, xlbl)))
-    kept, miss = _tiles(byexp_depth)
-    missing += miss
-    if kept:
-        plan.append(("grid",
-                     "Vim invagination depth — by experiment",
-                     kept,
-                     "each 1×2: Ctrl/DMSO (blue) vs Noco 1 μM (yellow), "
-                     "Apr 29 | Jan 23 | Feb 27",
-                     2, 10, 0.28))
+    for disp, dbl, _comma, sgl in EXP_DATES:
+        top = (DEPTH / "vim_invag_depth_profiles_{}.png".format(dbl),
+               "invagination depth")
+        bottom = [
+            (CURV / "vim_min_curv_profiles_{}.png".format(sgl),
+             "min curvature"),
+            (CURV / "vim_mean_curv_profiles_{}.png".format(sgl),
+             "mean curvature"),
+        ]
+        avail = [e for e in [top] + bottom if path_exists(e[0])]
+        missing.extend(e[0] for e in [top] + bottom if not path_exists(e[0]))
+        if path_exists(top[0]) and any(path_exists(b[0]) for b in bottom):
+            plan.append(("trio",
+                         "Depth & curvature vs NE geometry — {}".format(disp),
+                         top,
+                         [b for b in bottom if path_exists(b[0])],
+                         "top: vim vs invagination depth · "
+                         "bottom: vim vs min/mean curvature · "
+                         "Ctrl/DMSO (blue) vs Noco 1 μM (yellow)"))
+        elif avail:
+            # Fallback: whatever exists, as a plain grid.
+            plan.append(("grid",
+                         "Depth & curvature vs NE geometry — {}".format(disp),
+                         avail,
+                         "Ctrl/DMSO (blue) vs Noco 1 μM (yellow)",
+                         2, 11, 0.30))
 
     # ===================================================================
-    # Sec 5: Curvature profiles — one slide per stratification
+    # Sec 5b: Centrosome-stratified profiles (near vs away centrosome).
+    #   These only exist as dense 3-row figures, so one per slide at full
+    #   width. Everything per experiment, nothing pooled.
     # ===================================================================
     plan.append(("divider",
-                 "Curvature-stratified vimentin profiles",
-                 "min & mean curvature · centrosome-stratified"))
+                 "Centrosome-stratified profiles",
+                 "near vs away centrosome · one plot per slide · "
+                 "per experiment · DMSO vs Noco"))
 
-    # One curvature type per slide, the two experiments side by side, so the
-    # (wide) profile figures render as large as possible.
-    for strat, slbl in [("", "unstratified"),
-                        ("_0_5um_cent_stratified", "0.5 μm centrosome-strat."),
-                        ("_1um_cent_stratified", "1 μm centrosome-strat.")]:
-        for curv, clbl in [("min", "min curvature"),
-                           ("mean", "mean curvature")]:
-            ctiles = []
-            for disp, _dbl, _comma, sgl in EXP_DATES:
-                ctiles.append((
-                    CURV / "vim_{}_curv_profiles{}_{}.png".format(
-                        curv, strat, sgl),
-                    disp))
-            kept, miss = _tiles(ctiles)
-            missing += miss
-            if kept:
-                plan.append(("grid",
-                             "Vim {} profiles — {}".format(clbl, slbl),
-                             kept,
-                             "per experiment · DMSO vs Noco",
-                             2, 12, 0.30))
+    strat_metrics = []
+    for curv, clbl in [("min", "min-curvature"), ("mean", "mean-curvature")]:
+        for skey, slbl in [("0_5um", "0.5 μm"), ("1um", "1 μm")]:
+            strat_metrics.append((
+                "{} near vs away centrosome ({})".format(clbl, slbl),
+                lambda dt, c=curv, s=skey: CURV / (
+                    "vim_{}_curv_profiles_{}_cent_stratified_{}.png".format(
+                        c, s, dt[3]))))
+    for skey, slbl in [("0_5um", "0.5 μm"), ("1um", "1 μm")]:
+        strat_metrics.append((
+            "invagination depth near vs away centrosome ({})".format(slbl),
+            lambda dt, s=skey: DEPTH / (
+                "vim_invag_depth_profiles_{}_cent_stratified_{}.png".format(
+                    s, dt[1]))))
+
+    for mlabel, pathfn in strat_metrics:
+        for dt in EXP_DATES:
+            p = pathfn(dt)
+            if path_exists(p):
+                plan.append(("single",
+                             "Vim {} — {}".format(mlabel, dt[0]), p, ""))
+            else:
+                missing.append(p)
 
     # ===================================================================
     # Sec 6: Morphology scatter & centrosome level
@@ -936,6 +1006,9 @@ def main():
             ntiles = sum(len(r) for r in it[3])
             print("  [{}] {} (matrix {}x{})".format(
                 ntiles, it[1], len(it[3]), max(len(r) for r in it[3])))
+        elif it[0] == "trio":
+            print("  [{}] {} (trio: 1 top + {} bottom)".format(
+                1 + len(it[3]), it[1], len(it[3])))
         else:
             print("  [{}] {}".format(len(it[2]), it[1]))
     if missing:
@@ -963,6 +1036,9 @@ def main():
             _, title, row_labels, matrix, footer, cap_pt, cap_h = it
             build_matrix_slide(prs, title, row_labels, matrix, footer,
                                cap_pt, cap_h)
+        elif it[0] == "trio":
+            _, title, top_entry, bottom_entries, footer = it
+            build_trio_slide(prs, title, top_entry, bottom_entries, footer)
 
     if OUTPUT_PATH.exists():
         backup_dir = OUTPUT_PATH.parent / "backups"
