@@ -1,0 +1,36 @@
+deck_title: "Cellpose QC: C1 12 min (CTL Fixed 20260716, recrop 20260718)"
+output_pptx: "K:/FF/PPT/PPT_autogeneration/Cellpose_mask_review/CTL_nuc_gran/ctl_20260716_C1_12min_aCD3_ICAM1_3SI_660bTub_535Actin_488LAMP1_405Nuc_recrop_20260718.pptx"
+cache_dir:   "K:/FF/PPT/PPT_autogeneration/Cellpose_mask_review/CTL_nuc_gran/cache/ctl_20260716_C1_12min_aCD3_ICAM1_3SI_660bTub_535Actin_488LAMP1_405Nuc_recrop_20260718"
+
+raw_dir:    "L:/FF/Nucleus_granules/CTL_fixed/20260716_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus/C1_12min_aCD3_ICAM1_3SI_660bTub_535Actin_488LAMP1_405Nuc"
+mask_dir:   "L:/FF/Nucleus_granules/CTL_fixed/20260716_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus/C1_12min_aCD3_ICAM1_3SI_660bTub_535Actin_488LAMP1_405Nuc/cellpose_masks"
+
+raw_pattern:  "{fov}.tif"
+mask_pattern: "cellpose_mask_{fov}.tif"
+
+actin_channel:   1
+hoechst_channel: 3
+
+pixel_size_um: 0.065
+scalebar_um:   10
+
+actin_low_pct:    1.0
+actin_high_pct:   99.5
+
+hoechst_low_pct:  2.0
+hoechst_high_pct: 99.5
+hoechst_min_lo:   120
+hoechst_color:    [255, 0, 0]
+
+grid_rows: 3
+grid_cols: 3
+
+image_format: "jpg"
+jpeg_quality: 90
+
+concurrent_fovs: 3
+
+fov_ids: auto
+fov_id_filter: '^\d+$'
+
+skip_plain: true
