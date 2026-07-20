@@ -43,30 +43,73 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ppt_image_inserter import backup_presentation  # noqa: E402
 
 # ---------------------------------------------------------------------------
-# Paths
+# Datasets. One deck per experiment (or the cross-experiment pool). Select with
+# --dataset <key>. Per-dataset: source root, grid subdir, stiffness-view
+# timepoints, output path and titles. Everything else (classifier, families,
+# all_conditions + timecourse views) is shared across datasets.
 # ---------------------------------------------------------------------------
-ROOT = Path(
-    "J:/FF/fixed_cell/CTL_nucleus/tifsFixed3SIactivatedCTLs_nucleus/"
-    "tifsCTLsFixed101010aCD3aCD28ICAM_H3K27me3_01292024/chromark/compiled_all_20260622"
-)
-GRID_DIR = ROOT / "grid_panels_curated"   # the curated metric set (~126 features)
+EXP_BASE = "J:/FF/fixed_cell/CTL_nucleus/tifsFixed3SIactivatedCTLs_nucleus"
+CROSS_SEARCH = EXP_BASE + "/chromark_cross_experiment"
+OUT_DIR = "K:/FF/PPT/PPT_autogeneration/Naive_CTL/chromark"
 
-OUTPUT_PATH = Path(
-    "K:/FF/PPT/PPT_autogeneration/Naive_CTL/chromark_H3K27me3/"
-    "NaiveCTL_chromark_H3K27me3_summary.pptx"
-)
+_STIFF_EARLY = [("stiffness_10min", "10 min"), ("stiffness_3hr", "3 h")]
+_STIFF_LATE = [("stiffness_27hr", "27 h"), ("stiffness_51hr", "51 h")]
 
-DECK_TITLE = "Activated CTLs on stiffness substrates"
-DECK_SUBTITLE = (
-    "H3K27me3 / DNA nuclear chromark summary (curated metrics)  -  fixed 01/29/2024  -  "
-    "compiled 2026-06-22"
-)
+# Each dataset auto-resolves the NEWEST dated subfolder under `search` matching
+# `pat` (so a re-compile to a new date is picked up automatically — no path edit).
+# `mark` is the display label for the h3k27me3 channel token (panels use that token
+# generically even when the actual mark differs).
+DATASETS = {
+    "cross": dict(
+        search=CROSS_SEARCH, pat="CTL_3marker_*", grid="grid_panels_curated",
+        stiffness=_STIFF_EARLY, mark="chromatin mark",
+        out=OUT_DIR + "/CTL_chromark_crossexp_3exp_summary.pptx",
+        title="CTL chromark — cross-experiment (3 marks as rows)",
+        subtitle="Chromatin mark / DNA nuclear chromark (curated) - rows: "
+                 "H3K27me3 (0321) / H3K9me3 (0424) / H3K27ac (0531)"),
+    "cross_full": dict(
+        search=CROSS_SEARCH, pat="CTL_3marker_*", grid="grid_panels",
+        stiffness=_STIFF_EARLY, mark="chromatin mark",
+        out=OUT_DIR + "/CTL_chromark_crossexp_3exp_FULL_summary.pptx",
+        title="CTL chromark — cross-experiment (3 marks as rows, full set)",
+        subtitle="Chromatin mark / DNA nuclear chromark (FULL) - rows: "
+                 "H3K27me3 / H3K9me3 / H3K27ac"),
+    "0129": dict(
+        search=EXP_BASE + "/tifsCTLsFixed101010aCD3aCD28ICAM_H3K27me3_01292024/chromark",
+        pat="compiled_all_*", grid="grid_panels_curated",
+        stiffness=_STIFF_LATE, mark="H3K27me3",
+        out=OUT_DIR + "/CTL_chromark_H3K27me3_01292024_summary.pptx",
+        title="Activated CTLs on stiffness substrates — H3K27me3 (01/29/2024)",
+        subtitle="H3K27me3 / DNA nuclear chromark (curated) - aCD3/aCD28/ICAM"),
+    "0321": dict(
+        search=EXP_BASE + "/tifs3SICTLsFixed1010aCD3ICAM_H3K27me3_03212024/chromark",
+        pat="compiled_all_*", grid="grid_panels_curated",
+        stiffness=_STIFF_EARLY, mark="H3K27me3",
+        out=OUT_DIR + "/CTL_chromark_H3K27me3_03212024_summary.pptx",
+        title="Activated CTLs on stiffness substrates — H3K27me3 (03/21/2024)",
+        subtitle="H3K27me3 / DNA nuclear chromark (curated) - aCD3/ICAM - early"),
+    # Pending the per-mark chromark compile (auto-picks up the newest when it lands):
+    "0424": dict(
+        search=EXP_BASE + "/tifs3SICTLsFixed1010aCD3ICAM_H3K9me3_04242024/chromark",
+        pat="compiled_all_*", grid="grid_panels_curated",
+        stiffness=_STIFF_EARLY, mark="H3K9me3",
+        out=OUT_DIR + "/CTL_chromark_H3K9me3_04242024_summary.pptx",
+        title="Activated CTLs on stiffness substrates — H3K9me3 (04/24/2024)",
+        subtitle="H3K9me3 / DNA nuclear chromark (curated) - aCD3/ICAM - early"),
+    "0531": dict(
+        search=EXP_BASE + "/tifs3SICTLsFixed101010aCD3aCD28ICAM_H3K27ac_05312024/chromark",
+        pat="compiled_all_*", grid="grid_panels_curated",
+        stiffness=_STIFF_EARLY, mark="H3K27ac",
+        out=OUT_DIR + "/CTL_chromark_H3K27ac_05312024_summary.pptx",
+        title="Activated CTLs on stiffness substrates — H3K27ac (05/31/2024)",
+        subtitle="H3K27ac / DNA nuclear chromark (curated) - aCD3/aCD28/ICAM - early"),
+}
+DEFAULT_DATASET = "cross"
 
 GRID_SUFFIX = "_grid.png"
 
-# Comparison views (folder under grid_panels/ -> caption).
+# Comparison views shared across datasets (folder under grid dir -> caption).
 ALL_COND_VIEW = "all_conditions"
-STIFFNESS_VIEWS = [("stiffness_27hr", "27 h"), ("stiffness_51hr", "51 h")]
 TIMECOURSE_VIEWS = [
     ("timepoint_1p5kPa", "1.5 kPa"),
     ("timepoint_12kPa", "12 kPa"),
@@ -74,12 +117,40 @@ TIMECOURSE_VIEWS = [
 ]
 VIEW_ORDER = ("all", "stiffness", "timecourse")
 
+
+MARK_LABEL = "H3K27me3"  # display label for the h3k27me3 channel token; per-dataset
+
+
+def apply_dataset(key):
+    """Point the module globals at one dataset, auto-resolving the NEWEST dated
+    compile under its search/pat (so new date folders are picked up automatically)."""
+    global ROOT, GRID_DIR, STIFFNESS_VIEWS, OUTPUT_PATH, DECK_TITLE, DECK_SUBTITLE, MARK_LABEL
+    ds = DATASETS[key]
+    search = Path(ds["search"])
+    dated = sorted(d for d in search.glob(ds["pat"]) if d.is_dir()) if search.is_dir() else []
+    ROOT = dated[-1] if dated else (search / "__no_compile_yet__")
+    GRID_DIR = ROOT / ds["grid"]
+    STIFFNESS_VIEWS = ds["stiffness"]
+    MARK_LABEL = ds.get("mark", "H3K27me3")
+    OUTPUT_PATH = Path(ds["out"])
+    DECK_TITLE = ds["title"]
+    DECK_SUBTITLE = ds["subtitle"]
+
+
+apply_dataset(DEFAULT_DATASET)
+
 EXCLUDE_PANELS_RAW = set()
 EXCLUDE_PANELS = {
     p.split("grid_panels_curated/", 1)[-1].split("grid_panels/", 1)[-1].lstrip("/")
     for p in EXCLUDE_PANELS_RAW
 }
-DROP_METRICS = set()  # "include everything" -- nothing dropped
+# Whole-channel mean/SD are redundant with (and less clearly nuclear-mask than)
+# the explicit `*_3d_nuclear_mean/std_int`; drop them so there is a single
+# nuclear-mask "mean intensity" / "SD intensity".
+DROP_METRICS = {
+    "chan_mean_hoechst_3d_int", "chan_mean_h3k27me3_3d_int",
+    "chan_std_hoechst_3d_int", "chan_std_h3k27me3_3d_int",
+}
 
 # Family order (index -> divider title).
 FAMILIES_ORDER = [
@@ -197,7 +268,9 @@ MORPH_ORDER = {stem: i for i, stem in enumerate(
 
 
 def _ch(tok):
-    return CH_TITLE[tok]
+    # "hoechst" -> DNA; the mark token "h3k27me3" -> the dataset's MARK_LABEL
+    # (which may be H3K27me3, H3K9me3, H3K27ac, or "chromatin mark" for the cross pool).
+    return "DNA" if tok == "hoechst" else MARK_LABEL
 
 
 def _periph_dist(tok):
@@ -242,7 +315,7 @@ def classify(stem):
         return dict(fam="Nuclear intensity",
                     sort=(0, INT_STAT_RANK.get(stat, 50), 0, stem),
                     channel=_ch(ch), pair=("int_nuclear", stat),
-                    title="{} nuclear {} intensity (3D)".format(
+                    title="{} {} intensity (3D)".format(
                         _ch(ch), INT_STAT_TITLE.get(stat, stat)))
 
     # --- intensity: <ch>_2d_int_<stat> ---
@@ -362,31 +435,33 @@ DIVIDER_BG = RGBColor(0xF0, 0xF0, 0xF0)
 
 SLIDE_W = 13.333
 SLIDE_H = 7.5
-MARGIN = 0.10
+MARGIN = 0.08  # tight margins to maximize plot area
 
 TITLE_LEFT = MARGIN
-TITLE_TOP = 0.05
+TITLE_TOP = 0.03
 TITLE_WIDTH = SLIDE_W - 2 * MARGIN
-TITLE_HEIGHT = 0.55
+TITLE_HEIGHT = 0.50
 TITLE_FONT_PT = 28
 
+# Single (wide) image: fills almost the whole slide below the title.
 IMG_LEFT = MARGIN
-IMG_TOP = 0.66
+IMG_TOP = 0.56
 IMG_BOX_W = SLIDE_W - 2 * MARGIN
-IMG_BOX_H = 6.36
+IMG_BOX_H = 6.76          # 0.56 -> 7.32
 
 FOOTER_LEFT = MARGIN
-FOOTER_TOP = 7.06
+FOOTER_TOP = 7.33
 FOOTER_WIDTH = SLIDE_W - 2 * MARGIN
-FOOTER_HEIGHT = 0.40
-FOOTER_FONT_PT = 9
+FOOTER_HEIGHT = 0.15
+FOOTER_FONT_PT = 7
 
-COL_GAP = 0.20
-MULTI_LABEL_TOP = 0.64
-MULTI_LABEL_HEIGHT = 0.42
-MULTI_IMG_TOP = 1.10
-MULTI_IMG_H = 5.90
-MULTI_FOOTER_FONT_PT = 8
+# Multi-image (N-up): thin caption row, images fill the rest.
+COL_GAP = 0.12
+MULTI_LABEL_TOP = 0.55
+MULTI_LABEL_HEIGHT = 0.34
+MULTI_IMG_TOP = 0.92
+MULTI_IMG_H = 6.40        # 0.92 -> 7.32
+MULTI_FOOTER_FONT_PT = 7
 
 
 # ---------------------------------------------------------------------------
@@ -468,7 +543,7 @@ def build_multi_slide(prs, title, image_paths, labels, footers):
     add_textbox(slide, title, TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, TITLE_HEIGHT,
                 font_pt=title_font_for(title), color=BLACK, bold=True)
     col_w = (SLIDE_W - 2 * MARGIN - (n - 1) * COL_GAP) / n
-    label_font = 26 if n <= 2 else 20
+    label_font = 22 if n <= 2 else 18
     for i in range(n):
         left = MARGIN + i * (col_w + COL_GAP)
         add_textbox(slide, labels[i], left, MULTI_LABEL_TOP, col_w, MULTI_LABEL_HEIGHT,
@@ -490,6 +565,26 @@ def build_multi_slide(prs, title, image_paths, labels, footers):
         para.alignment = PP_ALIGN.CENTER
         para.runs[0].font.size = Pt(MULTI_FOOTER_FONT_PT)
         para.runs[0].font.color.rgb = BLACK
+    return slide
+
+
+def build_stack_slide(prs, title, image_paths, labels, footers):
+    """Stack N images vertically (full width), each under a caption. Used for the
+    all-conditions combined view: nucleus (DNA) on top, histone mark on bottom."""
+    n = len(image_paths)
+    slide = _new_slide(prs)
+    add_textbox(slide, title, TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, TITLE_HEIGHT,
+                font_pt=title_font_for(title), color=BLACK, bold=True)
+    top_y = TITLE_TOP + TITLE_HEIGHT + 0.03
+    bottom_y = SLIDE_H - 0.06
+    row_h = (bottom_y - top_y) / n
+    cap_h = 0.30
+    for i in range(n):
+        rt = top_y + i * row_h
+        add_textbox(slide, labels[i], MARGIN, rt, SLIDE_W - 2 * MARGIN, cap_h,
+                    font_pt=18, color=BLACK, bold=True)
+        add_image_in_box(slide, str(image_paths[i]), MARGIN, rt + cap_h + 0.02,
+                         SLIDE_W - 2 * MARGIN, row_h - cap_h - 0.08)
     return slide
 
 
@@ -570,28 +665,28 @@ def build_item(prs, item, missing, omitted):
 
 
 def build_item_allcond(prs, item, missing):
-    """All-conditions-only variant: one slide per item. A pair shows DNA and
-    H3K27me3 all-conditions panels side by side under a shared metric title; a
-    solo shows its single all-conditions panel."""
+    """All-conditions-only variant: one slide per item. A pair STACKS the two
+    all-conditions panels vertically -- nucleus (DNA) on top, histone mark on
+    bottom -- under a shared metric title; a solo shows its single panel."""
     if item[0] == "pair":
         _, dna_stem, dna_title, h3_stem, h3_title = item
         base = dna_title[len("DNA "):] if dna_title.startswith("DNA ") else dna_title
-        cols = []
-        for stem, lab in ((dna_stem, "DNA"), (h3_stem, "H3K27me3")):
+        rows = []
+        for stem, lab in ((dna_stem, "Nucleus (DNA)"), (h3_stem, MARK_LABEL)):
             fn = stem + GRID_SUFFIX
             p = GRID_DIR / ALL_COND_VIEW / fn
             if p.exists() and not _excluded(ALL_COND_VIEW, fn):
-                cols.append((p, lab))
+                rows.append((p, lab))
             else:
                 missing.append("{}/{}".format(ALL_COND_VIEW, fn))
-        if not cols:
+        if not rows:
             return
         title = "{} — all conditions".format(base)
-        if len(cols) == 1:
-            build_slide(prs, title, cols[0][0], rel_footer(cols[0][0]))
+        if len(rows) == 1:
+            build_slide(prs, title, rows[0][0], rel_footer(rows[0][0]))
         else:
-            build_multi_slide(prs, title, [c[0] for c in cols],
-                               [c[1] for c in cols], [rel_footer(c[0]) for c in cols])
+            build_stack_slide(prs, title, [r[0] for r in rows],
+                              [r[1] for r in rows], [rel_footer(r[0]) for r in rows])
     else:  # solo
         _, stem, title = item
         fn = stem + GRID_SUFFIX
@@ -600,6 +695,25 @@ def build_item_allcond(prs, item, missing):
             build_slide(prs, "{} — all conditions".format(title), p, rel_footer(p))
         else:
             missing.append("{}/{}".format(ALL_COND_VIEW, fn))
+
+
+def build_item_allcond_channel(prs, item, channel, missing):
+    """Emit ONE full-size all-conditions slide for a single channel
+    ('nucleus' or 'mark'). One plot per slide, filling the slide (build_slide).
+    Channel-independent nuclear-morphology solos go to the nucleus deck only."""
+    if item[0] == "pair":
+        _, dna_stem, dna_title, h3_stem, h3_title = item
+        stem, title = (dna_stem, dna_title) if channel == "nucleus" else (h3_stem, h3_title)
+    else:  # solo -> nuclear morphology, nucleus deck only
+        if channel != "nucleus":
+            return
+        _, stem, title = item
+    fn = stem + GRID_SUFFIX
+    p = GRID_DIR / ALL_COND_VIEW / fn
+    if p.exists() and not _excluded(ALL_COND_VIEW, fn):
+        build_slide(prs, "{} — all conditions".format(title), p, rel_footer(p))
+    else:
+        missing.append("{}/{}".format(ALL_COND_VIEW, fn))
 
 
 def _item_stems(item):
@@ -643,9 +757,9 @@ def build_families():
     for (fam, _pair), recs in groups.items():
         chans = {r["channel"] for r in recs}
         sort_key = min(r["sort"] for r in recs)
-        if len(recs) == 2 and chans == {"DNA", "H3K27me3"}:
+        if len(recs) == 2 and chans == {"DNA", MARK_LABEL}:
             dna = next(r for r in recs if r["channel"] == "DNA")
-            h3 = next(r for r in recs if r["channel"] == "H3K27me3")
+            h3 = next(r for r in recs if r["channel"] == MARK_LABEL)
             fam_items[fam].append((sort_key, ("pair", dna["stem"], dna["title"],
                                               h3["stem"], h3["title"])))
         else:
@@ -665,8 +779,19 @@ def build_families():
 
 
 def main():
-    list_only = "--list" in sys.argv
-    allcond = "--allcond" in sys.argv  # all-conditions-only deck (DNA vs H3K side by side)
+    args = sys.argv[1:]
+    list_only = "--list" in args
+    allcond = "--allcond" in args  # all-conditions-only deck (DNA vs H3K side by side)
+    ds_key = DEFAULT_DATASET
+    if "--dataset" in args:
+        i = args.index("--dataset")
+        ds_key = args[i + 1] if i + 1 < len(args) else ds_key
+    if ds_key not in DATASETS:
+        print("Unknown dataset '{}'. Choose from: {}".format(ds_key, list(DATASETS)))
+        sys.exit(2)
+    apply_dataset(ds_key)
+    print("Dataset: {}".format(ds_key))
+
     families, unknown = build_families()
 
     n_metrics = sum(len(_item_stems(it)) for _, items in families for it in items)
@@ -689,44 +814,61 @@ def main():
             print("UNKNOWN (-> Other): {}".format(unknown))
         return
 
-    if allcond:
-        out_path = OUTPUT_PATH.with_name(OUTPUT_PATH.stem + "_all_conditions.pptx")
-        subtitle = DECK_SUBTITLE + "  -  all conditions only (DNA vs H3K27me3)"
-    else:
-        out_path = OUTPUT_PATH
-        subtitle = DECK_SUBTITLE
+    if n_metrics == 0:
+        print("No metrics found under {}\n  -> data not compiled yet? Skipping build."
+              .format(GRID_DIR))
+        return
 
+    if allcond:
+        # Split the all-conditions comparison into SEPARATE full-size decks:
+        # one nucleus (DNA) deck, one chromatin-mark deck. One plot per slide,
+        # filling the slide. Nuclear-morphology solos go to the nucleus deck.
+        for channel, clabel in (("nucleus", "Nucleus (DNA)"), ("mark", MARK_LABEL)):
+            out_path = OUTPUT_PATH.with_name(
+                OUTPUT_PATH.stem + "_all_conditions_" + channel + ".pptx")
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            prs = Presentation()
+            prs.slide_width = Inches(SLIDE_W)
+            prs.slide_height = Inches(SLIDE_H)
+            build_title_slide(prs, DECK_TITLE,
+                              DECK_SUBTITLE + "  -  all conditions, {} only".format(clabel))
+            missing = []
+            for fam, items in families:
+                build_divider_slide(prs, fam)
+                for it in items:
+                    build_item_allcond_channel(prs, it, channel, missing)
+            if out_path.exists():
+                backup_presentation(str(out_path), backup_base=str(out_path.parent / "backups"))
+            prs.save(str(out_path))
+            print("[{} only] {} slides -> {}".format(
+                clabel, len(prs.slides._sldIdLst), out_path.name))
+        return
+
+    # Full deck: both channels interleaved across the three views.
+    out_path = OUTPUT_PATH
     out_path.parent.mkdir(parents=True, exist_ok=True)
     prs = Presentation()
     prs.slide_width = Inches(SLIDE_W)
     prs.slide_height = Inches(SLIDE_H)
-    build_title_slide(prs, DECK_TITLE, subtitle)
+    build_title_slide(prs, DECK_TITLE, DECK_SUBTITLE)
 
     missing, omitted = [], []
     for fam, items in families:
         build_divider_slide(prs, fam)
         print("=== {} ===".format(fam))
         for it in items:
-            if allcond:
-                build_item_allcond(prs, it, missing)
-            else:
-                build_item(prs, it, missing, omitted)
+            build_item(prs, it, missing, omitted)
             print("  {}".format(_item_log(it)))
         print("")
 
     if out_path.exists():
-        backup_dir = out_path.parent / "backups"
-        created = backup_presentation(str(out_path), backup_base=str(backup_dir))
-        if created:
-            print("Backed up previous deck to: {}\n".format(backup_dir))
+        backup_presentation(str(out_path), backup_base=str(out_path.parent / "backups"))
 
     prs.save(str(out_path))
     total = len(prs.slides._sldIdLst)
-    print("Done. {} metrics, {} slides written to:\n  {}".format(
-        n_metrics, total, out_path))
+    print("Done. {} metrics, {} slides written to:\n  {}".format(n_metrics, total, out_path))
     if unknown:
-        print("\n{} unrecognized stem(s) under 'Other metrics': {}".format(
-            len(unknown), unknown))
+        print("\n{} unrecognized stem(s) under 'Other metrics': {}".format(len(unknown), unknown))
     if missing:
         print("\nSkipped {} missing panel(s) (not on disk).".format(len(missing)))
 
