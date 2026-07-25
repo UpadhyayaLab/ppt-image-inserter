@@ -69,6 +69,11 @@ from .longpath import (
     path_exists,
 )
 
+from .compile_paths import (
+    resolve_latest_compile,
+    compile_date_from,
+)
+
 # Define public API
 __all__ = [
     # Core functions
@@ -120,4 +125,8 @@ __all__ = [
     # Long-path helpers (Windows MAX_PATH workaround)
     'safe_path',
     'path_exists',
+
+    # Dated compile directory resolution
+    'resolve_latest_compile',
+    'compile_date_from',
 ]

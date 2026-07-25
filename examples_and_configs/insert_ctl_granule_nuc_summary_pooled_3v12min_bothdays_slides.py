@@ -1,14 +1,16 @@
 """
-insert_ctl_granule_nuc_summary_20260617_slides.py
+insert_ctl_granule_nuc_summary_pooled_3v12min_bothdays_slides.py
 
-Condition-comparison summary deck for the 20260617 fixed activated-CTL experiment
-(20260617_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus_3min_12min),
-compiled into compiled_results/CTL_Glass_nuc_MT_granules_20260617_ncdist_neg0p5_20260701.
-The two conditions are TIMEPOINTS — 3 min (early activation) vs 12 min (established
-polarization) — αCD3/ICAM1/3SI on glass. Channels: LAMP1 (lytic granules), MT
-(β-tubulin; also the centrosome-context stain — no dedicated centrosome marker),
-actin, and Hoechst/DNA. Each grid panel is a 3 min vs 12 min comparison plot.
-Companion to the montage deck (insert_ctl_lamp1_synapse_and_xz_20260617_slides.py).
+Pooled (June 17 + July 16 merged) summary deck for the fixed activated-CTL
+experiments. Compile is
+compiled_results/CTL_nuc_MT_granules_3v12min_bothdays_ncdn05_20260724
+(pooled 3 min = June+July, 5 min = July only, 12 min = June+July).
+
+Same FAMILIES structure as the per-experiment decks
+(insert_ctl_granule_nuc_summary_20260617_slides.py and _20260716_slides.py) —
+same violin/scatter grid_panels, all channel/metric families — but grid_panels
+live under grid_panels/timepoint/<stem>.png here (no `_grid` suffix), so
+GRID_DIR + GRID_SUFFIX are adjusted below.
 
 Modeled on the blebbistatin summary deck (insert_bleb_summary_slides.py) for the
 per-slide layout, title slide, family dividers, and --list dry-run, plus the
@@ -46,49 +48,92 @@ from pptx.util import Inches, Pt
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ppt_image_inserter import backup_presentation, safe_path, path_exists  # noqa: E402
+from ppt_image_inserter import (  # noqa: E402
+    backup_presentation,
+    compile_date_from,
+    path_exists,
+    resolve_latest_compile,
+    safe_path,
+)
 
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-ROOT = Path(
-    "L:/FF/Nucleus_granules/CTL_fixed/"
-    "20260617_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus_3min_12min/"
-    "compiled_results/CTL_Glass_nuc_MT_granules_20260617_ncdist_neg0p5_20260703"
+# Auto-picks the newest CTL_nuc_MT_granules_*_bothdays_ncdn05_YYYYMMDD subdir.
+# The compile scope varies between 3v12min (June+July, no 5 min) and
+# 3_5_12min (all three) — either matches. The `bothdays_ncdn05` filter is
+# pinned because that's this deck's scope; other filters (reposCent, …) get
+# their own deck.
+ROOT = resolve_latest_compile(
+    "L:/FF/Nucleus_granules/CTL_fixed/compiled_results",
+    "CTL_nuc_MT_granules_*_bothdays_ncdn05_*",
 )
-# Secondary root — for panels that live in a different compile from the
-# primary. Currently used for invag_depth_profiles/ and *_loc_wrto_invag/
-# (added 2026-07-19); those dirs don't exist in the ncdist_neg0p5 compile.
-EXTRA_ROOT = Path(
-    "L:/FF/Nucleus_granules/CTL_fixed/"
-    "20260617_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus_3min_12min/"
-    "compiled_results/CTL_Glass_nuc_MT_granules_20260617_20260720"
-)
+EXTRA_ROOT = ROOT
 EXTRA_ROOT_PREFIXES = (
     "invag_depth_profiles/",
     "Lamp1_loc_wrto_invag/",
     "MT_loc_wrto_invag/",
 )
-GRID_DIR = ROOT / "grid_panels"
+# Pooled compile stores grid panels under grid_panels/timepoint/<stem>.png
+# (no `_grid` suffix) — a different naming convention from the per-experiment
+# compiles (grid_panels/<stem>_grid.png). Adjust both constants together.
+GRID_DIR = ROOT / "grid_panels" / "timepoint"
+GRID_SUFFIX = ".png"
 CELL_COUNTS_PNG = ROOT / "cell_counts_barplot.png"   # context slide (optional)
+
+# Filter tag from the ROOT folder name (between the base stem and the date),
+# e.g. "bothdays_ncdn05" or "reposCent". Reused in the deck subtitle + output
+# filename so both stay in sync with the compile that was actually picked.
+# Everything between the fixed prefix `CTL_nuc_MT_granules_` and the trailing
+# `_YYYYMMDD` — e.g. "3v12min_bothdays_ncdn05", "3_5_12min_bothdays_ncdn05",
+# "3v12min_reposCent". Used verbatim in the output filename and subtitle so
+# the deck name always reflects the compile that was actually resolved.
+_PREFIX = "CTL_nuc_MT_granules_"
+COMPILE_TAG = ROOT.name[len(_PREFIX): -len("_YYYYMMDD")]
 
 OUTPUT_PATH = Path(
     "K:/FF/PPT/PPT_autogeneration/CTL_Glass_Nucleus_Centrosome/"
-    "CTL_fixed_LAMP1/"                                # co-located with the LAMP1 montage deck
-    "CTL_fixed_granule_nuc_summary_20260617.pptx"
+    "CTL_fixed_LAMP1/"
+    "CTL_fixed_granule_nuc_summary_pooled_{}.pptx".format(COMPILE_TAG)
 )
 
-GRID_SUFFIX = "_grid.png"
+# Compile date parsed from the resolved ROOT folder (…_YYYYMMDD).
+COMPILE_DATE = compile_date_from(ROOT)
 
-# Compile date parsed from the dated ROOT folder (…_YYYYMMDD), shown in the footer.
-_d = ROOT.name.rsplit("_", 1)[-1]          # e.g. "20260703"
-COMPILE_DATE = "{}-{}-{}".format(_d[:4], _d[4:6], _d[6:8])
+# n's read at build time from cell_counts.csv (FilteredCells column) so they
+# track whatever filter this compile applied.
+def _read_pooled_counts(root):
+    csv = root / "cell_counts.csv"
+    counts = {}
+    if not path_exists(csv):
+        return counts
+    with open(safe_path(csv), "r") as fh:
+        header = fh.readline().strip().split(",")
+        try:
+            i_label = header.index("Label")
+            i_n = header.index("FilteredCells")
+        except ValueError:
+            return counts
+        for line in fh:
+            row = line.strip().split(",")
+            if len(row) > max(i_label, i_n):
+                counts[row[i_label]] = row[i_n]
+    return counts
 
-DECK_TITLE = "Granule polarization and nuclear morphology in activated CTLs"
-# n's from cell_counts.csv (3 min 109, 12 min 95 after the negative-invag QC filter).
+_counts = _read_pooled_counts(ROOT)
+def _n(label, source):
+    return "{} (n = {}, {})".format(label, _counts.get(label, "?"), source)
+
+DECK_TITLE = "Granule polarization and nuclear morphology in activated CTLs — pooled"
 DECK_SUBTITLE = (
-    "3 min (n = 105) vs 12 min (n = 94)  ·  αCD3/ICAM1/3SI, glass  ·  "
-    "LAMP1 / MT / actin / DNA  ·  fixed 06/17/2026  ·  compiled 2026-07-03"
+    "{}  ·  {}  ·  {}  ·  αCD3/ICAM1/3SI, glass  ·  "
+    "LAMP1 / MT / actin / DNA  ·  compiled {} ({})"
+).format(
+    _n("3 min", "June+July"),
+    _n("5 min", "July only"),
+    _n("12 min", "June+July"),
+    COMPILE_DATE,
+    COMPILE_TAG,
 )
 
 # ---------------------------------------------------------------------------
@@ -107,7 +152,7 @@ FAMILIES = [
          "Synapse and nuclear broadest-slice area"),
     ]),
     ("Granules — polarization and synapse delivery", [
-        ([("centrosome_center_z_rel_bottom_actin_plane", "centrosome"),
+        ([("centrosome_from_MT_z_cell_bottom_distance", "centrosome"),
           ("Lamp1_zCOF_cell_bottom_distance", "granules")],
          "Centrosome and granule distance to synapse"),
         ([("Lamp1_z50_cell_bottom_distance", "z₅₀"),
@@ -221,17 +266,17 @@ FAMILIES = [
     # profiles from invag_depth_profiles/. Each slide places LAMP1 (left) and
     # MT (right) side by side so their responses can be read against each other.
     ("Granules and MT — invagination-depth profiles", [
-        ([("invag_depth_profiles/Lamp1_invag_depth_profiles_pooled.png", "LAMP1"),
-          ("invag_depth_profiles/MT_invag_depth_profiles_pooled.png",    "MT")],
+        ([("invag_depth_profiles/Lamp1_invag_depth_profiles.png", "LAMP1"),
+          ("invag_depth_profiles/MT_invag_depth_profiles.png",    "MT")],
          "Density vs invagination depth (pooled)"),
-        ([("invag_depth_profiles/Lamp1_invag_depth_profiles_0_5um_cent_stratified_pooled.png", "LAMP1"),
-          ("invag_depth_profiles/MT_invag_depth_profiles_0_5um_cent_stratified_pooled.png",    "MT")],
+        ([("invag_depth_profiles/Lamp1_invag_depth_profiles_0_5um_cent_stratified.png", "LAMP1"),
+          ("invag_depth_profiles/MT_invag_depth_profiles_0_5um_cent_stratified.png",    "MT")],
          "Density vs invag depth — stratified by ≤0.5 μm to centrosome"),
-        ([("invag_depth_profiles/Lamp1_invag_depth_profiles_1um_cent_stratified_pooled.png", "LAMP1"),
-          ("invag_depth_profiles/MT_invag_depth_profiles_1um_cent_stratified_pooled.png",    "MT")],
+        ([("invag_depth_profiles/Lamp1_invag_depth_profiles_1um_cent_stratified.png", "LAMP1"),
+          ("invag_depth_profiles/MT_invag_depth_profiles_1um_cent_stratified.png",    "MT")],
          "Density vs invag depth — stratified by ≤1 μm to centrosome"),
-        ([("invag_depth_profiles/Lamp1_invag_enrichment_vs_centdist_pooled.png", "LAMP1"),
-          ("invag_depth_profiles/MT_invag_enrichment_vs_centdist_pooled.png",    "MT")],
+        ([("invag_depth_profiles/Lamp1_invag_enrichment_vs_centdist.png", "LAMP1"),
+          ("invag_depth_profiles/MT_invag_enrichment_vs_centdist.png",    "MT")],
          "Invagination enrichment vs distance to centrosome"),
     ]),
     # Granule (LAMP1) and MT localization vs invagination geometry, from
@@ -241,12 +286,12 @@ FAMILIES = [
         ([("Lamp1_loc_wrto_invag/02a_Lamp1_avg_hulldist.png", "LAMP1"),
           ("MT_loc_wrto_invag/02a_MT_avg_hulldist.png",       "MT")],
          "Avg signal vs hull-boundary distance (concave regions)"),
-        ([("Lamp1_loc_wrto_invag/02b_Lamp1_avg_minCurvature_concave.png", "LAMP1"),
-          ("MT_loc_wrto_invag/02b_MT_avg_minCurvature_concave.png",       "MT")],
-         "Avg signal vs min curvature (concave)"),
-        ([("Lamp1_loc_wrto_invag/02c_Lamp1_avg_meanCurvature_concave.png", "LAMP1"),
-          ("MT_loc_wrto_invag/02c_MT_avg_meanCurvature_concave.png",       "MT")],
-         "Avg signal vs mean curvature (concave)"),
+        ([("Lamp1_loc_wrto_invag/02b_Lamp1_avg_minCurvature.png", "LAMP1"),
+          ("MT_loc_wrto_invag/02b_MT_avg_minCurvature.png",       "MT")],
+         "Avg signal vs min curvature (full range)"),
+        ([("Lamp1_loc_wrto_invag/02c_Lamp1_avg_meanCurvature.png", "LAMP1"),
+          ("MT_loc_wrto_invag/02c_MT_avg_meanCurvature.png",       "MT")],
+         "Avg signal vs mean curvature (full range)"),
         ([("Lamp1_loc_wrto_invag/03a_Lamp1_enrichment_hulldist_gt0.5um.png", "LAMP1"),
           ("MT_loc_wrto_invag/03a_MT_enrichment_hulldist_gt0.5um.png",       "MT")],
          "Enrichment in deep invaginations (hulldist > 0.5 μm)"),

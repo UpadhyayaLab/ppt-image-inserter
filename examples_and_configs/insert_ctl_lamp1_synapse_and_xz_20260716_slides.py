@@ -198,31 +198,61 @@ BLACK = RGBColor(0x00, 0x00, 0x00)
 SLIDE_W = 13.333
 SLIDE_H = 7.5
 
-TITLE_LEFT = 0.10
-TITLE_TOP = 0.05
-TITLE_WIDTH = SLIDE_W - 2 * 0.10
-TITLE_HEIGHT = 0.50
-TITLE_FONT_PT = 24
+# MAXIMALLY AGGRESSIVE — zero reserved margins / gaps / title band. Image
+# cells claim the entire slide. Title and per-cell labels are drawn as
+# overlays AFTER the images (so they win z-order) at the slide/cell top,
+# where they sit on the black dead-space of width-bound panels or lightly
+# overlap the black edge (above cell membrane) of height-bound MIPs.
+TITLE_LEFT = 0.02
+TITLE_TOP = 0.01
+TITLE_WIDTH = SLIDE_W - 2 * 0.02
+TITLE_HEIGHT = 0.24
+TITLE_FONT_PT = 18
 
-GRID_LEFT = 0.10
-GRID_TOP = 0.60
-GRID_BOT_MARGIN = 0.10
-GRID_H = SLIDE_H - GRID_TOP - GRID_BOT_MARGIN     # 6.80
-LABEL_H = 0.30
-LABEL_FONT_PT = 16
+GRID_LEFT = 0.0
+GRID_TOP = 0.0
+GRID_BOT_MARGIN = 0.0
+GRID_H = SLIDE_H - GRID_TOP - GRID_BOT_MARGIN     # 7.50
+LABEL_H = 0.22
+LABEL_FONT_PT = 12
+
+# Per-cell labels overlay the top of each image cell. For the top row the
+# label would collide with the title box (both anchored near y=0), so we
+# push top-row labels down to just below the title band.
+TITLE_BOTTOM = TITLE_TOP + TITLE_HEIGHT           # 0.25
+def label_y_for(cell_top: float) -> float:
+    return max(cell_top, TITLE_BOTTOM)
 
 # N-column side-by-side layout (N = len(CONDITIONS)).
 N_COND = len(CONDITIONS)
-COL_GAP = 0.10
+COL_GAP = 0.0
 CELL_W = (SLIDE_W - 2 * GRID_LEFT - (N_COND - 1) * COL_GAP) / N_COND
-IMG_H = GRID_H - LABEL_H
+IMG_H = GRID_H                       # full cell — labels overlay, not reserve
 CELL_LEFTS = [GRID_LEFT + i * (CELL_W + COL_GAP) for i in range(N_COND)]
 
-# N-row stacked full-width layout (used for wide panel groups).
-PANEL_GROUPS = {"xzpanel_phys", "companel_phys"}
+# 2-top-1-bottom layout — for wide-ish groups (xz_phys), each cell is
+# ~half-slide wide × ~half-height tall so images can be wider than in 3-column.
+# Row 1 has cells 0 and 1; row 2 has cell 2 centered. All cells same size so
+# every panel shares the same physical scale.
+TWO_TOP_ONE_BOT_GROUPS = {"xz_phys", "xzpanel_phys", "companel_phys"}
+TT_CELL_W = (SLIDE_W - 2 * GRID_LEFT - COL_GAP) / 2
+TT_ROW_H = GRID_H / 2
+TT_IMG_H = TT_ROW_H                  # full row — label overlays image top edge
+TT_ROW1_TOP = GRID_TOP
+TT_ROW2_TOP = GRID_TOP + TT_ROW_H
+TT_POSITIONS = [
+    (GRID_LEFT,                        TT_ROW1_TOP),   # 3 min
+    (GRID_LEFT + TT_CELL_W + COL_GAP,  TT_ROW1_TOP),   # 5 min
+    ((SLIDE_W - TT_CELL_W) / 2,        TT_ROW2_TOP),   # 12 min centered
+]
+
+# N-row stacked full-width layout — no group uses it anymore (panel groups
+# moved to 2-top-1-bot per user preference), but keep the helpers defined
+# in case a future group needs the shape.
+PANEL_GROUPS: set = set()
 PANEL_IMG_W = SLIDE_W - 2 * GRID_LEFT
 PANEL_ROW_H = GRID_H / N_COND
-PANEL_ROW_IMG_H = PANEL_ROW_H - LABEL_H
+PANEL_ROW_IMG_H = PANEL_ROW_H        # full row — label overlays image top edge
 PANEL_ROW_TOPS = [GRID_TOP + i * PANEL_ROW_H for i in range(N_COND)]
 
 # ---------------------------------------------------------------------------
@@ -249,10 +279,12 @@ def add_textbox(slide, text, left, top, width, height, font_pt, color, bold=Fals
         Inches(left), Inches(top), Inches(width), Inches(height)
     )
     tf = box.text_frame
-    tf.margin_left = Inches(0.05)
-    tf.margin_right = Inches(0.05)
-    tf.margin_top = Inches(0.02)
-    tf.margin_bottom = Inches(0.02)
+    # Zero internal padding so a narrow text box (e.g. 0.14" label) actually
+    # fits the intended font size instead of getting eaten by default margins.
+    tf.margin_left = Inches(0.02)
+    tf.margin_right = Inches(0.02)
+    tf.margin_top = Inches(0)
+    tf.margin_bottom = Inches(0)
     tf.text = text
     para = tf.paragraphs[0]
     para.alignment = PP_ALIGN.CENTER
@@ -331,23 +363,62 @@ def build_multi_compare_slide(prs, title_text, panels, slide_ppi):
     )
 
     missing = []
+    # Image first, label overlays on top so it wins the z-order.
     for i, (label, img_path) in enumerate(panels):
         cell_left = CELL_LEFTS[i]
-        add_textbox(
-            slide, label,
-            cell_left, GRID_TOP, CELL_W, LABEL_H,
-            font_pt=LABEL_FONT_PT, color=WHITE, bold=True,
-        )
         if img_path is not None and _exists_long(img_path):
             add_image_at_ppi(slide, img_path, slide_ppi,
-                             cell_left, GRID_TOP + LABEL_H, CELL_W, IMG_H)
+                             cell_left, GRID_TOP, CELL_W, IMG_H)
         else:
             add_textbox(
                 slide, "(missing)",
-                cell_left, GRID_TOP + LABEL_H + IMG_H / 2 - 0.15, CELL_W, 0.3,
+                cell_left, GRID_TOP + IMG_H / 2 - 0.15, CELL_W, 0.3,
                 font_pt=14, color=WHITE,
             )
             missing.append(label)
+    for i, (label, _img) in enumerate(panels):
+        cell_left = CELL_LEFTS[i]
+        add_textbox(
+            slide, label,
+            cell_left, label_y_for(GRID_TOP), CELL_W, LABEL_H,
+            font_pt=LABEL_FONT_PT, color=WHITE, bold=True,
+        )
+    return slide, missing
+
+
+def build_multi_2top1bot_slide(prs, title_text, panels, slide_ppi):
+    """2-top-1-bottom layout for wide-ish groups (xz_phys). All cells share
+    the same size, so panels stay at the same physical scale."""
+    blank_layout = prs.slide_layouts[6]
+    slide = prs.slides.add_slide(blank_layout)
+    set_slide_background(slide, BLACK)
+
+    add_textbox(
+        slide, title_text,
+        TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, TITLE_HEIGHT,
+        font_pt=TITLE_FONT_PT, color=WHITE, bold=True,
+    )
+
+    missing = []
+    for i, (label, img_path) in enumerate(panels):
+        cell_left, cell_top = TT_POSITIONS[i]
+        if img_path is not None and _exists_long(img_path):
+            add_image_at_ppi(slide, img_path, slide_ppi,
+                             cell_left, cell_top, TT_CELL_W, TT_IMG_H)
+        else:
+            add_textbox(
+                slide, "(missing)",
+                cell_left, cell_top + TT_IMG_H / 2 - 0.15,
+                TT_CELL_W, 0.3, font_pt=14, color=WHITE,
+            )
+            missing.append(label)
+    for i, (label, _img) in enumerate(panels):
+        cell_left, cell_top = TT_POSITIONS[i]
+        add_textbox(
+            slide, label,
+            cell_left, label_y_for(cell_top), TT_CELL_W, LABEL_H,
+            font_pt=LABEL_FONT_PT, color=WHITE, bold=True,
+        )
     return slide, missing
 
 
@@ -367,21 +438,23 @@ def build_multi_stacked_slide(prs, title_text, panels, slide_ppi):
     missing = []
     for i, (label, img_path) in enumerate(panels):
         row_top = PANEL_ROW_TOPS[i]
-        add_textbox(
-            slide, label,
-            GRID_LEFT, row_top, PANEL_IMG_W, LABEL_H,
-            font_pt=LABEL_FONT_PT, color=WHITE, bold=True,
-        )
         if img_path is not None and _exists_long(img_path):
             add_image_at_ppi(slide, img_path, slide_ppi,
-                             GRID_LEFT, row_top + LABEL_H, PANEL_IMG_W, PANEL_ROW_IMG_H)
+                             GRID_LEFT, row_top, PANEL_IMG_W, PANEL_ROW_IMG_H)
         else:
             add_textbox(
                 slide, "(missing)",
-                GRID_LEFT, row_top + LABEL_H + PANEL_ROW_IMG_H / 2 - 0.15,
+                GRID_LEFT, row_top + PANEL_ROW_IMG_H / 2 - 0.15,
                 PANEL_IMG_W, 0.3, font_pt=14, color=WHITE,
             )
             missing.append(label)
+    for i, (label, _img) in enumerate(panels):
+        row_top = PANEL_ROW_TOPS[i]
+        add_textbox(
+            slide, label,
+            GRID_LEFT, label_y_for(row_top), PANEL_IMG_W, LABEL_H,
+            font_pt=LABEL_FONT_PT, color=WHITE, bold=True,
+        )
     return slide, missing
 
 
@@ -413,12 +486,18 @@ def main() -> None:
         sys.exit(1)
 
     # One PPI per scale_group, pinned to the largest source image in that group.
+    # PPI-binding cell dimensions depend on the layout each group uses:
+    #   PANEL_GROUPS         → stacked full-width rows (PANEL_IMG_W × PANEL_ROW_IMG_H)
+    #   TWO_TOP_ONE_BOT_GROUPS → 2-top-1-bot half-width cells (TT_CELL_W × TT_IMG_H)
+    #   everything else       → 3-column side-by-side (CELL_W × IMG_H)
     group_ppi: dict = {}
     for spec in slide_specs:
         imgs = [p for p in spec["imgs"] if p is not None and _exists_long(p)]
         sg = spec["scale_group"]
         if sg in PANEL_GROUPS:
             own = compute_group_ppi(imgs, PANEL_IMG_W, PANEL_ROW_IMG_H) if imgs else 0.0
+        elif sg in TWO_TOP_ONE_BOT_GROUPS:
+            own = compute_group_ppi(imgs, TT_CELL_W, TT_IMG_H) if imgs else 0.0
         else:
             own = compute_group_ppi(imgs, CELL_W, IMG_H) if imgs else 0.0
         group_ppi[sg] = max(group_ppi.get(sg, 0.0), own)
@@ -443,19 +522,25 @@ def main() -> None:
     for spec in slide_specs:
         slide_ppi = group_ppi[spec["scale_group"]]
         panels = list(zip(tp_labels, spec["imgs"]))
-        builder = (build_multi_stacked_slide if spec["scale_group"] in PANEL_GROUPS
-                   else build_multi_compare_slide)
+        sg = spec["scale_group"]
+        if sg in PANEL_GROUPS:
+            builder = build_multi_stacked_slide
+        elif sg in TWO_TOP_ONE_BOT_GROUPS:
+            builder = build_multi_2top1bot_slide
+        else:
+            builder = build_multi_compare_slide
         _, missing = builder(prs, spec["title"], panels, slide_ppi)
         status = "  ".join(
             f"{tp}:{'OK' if img else 'MISSING'}" for tp, img in panels
         )
-        print(f"[{spec['scale_group']:>13s}]  {status}  {spec['title']}")
+        print(f"[{sg:>13s}]  {status}  {spec['title']}")
         for label in missing:
             idx = tp_labels.index(label) if label in tp_labels else 0
             missing_total.append(f"{spec['title']}/{label}  ({spec['dirs'][idx]})")
 
     prs.save(str(out_path))
-    print(f"\nDone. {len(slide_specs)} slides written to:\n  {out_path}")
+    n_slides = sum(1 for _ in prs.slides)
+    print(f"\nDone. {n_slides} slides written to:\n  {out_path}")
     if missing_total:
         print(f"\nMissing ({len(missing_total)}):")
         for m in missing_total:

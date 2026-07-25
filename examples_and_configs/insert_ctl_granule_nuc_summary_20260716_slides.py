@@ -1,14 +1,14 @@
 """
-insert_ctl_granule_nuc_summary_20260617_slides.py
+insert_ctl_granule_nuc_summary_20260716_slides.py
 
-Condition-comparison summary deck for the 20260617 fixed activated-CTL experiment
-(20260617_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus_3min_12min),
-compiled into compiled_results/CTL_Glass_nuc_MT_granules_20260617_ncdist_neg0p5_20260701.
-The two conditions are TIMEPOINTS — 3 min (early activation) vs 12 min (established
-polarization) — αCD3/ICAM1/3SI on glass. Channels: LAMP1 (lytic granules), MT
+Condition-comparison summary deck for the 20260716 fixed activated-CTL experiment
+(20260716_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus).
+Same structure as the 20260617 companion (insert_ctl_granule_nuc_summary_20260617_slides.py)
+but pointed at the July-only ncdn05 compile. THREE timepoints — 3 min, 5 min,
+12 min — αCD3/ICAM1/3SI on glass. Channels: LAMP1 (lytic granules), MT
 (β-tubulin; also the centrosome-context stain — no dedicated centrosome marker),
-actin, and Hoechst/DNA. Each grid panel is a 3 min vs 12 min comparison plot.
-Companion to the montage deck (insert_ctl_lamp1_synapse_and_xz_20260617_slides.py).
+actin, and Hoechst/DNA. Each grid panel is a 3-timepoint comparison.
+Companion to the montage deck (insert_ctl_lamp1_synapse_and_xz_20260716_slides.py).
 
 Modeled on the blebbistatin summary deck (insert_bleb_summary_slides.py) for the
 per-slide layout, title slide, family dividers, and --list dry-run, plus the
@@ -53,17 +53,13 @@ from ppt_image_inserter import backup_presentation, safe_path, path_exists  # no
 # ---------------------------------------------------------------------------
 ROOT = Path(
     "L:/FF/Nucleus_granules/CTL_fixed/"
-    "20260617_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus_3min_12min/"
-    "compiled_results/CTL_Glass_nuc_MT_granules_20260617_ncdist_neg0p5_20260703"
+    "20260716_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus/"
+    "compiled_results/CTL_Glass_nuc_MT_granules_20260716_ncdn05_20260724"
 )
-# Secondary root — for panels that live in a different compile from the
-# primary. Currently used for invag_depth_profiles/ and *_loc_wrto_invag/
-# (added 2026-07-19); those dirs don't exist in the ncdist_neg0p5 compile.
-EXTRA_ROOT = Path(
-    "L:/FF/Nucleus_granules/CTL_fixed/"
-    "20260617_Fixed_CTLs_glass_centrosome_polarization_granules_nucleus_3min_12min/"
-    "compiled_results/CTL_Glass_nuc_MT_granules_20260617_20260720"
-)
+# For the July-only compile, invag_depth_profiles/ and *_loc_wrto_invag/ ship
+# in the same ncdn05 compile as the grid_panels/, so EXTRA_ROOT = ROOT. Kept
+# as a separate constant to match the 20260617 script layout.
+EXTRA_ROOT = ROOT
 EXTRA_ROOT_PREFIXES = (
     "invag_depth_profiles/",
     "Lamp1_loc_wrto_invag/",
@@ -75,7 +71,7 @@ CELL_COUNTS_PNG = ROOT / "cell_counts_barplot.png"   # context slide (optional)
 OUTPUT_PATH = Path(
     "K:/FF/PPT/PPT_autogeneration/CTL_Glass_Nucleus_Centrosome/"
     "CTL_fixed_LAMP1/"                                # co-located with the LAMP1 montage deck
-    "CTL_fixed_granule_nuc_summary_20260617.pptx"
+    "CTL_fixed_granule_nuc_summary_20260716_ncdn05.pptx"
 )
 
 GRID_SUFFIX = "_grid.png"
@@ -85,10 +81,11 @@ _d = ROOT.name.rsplit("_", 1)[-1]          # e.g. "20260703"
 COMPILE_DATE = "{}-{}-{}".format(_d[:4], _d[4:6], _d[6:8])
 
 DECK_TITLE = "Granule polarization and nuclear morphology in activated CTLs"
-# n's from cell_counts.csv (3 min 109, 12 min 95 after the negative-invag QC filter).
+# n's from cell_counts.csv for the July-only ncdn05 compile (July 16, 2026).
 DECK_SUBTITLE = (
-    "3 min (n = 105) vs 12 min (n = 94)  ·  αCD3/ICAM1/3SI, glass  ·  "
-    "LAMP1 / MT / actin / DNA  ·  fixed 06/17/2026  ·  compiled 2026-07-03"
+    "3 min (n = 100)  ·  5 min (n = 128)  ·  12 min (n = 111)  ·  "
+    "αCD3/ICAM1/3SI, glass  ·  LAMP1 / MT / actin / DNA  ·  "
+    "fixed 07/16/2026  ·  compiled 2026-07-24 (ncdn05)"
 )
 
 # ---------------------------------------------------------------------------

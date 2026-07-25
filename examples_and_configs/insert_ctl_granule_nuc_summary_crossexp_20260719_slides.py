@@ -60,18 +60,33 @@ from ppt_image_inserter import backup_presentation, safe_path, path_exists  # no
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-ROOT = Path(
-    "L:/FF/Nucleus_granules/CTL_fixed/compiled_results/"
-    "CTL_nuc_MT_granules_20260617_20260716_crossexp_20260719"
-)
+COMPILE_ROOT = "L:/FF/Nucleus_granules/CTL_fixed/compiled_results"
+OUT_DIR = "K:/FF/PPT/PPT_autogeneration/CTL_Glass_Nucleus_Centrosome/CTL_fixed_LAMP1"
+
+# Variant registry — two compiles that share the same structure and this same deck
+# layout, written to separate .pptx files:
+#   base    = the standard cross-experiment compile (default)
+#   ncdn05  = the nucleus-centrosome-distance filter variant (--ncdn05)
+# Select with the --ncdn05 flag; otherwise the base variant is built.
+_VARIANTS = {
+    "base": {
+        "root": "CTL_nuc_MT_granules_20260617_20260716_crossexp_20260720",
+        "out": "CTL_fixed_granule_nuc_summary_crossexp_20260617_20260716.pptx",
+        "note": "",
+    },
+    "ncdn05": {
+        "root": "CTL_nuc_MT_granules_20260617_20260716_crossexp_ncdn05_20260724",
+        "out": "CTL_fixed_granule_nuc_summary_crossexp_ncdn05_20260617_20260716.pptx",
+        "note": "  ·  ncdn05 nucleus-centrosome-distance filter variant",
+    },
+}
+VARIANT = "ncdn05" if "--ncdn05" in sys.argv else "base"
+_V = _VARIANTS[VARIANT]
+
+ROOT = Path(COMPILE_ROOT) / _V["root"]
 GRID_DIR = ROOT / "grid_panels"
 CELL_COUNTS_PNG = ROOT / "cell_counts_barplot.png"   # context slide (optional)
-
-OUTPUT_PATH = Path(
-    "K:/FF/PPT/PPT_autogeneration/CTL_Glass_Nucleus_Centrosome/"
-    "CTL_fixed_LAMP1/"                                # cross-experiment granule/nucleus decks
-    "CTL_fixed_granule_nuc_summary_crossexp_20260617_20260716.pptx"
-)
+OUTPUT_PATH = Path(OUT_DIR) / _V["out"]
 
 # Per-experiment stacked-rows violins (June 17 row: 3/12 min; July 16 row: 3/5/12 min)
 # — the desired layout, matching the LatA per-experiment-rows pattern. The single-axis
@@ -79,7 +94,7 @@ OUTPUT_PATH = Path(
 GRID_SUFFIX = "_per_experiment_grid.png"
 
 # Compile date parsed from the dated ROOT folder (…_YYYYMMDD), shown in the footer.
-_d = ROOT.name.rsplit("_", 1)[-1]          # e.g. "20260719"
+_d = ROOT.name.rsplit("_", 1)[-1]          # e.g. "20260720"
 COMPILE_DATE = "{}-{}-{}".format(_d[:4], _d[4:6], _d[6:8])
 
 DECK_TITLE = "Granule polarization and nuclear morphology in activated CTLs"
@@ -88,7 +103,7 @@ DECK_TITLE = "Granule polarization and nuclear morphology in activated CTLs"
 DECK_SUBTITLE = (
     "Cross-experiment (Jun 17 + Jul 16 2026), pooled  ·  3 / 12 min "
     "(Jul 16 also 5 min)  ·  αCD3/ICAM1/3SI, glass  ·  LAMP1 / MT / actin / DNA  ·  "
-    "compiled 2026-07-19"
+    "compiled " + COMPILE_DATE + _V["note"]
 )
 
 # ---------------------------------------------------------------------------
@@ -149,6 +164,27 @@ FAMILIES = [
         ([("Lamp1_enrichment_within_half_um_nuc_2_um_cent", "granule"),
           ("MT_enrichment_within_half_um_nuc_2_um_cent", "MT")],
          "Enrichment near centrosome (0.5 μm of nucleus, 2 μm of cent)"),
+    ]),
+    # Granule polarization relative to the MTOC (2 μm sphere). Each is one figure
+    # per slide with a descriptive caption (item = (stem, title, caption)).
+    ("Granules around the MTOC (1 & 2 μm)", [
+        ([("Lamp1_cent_facing_mass_ratio_1um", "1 μm"),
+          ("Lamp1_cent_facing_mass_ratio_2um", "2 μm")],
+         "Granules are not biased to the nucleus-facing side of the centrosome",
+         "Ratio of granule intensity per available cytoplasm, nucleus-facing vs. far "
+         "hemisphere of the MTOC (nucleus excluded), for 1 μm and 2 μm spheres. Dashed "
+         "line at 1 = no side preference. June 17 and July 16, 2026; 3/5/12 min. The ratio "
+         "sits at ~1 in every timepoint, both experiments and both radii (all n.s.) — no "
+         "facing preference, and the null reproduces across replicates."),
+        ([("Lamp1_cent_nuc_dist_ratio_1um", "1 μm"),
+          ("Lamp1_cent_nuc_dist_ratio_2um", "2 μm")],
+         "Granules sit slightly closer to the nucleus in July, but not June",
+         "Intensity-weighted mean granule distance to the nucleus, over the chance "
+         "distance across available cytoplasm, for 1 μm and 2 μm spheres. Dashed line at "
+         "1 = chance; <1 = closer than chance. July sits below chance (~0.92 at 2 μm, more "
+         "modest at 1 μm); June sits at ~1 (n.s.). The effect does not reproduce between "
+         "experiments and is not explained by centrosome–nucleus distance (near-identical "
+         "between the two), so it is a between-experiment difference, not a claimable result."),
     ]),
     ("Centrosome ↔ nucleus", [
         ("nuc_cent_closest_dist",            "Nucleus-centrosome closest distance"),
@@ -290,50 +326,100 @@ FAMILIES.append((
 # ---------------------------------------------------------------------------
 _GD_PROF_S = "geom_density/profiles/singles"
 _GD_ENR = "geom_density/enrichment"
-_GD_CURATED = "Lamp1_loc_wrto_invag"   # curated key-evidence violins (03a-e enrichment, 04a-c correlation)
 
 # Granule geometry-density section, modeled on the vim/MT geom-density comparison
-# decks (e.g. insert_vim_geomdensity_DMSO_slides.py). Two ingredients:
-#   1. Density-vs-geometry OVERLAY line profiles (perinuc 0.5 μm) — the single-line
-#      version, NOT the 3-row per-cell/Mean±SEM/bars grids. Curvature uses the FULL
-#      range (not the concave-only half).
-#   2. The curated enrichment/correlation VIOLINS from Lamp1_loc_wrto_invag/ —
-#      stratified by hull-boundary distance (03a/03b) and by curvature (03c-e),
-#      per-cell correlation (04a-c), each with the conditions (timepoints) side by
-#      side. These are the "key-evidence" violins, not the geom_density/enrichment
-#      /*_shells_* raw outputs.
-_SHELLS_ENR = "shells side by side · one dot per cell · ref line 1 (enriched > 1)"
-_SHELLS_CORR = ("shells side by side · one dot per cell · ref line 0 "
-                "(neg curvature-r / pos hull-r = enriched in concavities)")
+# decks. One slide per metric, with the two experiments side by side (1×2): the
+# first experiment (June 17, 3/12 min) next to the second (July 16, 3/5/12 min), so
+# both experiments are visible together on every slide. Density profiles use the
+# full-range OVERLAY line (perinuc 0.5 μm); enrichment/correlation use the per-cell
+# shell violins. Panels come from geom_density/ (the curated Lamp1_loc_wrto_invag/
+# set is pooled-only, so it can't provide the per-experiment split).
+#   (label, enrichment token [comma], OVERLAY-singles token [double underscore])
+_GD_EXP = [
+    ("June 17", "June_17,_2026", "June_17__2026"),
+    ("July 16", "July_16,_2026", "July_16__2026"),
+]
+
+
+def _gd_profile_pair(geom, channel="Lamp1"):
+    """June|July OVERLAY line profile panels for one geometry (hulldist/mincurv/meancurv).
+    channel='Lamp1' (granules) or 'MT' (microtubules)."""
+    return [("{}/{}_geomdens_{}_perinuc05_OVERLAY_line_{}.png".format(_GD_PROF_S, channel, geom, ov), lab)
+            for lab, _enr, ov in _GD_EXP]
+
+
+def _gd_shell_pair(stem):
+    """June|July shell-violin panels for one enrichment/correlation metric stem."""
+    return [("{}/{}_{}.png".format(_GD_ENR, stem, enr), lab)
+            for lab, enr, _ov in _GD_EXP]
+
+
+# Intersperse granule (LAMP1) and MT slides for each metric — LAMP1 slide
+# immediately followed by MT slide with the equivalent metric.
+def _lamp_mt_profile_slides(geom, title):
+    return [
+        (_gd_profile_pair(geom, "Lamp1"), "Granule "  + title),
+        (_gd_profile_pair(geom, "MT"),    "MT "        + title),
+    ]
+
+
+def _lamp_mt_shell_slides(stem_no_ch, title_lamp, title_mt):
+    """stem_no_ch is the metric stem after the 'Lamp1_'/'MT_' prefix, e.g.
+    'hulldist_gt0.5um_shells'. Returns a LAMP1 slide immediately followed by
+    the MT-analog slide."""
+    return [
+        (_gd_shell_pair("Lamp1_" + stem_no_ch), title_lamp),
+        (_gd_shell_pair("MT_"    + stem_no_ch), title_mt),
+    ]
+
+
+def _dp(title):  # "density" title suffix
+    return "density " + title
+
 
 FAMILIES.append((
-    "Granule density & enrichment vs NE geometry",
-    [
-        # Density-vs-geometry OVERLAY line profiles (perinuc 0.5 μm), full range.
-        ("{}/Lamp1_geomdens_hulldist_perinuc05_OVERLAY_line_pooled.png".format(_GD_PROF_S),
-         "Granule density vs invagination depth (perinuc 0.5 μm)"),
-        ([("{}/Lamp1_geomdens_mincurv_perinuc05_OVERLAY_line_pooled.png".format(_GD_PROF_S), "vs min curvature"),
-          ("{}/Lamp1_geomdens_meancurv_perinuc05_OVERLAY_line_pooled.png".format(_GD_PROF_S), "vs mean curvature")],
-         "Granule density vs nuclear curvature (perinuc 0.5 μm)"),
-        # Enrichment violins stratified by hull-boundary distance (deep invaginations).
-        ([("{}/03a_Lamp1_enrichment_hulldist_gt0.5um.png".format(_GD_CURATED), "hull dist > 0.5 μm"),
-          ("{}/03b_Lamp1_enrichment_hulldist_gt1.0um.png".format(_GD_CURATED), "hull dist > 1.0 μm")],
-         "Granule levels and invagination depth"),
-        # Enrichment violins stratified by curvature.
-        ([("{}/03c_Lamp1_enrichment_minCurvature_lt0.png".format(_GD_CURATED), "min curv < 0"),
-          ("{}/03d_Lamp1_enrichment_minCurvature_ltm0.25.png".format(_GD_CURATED), "min curv < −0.25"),
-          ("{}/03e_Lamp1_enrichment_meanCurvature.png".format(_GD_CURATED), "mean curv < 0")],
-         "Granule levels and nuclear curvature"),
-        # Per-cell correlation vs geometry.
-        ([("{}/04a_Lamp1_correlation_hulldist.png".format(_GD_CURATED), "vs hull-boundary distance"),
-          ("{}/04b_Lamp1_correlation_minCurvature.png".format(_GD_CURATED), "vs min curvature"),
-          ("{}/04c_Lamp1_correlation_meanCurvature.png".format(_GD_CURATED), "vs mean curvature")],
-         "Granule per-cell correlation vs NE geometry"),
-        # Correlation vs curvature WITHIN deep invaginations (deepcorr).
-        ([("{}/Lamp1_deepcorr_mincurv_shells_pooled.png".format(_GD_ENR), "vs min curvature (deep invaginations)"),
-          ("{}/Lamp1_deepcorr_meancurv_shells_pooled.png".format(_GD_ENR), "vs mean curvature (deep invaginations)")],
-         "Granule correlation vs curvature within deep invaginations"),
-    ],
+    "Granule + MT density vs NE geometry (June 17 vs July 16)",
+    _lamp_mt_profile_slides("hulldist",  "density vs invagination depth (perinuc 0.5 μm)") +
+    _lamp_mt_profile_slides("mincurv",   "density vs min curvature (perinuc 0.5 μm)") +
+    _lamp_mt_profile_slides("meancurv",  "density vs mean curvature (perinuc 0.5 μm)"),
+))
+
+FAMILIES.append((
+    "Granule + MT enrichment vs NE geometry (June 17 vs July 16)",
+    _lamp_mt_shell_slides("hulldist_gt0.5um_shells",
+        "Granule levels in deep invaginations (hull dist > 0.5 μm)",
+        "MT levels in deep invaginations (hull dist > 0.5 μm)") +
+    _lamp_mt_shell_slides("hulldist_gt1.0um_shells",
+        "Granule levels in deep invaginations (hull dist > 1.0 μm)",
+        "MT levels in deep invaginations (hull dist > 1.0 μm)") +
+    _lamp_mt_shell_slides("mincurv_lt0_shells",
+        "Granule levels on concave surface (min curv < 0)",
+        "MT levels on concave surface (min curv < 0)") +
+    _lamp_mt_shell_slides("mincurv_ltm0.25_shells",
+        "Granule levels on strongly concave surface (min curv < −0.25)",
+        "MT levels on strongly concave surface (min curv < −0.25)") +
+    _lamp_mt_shell_slides("meancurv_lt0_shells",
+        "Granule levels on concave surface (mean curv < 0)",
+        "MT levels on concave surface (mean curv < 0)"),
+))
+
+FAMILIES.append((
+    "Granule + MT correlation vs NE geometry (June 17 vs July 16)",
+    _lamp_mt_shell_slides("corr_hulldist_shells",
+        "Granule per-cell correlation vs hull-boundary distance",
+        "MT per-cell correlation vs hull-boundary distance") +
+    _lamp_mt_shell_slides("corr_mincurv_shells",
+        "Granule per-cell correlation vs min curvature",
+        "MT per-cell correlation vs min curvature") +
+    _lamp_mt_shell_slides("corr_meancurv_shells",
+        "Granule per-cell correlation vs mean curvature",
+        "MT per-cell correlation vs mean curvature") +
+    _lamp_mt_shell_slides("deepcorr_mincurv_shells",
+        "Granule correlation vs min curvature within deep invaginations",
+        "MT correlation vs min curvature within deep invaginations") +
+    _lamp_mt_shell_slides("deepcorr_meancurv_shells",
+        "Granule correlation vs mean curvature within deep invaginations",
+        "MT correlation vs mean curvature within deep invaginations"),
 ))
 
 # ---------------------------------------------------------------------------
@@ -370,6 +456,11 @@ FOOTER_TOP = 7.06
 FOOTER_WIDTH = SLIDE_W - 2 * MARGIN
 FOOTER_HEIGHT = 0.40
 FOOTER_FONT_PT = 9
+
+# Optional caption block (between image and footer) for slides that carry a
+# descriptive paragraph (e.g. the MTOC granule figures).
+CAPTION_BLOCK_H = 1.25
+CAPTION_FONT_PT = 12
 
 # ---------------------------------------------------------------------------
 
@@ -465,20 +556,24 @@ def _place_missing(slide, left, top, width):
                 width, 0.4, font_pt=18, color=BLACK)
 
 
-def build_slide(prs, title_text, panels, footer_text):
-    """Title + one or more panels (aspect preserved) + source-path footer.
+def build_slide(prs, title_text, panels, footer_text, caption=None):
+    """Title + one or more panels (aspect preserved) + optional caption + footer.
     `panels` is a list of (path, sublabel); a single entry fills the image box,
     multiple entries are laid out in side-by-side columns with a sublabel above
-    each. Returns the list of missing panel paths (not on disk)."""
+    each. An optional multi-line `caption` sits between the image and the footer
+    (shrinking the image box). Returns the list of missing panel paths."""
     slide = _new_slide(prs)
     add_textbox(slide, title_text, TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, TITLE_HEIGHT,
                 font_pt=title_font_for(title_text), color=BLACK, bold=True)
+
+    cap_h = CAPTION_BLOCK_H if caption else 0.0
+    box_h = IMG_BOX_H - cap_h
 
     missing = []
     if len(panels) == 1:
         path, _ = panels[0]
         if path_exists(path):
-            add_image_in_box(slide, safe_path(path), IMG_LEFT, IMG_TOP, IMG_BOX_W, IMG_BOX_H)
+            add_image_in_box(slide, safe_path(path), IMG_LEFT, IMG_TOP, IMG_BOX_W, box_h)
         else:
             _place_missing(slide, IMG_LEFT, IMG_TOP, IMG_BOX_W)
             missing.append(path)
@@ -486,7 +581,7 @@ def build_slide(prs, title_text, panels, footer_text):
         n = len(panels)
         col_w = (IMG_BOX_W - (n - 1) * COL_GAP) / n
         band_top = IMG_TOP + SUBLABEL_H + SUBLABEL_GAP
-        band_h = IMG_BOX_H - SUBLABEL_H - SUBLABEL_GAP
+        band_h = box_h - SUBLABEL_H - SUBLABEL_GAP
         for i, (path, sublabel) in enumerate(panels):
             left = IMG_LEFT + i * (col_w + COL_GAP)
             sub_box = add_textbox(slide, sublabel or "", left, IMG_TOP, col_w, SUBLABEL_H,
@@ -498,6 +593,10 @@ def build_slide(prs, title_text, panels, footer_text):
             else:
                 _place_missing(slide, left, band_top, col_w)
                 missing.append(path)
+
+    if caption:
+        add_textbox(slide, caption, MARGIN, IMG_TOP + box_h + 0.04, IMG_BOX_W,
+                    cap_h - 0.04, font_pt=CAPTION_FONT_PT, color=BLACK, align=PP_ALIGN.LEFT)
 
     add_textbox(slide, footer_text, FOOTER_LEFT, FOOTER_TOP, FOOTER_WIDTH,
                 FOOTER_HEIGHT, font_pt=FOOTER_FONT_PT, color=BLACK)
@@ -565,7 +664,8 @@ def main():
     if list_only:
         for fam, items in FAMILIES:
             print("=== {} ({}) ===".format(fam, len(items)))
-            for entry_stem, title in items:
+            for entry in items:
+                entry_stem, title = entry[0], entry[1]
                 panels = entry_panels(entry_stem)
                 flags = " ".join(
                     "{}:{}".format(sub or "-", "OK" if path_exists(p) else "MISS")
@@ -598,10 +698,12 @@ def main():
     for fam, items in FAMILIES:
         build_divider_slide(prs, fam)
         print("=== {} ===".format(fam))
-        for entry_stem, title in items:
+        for entry in items:
+            entry_stem, title = entry[0], entry[1]
+            caption = entry[2] if len(entry) > 2 else None
             panels = entry_panels(entry_stem)
             footer = " | ".join(rel_footer(p) for p, _ in panels)
-            miss = build_slide(prs, title, panels, footer)
+            miss = build_slide(prs, title, panels, footer, caption)
             status = "OK" if not miss else "MISSING"
             print("  [{}] {} -> {!r}".format(
                 status, ", ".join(p.name for p, _ in panels), title))
