@@ -199,6 +199,12 @@ BLOCKS = [
         "LAMP1 + MT, synapse plane — 3 min vs 12 min",
         "syn_phys",
     ),
+    # LAMP1 + actin at the synapse (3-slice MIP, panel view: channels + merge).
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_actin_syn3mip_fixed/montages/panels",
+        "LAMP1 + Actin, synapse 3-slice MIP (panels) — 3 min vs 12 min",
+        "syn3mip_phys",
+    ),
 ]
 
 CHUNK_GLOB = "montage_cells_*.png"
@@ -488,7 +494,7 @@ def main() -> None:
     # Groups whose source is physical_scale_images/ carry the embedded 104 px
     # scalebar; the rest (actin/bottom_slice_seg, deepest_invag_slice merges)
     # do not, so we report them as layout-pin only.
-    PHYS_GROUPS = {"xz_phys", "syn_phys", "broad", "xy_phys", "xzpanel_phys", "companel_phys"}
+    PHYS_GROUPS = {"xz_phys", "syn_phys", "syn3mip_phys", "broad", "xy_phys", "xzpanel_phys", "companel_phys"}
     print(f"Pinned PPI per scale_group ({len(slide_specs)} slides total):")
     for sg, ppi in sorted(group_ppi.items()):
         if sg in PHYS_GROUPS:

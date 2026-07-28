@@ -167,6 +167,12 @@ BLOCKS = [
         f"LAMP1 + MT, synapse plane — {TP_TITLE}",
         "syn_phys",
     ),
+    # LAMP1 + actin at the synapse (3-slice MIP, panel view: channels + merge).
+    (
+        "{cond}/cropped/channels/prog_fixed_cells/physical_scale_images/Lamp1_actin_syn3mip_fixed/montages/panels",
+        f"LAMP1 + Actin, synapse 3-slice MIP (panels) — {TP_TITLE}",
+        "syn3mip_phys",
+    ),
 ]
 
 CHUNK_GLOB = "montage_cells_*.png"
@@ -234,7 +240,7 @@ CELL_LEFTS = [GRID_LEFT + i * (CELL_W + COL_GAP) for i in range(N_COND)]
 # ~half-slide wide × ~half-height tall so images can be wider than in 3-column.
 # Row 1 has cells 0 and 1; row 2 has cell 2 centered. All cells same size so
 # every panel shares the same physical scale.
-TWO_TOP_ONE_BOT_GROUPS = {"xz_phys", "xzpanel_phys", "companel_phys"}
+TWO_TOP_ONE_BOT_GROUPS = {"xz_phys", "syn3mip_phys"}
 TT_CELL_W = (SLIDE_W - 2 * GRID_LEFT - COL_GAP) / 2
 TT_ROW_H = GRID_H / 2
 TT_IMG_H = TT_ROW_H                  # full row — label overlays image top edge
@@ -246,14 +252,29 @@ TT_POSITIONS = [
     ((SLIDE_W - TT_CELL_W) / 2,        TT_ROW2_TOP),   # 12 min centered
 ]
 
-# N-row stacked full-width layout — no group uses it anymore (panel groups
-# moved to 2-top-1-bot per user preference), but keep the helpers defined
-# in case a future group needs the shape.
-PANEL_GROUPS: set = set()
+# N-row stacked full-width layout — for wide 3-panel groups
+# (companel_phys, xzpanel_phys). Each row spans the full slide width so
+# panels are at max size under group-pinned physical scale. Chronological
+# order (3 min top, 5 middle, 12 bottom) means 3+5 sit above 12.
+PANEL_GROUPS = {"xzpanel_phys", "companel_phys"}
 PANEL_IMG_W = SLIDE_W - 2 * GRID_LEFT
 PANEL_ROW_H = GRID_H / N_COND
-PANEL_ROW_IMG_H = PANEL_ROW_H        # full row — label overlays image top edge
+PANEL_ROW_IMG_H = PANEL_ROW_H
 PANEL_ROW_TOPS = [GRID_TOP + i * PANEL_ROW_H for i in range(N_COND)]
+
+# WIDE_2TOP layout — REMOVED. It gave the 12 min panel a huge full-width
+# bottom cell, but at the cost of per-cell PPI (different physical scales
+# across the three panels on one slide). Kept the empty set so the render
+# dispatch still compiles; nothing routes to it.
+WIDE_2TOP_GROUPS: set = set()
+W2T_TOP_CELL_W = (SLIDE_W - 2 * GRID_LEFT - COL_GAP) / 2
+W2T_TOP_H = GRID_H / 2
+W2T_BOT_CELL_W = SLIDE_W - 2 * GRID_LEFT
+W2T_BOT_H = GRID_H / 2
+W2T_TOP_LEFTS = [GRID_LEFT, GRID_LEFT + W2T_TOP_CELL_W + COL_GAP]
+W2T_BOT_LEFT = GRID_LEFT
+W2T_BOT_TOP = GRID_TOP + W2T_TOP_H
+WIDE_2TOP_SHRINK: dict = {}
 
 # ---------------------------------------------------------------------------
 
@@ -422,6 +443,56 @@ def build_multi_2top1bot_slide(prs, title_text, panels, slide_ppi):
     return slide, missing
 
 
+def build_wide_2top_slide(prs, title_text, panels, shrink: float = 1.0):
+    """3+5 min on top row (half-width side-by-side), 12 min on bottom row
+    (FULL width). Each panel renders at its own max-fit PPI (physical
+    scale is NOT pinned across cells here) so the bottom cell's extra
+    horizontal room actually gets used. `shrink` (0<s<=1) scales the
+    fit-target area — 1.0 fills the cell, 0.93 renders ~13% smaller."""
+    blank_layout = prs.slide_layouts[6]
+    slide = prs.slides.add_slide(blank_layout)
+    set_slide_background(slide, BLACK)
+
+    add_textbox(
+        slide, title_text,
+        TITLE_LEFT, TITLE_TOP, TITLE_WIDTH, TITLE_HEIGHT,
+        font_pt=TITLE_FONT_PT, color=WHITE, bold=True,
+    )
+
+    # Cells: [top-left, top-right, bottom-full-width]
+    cells = [
+        (W2T_TOP_LEFTS[0], GRID_TOP,     W2T_TOP_CELL_W, W2T_TOP_H),
+        (W2T_TOP_LEFTS[1], GRID_TOP,     W2T_TOP_CELL_W, W2T_TOP_H),
+        (W2T_BOT_LEFT,     W2T_BOT_TOP,  W2T_BOT_CELL_W, W2T_BOT_H),
+    ]
+
+    missing = []
+    for i, (label, img_path) in enumerate(panels):
+        cl, ct, cw, ch = cells[i]
+        if img_path is not None and _exists_long(img_path):
+            # Per-cell PPI — unpinned. Each image renders at its natural
+            # best fit inside its cell (scaled by `shrink`), aspect preserved.
+            w_px, h_px = _png_dims(img_path)
+            fit_w = cw * shrink
+            fit_h = ch * shrink
+            cell_ppi = max(w_px / fit_w, h_px / fit_h)
+            add_image_at_ppi(slide, img_path, cell_ppi, cl, ct, cw, ch)
+        else:
+            add_textbox(
+                slide, "(missing)",
+                cl, ct + ch / 2 - 0.15, cw, 0.3, font_pt=14, color=WHITE,
+            )
+            missing.append(label)
+    for i, (label, _img) in enumerate(panels):
+        cl, ct, cw, ch = cells[i]
+        add_textbox(
+            slide, label,
+            cl, label_y_for(ct), cw, LABEL_H,
+            font_pt=LABEL_FONT_PT, color=WHITE, bold=True,
+        )
+    return slide, missing
+
+
 def build_multi_stacked_slide(prs, title_text, panels, slide_ppi):
     """N-row stacked full-width layout (each row spans the whole slide width).
     panels = list of (label, img_path) tuples in top→bottom order."""
@@ -494,6 +565,10 @@ def main() -> None:
     for spec in slide_specs:
         imgs = [p for p in spec["imgs"] if p is not None and _exists_long(p)]
         sg = spec["scale_group"]
+        if sg in WIDE_2TOP_GROUPS:
+            # Per-cell PPI inside the builder — no group-level pin.
+            group_ppi.setdefault(sg, 0.0)
+            continue
         if sg in PANEL_GROUPS:
             own = compute_group_ppi(imgs, PANEL_IMG_W, PANEL_ROW_IMG_H) if imgs else 0.0
         elif sg in TWO_TOP_ONE_BOT_GROUPS:
@@ -502,9 +577,13 @@ def main() -> None:
             own = compute_group_ppi(imgs, CELL_W, IMG_H) if imgs else 0.0
         group_ppi[sg] = max(group_ppi.get(sg, 0.0), own)
 
-    PHYS_GROUPS = {"xz_phys", "syn_phys", "broad", "xy_phys", "xzpanel_phys", "companel_phys"}
+    PHYS_GROUPS = {"xz_phys", "syn_phys", "syn3mip_phys", "broad", "xy_phys", "xzpanel_phys", "companel_phys"}
     print(f"Pinned PPI per scale_group ({len(slide_specs)} slides total):")
     for sg, ppi in sorted(group_ppi.items()):
+        if sg in WIDE_2TOP_GROUPS:
+            note = "  (per-cell PPI — physical scale is per-panel, not group-pinned)"
+            print(f"  {sg:>13s}  PPI=  <per-cell>{note}")
+            continue
         if sg in PHYS_GROUPS:
             bar = SCALEBAR_PX / ppi
             note = f"  scalebar = {bar:.3f} in = {bar * 2.54:.3f} cm"
@@ -523,13 +602,17 @@ def main() -> None:
         slide_ppi = group_ppi[spec["scale_group"]]
         panels = list(zip(tp_labels, spec["imgs"]))
         sg = spec["scale_group"]
-        if sg in PANEL_GROUPS:
-            builder = build_multi_stacked_slide
-        elif sg in TWO_TOP_ONE_BOT_GROUPS:
-            builder = build_multi_2top1bot_slide
+        if sg in WIDE_2TOP_GROUPS:
+            shrink = WIDE_2TOP_SHRINK.get(sg, 1.0)
+            _, missing = build_wide_2top_slide(prs, spec["title"], panels, shrink=shrink)
         else:
-            builder = build_multi_compare_slide
-        _, missing = builder(prs, spec["title"], panels, slide_ppi)
+            if sg in PANEL_GROUPS:
+                builder = build_multi_stacked_slide
+            elif sg in TWO_TOP_ONE_BOT_GROUPS:
+                builder = build_multi_2top1bot_slide
+            else:
+                builder = build_multi_compare_slide
+            _, missing = builder(prs, spec["title"], panels, slide_ppi)
         status = "  ".join(
             f"{tp}:{'OK' if img else 'MISSING'}" for tp, img in panels
         )

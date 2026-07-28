@@ -157,9 +157,11 @@ FAMILIES_ORDER = [
     "Nuclear intensity",
     "Texture (GLCM)",
     "Texture (GLCM, max area slice)",
+    "Mark–DNA co-distribution",
     "Chromatin organization",
     "Nuclear morphology (3D)",
     "Nuclear morphology (2D)",
+    "Nuclear morphology (maximal area slice)",
     "Other metrics",
 ]
 FAM = {name: i for i, name in enumerate(FAMILIES_ORDER)}
@@ -177,26 +179,48 @@ INT_STAT_TITLE = {"mean": "mean", "std": "SD", "sd": "SD", "skewness": "skewness
                   "q75": "Q75", "min": "min", "max": "max", "mode": "mode",
                   "rel": "relative", "d25": "d25", "d75": "d75"}
 
+# Suffixes marking a DNA-normalised twin of another metric. Whichever spelling
+# the upstream pipeline emits, the metric is titled "<base>, per DNA" and sorted
+# directly after its unnormalised counterpart.
+NORM_SUFFIXES = ("_per_dna", "_dnanorm", "_dna_norm", "_norm_dna", "_perdna")
+
 GLCM_RANK = {"contrast": 0, "correlation": 1, "dissimilarity": 2, "energy": 3,
              "homogeneity": 4, "asm": 5}
 GLCM_TITLE = {"asm": "ASM", "contrast": "contrast", "correlation": "correlation",
               "dissimilarity": "dissimilarity", "energy": "energy",
               "homogeneity": "homogeneity"}
 
-# Chromatin 2D names -> (sub-rank, title-without-channel). Channel prepended.
+# Scope token -> display label. "2dmid" is the MAXIMUM-AREA slice (a real optical
+# section), not a midplane -- the upstream field name is historical.
+DIM_LABEL = {"2d": "2D", "2dmid": "max area slice", "3d": "3D"}
+
+# Chromatin names -> (sub-rank, title-without-channel-or-dimension).
+# Channel is prepended and the scope label appended, so the same entry serves the
+# 2D (MIP) and max-area-slice variants.
 CHROM2D = {
-    "i80_i20": (0, "I80/I20 ratio (2D)"),
-    "hc_area_ec_area": (1, "heterochromatin/euchromatin area (2D)"),
-    "hc_area_nuc_area": (2, "heterochromatin/nucleus area (2D)"),
-    "hc_content_ec_content": (3, "HC/EC content (2D)"),
-    "hc_content_dna_content": (4, "HC/DNA content (2D)"),
-    "nhigh_nlow": (9, "N_high / N_low (2D)"),
+    "i80_i20": (0, "I80/I20 ratio"),
+    "hc_area_ec_area": (1, "heterochromatin/euchromatin area"),
+    "hc_area_nuc_area": (2, "heterochromatin/nucleus area"),
+    "hc_content_ec_content": (3, "HC/EC content"),
+    "hc_content_dna_content": (4, "HC/DNA content"),
+    "nhigh_nlow": (9, "N_high / N_low"),
+}
+
+# Marker <-> DNA co-distribution (new 2026-07-27). No _2d_ (MIP) variant by design.
+CODIST = {
+    "dna_corr": (0, "× DNA correlation"),
+    "dna_dense_reg_rel_level": (1, "relative level in DNA-dense regions"),
+    "dna_sparse_reg_rel_level": (2, "relative level in DNA-sparse regions"),
 }
 
 # Morphology titles (channel-independent). Insertion order = display order.
 MORPH3D_TITLES = {
+    # Shape/flatness first -- aspect ratio is the featured mechano readout.
+    "morph3d_aspect_ratio": "Lateral-axial aspect ratio",
+    "morph3d_z_height": "Nuclear height",
+    "morph3d_sphericity": "Sphericity",
     "morph3d_nuclear_volume": "Nuclear volume",
-    "morph3d_surface_area": "Surface area (3D)",
+    "morph3d_surface_area": "Surface area",
     "morph3d_convex_hull_vol": "Convex hull volume",
     "morph3d_equivalent_diameter": "Equivalent diameter (3D)",
     "morph3d_extent": "Nuclear extent (vol/bbox)",
@@ -266,10 +290,67 @@ MORPH2D_TITLES = {
 MORPH_ORDER = {stem: i for i, stem in enumerate(
     list(MORPH3D_TITLES) + list(MORPH2D_TITLES))}
 
+# Featured metrics: the `violin_selected/` set uses bare stems (no morph*/hoechst*
+# prefix). Order here = display order; aspect ratio leads (the headline mechano
+# readout), volume is the constant-volume control.
+FEATURED_TITLES = {
+    "aspect_ratio": "Lateral-axial aspect ratio",
+    "volume": "Nuclear volume",
+    "dna_skewness": "DNA intensity skewness",
+    "dna_kurtosis": "DNA intensity excess kurtosis",
+    "dna_hc_area_fraction": "DNA heterochromatin area fraction",
+    "dna_hc_volume_fraction": "DNA heterochromatin volume fraction",
+}
+FEATURED_ORDER = {stem: i for i, stem in enumerate(FEATURED_TITLES)}
+FEATURED_FAM = {
+    "aspect_ratio": "Nuclear morphology (3D)",
+    "volume": "Nuclear morphology (3D)",
+    "dna_skewness": "Nuclear intensity",
+    "dna_kurtosis": "Nuclear intensity",
+    "dna_hc_area_fraction": "Chromatin organization",
+    "dna_hc_volume_fraction": "Chromatin organization",
+}
+
+
+# Distribution-SHAPE moments read wrong with "intensity" appended ("excess
+# kurtosis intensity"), so they are titled bare; level statistics keep it
+# ("mean intensity").
+SHAPE_MOMENTS = {"skewness", "kurtosis"}
+
+
+def _int_title(ch_label, stat, dim_label):
+    """'<channel> mean intensity (3D)' but '<channel> excess kurtosis (3D)'."""
+    word = INT_STAT_TITLE.get(stat, stat)
+    noun = "" if stat in SHAPE_MOMENTS else " intensity"
+    return "{} {}{} ({})".format(ch_label, word, noun, dim_label)
+
+
+# For a chromatin MARK channel, "heterochromatin/euchromatin" is wrong -- these
+# thresholds are just high/low signal of that antibody (H3K27ac is an ACTIVE
+# mark). Only the DNA channel gets the chromatin-state wording.
+_HC_SWAPS = [
+    ("relative heterochromatin volume", "high-signal volume fraction"),
+    ("relative euchromatin volume", "low-signal volume fraction"),
+    ("heterochromatin/euchromatin", "high-signal/low-signal"),
+    ("heterochromatin/nucleus", "high-signal/nucleus"),
+    ("HC/EC volume ratio", "high-signal/low-signal volume ratio"),
+    ("HC/EC content", "high-signal/low-signal content"),
+    ("HC/DNA content", "high-signal content / DNA content"),
+]
+
+
+def _hc_terms(ch_tok, text):
+    if ch_tok == "hoechst":
+        return text
+    for a, b in _HC_SWAPS:
+        text = text.replace(a, b)
+    return text
+
 
 def _ch(tok):
-    # "hoechst" -> DNA; the mark token "h3k27me3" -> the dataset's MARK_LABEL
-    # (which may be H3K27me3, H3K9me3, H3K27ac, or "chromatin mark" for the cross pool).
+    # "hoechst" -> DNA; the mark tokens ("h3k27me3", or the generic "mark" used by
+    # the cross-experiment violin_marks set) -> the dataset's MARK_LABEL (H3K27me3,
+    # H3K9me3, H3K27ac, or "Chromatin mark" when the columns are 3 different marks).
     return "DNA" if tok == "hoechst" else MARK_LABEL
 
 
@@ -298,47 +379,82 @@ def classify(stem):
     channel-agnostic key (records sharing it across DNA/H3K27me3 form a pair);
     `channel` in {'DNA','H3K27me3', None}."""
 
+    # --- DNA-normalised readouts (checked FIRST) ---------------------------
+    # The mark channel's absolute level is batch-sensitive, so the interpretable
+    # version is normalised to DNA. Two spellings are supported:
+    #   <ch>_dna_ratio             -> the overall mark/DNA ratio
+    #   <base-metric><NORM_SUFFIX> -> any metric's DNA-normalised twin
+    # Both sort IMMEDIATELY AFTER their unnormalised counterpart. This must run
+    # before the specific rules below, or e.g. the peripheral-distance regex
+    # would swallow the suffix as part of the shell token.
+    m = re.match(r"^(hoechst|h3k27me3|mark)_dna_ratio$", stem)
+    if m:
+        ch = m.group(1)
+        return dict(fam="Nuclear intensity",
+                    sort=(0, INT_STAT_RANK["mean"], 1, stem),
+                    channel=_ch(ch), pair=("dna_ratio",),
+                    title="{} / DNA ratio".format(_ch(ch)))
+
+    for suf in NORM_SUFFIXES:
+        if stem.endswith(suf):
+            base = classify(stem[: -len(suf)])
+            if base:
+                rec = dict(base)
+                rec["title"] = base["title"] + ", per DNA"
+                # same sort key as the base, nudged one place later
+                rec["sort"] = tuple(base["sort"][:-1]) + (str(base["sort"][-1]) + "~",)
+                rec["pair"] = ("norm",) + tuple(base["pair"])
+                return rec
+
     # --- intensity: chan_<stat>_<ch>_3d_int ---
-    m = re.match(r"^chan_(.+)_(hoechst|h3k27me3)_3d_int$", stem)
+    m = re.match(r"^chan_(.+)_(hoechst|h3k27me3|mark)_3d_int$", stem)
     if m:
         stat, ch = m.group(1), m.group(2)
         return dict(fam="Nuclear intensity",
                     sort=(0, INT_STAT_RANK.get(stat, 50), 1, stem),
                     channel=_ch(ch), pair=("int_chan", stat),
-                    title="{} {} intensity (3D)".format(
-                        _ch(ch), INT_STAT_TITLE.get(stat, stat)))
+                    title=_int_title(_ch(ch), stat, "3D"))
 
     # --- intensity: <ch>_3d_nuclear_<stat>_int ---
-    m = re.match(r"^(hoechst|h3k27me3)_3d_nuclear_(.+)_int$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|mark)_3d_nuclear_(.+)_int$", stem)
     if m:
         ch, stat = m.group(1), m.group(2)
         return dict(fam="Nuclear intensity",
                     sort=(0, INT_STAT_RANK.get(stat, 50), 0, stem),
                     channel=_ch(ch), pair=("int_nuclear", stat),
-                    title="{} {} intensity (3D)".format(
-                        _ch(ch), INT_STAT_TITLE.get(stat, stat)))
+                    title=_int_title(_ch(ch), stat, "3D"))
 
-    # --- intensity: <ch>_2d_int_<stat> ---
-    m = re.match(r"^(hoechst|h3k27me3)_2d_int_(.+)$", stem)
+    # --- marker <-> DNA co-distribution: <ch>_(3d|2dmid)_dna_<measure> ---
+    m = re.match(r"^(hoechst|h3k27me3|mark)_(3d|2dmid)_(dna_corr|dna_dense_reg_rel_level"
+                 r"|dna_sparse_reg_rel_level)$", stem)
     if m:
-        ch, stat = m.group(1), m.group(2)
+        ch, dim, key = m.groups()
+        sub, ttl = CODIST[key]
+        return dict(fam="Mark–DNA co-distribution",
+                    sort=(0 if dim == "3d" else 1, sub, stem),
+                    channel=_ch(ch), pair=("codist", dim, key),
+                    title="{} {} ({})".format(_ch(ch), ttl, DIM_LABEL[dim]))
+
+    # --- intensity: <ch>_(2d|2dmid)_int_<stat> ---
+    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid)_int_(.+)$", stem)
+    if m:
+        ch, dim, stat = m.groups()
         return dict(fam="Nuclear intensity",
                     sort=(1, INT_STAT_RANK.get(stat, 50), 0, stem),
-                    channel=_ch(ch), pair=("int_2d", stat),
-                    title="{} {} intensity (2D)".format(
-                        _ch(ch), INT_STAT_TITLE.get(stat, stat)))
+                    channel=_ch(ch), pair=("int_" + dim, stat),
+                    title=_int_title(_ch(ch), stat, DIM_LABEL[dim]))
 
-    # --- intensity: <ch>_2d_skewness | _2d_kurtosis ---
-    m = re.match(r"^(hoechst|h3k27me3)_2d_(skewness|kurtosis)$", stem)
+    # --- intensity shape moments: <ch>_(2d|2dmid)_skewness | _kurtosis ---
+    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid)_(skewness|kurtosis)$", stem)
     if m:
-        ch, stat = m.group(1), m.group(2)
+        ch, dim, stat = m.groups()
         return dict(fam="Nuclear intensity",
                     sort=(1, INT_STAT_RANK[stat], 0, stem),
-                    channel=_ch(ch), pair=("int_2d", stat),
-                    title="{} {} intensity (2D)".format(_ch(ch), INT_STAT_TITLE[stat]))
+                    channel=_ch(ch), pair=("int_" + dim, stat),
+                    title=_int_title(_ch(ch), stat, DIM_LABEL[dim]))
 
     # --- GLCM: <ch>_(2d|2dmid)_<type>_<dist> ---
-    m = re.match(r"^(hoechst|h3k27me3)_(2d|2dmid)_"
+    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid)_"
                  r"(asm|contrast|correlation|dissimilarity|energy|homogeneity)_(\d+)$", stem)
     if m:
         ch, variant, gt, dist = m.groups()
@@ -350,16 +466,17 @@ def classify(stem):
                     title="{} GLCM {} ({} px, {})".format(
                         _ch(ch), GLCM_TITLE[gt], dist, suffix))
 
-    # --- texture: <ch>_2d_entropy ---
-    m = re.match(r"^(hoechst|h3k27me3)_2d_entropy$", stem)
+    # --- texture: <ch>_(2d|2dmid)_entropy ---
+    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid)_entropy$", stem)
     if m:
-        ch = m.group(1)
-        return dict(fam="Texture (GLCM)", sort=(90, 0, stem),
-                    channel=_ch(ch), pair=("entropy",),
-                    title="{} entropy (2D)".format(_ch(ch)))
+        ch, dim = m.group(1), m.group(2)
+        fam = "Texture (GLCM)" if dim == "2d" else "Texture (GLCM, max area slice)"
+        return dict(fam=fam, sort=(90, 0, stem),
+                    channel=_ch(ch), pair=("entropy", dim),
+                    title="{} entropy ({})".format(_ch(ch), DIM_LABEL[dim]))
 
     # --- chromatin: <ch>_3d_rdp_<n> ---
-    m = re.match(r"^(hoechst|h3k27me3)_3d_rdp_(\d+)$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|mark)_3d_rdp_(\d+)$", stem)
     if m:
         ch, n = m.group(1), m.group(2)
         return dict(fam="Chromatin organization",
@@ -367,26 +484,27 @@ def classify(stem):
                     title="{} radial density profile, shell {} (3D)".format(_ch(ch), n))
 
     # --- chromatin: <ch>_3d_rel_(hc|ec)_volume ---
-    m = re.match(r"^(hoechst|h3k27me3)_3d_rel_(hc|ec)_volume$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|mark)_3d_rel_(hc|ec)_volume$", stem)
     if m:
         ch, which = m.group(1), m.group(2)
         full = "heterochromatin" if which == "hc" else "euchromatin"
         return dict(fam="Chromatin organization",
                     sort=(0, 1, 0 if which == "hc" else 1, stem),
                     channel=_ch(ch), pair=("rel_vol", which),
-                    title="{} relative {} volume".format(_ch(ch), full))
+                    title=_hc_terms(ch, "{} relative {} volume".format(_ch(ch), full)))
 
     # --- chromatin: <ch>_3d_hc_ec_ratio_3d ---
-    m = re.match(r"^(hoechst|h3k27me3)_3d_hc_ec_ratio_3d$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|mark)_3d_hc_ec_ratio_3d$", stem)
     if m:
         ch = m.group(1)
         return dict(fam="Chromatin organization", sort=(0, 2, 0, stem),
                     channel=_ch(ch), pair=("hc_ec_ratio",),
-                    title="{} HC/EC volume ratio (3D)".format(_ch(ch)))
+                    title=_hc_terms(ch, "{} HC/EC volume ratio (3D)".format(_ch(ch))))
 
     # --- chromatin: <ch>_(2d|3d)_peripheral_(chromatin|enrichment)_<dist> ---
     # dist may be pixels (10), microns (0p5um/1um/2um) or radial-percent (r10pct).
-    m = re.match(r"^(hoechst|h3k27me3)_(2d|3d)_peripheral_(chromatin|enrichment)_(.+)$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid|3d)_peripheral_"
+                 r"(chromatin|enrichment)_(.+)$", stem)
     if m:
         ch, dim, kind, tok = m.groups()
         disp, dsort = _periph_dist(tok)
@@ -395,16 +513,22 @@ def classify(stem):
                     sort=(0 if dim == "3d" else 1, sub, dsort, stem), channel=_ch(ch),
                     pair=("peripheral", dim, kind, tok),
                     title="{} peripheral {}, {} ({})".format(
-                        _ch(ch), kind, disp, "3D" if dim == "3d" else "2D"))
+                        _ch(ch), kind, disp, DIM_LABEL[dim]))
 
     # --- chromatin: named 2D ratios/contents ---
-    m = re.match(r"^(hoechst|h3k27me3)_2d_(.+)$", stem)
-    if m and m.group(2) in CHROM2D:
-        ch, key = m.group(1), m.group(2)
+    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid)_(.+)$", stem)
+    if m and m.group(3) in CHROM2D:
+        ch, dim, key = m.groups()
         sub, ttl = CHROM2D[key]
         return dict(fam="Chromatin organization", sort=(1, sub, 0, stem),
-                    channel=_ch(ch), pair=("chrom2d", key),
-                    title="{} {}".format(_ch(ch), ttl))
+                    channel=_ch(ch), pair=("chrom2d", dim, key),
+                    title=_hc_terms(ch, "{} {} ({})".format(
+                        _ch(ch), ttl, DIM_LABEL[dim])))
+
+    # --- featured / pre-named metrics (violin_selected uses bare stems) ---
+    if stem in FEATURED_TITLES:
+        return dict(fam=FEATURED_FAM[stem], sort=(FEATURED_ORDER[stem], stem),
+                    channel=None, pair=("featured", stem), title=FEATURED_TITLES[stem])
 
     # --- morphology (channel-independent) ---
     if stem in MORPH3D_TITLES:
@@ -413,6 +537,24 @@ def classify(stem):
     if stem in MORPH2D_TITLES:
         return dict(fam="Nuclear morphology (2D)", sort=(MORPH_ORDER[stem], stem),
                     channel=None, pair=("morph", stem), title=MORPH2D_TITLES[stem])
+
+    # --- equatorial-slice morphology (morph2dmid_*): same quantities as morph2d_*,
+    # measured on the max-area optical slice rather than the MIP silhouette. Reuse
+    # the 2D titles with a "(slice)" suffix so the pair is obvious.
+    if stem.startswith("morph2dmid_"):
+        base = "morph2d_" + stem[len("morph2dmid_"):]
+        if base in MORPH2D_TITLES:
+            ttl = MORPH2D_TITLES[base].replace("(2D)", "(max area slice)")
+            if "(max area slice)" not in ttl:
+                ttl += " (max area slice)"
+            order = MORPH_ORDER.get(base, 999)
+        else:
+            ttl = (stem[len("morph2dmid_"):].replace("_", " ").capitalize()
+                   + " (max area slice)")
+            order = 999
+        return dict(fam="Nuclear morphology (maximal area slice)", sort=(order, stem),
+                    channel=None, pair=("morphmid", stem), title=ttl)
+
     if stem.startswith(("morph3d_", "morph2d_")):
         fam = "Nuclear morphology (3D)" if stem.startswith("morph3d_") else "Nuclear morphology (2D)"
         return dict(fam=fam, sort=(999, stem), channel=None, pair=("morph", stem),
