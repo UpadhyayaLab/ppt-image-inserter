@@ -490,9 +490,7 @@ def build_plan():
          gp("MT_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio",
             "grooves ÷ convex surface"),
          gp("MT_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio",
-            "grooves ÷ whole perinuc shell"),
-         gp("MT_cyto_in_nuc_hull_vs_nuc_MFI_ratio",
-            "grooves ÷ nucleus MFI")],
+            "grooves ÷ whole perinuc shell")],
         "grid_panels overview + voxel convex-hull decomposition · "
         "DMSO vs Noco")
 

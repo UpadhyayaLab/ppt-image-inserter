@@ -118,13 +118,26 @@ TIMECOURSE_VIEWS = [
 VIEW_ORDER = ("all", "stiffness", "timecourse")
 
 
-MARK_LABEL = "H3K27me3"  # display label for the h3k27me3 channel token; per-dataset
+MARK_LABEL = "H3K27me3"  # display label for the generic mark token; per-dataset
+
+# Real names for the specific antibody tokens. Used when a folder carries several
+# marks side by side (e.g. violin_all_curated emits h3k27me3_/h3k9me3_/h3k27ac_).
+MARK_NAMES = {"h3k27me3": "H3K27me3", "h3k9me3": "H3K9me3", "h3k27ac": "H3K27ac"}
+
+# When True, ANY mark token renders as MARK_LABEL. Set for the cross-experiment
+# grid_panels decks, whose rows are three different marks sharing one token.
+FORCE_MARK_LABEL = True
 
 
 def apply_dataset(key):
     """Point the module globals at one dataset, auto-resolving the NEWEST dated
     compile under its search/pat (so new date folders are picked up automatically)."""
-    global ROOT, GRID_DIR, STIFFNESS_VIEWS, OUTPUT_PATH, DECK_TITLE, DECK_SUBTITLE, MARK_LABEL
+    global ROOT, GRID_DIR, STIFFNESS_VIEWS, OUTPUT_PATH, DECK_TITLE, DECK_SUBTITLE
+    global MARK_LABEL, FORCE_MARK_LABEL
+    # The compiles now emit per-antibody columns (h3k27me3_/h3k9me3_/h3k27ac_),
+    # so each mark keeps its own name. Forcing one generic label here would
+    # collapse three different antibodies into identically-titled slides.
+    FORCE_MARK_LABEL = False
     ds = DATASETS[key]
     search = Path(ds["search"])
     dated = sorted(d for d in search.glob(ds["pat"]) if d.is_dir()) if search.is_dir() else []
@@ -148,8 +161,9 @@ EXCLUDE_PANELS = {
 # the explicit `*_3d_nuclear_mean/std_int`; drop them so there is a single
 # nuclear-mask "mean intensity" / "SD intensity".
 DROP_METRICS = {
-    "chan_mean_hoechst_3d_int", "chan_mean_h3k27me3_3d_int",
-    "chan_std_hoechst_3d_int", "chan_std_h3k27me3_3d_int",
+    "chan_{}_{}_3d_int".format(stat, ch)
+    for stat in ("mean", "std")
+    for ch in ("hoechst", "h3k27me3", "h3k9me3", "h3k27ac", "mark")
 }
 
 # Family order (index -> divider title).
@@ -351,7 +365,15 @@ def _ch(tok):
     # "hoechst" -> DNA; the mark tokens ("h3k27me3", or the generic "mark" used by
     # the cross-experiment violin_marks set) -> the dataset's MARK_LABEL (H3K27me3,
     # H3K9me3, H3K27ac, or "Chromatin mark" when the columns are 3 different marks).
-    return "DNA" if tok == "hoechst" else MARK_LABEL
+    if tok == "hoechst":
+        return "DNA"
+    # The generic "mark" token always takes the dataset's label. A SPECIFIC
+    # antibody token keeps its own name unless the dataset forces the generic
+    # label (cross-experiment decks, where each row is a different mark and the
+    # h3k27me3 token stands in for "the mark channel").
+    if tok != "mark" and not FORCE_MARK_LABEL:
+        return MARK_NAMES.get(tok, MARK_LABEL)
+    return MARK_LABEL
 
 
 def _periph_dist(tok):
@@ -387,7 +409,7 @@ def classify(stem):
     # Both sort IMMEDIATELY AFTER their unnormalised counterpart. This must run
     # before the specific rules below, or e.g. the peripheral-distance regex
     # would swallow the suffix as part of the shell token.
-    m = re.match(r"^(hoechst|h3k27me3|mark)_dna_ratio$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_dna_ratio$", stem)
     if m:
         ch = m.group(1)
         return dict(fam="Nuclear intensity",
@@ -407,7 +429,7 @@ def classify(stem):
                 return rec
 
     # --- intensity: chan_<stat>_<ch>_3d_int ---
-    m = re.match(r"^chan_(.+)_(hoechst|h3k27me3|mark)_3d_int$", stem)
+    m = re.match(r"^chan_(.+)_(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_3d_int$", stem)
     if m:
         stat, ch = m.group(1), m.group(2)
         return dict(fam="Nuclear intensity",
@@ -416,7 +438,7 @@ def classify(stem):
                     title=_int_title(_ch(ch), stat, "3D"))
 
     # --- intensity: <ch>_3d_nuclear_<stat>_int ---
-    m = re.match(r"^(hoechst|h3k27me3|mark)_3d_nuclear_(.+)_int$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_3d_nuclear_(.+)_int$", stem)
     if m:
         ch, stat = m.group(1), m.group(2)
         return dict(fam="Nuclear intensity",
@@ -425,7 +447,7 @@ def classify(stem):
                     title=_int_title(_ch(ch), stat, "3D"))
 
     # --- marker <-> DNA co-distribution: <ch>_(3d|2dmid)_dna_<measure> ---
-    m = re.match(r"^(hoechst|h3k27me3|mark)_(3d|2dmid)_(dna_corr|dna_dense_reg_rel_level"
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_(3d|2dmid)_(dna_corr|dna_dense_reg_rel_level"
                  r"|dna_sparse_reg_rel_level)$", stem)
     if m:
         ch, dim, key = m.groups()
@@ -436,7 +458,7 @@ def classify(stem):
                     title="{} {} ({})".format(_ch(ch), ttl, DIM_LABEL[dim]))
 
     # --- intensity: <ch>_(2d|2dmid)_int_<stat> ---
-    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid)_int_(.+)$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_(2d|2dmid)_int_(.+)$", stem)
     if m:
         ch, dim, stat = m.groups()
         return dict(fam="Nuclear intensity",
@@ -445,7 +467,7 @@ def classify(stem):
                     title=_int_title(_ch(ch), stat, DIM_LABEL[dim]))
 
     # --- intensity shape moments: <ch>_(2d|2dmid)_skewness | _kurtosis ---
-    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid)_(skewness|kurtosis)$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_(2d|2dmid)_(skewness|kurtosis)$", stem)
     if m:
         ch, dim, stat = m.groups()
         return dict(fam="Nuclear intensity",
@@ -454,7 +476,7 @@ def classify(stem):
                     title=_int_title(_ch(ch), stat, DIM_LABEL[dim]))
 
     # --- GLCM: <ch>_(2d|2dmid)_<type>_<dist> ---
-    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid)_"
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_(2d|2dmid)_"
                  r"(asm|contrast|correlation|dissimilarity|energy|homogeneity)_(\d+)$", stem)
     if m:
         ch, variant, gt, dist = m.groups()
@@ -467,7 +489,7 @@ def classify(stem):
                         _ch(ch), GLCM_TITLE[gt], dist, suffix))
 
     # --- texture: <ch>_(2d|2dmid)_entropy ---
-    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid)_entropy$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_(2d|2dmid)_entropy$", stem)
     if m:
         ch, dim = m.group(1), m.group(2)
         fam = "Texture (GLCM)" if dim == "2d" else "Texture (GLCM, max area slice)"
@@ -476,7 +498,7 @@ def classify(stem):
                     title="{} entropy ({})".format(_ch(ch), DIM_LABEL[dim]))
 
     # --- chromatin: <ch>_3d_rdp_<n> ---
-    m = re.match(r"^(hoechst|h3k27me3|mark)_3d_rdp_(\d+)$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_3d_rdp_(\d+)$", stem)
     if m:
         ch, n = m.group(1), m.group(2)
         return dict(fam="Chromatin organization",
@@ -484,7 +506,7 @@ def classify(stem):
                     title="{} radial density profile, shell {} (3D)".format(_ch(ch), n))
 
     # --- chromatin: <ch>_3d_rel_(hc|ec)_volume ---
-    m = re.match(r"^(hoechst|h3k27me3|mark)_3d_rel_(hc|ec)_volume$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_3d_rel_(hc|ec)_volume$", stem)
     if m:
         ch, which = m.group(1), m.group(2)
         full = "heterochromatin" if which == "hc" else "euchromatin"
@@ -494,7 +516,7 @@ def classify(stem):
                     title=_hc_terms(ch, "{} relative {} volume".format(_ch(ch), full)))
 
     # --- chromatin: <ch>_3d_hc_ec_ratio_3d ---
-    m = re.match(r"^(hoechst|h3k27me3|mark)_3d_hc_ec_ratio_3d$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_3d_hc_ec_ratio_3d$", stem)
     if m:
         ch = m.group(1)
         return dict(fam="Chromatin organization", sort=(0, 2, 0, stem),
@@ -503,7 +525,7 @@ def classify(stem):
 
     # --- chromatin: <ch>_(2d|3d)_peripheral_(chromatin|enrichment)_<dist> ---
     # dist may be pixels (10), microns (0p5um/1um/2um) or radial-percent (r10pct).
-    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid|3d)_peripheral_"
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_(2d|2dmid|3d)_peripheral_"
                  r"(chromatin|enrichment)_(.+)$", stem)
     if m:
         ch, dim, kind, tok = m.groups()
@@ -516,7 +538,7 @@ def classify(stem):
                         _ch(ch), kind, disp, DIM_LABEL[dim]))
 
     # --- chromatin: named 2D ratios/contents ---
-    m = re.match(r"^(hoechst|h3k27me3|mark)_(2d|2dmid)_(.+)$", stem)
+    m = re.match(r"^(hoechst|h3k27me3|h3k9me3|h3k27ac|mark)_(2d|2dmid)_(.+)$", stem)
     if m and m.group(3) in CHROM2D:
         ch, dim, key = m.groups()
         sub, ttl = CHROM2D[key]
@@ -878,6 +900,15 @@ def discover_stems():
     return sorted(stems)
 
 
+def _sort_key(rec):
+    """Family sort key with the channel folded in just before the stem, so when a
+    metric exists for DNA and several antibodies the DNA panel comes first and the
+    marks follow in a stable order."""
+    s = tuple(rec["sort"])
+    chan = 0 if rec.get("channel") == "DNA" else 1
+    return s[:-1] + (chan, str(s[-1]))
+
+
 def build_families():
     """Discover + classify all metrics into ordered (family_name, [items])."""
     stems = [s for s in discover_stems() if s not in DROP_METRICS]
@@ -898,7 +929,7 @@ def build_families():
     fam_items = defaultdict(list)  # fam -> list of (sort_key, item)
     for (fam, _pair), recs in groups.items():
         chans = {r["channel"] for r in recs}
-        sort_key = min(r["sort"] for r in recs)
+        sort_key = min(_sort_key(r) for r in recs)
         if len(recs) == 2 and chans == {"DNA", MARK_LABEL}:
             dna = next(r for r in recs if r["channel"] == "DNA")
             h3 = next(r for r in recs if r["channel"] == MARK_LABEL)
@@ -906,7 +937,7 @@ def build_families():
                                               h3["stem"], h3["title"])))
         else:
             for r in recs:  # solos (incl. any unpaired channel metric)
-                fam_items[fam].append((r["sort"], ("solo", r["stem"], r["title"])))
+                fam_items[fam].append((_sort_key(r), ("solo", r["stem"], r["title"])))
 
     if unknown:
         fam_items["Other metrics"].extend(

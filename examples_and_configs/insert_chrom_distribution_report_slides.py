@@ -136,6 +136,9 @@ def discover(folder):
 def main():
     list_only = "--list" in sys.argv[1:]
     M.MARK_LABEL = MARK_LABEL
+    # Specific antibody tokens keep their own names; the generic "mark" token
+    # (used by this report set) still renders as MARK_LABEL.
+    M.FORCE_MARK_LABEL = False
 
     sections = []
     for folder in sorted(d for d in SRC.iterdir() if d.is_dir()):

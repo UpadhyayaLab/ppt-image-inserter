@@ -397,8 +397,6 @@ def build_plan():
         "SUN in nuclear invagination pockets",
         [(GRID / "SUN_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio.png",
           "grooves ÷ convex surface"),
-         (GRID / "SUN_cyto_in_nuc_hull_vs_nuc_MFI_ratio.png",
-          "grooves ÷ nucleus MFI"),
          (GRID / "SUN_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio.png",
           "grooves ÷ whole perinuc shell"),
          (GRID / "SUN_invag_within_chull_vs_convex_within_chull_MFI_ratio.png",

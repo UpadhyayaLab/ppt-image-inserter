@@ -116,7 +116,7 @@ DROP_SUBSTRINGS = ("_peripheral_enrichment_2um", "_peripheral_enrichment_r33pct"
 
 # Channel tokens, normalised to "@" so one drop-list covers the DNA deck and the
 # chromatin-mark deck (violin_marks uses a generic "mark" token).
-CHANNEL_TOKENS = ("hoechst", "h3k27me3", "mark")
+CHANNEL_TOKENS = ("hoechst", "h3k27me3", "h3k9me3", "h3k27ac", "mark")
 
 #  - Orientation (angle of the fitted ellipse in the imaging plane) carries no
 #    biological meaning here -- cells land in arbitrary rotations.
@@ -298,6 +298,10 @@ def main():
     list_only = "--list" in args
     selected_only = "--selected" in args
     marks = "--marks" in args
+
+    # These folders name each antibody explicitly (h3k27me3_/h3k9me3_/h3k27ac_),
+    # so every mark keeps its own label rather than a generic one.
+    M.FORCE_MARK_LABEL = False
 
     if marks:
         # Same pipeline, mark channel. MARK_LABEL drives the titles ("Chromatin

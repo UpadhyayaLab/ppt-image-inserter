@@ -387,8 +387,6 @@ def build_plan(tf, root):
                  "fraction inside nuclear hull"),
               gp("{}_cyto_in_nuc_hull_vs_near_convex_nuc_MFI_ratio".format(tf),
                  "grooves ÷ convex surface"),
-              gp("{}_cyto_in_nuc_hull_vs_nuc_MFI_ratio".format(tf),
-                 "grooves ÷ nucleus MFI"),
               gp("{}_cyto_in_nuc_hull_vs_all_perinuc_MFI_ratio".format(tf),
                  "grooves ÷ whole perinuc"),
               gp("{}_cyto_in_nuc_hull_sig_fraction".format(tf),
