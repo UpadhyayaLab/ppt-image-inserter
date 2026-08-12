@@ -87,6 +87,55 @@ THREE_SLICE_METRICS_WITH_RAD = (
     THREE_SLICE_METRICS[:3] + [RAD_PROFILE_3SLICE] + THREE_SLICE_METRICS[3:]
 )
 
+# IRM-derived synapse area + actin median radius, present in compiles
+# that ran the newer footprint code. Splice into a per-dataset png_files:
+# IRM after mask_area, R_median after the two inner/outer ratios.
+IRM_SYNAPSE_AREA = (SUB_SCATTER, "IRM_mask_area_grid.png")
+R_MEDIAN_SLICE = (SUB_SCATTER, "actin_bottom_slice_r_median_grid.png")
+R_MEDIAN_3SLICE = (SUB_SCATTER, "actin_bottom_3slice_mip_r_median_grid.png")
+
+# Optional extra blocks appended to actin-only decks whose compiles
+# ran the fuller feature set (foci scoring, whole-cell MIP metrics,
+# Z-distribution). Older compiles may lack some of these PNGs — check
+# the source before splicing into an existing DATASETS entry.
+
+# Actin foci (8): 4 canonical + 4 scoring/threshold extras from the
+# newer foci-detection code.
+ACTIN_FOCI_METRICS = [
+    (SUB_SCATTER, "actin_foci_count_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_um2_grid.png"),
+    (SUB_SCATTER, "actin_foci_area_fraction_grid.png"),
+    (SUB_SCATTER, "actin_foci_mean_intensity_grid.png"),
+    (SUB_SCATTER, "actin_foci_total_intensity_grid.png"),
+    (SUB_SCATTER, "actin_foci_max_norm_score_grid.png"),
+    (SUB_SCATTER, "actin_foci_mean_norm_score_grid.png"),
+    (SUB_SCATTER, "actin_foci_threshold_used_grid.png"),
+]
+
+# Actin whole-cell metrics (6): MIP footprint (4) + integrated intensity (2).
+ACTIN_WHOLE_CELL_METRICS = [
+    (SUB_SCATTER, "actin_MIP_area_grid.png"),
+    (SUB_SCATTER, "actin_MIP_major_axis_length_grid.png"),
+    (SUB_SCATTER, "actin_MIP_minor_axis_length_grid.png"),
+    (SUB_SCATTER, "actin_MIP_mask_nonzero_grid.png"),
+    (SUB_SCATTER, "actin_total_sig_grid.png"),
+    (SUB_SCATTER, "actin_peak_sig_grid.png"),
+]
+
+# Actin Z-distribution (10): position of signal in cell height + cell extent.
+ACTIN_Z_METRICS = [
+    (SUB_SCATTER, "actin_z50_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER, "actin_z75_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER, "actin_z90_rel_cell_bottom_grid.png"),
+    (SUB_SCATTER, "actin_zprofile_peak_idx_grid.png"),
+    (SUB_SCATTER, "actin_zprofile_peak_rel_bot_grid.png"),
+    (SUB_SCATTER, "actin_bottom_slice_num_grid.png"),
+    (SUB_SCATTER, "actin_top_slice_num_grid.png"),
+    (SUB_SCATTER, "actin_height_grid.png"),
+    (SUB_SCATTER, "actin_above_FOV_grid.png"),
+    (SUB_SCATTER, "actin_below_FOV_grid.png"),
+]
+
 # by_timepoint compiles are flat: every PNG lives under
 # <by_timepoint_root>/all_<tp>_<date>/all_conditions/, with no _grid suffix.
 BY_TIMEPOINT_ROOT = Path(
@@ -694,6 +743,41 @@ DATASETS = [
         "png_files": SLICE_METRICS_WITH_RAD + THREE_SLICE_METRICS_WITH_RAD,
     },
     {
+        "label": "20260717 + 20260723 (pooled)",
+        # Two experiment dates (Jul 17 + Jul 23, 2026) pooled; compile-run
+        # 2026-08-11. Same grid_panels/{timecourse_scatter_plots,
+        # CAT_vs_FMC_by_timepoint} layout as the "2024-06 data" entry.
+        "compiled_root": Path(
+            "H:/results_compiled/actin_only/"
+            "compiled_20260717_20260723_20260811/grid_panels"
+        ),
+        "output_path": OUTPUT_DIR / "CART_actin_summary_20260717_20260723.pptx",
+        # Splice extras into the standard blocks:
+        #   slice  : mask_area | IRM | IOR50 | IOR70 | R_median | rad_prof | ...
+        #   3-slice: mask_area | IOR50 | IOR70 | R_median | rad_prof | ...
+        # Axial-overlay slides come from a peer compile dir (absolute Path
+        # in the "sub" slot bypasses compiled_root via pathlib semantics).
+        "png_files": (
+            SLICE_METRICS_WITH_RAD[:1]                # mask_area
+            + [IRM_SYNAPSE_AREA]                      # + IRM
+            + SLICE_METRICS_WITH_RAD[1:3]             # IOR50, IOR70
+            + [R_MEDIAN_SLICE]                        # + R_median
+            + SLICE_METRICS_WITH_RAD[3:]              # rad_prof, MFI, ...
+            + THREE_SLICE_METRICS_WITH_RAD[:3]        # 3-slice mask_area, IOR50/70
+            + [R_MEDIAN_3SLICE]                       # + R_median (3-slice)
+            + THREE_SLICE_METRICS_WITH_RAD[3:]        # rad_prof, MFI, ...
+            + ACTIN_FOCI_METRICS
+            + [
+                (Path("H:/results_compiled/actin_only/"
+                      "compiled_20260717_20260723/axial_profile_overlays"),
+                 "axial_overlay_perslice_Jul_17_2026.png"),
+                (Path("H:/results_compiled/actin_only/"
+                      "compiled_20260717_20260723/axial_profile_overlays"),
+                 "axial_overlay_perslice_Jul_23_2026.png"),
+            ]
+        ),
+    },
+    {
         "label": "5min by_timepoint",
         # Flat layout: PNGs live directly under compiled_root with no
         # _grid suffix. strip_grid_suffix=True tells build_deck to drop
@@ -1095,6 +1179,55 @@ TITLE_OVERRIDES = {
         "CatB Z-COF: Distance from Cell Bottom",
     "CathepsinB_zCOF_cell_bottom_distance_norm_cell_height_grid.png":
         "CatB Z-COF: Distance from Cell Bottom (normalized by cell height)",
+    # --- Actin foci (canonical + scoring/threshold extras) --------------
+    "actin_foci_count_grid.png": "Actin Foci Count",
+    "actin_foci_area_um2_grid.png": "Actin Foci Area (μm²)",
+    "actin_foci_area_fraction_grid.png":
+        "Actin Foci Area Fraction (of synapse)",
+    "actin_foci_mean_intensity_grid.png": "Actin Foci Mean Intensity",
+    "actin_foci_total_intensity_grid.png": "Actin Foci Total Intensity",
+    "actin_foci_max_norm_score_grid.png":
+        "Actin Foci Max Normalized Score",
+    "actin_foci_mean_norm_score_grid.png":
+        "Actin Foci Mean Normalized Score",
+    "actin_foci_threshold_used_grid.png":
+        "Actin Foci Detection Threshold Used",
+    # --- Actin whole-cell (MIP footprint + integrated intensity) --------
+    "actin_MIP_area_grid.png": "Actin Whole-Cell MIP Area",
+    "actin_MIP_major_axis_length_grid.png":
+        "Actin Whole-Cell MIP Major Axis Length",
+    "actin_MIP_minor_axis_length_grid.png":
+        "Actin Whole-Cell MIP Minor Axis Length",
+    "actin_MIP_mask_nonzero_grid.png":
+        "Actin Whole-Cell MIP Nonzero Pixel Count",
+    "actin_total_sig_grid.png": "Actin Whole-Cell Total Signal",
+    "actin_peak_sig_grid.png": "Actin Whole-Cell Peak Signal",
+    # --- Actin Z-distribution (signal position + cell extent) -----------
+    "actin_z50_rel_cell_bottom_grid.png":
+        "Actin Z₅₀ (μm from cell bottom)",
+    "actin_z75_rel_cell_bottom_grid.png":
+        "Actin Z₇₅ (μm from cell bottom)",
+    "actin_z90_rel_cell_bottom_grid.png":
+        "Actin Z₉₀ (μm from cell bottom)",
+    "actin_zprofile_peak_idx_grid.png":
+        "Actin Z-Profile Peak Slice Index",
+    "actin_zprofile_peak_rel_bot_grid.png":
+        "Actin Z-Profile Peak (μm from cell bottom)",
+    "actin_bottom_slice_num_grid.png": "Actin Cell Bottom Slice #",
+    "actin_top_slice_num_grid.png": "Actin Cell Top Slice #",
+    "actin_height_grid.png": "Cell Height (slices)",
+    "actin_above_FOV_grid.png": "Cell Extends Above FOV (flag)",
+    "actin_below_FOV_grid.png": "Cell Extends Below FOV (flag)",
+    # --- IRM synapse area + actin median radius ------------------------
+    "IRM_mask_area_grid.png": "Synapse Area (IRM)",
+    "actin_bottom_slice_r_median_grid.png": "Actin Synapse R_median",
+    "actin_bottom_3slice_mip_r_median_grid.png":
+        "Actin Synapse (3-Slice MIP) R_median",
+    # --- Axial-profile overlays (per-experiment) -----------------------
+    "axial_overlay_perslice_Jul_17_2026.png":
+        "Actin Axial Profile Overlay — per slice (Jul 17, 2026)",
+    "axial_overlay_perslice_Jul_23_2026.png":
+        "Actin Axial Profile Overlay — per slice (Jul 23, 2026)",
 }
 
 # Optional per-filename subtitle shown under the title (formula / units /
@@ -1397,8 +1530,23 @@ def build_deck(dataset) -> int:
 
 
 def main() -> None:
+    # Optional CLI filters: any args are treated as case-insensitive
+    # substrings matched against dataset["label"]. No args = build all.
+    filters = [a.lower() for a in sys.argv[1:]]
+    if filters:
+        selected = [d for d in DATASETS
+                    if any(f in d["label"].lower() for f in filters)]
+        if not selected:
+            print(f"No datasets match filters: {filters}")
+            print("Available labels:")
+            for d in DATASETS:
+                print(f"  - {d['label']}")
+            sys.exit(1)
+    else:
+        selected = DATASETS
+
     total_missing = 0
-    for dataset in DATASETS:
+    for dataset in selected:
         total_missing += build_deck(dataset)
     if total_missing:
         sys.exit(1)
