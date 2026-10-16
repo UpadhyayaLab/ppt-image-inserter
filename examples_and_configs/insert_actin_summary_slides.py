@@ -192,13 +192,31 @@ PLAT_CORR_METRICS = [
 
 PZAP70_TIRF_ROOT = Path(
     "L:/FF/CAR T/CAR T data for actin area trouble shoot/"
-    "results_compiled_tirf/compiled_pzap70_tirf_timecourse_20260701/grid_panels"
+    "results_compiled_tirf/compiled_pzap70_tirf_timecourse_20260915/grid_panels"
+)
+# Joint compile recompiled 2026-09-15 alongside the per-date tc compile.
+# Used via peer-directory trick to append CAT_vs_FMC (joint) slides —
+# puncta (PtoMbp only) + radial profiles — at the tail of the pZap70
+# summary deck. Titles are suffixed "(joint)"; whether each panel pools
+# experiments or reports them separately is set by the compile config
+# and was not independently verified here.
+PZAP70_JOINT_ROOT = Path(
+    "L:/FF/CAR T/CAR T data for actin area trouble shoot/"
+    "results_compiled_tirf/compiled_pzap70_tirf_20260915/grid_panels"
 )
 OUTPUT_DIR_PZAP70 = Path("K:/FF/PPT/PPT_autogeneration/CART/pZap70")
 
 PMLC_JOINT_ROOT = Path(
     "Y:/User_data/Kiet/results_compiled/pmlc_joint/"
     "compiled_pmlc_v2_20260702/grid_panels"
+)
+# 3-replicate compile finished 2026-09-15 20:39 (Mar 12 + May 10 + Jun 07,
+# 2026). Contains PtoM_ (broken original detector) grids too — never
+# include those in any deck; see [[reference_pzap70_bandpass_only]] for
+# the general rule (applies to pMLC just as it does to pZap70).
+PMLC_JOINT_ROOT_20260915 = Path(
+    "Y:/User_data/Kiet/results_compiled/pmlc_joint/"
+    "compiled_pmlc_v2_20260915/grid_panels"
 )
 OUTPUT_DIR_PMLC = Path("K:/FF/PPT/PPT_autogeneration/CART/pMLC")
 
@@ -400,6 +418,32 @@ PMLC_CORR_METRICS = [
     (SUB_CAT_VS_FMC, "pMLC_synapse_autocorr_c_all_cells_with_average_grid.png"),
 ]
 
+# 9 pMLC peak-to-mean puncta metrics — band-pass detector only. Same
+# ordering as PZAP70_PTOMBP_METRICS. `_n_puncta_all_grid` and
+# `_puncta_all_per_um2_grid` are exact duplicates of the non-"all"
+# grids for band-pass and are excluded. `pMLC_synapse_PtoM_*`
+# (WITHOUT `bp`) is the broken original detector and never appears
+# in a deck — see [[reference_pzap70_bandpass_only]].
+PMLC_PTOMBP_METRICS_SCATTER = [
+    (SUB_SCATTER, "pMLC_synapse_PtoMbp_puncta_per_um2_grid.png"),
+    (SUB_SCATTER, "pMLC_synapse_PtoMbp_n_puncta_grid.png"),
+    (SUB_SCATTER, "pMLC_synapse_PtoMbp_peak_median_grid.png"),
+    (SUB_SCATTER, "pMLC_synapse_PtoMbp_peak_mean_grid.png"),
+    (SUB_SCATTER, "pMLC_synapse_PtoMbp_blobmean_median_grid.png"),
+    (SUB_SCATTER, "pMLC_synapse_PtoMbp_blobmean_mean_grid.png"),
+    (SUB_SCATTER, "pMLC_synapse_PtoMbp_puncta_to_nonpuncta_grid.png"),
+    (SUB_SCATTER, "pMLC_synapse_PtoMbp_area_um2_median_grid.png"),
+    (SUB_SCATTER, "pMLC_synapse_PtoMbp_bp_mad_grid.png"),
+]
+
+# Same 9 metrics from CAT_vs_FMC_by_timepoint (violin appendix).
+# 3-tuple entries add a "(CAT vs FMC violins)" suffix so the appendix
+# slides are trivially told apart from the timecourse-scatter ones.
+PMLC_PTOMBP_METRICS_CAT_VS_FMC = [
+    (SUB_CAT_VS_FMC, fn, "(CAT vs FMC violins)")
+    for _, fn in PMLC_PTOMBP_METRICS_SCATTER
+]
+
 # 4 actin foci — no `foci_pMLC_*` colocalization PNGs yet, so this
 # block is smaller than pZap70/pLAT (which have 5 more slides here).
 FOCI_METRICS_PMLC = [
@@ -445,6 +489,148 @@ FOCI_METRICS_PZAP70 = [
     (SUB_SCATTER, "foci_pZap70_m1_intensity_in_foci_grid.png"),
     (SUB_SCATTER, "foci_pZap70_pearsons_coeff_grid.png"),
 ]
+
+# 9 pZap70 peak-to-mean puncta metrics from the NEW band-pass detector
+# (2026-09-15 recompile; FF's chosen primary). Per-date view from
+# timecourse_scatter_plots. Order per handoff.
+PZAP70_PTOMBP_METRICS = [
+    (SUB_SCATTER, "pZap70_synapse_PtoMbp_puncta_per_um2_grid.png"),
+    (SUB_SCATTER, "pZap70_synapse_PtoMbp_n_puncta_grid.png"),
+    (SUB_SCATTER, "pZap70_synapse_PtoMbp_peak_median_grid.png"),
+    (SUB_SCATTER, "pZap70_synapse_PtoMbp_peak_mean_grid.png"),
+    (SUB_SCATTER, "pZap70_synapse_PtoMbp_blobmean_median_grid.png"),
+    (SUB_SCATTER, "pZap70_synapse_PtoMbp_blobmean_mean_grid.png"),
+    (SUB_SCATTER, "pZap70_synapse_PtoMbp_puncta_to_nonpuncta_grid.png"),
+    (SUB_SCATTER, "pZap70_synapse_PtoMbp_area_um2_median_grid.png"),
+    # `_n_puncta_all_grid` and `_puncta_all_per_um2_grid` are identical
+    # to their non-"all" twins (FF, 2026-09-15) — dropped to avoid dupes.
+    (SUB_SCATTER, "pZap70_synapse_PtoMbp_bp_mad_grid.png"),
+]
+
+# NOTE: `pZap70_synapse_PtoM_*` (WITHOUT the `bp` = band-pass suffix)
+# is the ORIGINAL broken peak-to-mean detector — never insert those
+# grids into any deck (see [[reference_pzap70_bandpass_only]]).
+
+# Extra radial-profile variants (per-date CAT_vs_FMC_by_timepoint) that
+# complement the existing `_auc1_all_cells_with_average` in
+# PZAP70_METRICS: base rad_profile (no auc1) + full per-cell overlay.
+PZAP70_RAD_EXTRAS = [
+    (SUB_CAT_VS_FMC, "pZap70_synapse_rad_profile_grid.png"),
+    (SUB_CAT_VS_FMC, "pZap70_synapse_rad_profile_all_cells_with_average_grid.png"),
+    (SUB_CAT_VS_FMC, "actin_bottom_slice_rad_profile_grid.png"),
+    (SUB_CAT_VS_FMC, "foci_pZap70_cross_corr_profile_grid.png"),
+]
+
+# --- Joint compile block ---------------------------------------------
+# Joint-compile CAT_vs_FMC slides from PZAP70_JOINT_ROOT, spliced in
+# using absolute Path in the "sub" slot (pathlib absolute-RHS-discards-
+# LHS trick — no build_deck code changes needed).
+_PZAP70_JOINT_CAT = PZAP70_JOINT_ROOT / "CAT_vs_FMC"
+
+# Per-metric title-suffix "(joint)" so a metric slide is trivially told
+# apart from its per-date twin in the deck. 3-tuple entries pick up the
+# suffix in build_deck (same mechanism as PZAP70_DIST_BIN_PER_DATE).
+def _joint(fn: str) -> tuple:
+    return (_PZAP70_JOINT_CAT, fn, "(joint)")
+
+# 9 PtoMbp (band-pass) puncta, joint view.
+PZAP70_JOINT_PTOMBP = [
+    _joint("pZap70_synapse_PtoMbp_puncta_per_um2_grid.png"),
+    _joint("pZap70_synapse_PtoMbp_n_puncta_grid.png"),
+    _joint("pZap70_synapse_PtoMbp_peak_median_grid.png"),
+    _joint("pZap70_synapse_PtoMbp_peak_mean_grid.png"),
+    _joint("pZap70_synapse_PtoMbp_blobmean_median_grid.png"),
+    _joint("pZap70_synapse_PtoMbp_blobmean_mean_grid.png"),
+    _joint("pZap70_synapse_PtoMbp_puncta_to_nonpuncta_grid.png"),
+    _joint("pZap70_synapse_PtoMbp_area_um2_median_grid.png"),
+    # `_n_puncta_all_grid` and `_puncta_all_per_um2_grid` are identical
+    # to their non-"all" twins (FF, 2026-09-15) — dropped to avoid dupes.
+    _joint("pZap70_synapse_PtoMbp_bp_mad_grid.png"),
+]
+
+# (No `PZAP70_JOINT_PTOM` block — the non-bandpass Original detector is
+# broken and never goes in a deck; see [[reference_pzap70_bandpass_only]].)
+
+# Radial profiles from the joint compile (CAT_vs_FMC).
+# Base + auc1 + per-cell overlays for pZap70, actin, cross-corr.
+PZAP70_JOINT_RAD = [
+    _joint("pZap70_synapse_rad_profile_grid.png"),
+    _joint("pZap70_synapse_rad_profile_auc1_all_cells_with_average_grid.png"),
+    _joint("pZap70_synapse_rad_profile_all_cells_with_average_grid.png"),
+    _joint("actin_bottom_slice_rad_profile_grid.png"),
+    _joint("actin_bottom_slice_rad_profile_auc1_all_cells_with_average_grid.png"),
+    _joint("foci_pZap70_cross_corr_profile_grid.png"),
+    _joint("foci_pZap70_cross_corr_profile_all_cells_with_average_grid.png"),
+]
+
+# --- pZap70 zone profiles (green actin / magenta marker, 3 zones) ----
+# FF's favourite profile style, matched to the pMLC version. 60 PNGs
+# under `pzap70_zone_profiles_20260915/{cat_vs_fmc,per_condition}/`,
+# rendered 2026-09-15 in a peer session. Each slide is one PNG (no
+# multi-panel compositing).
+PZAP70_ZONE_ROOT = Path(
+    "L:/FF/CAR T/CAR T data for actin area trouble shoot/"
+    "results_compiled_tirf/pzap70_zone_profiles_20260915"
+)
+_ZONE_CAT_VS_FMC = PZAP70_ZONE_ROOT / "cat_vs_fmc"
+_ZONE_PER_COND   = PZAP70_ZONE_ROOT / "per_condition"
+
+# Chronological ds_tp order for the cat_vs_fmc block.
+_ZONE_DS_TPS = [
+    ("Sep_2023_6_min",     "Sep 2023, 6 min"),
+    ("Oct_2023_6_min",     "Oct 2023, 6 min"),
+    ("Feb_2025_D3_5_min",  "Feb 2025 D3, 5 min"),
+    ("Feb_2025_D3_15_min", "Feb 2025 D3, 15 min"),
+    ("Feb_2025_D5_5_min",  "Feb 2025 D5, 5 min"),
+    ("Feb_2025_D5_15_min", "Feb 2025 D5, 15 min"),
+]
+
+# 12 CAT vs FMC zone-profile slides — profile then gradient per ds_tp.
+PZAP70_ZONE_CAT_VS_FMC = []
+_PZAP70_ZONE_TITLES = {}
+for _stem, _pretty in _ZONE_DS_TPS:
+    for _kind, _kind_label in [("profile", "Profile"),
+                                ("grad",    "Gradient")]:
+        _fn = f"cat_vs_fmc_{_kind}_{_stem}.png"
+        PZAP70_ZONE_CAT_VS_FMC.append((_ZONE_CAT_VS_FMC, _fn))
+        _PZAP70_ZONE_TITLES[_fn] = (
+            f"pZap70 Zone {_kind_label} — CAT vs FMC ({_pretty})"
+        )
+
+# 12 conditions, chronological, CAT before FMC within each timepoint.
+_ZONE_CONDITIONS = [
+    ("CAT_6_min_Sep_2023",     "CAT, Sep 2023, 6 min"),
+    ("FMC_6_min_Sep_2023",     "FMC, Sep 2023, 6 min"),
+    ("CAT_6_min_Oct_2023",     "CAT, Oct 2023, 6 min"),
+    ("FMC_6_min_Oct_2023",     "FMC, Oct 2023, 6 min"),
+    ("CAT_5_min_Feb_2025_D3",  "CAT, Feb 2025 D3, 5 min"),
+    ("FMC_5_min_Feb_2025_D3",  "FMC, Feb 2025 D3, 5 min"),
+    ("CAT_15_min_Feb_2025_D3", "CAT, Feb 2025 D3, 15 min"),
+    ("FMC_15_min_Feb_2025_D3", "FMC, Feb 2025 D3, 15 min"),
+    ("CAT_5_min_Feb_2025_D5",  "CAT, Feb 2025 D5, 5 min"),
+    ("FMC_5_min_Feb_2025_D5",  "FMC, Feb 2025 D5, 5 min"),
+    ("CAT_15_min_Feb_2025_D5", "CAT, Feb 2025 D5, 15 min"),
+    ("FMC_15_min_Feb_2025_D5", "FMC, Feb 2025 D5, 15 min"),
+]
+
+# 48 per-condition slides — 4 panels per condition, in the order
+# combined_profile → combined_gradient → actin region MFI → pZap70
+# region MFI. Groups the 4 panels for one condition consecutively.
+PZAP70_ZONE_PER_COND = []
+for _stem, _pretty in _ZONE_CONDITIONS:
+    for _prefix, _title_head in [
+        # `_title_head` is the full leading phrase — the combined_* pair
+        # keeps the "pZap70 Zone" prefix, while the per-channel region-
+        # MFI pair leads with the channel name to avoid "pZap70 Zone
+        # pZap70 Region MFI" tautology.
+        ("combined_profile",         "pZap70 Zone Combined Profile"),
+        ("combined_gradient",        "pZap70 Zone Combined Gradient"),
+        ("actin_region_MFI_norm",    "Actin Region MFI (zones, norm.)"),
+        ("pzap70_region_MFI_norm",   "pZap70 Region MFI (zones, norm.)"),
+    ]:
+        _fn = f"{_prefix}_{_stem}.png"
+        PZAP70_ZONE_PER_COND.append((_ZONE_PER_COND, _fn))
+        _PZAP70_ZONE_TITLES[_fn] = f"{_title_head} — {_pretty}"
 
 # pZap70 MFI binned by distance to nearest actin focus, per acquisition
 # date. Same shape as PLAT_DIST_BIN_PER_DATE (3-tuple title-suffix entry);
@@ -858,6 +1044,22 @@ DATASETS = [
         ),
     },
     {
+        "label": "pMLC PtoMbp",
+        # 18 slides: 9 PtoMbp metrics x 2 views (timecourse scatter +
+        # CAT vs FMC by timepoint). Sourced from the 3-replicate
+        # 20260915 compile (Mar 12 + May 10 + Jun 07, 2026).
+        # PtoM_ (non-bandpass, original detector) is broken and never
+        # appears in a deck; the compile has 450 such PNGs — skipped.
+        "compiled_root": PMLC_JOINT_ROOT_20260915,
+        "output_path": (
+            OUTPUT_DIR_PMLC / "CART_pMLC_puncta_results_20260916.pptx"
+        ),
+        "png_files": (
+            PMLC_PTOMBP_METRICS_SCATTER          # 9 timecourse scatter
+            + PMLC_PTOMBP_METRICS_CAT_VS_FMC     # 9 CAT_vs_FMC violins
+        ),
+    },
+    {
         "label": "pMLC joint",
         # 39 slides: 13 pMLC (leads with Synapse MFI, closes with
         # z50/z75/z90) + 10 actin + 10 actin 3-slice MIP + 2 correlation
@@ -876,18 +1078,39 @@ DATASETS = [
     },
     {
         "label": "pZap70 TIRF",
-        # 36 slides: 10 pZap70 (leads with Synapse MFI) + 10 actin +
-        # 3 correlation + 9 foci + 4 per-date dist-bin. Sources from
-        # the 20260701 recompile which added g(r) autocorrelation and
-        # foci x pZap70 cross-correlation.
+        # 125 slides. Per-date (tc compile) view + joint block + zone
+        # profiles (FF's green-actin / magenta-pZap70 style). Sources
+        # from the 20260915 recompile which added the PtoMbp (band-pass)
+        # peak-to-mean puncta detector + extra rad profile variants;
+        # joint block (title suffix "(joint)") appended via peer-directory
+        # trick from the sibling 20260915 joint compile; zone profiles
+        # from the `pzap70_zone_profiles_20260915/` folder (also
+        # peer-dir trick). Whether the joint panels pool experiments
+        # or split them is set by the compile config, not verified here.
+        # PtoM_ (non-bandpass, original detector) is BROKEN and never
+        # appears in a deck — see [[reference_pzap70_bandpass_only]].
+        # Breakdown:
+        #   10 pZap70 basic + 9 PtoMbp                         (19)
+        # + 10 actin                                            (10)
+        # + 3 correlation + 4 rad-extras (per-date)             (7)
+        # + 9 foci + 4 per-date dist-bin                        (13)
+        # + 9 joint PtoMbp + 7 joint rad-prof                   (16)
+        # + 12 CAT-vs-FMC zone (highlight) + 48 per-cond zone   (60)
+        # -----------------------------------------------------------------
         "compiled_root": PZAP70_TIRF_ROOT,
         "output_path": OUTPUT_DIR_PZAP70 / "CART_pZap70_summary.pptx",
         "png_files": (
-            PZAP70_METRICS               # 10 pZap70 (leads with Synapse MFI)
+            PZAP70_METRICS               # 10 pZap70 basic (leads w/ Synapse MFI)
+            + PZAP70_PTOMBP_METRICS      # 9 band-pass puncta (per-date)
             + SLICE_METRICS_WITH_RAD     # 10 actin
             + PZAP70_CORR_METRICS        # 3 g(r) autocorr + cross-corr
+            + PZAP70_RAD_EXTRAS          # 4 extra rad-profile variants
             + FOCI_METRICS_PZAP70        # 9 foci
             + PZAP70_DIST_BIN_PER_DATE   # 4 per-date dist-bin
+            + PZAP70_JOINT_PTOMBP        # 9 joint band-pass (CAT_vs_FMC)
+            + PZAP70_JOINT_RAD           # 7  joint radial profiles
+            + PZAP70_ZONE_CAT_VS_FMC     # 12 zone: CAT vs FMC (highlight)
+            + PZAP70_ZONE_PER_COND       # 48 zone: per-condition 4-panel
         ),
     },
     {
@@ -1085,6 +1308,58 @@ TITLE_OVERRIDES = {
     "pZap70_synapse_r_eff_grid.png": "pZap70 Synapse Effective Radius",
     "pZap70_synapse_rad_profile_auc1_all_cells_with_average_grid.png":
         "pZap70 Synapse Radial Profile AUC₁ (all cells + avg)",
+    "pZap70_synapse_rad_profile_grid.png":
+        "pZap70 Synapse Radial Profile",
+    "pZap70_synapse_rad_profile_all_cells_with_average_grid.png":
+        "pZap70 Synapse Radial Profile (all cells + avg)",
+    "pZap70_synapse_rad_profile_auc1_grid.png":
+        "pZap70 Synapse Radial Profile AUC₁",
+    "actin_bottom_slice_rad_profile_grid.png":
+        "Actin Synapse Radial Profile",
+    "foci_pZap70_cross_corr_profile_grid.png":
+        "Foci × pZap70 Cross-Correlation Profile",
+    # --- pZap70 puncta: band-pass (PtoMbp) detector (2026-09-15) --------
+    "pZap70_synapse_PtoMbp_puncta_per_um2_grid.png":
+        "pZap70 Puncta per μm²",
+    "pZap70_synapse_PtoMbp_n_puncta_grid.png":
+        "pZap70 Puncta Count",
+    "pZap70_synapse_PtoMbp_peak_median_grid.png":
+        "pZap70 Puncta Peak / Synapse Mean (median)",
+    "pZap70_synapse_PtoMbp_peak_mean_grid.png":
+        "pZap70 Puncta Peak / Synapse Mean (mean)",
+    "pZap70_synapse_PtoMbp_blobmean_median_grid.png":
+        "pZap70 Puncta Blob-Mean / Synapse Mean (median)",
+    "pZap70_synapse_PtoMbp_blobmean_mean_grid.png":
+        "pZap70 Puncta Blob-Mean / Synapse Mean (mean)",
+    "pZap70_synapse_PtoMbp_puncta_to_nonpuncta_grid.png":
+        "pZap70 Puncta / Non-Puncta Signal",
+    "pZap70_synapse_PtoMbp_area_um2_median_grid.png":
+        "pZap70 Puncta Area (median, μm²)",
+    # (Dropped `_n_puncta_all_grid` and `_puncta_all_per_um2_grid` overrides
+    # — those grids are identical to their non-"all" twins; FF, 2026-09-15.)
+    "pZap70_synapse_PtoMbp_bp_mad_grid.png":
+        "pZap70 Puncta Background MAD",
+    # (No PtoM_ overrides: the non-bandpass Original detector is broken
+    # and never appears in a deck — see [[reference_pzap70_bandpass_only]].)
+    # --- pMLC puncta: band-pass (PtoMbp) detector (2026-09-15) ----------
+    "pMLC_synapse_PtoMbp_puncta_per_um2_grid.png":
+        "pMLC Puncta per μm²",
+    "pMLC_synapse_PtoMbp_n_puncta_grid.png":
+        "pMLC Puncta Count",
+    "pMLC_synapse_PtoMbp_peak_median_grid.png":
+        "pMLC Puncta Peak / Synapse Mean (median)",
+    "pMLC_synapse_PtoMbp_peak_mean_grid.png":
+        "pMLC Puncta Peak / Synapse Mean (mean)",
+    "pMLC_synapse_PtoMbp_blobmean_median_grid.png":
+        "pMLC Puncta Blob-Mean / Synapse Mean (median)",
+    "pMLC_synapse_PtoMbp_blobmean_mean_grid.png":
+        "pMLC Puncta Blob-Mean / Synapse Mean (mean)",
+    "pMLC_synapse_PtoMbp_puncta_to_nonpuncta_grid.png":
+        "pMLC Puncta / Non-Puncta Signal",
+    "pMLC_synapse_PtoMbp_area_um2_median_grid.png":
+        "pMLC Puncta Area (median, μm²)",
+    "pMLC_synapse_PtoMbp_bp_mad_grid.png":
+        "pMLC Puncta Background MAD",
     # --- pMLC joint deck overrides --------------------------------------
     "pMLC_synapse_r_eff_grid.png": "pMLC Synapse Effective Radius",
     "pMLC_synapse_rad_profile_auc1_all_cells_with_average_grid.png":
@@ -1229,6 +1504,10 @@ TITLE_OVERRIDES = {
     "axial_overlay_perslice_Jul_23_2026.png":
         "Actin Axial Profile Overlay — per slice (Jul 23, 2026)",
 }
+
+# Merge the programmatically-generated zone-profile titles (60 files:
+# 12 cat_vs_fmc + 48 per-condition, built above).
+TITLE_OVERRIDES.update(_PZAP70_ZONE_TITLES)
 
 # Optional per-filename subtitle shown under the title (formula / units /
 # interpretation). Missing entries -> no subtitle line. Currently empty.

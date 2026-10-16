@@ -54,6 +54,7 @@ class TextboxSpec:
     # PowerPoint font color as a BGR integer (as VBA RGB()), or None for the
     # theme default (dark text). Use e.g. 0xFFFFFF (white) on dark slides.
     color_rgb: Optional[int] = None
+    italic: bool = False
 
 
 @dataclass(frozen=True)
@@ -164,8 +165,10 @@ def _slide_to_manifest(slide: SlideSpec) -> dict:
                 "height_pt": tb.height_pt,
                 "font_size_pt": tb.font_size_pt,
                 "bold": bool(tb.bold),
+                "italic": bool(tb.italic),
                 "align": _ALIGN_MAP[tb.align.lower()],
                 "font_name": tb.font_name,
+                "color_rgb": tb.color_rgb,
             }
             for tb in slide.textboxes
         ],
@@ -210,7 +213,9 @@ try {{
             $textRange.ParagraphFormat.Alignment = [int]$tb.align
             $textRange.Font.Size = [single]$tb.font_size_pt
             if ($tb.bold) {{ $textRange.Font.Bold = -1 }} else {{ $textRange.Font.Bold = 0 }}
+            if ($tb.italic) {{ $textRange.Font.Italic = -1 }} else {{ $textRange.Font.Italic = 0 }}
             $textRange.Font.Name = $tb.font_name
+            if ($null -ne $tb.color_rgb) {{ $textRange.Font.Color.RGB = [int]$tb.color_rgb }}
         }}
         foreach ($mv in $slideSpec.movies) {{
             $mediaShape = $slide.Shapes.AddMediaObject2(

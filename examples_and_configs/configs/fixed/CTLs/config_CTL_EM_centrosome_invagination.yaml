@@ -1,0 +1,34 @@
+# OpenOrganelle CTL FIB-SEM deck (FF 2026-10-02 advisor progress report).
+# Template: examples_and_configs/make_ctl_em_deck_template.py
+# Panels (TCell-3D-Morphodynamics):
+#   renders\  Blender (microscopy-nodes-blender-vis tools/render_ctl_em_showcase.py) composed by
+#             dev/analyses/ctl_id8_fibsem/compose_showcase_render.m (dev/runs/ctl_id8/run_compose_deck_renders.m)
+#   em\       export_scout_planes.py --tilted-views jrc_ctl-id8-2 jrc_ctl-id8-4 + render_ctl_scout_sheet.m
+#             (dev/runs/ctl_id8/run_render_tilted_deck.m)
+# Numbers: TCell-3D-Morphodynamics dev/runs/ctl_id8/mesh_five_ctls_published.log
+# Titles are one line (32 pt over 11 in), so the picture box can start under a one-line title band.
+presentation: "K:/FF/PPT/PPT_autogeneration/CTL_EM/CTL_EM_centrosome_invagination_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/CTL_EM/CTL_EM_centrosome_invagination.pptx"
+template_slide: 1
+preserve_slides: [0, 1]
+add_label: false
+base_dir: "L:/FF/Hackathon/full_datasets/ctl_id8_scout/deck_20261002"
+images:
+  # FF 2026-10-02: id8-4 first; raw EM before our segmentation renders; short titles
+  - images: [em/jrc_ctl-id8-4_raw_em.png]
+    title: "id8-4: raw FIB-SEM"
+  - images: [renders/jrc_ctl-id8-4_nucleus_white_v000_e+00_panel.png]
+    title: "id8-4: invagination at the centrosome (near/away 3.01)"
+  - images: [renders/jrc_ctl-id8-4_nucleus_white_v090_e-25_r-090_panel.png]
+    title: "id8-4: centrosome between invagination and target cell"
+  # empty slides for FF's own screenshots of the paper's figures (copyrighted; not reproduced here)
+  - images: ["K:/FF/PPT/PPT_autogeneration/CTL_EM/blank_for_screenshot.png"]
+    title: "Ritter et al. 2022, Fig. 2A: the id8-2 conjugate"
+  - images: ["K:/FF/PPT/PPT_autogeneration/CTL_EM/blank_for_screenshot.png"]
+    title: "Ritter et al. 2022, Fig. S2B: raw slices and segmentation"
+  - images: [em/jrc_ctl-id8-2_raw_em.png]
+    title: "id8-2 (Ritter Fig. 2A cell): raw FIB-SEM"
+  - images: [renders/jrc_ctl-id8-2_nucleus_white_v180_e-25_panel.png]
+    title: "id8-2: flat nucleus at the centrosome (near/away 1.12)"
+  - images: [renders/jrc_ctl-id8-2_nucleus_white_v270_e+00_r-090_panel.png]
+    title: "id8-2: centrosome docked at the synapse"

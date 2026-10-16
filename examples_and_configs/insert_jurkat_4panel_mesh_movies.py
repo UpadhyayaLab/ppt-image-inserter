@@ -21,9 +21,11 @@ script warns and skips them; once those movies exist in
 ``raw_with_meshes_movies/panel_raw_region_depth_curv_dot/`` a re-run adds the
 dot slides automatically (no code change needed).
 
-Scope: the 032022 (NaBu800 Control_3D_CD3) Jurkat dataset. Movies are inserted
-via PowerPoint COM (Windows-only); after saving, the timing-tree trigger on disk
-is rewritten so videos autoplay in slideshow mode.
+Scope: the 032022 (NaBu800 Control_3D_CD3) and 04142022 (GFP-Centrin Control)
+Jurkat datasets, selected with ``--experiment`` (one deck per experiment).
+Movies are inserted via PowerPoint COM (Windows-only); after saving, the
+timing-tree trigger on disk is rewritten so videos autoplay in slideshow mode,
+each movie holds its last frame briefly, and (by default) loops.
 """
 
 from __future__ import annotations
@@ -65,18 +67,39 @@ except ImportError:
 
 JURKAT_BASE = Path("F:/FF/nucleus_live_cell/jurkat_nucleus_centrosome")
 
-# All 4-panel movie folders live directly under this root, one subfolder per
-# variant (panel_raw_region_depth_curv, panel_raw_region_depth_curv_dot).
-EXPT_032022_MOVIES_ROOT = (
-    JURKAT_BASE
-    / "NaBu800 Experiments/Control_3D_CD3/all_cells_together/prog_live_cells/raw_with_meshes_movies"
-)
+PER_EXPT_OUTPUT_DIR = Path("K:/FF/PPT/PPT_autogeneration/Live Cells")
 
-EXPERIMENT_LABEL = "032022 expt"
 
-DEFAULT_OUTPUT = Path(
-    "K:/FF/PPT/PPT_autogeneration/Live Cells/Jurkat 4-panel mesh movies (032022).pptx"
-)
+@dataclass(frozen=True)
+class ExperimentSpec:
+    """One Jurkat live experiment whose 4-panel movies feed a deck.
+
+    ``movies_root`` is the ``raw_with_meshes_movies`` folder that holds the
+    per-variant subfolders (panel_raw_region_depth_curv[_dot]).
+    """
+
+    key: str
+    label: str
+    movies_root: Path
+
+
+# All 4-panel movie folders live directly under each experiment's movies_root,
+# one subfolder per variant (panel_raw_region_depth_curv, ..._dot).
+EXPERIMENTS: Dict[str, ExperimentSpec] = {
+    "032022": ExperimentSpec(
+        key="032022",
+        label="032022 expt",
+        movies_root=JURKAT_BASE
+        / "NaBu800 Experiments/Control_3D_CD3/all_cells_together/prog_live_cells/raw_with_meshes_movies",
+    ),
+    "04142022": ExperimentSpec(
+        key="04142022",
+        label="04142022 expt",
+        movies_root=JURKAT_BASE
+        / "GFP-Centrin_SiR-DNA/Control/cells/all_cells_together/prog_live_cells/raw_with_meshes_movies",
+    ),
+}
+DEFAULT_EXPERIMENT = "032022"
 
 # Poster frames and padded movie copies are transient per-run scratch; keep them
 # out of the repo and out of the deck output folder (wiped and recreated each run).
@@ -174,14 +197,24 @@ def parse_args() -> argparse.Namespace:
             "(raw | region | depth | min-curv), two slides per cell per variant "
             "pairing each direction with its _rev variant. Builds the raw "
             "variant and, when its movies exist, the centrosome-dot variant, "
-            "for the 032022 (NaBu800 Control) Jurkat experiment."
+            "for the chosen Jurkat experiment (--experiment)."
         )
+    )
+    parser.add_argument(
+        "--experiment",
+        type=str,
+        default=DEFAULT_EXPERIMENT,
+        choices=sorted(EXPERIMENTS),
+        help=f"Which Jurkat experiment to build (default: {DEFAULT_EXPERIMENT}).",
     )
     parser.add_argument(
         "--output",
         type=Path,
         default=None,
-        help=f"Output PowerPoint path. Defaults to {DEFAULT_OUTPUT}.",
+        help=(
+            "Output PowerPoint path. Defaults to "
+            f"{PER_EXPT_OUTPUT_DIR}/Jurkat 4-panel mesh movies (<experiment>).pptx."
+        ),
     )
     parser.add_argument(
         "--cells",
@@ -208,11 +241,13 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def resolve_output_path(output_arg: Optional[Path]) -> Path:
-    """Pick the output path based on --output."""
+def resolve_output_path(output_arg: Optional[Path], experiment: ExperimentSpec) -> Path:
+    """Pick the output path based on --output / --experiment."""
     if output_arg is not None:
         return output_arg.resolve()
-    return DEFAULT_OUTPUT.resolve()
+    return (
+        PER_EXPT_OUTPUT_DIR / f"Jurkat 4-panel mesh movies ({experiment.key}).pptx"
+    ).resolve()
 
 
 def parse_requested_cells(cells_arg: str) -> Optional[Set[int]]:
@@ -314,6 +349,7 @@ def report_missing_cells(
 def collect_panel_cells(
     panel: PanelSpec,
     movies_root: Path,
+    experiment_label: str,
     requested_cells: Optional[Set[int]] = None,
 ) -> Dict[int, Dict[str, Path]]:
     """Return ``{cell -> {view -> movie path}}`` for cells complete in a panel.
@@ -336,11 +372,11 @@ def collect_panel_cells(
         return {}
 
     by_variant = collect_movies_by_variant(
-        folder, panel.variant_patterns, f"{EXPERIMENT_LABEL} {panel.key}"
+        folder, panel.variant_patterns, f"{experiment_label} {panel.key}"
     )
 
     report_missing_cells(
-        f"{EXPERIMENT_LABEL} {panel.key}", by_variant, requested_cells
+        f"{experiment_label} {panel.key}", by_variant, requested_cells
     )
 
     complete: Set[int] = set(by_variant[VIEWS[0]])
@@ -429,11 +465,13 @@ def fit_within_box(
     return final_left, final_top, final_width, final_height
 
 
-def format_title(panel: PanelSpec, cell_number: int, direction: str) -> str:
+def format_title(
+    panel: PanelSpec, cell_number: int, direction: str, experiment_label: str
+) -> str:
     """Return the slide title for a panel/cell/direction."""
     return (
         f"{panel.title_prefix} ({direction}): "
-        f"Cell {cell_number} ({EXPERIMENT_LABEL})"
+        f"Cell {cell_number} ({experiment_label})"
     )
 
 
@@ -532,6 +570,7 @@ def build_slide_specs(
     panel_cells: Dict[str, Dict[int, Dict[str, Path]]],
     poster_dir: Path,
     hold_seconds: float,
+    experiment_label: str,
 ) -> List[SlideSpec]:
     """Build two SlideSpecs per cell per present panel (xz pair, yz pair).
 
@@ -552,7 +591,7 @@ def build_slide_specs(
             slug = f"cell{cell_number}_{panel.key}"
             slide_specs.append(
                 _build_movie_pair_slide(
-                    format_title(panel, cell_number, "xz"),
+                    format_title(panel, cell_number, "xz", experiment_label),
                     views["xz"],
                     views["xz_rev"],
                     "xz",
@@ -564,7 +603,7 @@ def build_slide_specs(
             )
             slide_specs.append(
                 _build_movie_pair_slide(
-                    format_title(panel, cell_number, "yz"),
+                    format_title(panel, cell_number, "yz", experiment_label),
                     views["yz"],
                     views["yz_rev"],
                     "yz",
@@ -601,11 +640,17 @@ def main() -> int:
         print(f"[ERROR] {exc}")
         return 1
 
+    experiment = EXPERIMENTS[args.experiment]
+    print(f"Experiment: {experiment.label} ({experiment.movies_root})")
+
     try:
         panel_cells: Dict[str, Dict[int, Dict[str, Path]]] = {}
         for panel in PANELS:
             cells = collect_panel_cells(
-                panel, EXPT_032022_MOVIES_ROOT, requested_cells=requested_cells
+                panel,
+                experiment.movies_root,
+                experiment.label,
+                requested_cells=requested_cells,
             )
             print(f"{panel.key} panel: found {len(cells)} complete cell set(s)")
             panel_cells[panel.key] = cells
@@ -631,7 +676,7 @@ def main() -> int:
     if args.loop:
         print("Looping each movie until stopped")
 
-    output_path = resolve_output_path(args.output)
+    output_path = resolve_output_path(args.output, experiment)
     ensure_parent_dir(output_path)
 
     if output_path.exists():
@@ -645,7 +690,9 @@ def main() -> int:
     poster_dir = prepare_poster_dir(DEFAULT_POSTER_DIR)
 
     try:
-        slide_specs = build_slide_specs(panel_cells, poster_dir, args.hold_last)
+        slide_specs = build_slide_specs(
+            panel_cells, poster_dir, args.hold_last, experiment.label
+        )
         rewritten = build_movie_deck_via_com(
             slide_specs,
             str(output_path),

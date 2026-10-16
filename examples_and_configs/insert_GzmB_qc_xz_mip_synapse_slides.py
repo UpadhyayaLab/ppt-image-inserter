@@ -1,9 +1,10 @@
 """
-insert_GzmB_qc_xz_mip_synapse_clim10_100_slides.py
+insert_GzmB_qc_xz_mip_synapse_slides.py
 
 Naive-CTL GzmB QC deck — one image per slide, two kinds across 12
 substrate / timepoint conditions from the 06/17/2025 GzmB + βTub
-imaging session.
+imaging session. --dataset 10292025 / 10152025 builds the same deck for the
+GzB_histone_marks experiments (12 / 15 conditions).
 
 Pipeline subdir is `prog_CTL_analysis/GzmB/<view>/montages_clim10_100/`.
 The GzmB plotter writes three contrast variants per view
@@ -21,9 +22,11 @@ Reuses the same condition list, smoke-skip rule, and single-image
 layout helpers.
 
 Usage:
-    python examples_and_configs/insert_GzmB_qc_xz_mip_synapse_clim10_100_slides.py
+    python examples_and_configs/insert_GzmB_qc_xz_mip_synapse_slides.py
+    python examples_and_configs/insert_GzmB_qc_xz_mip_synapse_slides.py --dataset 10292025
 """
 
+import argparse
 import os
 import re
 import sys
@@ -41,33 +44,78 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Configuration
 # ---------------------------------------------------------------------------
 
-OUTPUT_PATH = (
-    "K:/FF/PPT/PPT_autogeneration/Naive_CTL/"
-    "Naive_CTL_GzmB_QC_xz_mip_synapse_06172025.pptx"
-)
+# Per-dataset settings. conditions = (display_label, raw_folder_name).
+# 06172025: same user-specified ordering as the actin deck.
+# 10292025 / 10152025: cfg.condition_order + cfg.condition_labels of the
+# ctl-morphology postprocessing configs naiveCTLs_GzmB_<date>_postprocessing.m.
+_PPT_DIR = "K:/FF/PPT/PPT_autogeneration/Naive_CTL/"
+DATASETS = {
+    "06172025": dict(
+        output_path=_PPT_DIR + "Naive_CTL_GzmB_QC_xz_mip_synapse_06172025.pptx",
+        dataset_root="L:/FF/Naive_CTLs/GzB_bTub/06172025_naiveCTLs_grzmB_bTub_",
+        date_tag="06/17/2025",
+        conditions=[
+            ("1.5 kPa 24 hr", "auto-gel3p0-24hr-0617"),
+            ("1.5 kPa 48 hr", "f-gel3p0-48hr-0617"),
+            ("1.5 kPa 72 hr", "auto-gel3p0-72hr-0617"),
+            ("12 kPa 24 hr",  "auto-gel8p0-24hr-0617"),
+            ("12 kPa 48 hr",  "auto-gel8p0-48hr-0617-weirdchannel"),
+            ("12 kPa 72 hr",  "auto-gel8p0-72hr-0617"),
+            ("glass 2 hr",    "f-actGlass-101010-2hr-0617"),
+            ("glass 6 hr",    "f-actGlass-101010-6hr-0617"),
+            ("glass 24 hr",   "f-actglass-101010-24hr-0617"),
+            ("glass 48 hr",   "f-actglass-101010-48hr-0617"),
+            ("glass 72 hr",   "f-actGlass-101010-72hr-0617"),
+            ("PLL 2 hr",      "f-nonactGlassPLL-2hr-0617"),
+        ],
+    ),
+    "10292025": dict(
+        output_path=_PPT_DIR + "Naive_CTL_GzmB_QC_xz_mip_synapse_10292025.pptx",
+        dataset_root=("L:/FF/Naive_CTLs/GzB_histone_marks/tifsnaiveCTLs_H3K27acGrzmB/"
+                      "10292025_naiveCTLs_"),
+        date_tag="10/29/2025",
+        conditions=[
+            ("1.5 kPa 28 hr",    "Gel7_3p0_101010_28hr_"),
+            ("1.5 kPa 50 hr",    "Gel5_3p0_101010_50hr_"),
+            ("1.5 kPa 74 hr",    "Gel9_3p0_101010_74hr_"),
+            ("12 kPa 28 hr",     "Gel2_8p0_101010_28hr_"),
+            ("12 kPa 50 hr",     "Gel4_8p0_101010_50hr_"),
+            ("12 kPa 74 hr",     "Gel6_8p0_101010_74hr_001"),
+            ("glass 28 hr",      "G2A1_101010_28hr_"),
+            ("glass 50 hr",      "G3A1_101010_50hr_"),
+            ("glass 74 hr",      "G4A1_101010_74hr_"),
+            ("glass 1-16 28 hr", "G2B2_1-16_28hr_"),
+            ("glass 1-16 50 hr", "G3B2_1-16_50hr_"),
+            ("glass 1-16 74 hr", "G4B2_1-16_74hr_"),
+        ],
+    ),
+    "10152025": dict(
+        output_path=_PPT_DIR + "Naive_CTL_GzmB_QC_xz_mip_synapse_10152025.pptx",
+        dataset_root=("L:/FF/Naive_CTLs/GzB_histone_marks/tifsnaiveCTLs_H3K9me3GrzmB/"
+                      "10152025_naiveCTLs_"),
+        date_tag="10/15/2025",
+        conditions=[
+            ("1.5 kPa 24 hr",    "Gel3_3p0_101010_24hr_"),
+            ("1.5 kPa 48 hr",    "Gel5_3p0_48hr_101010_"),
+            ("1.5 kPa 72 hr",    "Gel7_3p0_72hr_101010_"),
+            ("12 kPa 24 hr",     "Gel2_8p0_24hr_101010_001"),
+            ("12 kPa 48 hr",     "Gel6_8p0_48hr_101010_"),
+            ("12 kPa 72 hr",     "Gel8_8p0_101010_72hr_"),
+            ("glass 6 hr",       "G1A1101010_6hr_002"),
+            ("glass 24 hr",      "G2A1_101010_24hr_"),
+            ("glass 48 hr",      "G3A1_101010_48hr_"),
+            ("glass 72 hr",      "G4A1_101010_72hr_"),
+            ("glass 1-16 6 hr",  "G1B2_1-16_101010_6hr_003"),
+            ("glass 1-16 24 hr", "G2B2_1-16_101010_24hr_001"),
+            ("glass 1-16 48 hr", "G3B2_1-16_101010_48hr_"),
+            ("glass 1-16 72 hr", "G4B2_1-16_72hr_"),
+            ("PLL 2 hr",         "G0A1_PLL_2hr_noILs_"),
+        ],
+    ),
+}
 
-DATASET_ROOT = (
-    "L:/FF/Naive_CTLs/GzB_bTub/06172025_naiveCTLs_grzmB_bTub_"
-)
-
-DATE_TAG = "06/17/2025"
-
-# (display_label, raw_folder_name) — same user-specified ordering as the
-# actin deck.
-CONDITIONS = [
-    ("1.5 kPa 24 hr", "auto-gel3p0-24hr-0617"),
-    ("1.5 kPa 48 hr", "f-gel3p0-48hr-0617"),
-    ("1.5 kPa 72 hr", "auto-gel3p0-72hr-0617"),
-    ("12 kPa 24 hr",  "auto-gel8p0-24hr-0617"),
-    ("12 kPa 48 hr",  "auto-gel8p0-48hr-0617-weirdchannel"),
-    ("12 kPa 72 hr",  "auto-gel8p0-72hr-0617"),
-    ("glass 2 hr",    "f-actGlass-101010-2hr-0617"),
-    ("glass 6 hr",    "f-actGlass-101010-6hr-0617"),
-    ("glass 24 hr",   "f-actglass-101010-24hr-0617"),
-    ("glass 48 hr",   "f-actglass-101010-48hr-0617"),
-    ("glass 72 hr",   "f-actGlass-101010-72hr-0617"),
-    ("PLL 2 hr",      "f-nonactGlassPLL-2hr-0617"),
-]
+# Set from DATASETS in main().
+OUTPUT_PATH = DATASET_ROOT = DATE_TAG = CONDITIONS = None
 
 PROG_SUBPATH = "prog_CTL_analysis/GzmB"
 
@@ -210,6 +258,13 @@ def build_slide(prs, title_text: str, image_path: Optional[Path]):
 
 
 def main() -> None:
+    global OUTPUT_PATH, DATASET_ROOT, DATE_TAG, CONDITIONS
+    ap = argparse.ArgumentParser(description="Naive-CTL GzmB QC deck")
+    ap.add_argument("--dataset", default="06172025", choices=sorted(DATASETS))
+    ds = DATASETS[ap.parse_args().dataset]
+    OUTPUT_PATH, DATASET_ROOT = ds["output_path"], ds["dataset_root"]
+    DATE_TAG, CONDITIONS = ds["date_tag"], ds["conditions"]
+
     out_path = Path(OUTPUT_PATH)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 

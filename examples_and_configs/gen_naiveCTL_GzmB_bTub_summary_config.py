@@ -15,40 +15,110 @@ reprocessed (the results dir is date-stamped).
 
 Usage:
     conda run -n PPT_editing python examples_and_configs/gen_naiveCTL_GzmB_bTub_summary_config.py
+    conda run -n PPT_editing python examples_and_configs/gen_naiveCTL_GzmB_bTub_summary_config.py --dataset 10292025
+
+--dataset picks an entry of DATASETS (default 06172025, the original deck).
 """
 
+import argparse
 import os
 
-# ---------------------------------------------------------------------------
-# Paths
-# ---------------------------------------------------------------------------
-# Compiled-results root. base_dir is the ROOT (not grid_panels) because the
-# profiles/ and polarization/ folders are siblings of grid_panels/.
-RESULTS_ROOT = (
-    "L:/FF/Naive_CTLs/GzB_bTub/06172025_naiveCTLs_grzmB_bTub_/compiled_results/"
-    "naiveCTLs_grzmB_bTub_06172025_12conditions_20260611"
-)
-
-PRESENTATION = (
-    "K:/FF/PPT/PPT_autogeneration/Naive_CTL/NaiveCTL_GzmB_bTub_summary_template.pptx"
-)
-OUTPUT_PATH = (
-    "K:/FF/PPT/PPT_autogeneration/Naive_CTL/NaiveCTL_GzmB_bTub_summary.pptx"
-)
-
-# Where to write the generated config (beside the reactivation configs).
-CONFIG_OUT = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "configs", "fixed", "CTLs", "config_naiveCTL_GzmB_bTub_summary.yaml",
-)
-
 # Template layout slides:
+#   0 = 2-up square panels      (glass vs glass 1-16 timecourses)
 #   1 = 1-image square panel   (default; activation + profiles)
 #   2 = 1-image wide panel      (all_conditions + polarization)
 #   3 = 3-up square panels      (substrate trio + timecourse trio on one slide)
+#   4 = 4-up square panels      (NaiveCTL_GzmB_histone_summary_template.pptx only;
+#                               built by make_naiveCTL_GzmB_4up_template.py)
+PAIR_SLIDE = 0
 SQUARE_SLIDE = 1
 WIDE_SLIDE = 2
 MULTI_SLIDE = 3
+QUAD_SLIDE = 4
+
+_CONFIG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           "configs", "fixed", "CTLs")
+_PPT_DIR = "K:/FF/PPT/PPT_autogeneration/Naive_CTL/"
+_TIMECOURSE_3UP = ("multi", ["gel_1p5kPa_timecourse", "gel_12kPa_timecourse", "glass_timecourse"],
+                   "timecourses: 1.5 kPa, 12 kPa, glass")
+_GLASS_1_16_2UP = ("multi", ["glass_timecourse", "glass_1-16_timecourse"],
+                   "timecourses: glass vs glass 1-16", PAIR_SLIDE)
+
+# ---------------------------------------------------------------------------
+# Per-dataset settings. results_root is the compiled-results ROOT (not
+# grid_panels) because the profiles/ and polarization/ folders are siblings of
+# grid_panels/. grid_layout panels are one of:
+#   ("single", folder, label, is_wide)                 -> 1 image (wide or square)
+#   ("multi",  [folder, ...], label[, template_slide]) -> several images on one
+#                                                         slide (default 3-up)
+# Related comparisons are grouped onto single multi-image slides to keep the
+# deck compact (substrate 24/48/72 together; the three timecourses together).
+# The grid_panels folder names come from the ctl-morphology postprocessing
+# config of each dataset.
+# ---------------------------------------------------------------------------
+DATASETS = {
+    "06172025": dict(
+        results_root=(
+            "L:/FF/Naive_CTLs/GzB_bTub/06172025_naiveCTLs_grzmB_bTub_/compiled_results/"
+            "naiveCTLs_grzmB_bTub_06172025_12conditions_20260611"),
+        presentation=_PPT_DIR + "NaiveCTL_GzmB_bTub_summary_template.pptx",
+        output_path=_PPT_DIR + "NaiveCTL_GzmB_bTub_summary.pptx",
+        config_out=os.path.join(_CONFIG_DIR, "config_naiveCTL_GzmB_bTub_summary.yaml"),
+        header="Naive CTL GzmB / beta-Tubulin -- 12-condition summary deck",
+        preserve_slides=[0, 1, 2, 3],
+        grid_layout=[
+            ("single", "all_conditions", "all conditions", True),
+            ("multi", ["substrate_24h", "substrate_48h", "substrate_72h"],
+                "substrate comparison (24 / 48 / 72 h)"),
+            _TIMECOURSE_3UP,
+            ("single", "activation_2h", "effects of activation: aCD3 vs PLL (2 h)", False),
+        ],
+    ),
+    # GzB_histone_marks experiments (GzmB + histone mark; histone not in the
+    # deck). No activation comparison; glass 1-16 (B2) added instead.
+    "10292025": dict(
+        results_root=(
+            "L:/FF/Naive_CTLs/GzB_histone_marks/tifsnaiveCTLs_H3K27acGrzmB/10292025_naiveCTLs_/"
+            "compiled_results/naiveCTLs_GzmB_10292025_12conditions_20260930"),
+        presentation=_PPT_DIR + "NaiveCTL_GzmB_histone_summary_template.pptx",
+        output_path=_PPT_DIR + "NaiveCTL_GzmB_10292025_summary.pptx",
+        config_out=os.path.join(_CONFIG_DIR, "config_naiveCTL_GzmB_10292025_summary.yaml"),
+        header="Naive CTL GzmB 10/29/2025 -- 12-condition summary deck",
+        preserve_slides=[0, 1, 2, 3, 4],
+        grid_layout=[
+            ("single", "all_conditions", "all conditions", True),
+            ("multi", ["substrate_28h", "substrate_50h", "substrate_74h"],
+                "substrate comparison (28 / 50 / 74 h)"),
+            _TIMECOURSE_3UP,
+            _GLASS_1_16_2UP,
+            ("multi", ["coating_28h", "coating_50h", "coating_74h"],
+                "glass vs glass 1-16 (28 / 50 / 74 h)"),
+        ],
+    ),
+    "10152025": dict(
+        results_root=(
+            "L:/FF/Naive_CTLs/GzB_histone_marks/tifsnaiveCTLs_H3K9me3GrzmB/10152025_naiveCTLs_/"
+            "compiled_results/naiveCTLs_GzmB_10152025_15conditions_20260930"),
+        presentation=_PPT_DIR + "NaiveCTL_GzmB_histone_summary_template.pptx",
+        output_path=_PPT_DIR + "NaiveCTL_GzmB_10152025_summary.pptx",
+        config_out=os.path.join(_CONFIG_DIR, "config_naiveCTL_GzmB_10152025_summary.yaml"),
+        header="Naive CTL GzmB 10/15/2025 -- 15-condition summary deck",
+        preserve_slides=[0, 1, 2, 3, 4],
+        grid_layout=[
+            ("single", "all_conditions", "all conditions", True),
+            ("multi", ["substrate_24h", "substrate_48h", "substrate_72h"],
+                "substrate comparison (24 / 48 / 72 h)"),
+            _TIMECOURSE_3UP,
+            _GLASS_1_16_2UP,
+            ("multi", ["coating_6h", "coating_24h", "coating_48h", "coating_72h"],
+                "glass vs glass 1-16 (6 / 24 / 48 / 72 h)", QUAD_SLIDE),
+        ],
+    ),
+}
+
+# Set from DATASETS in main().
+RESULTS_ROOT = PRESENTATION = OUTPUT_PATH = CONFIG_OUT = HEADER = None
+PRESERVE_SLIDES = GRID_LAYOUT = None
 
 # ---------------------------------------------------------------------------
 # Curated scalar metrics (ordered) -> (raw filename stem, pretty title)
@@ -66,22 +136,6 @@ METRICS = [
     ("GzmB_z75_cell_bottom_distance_norm_cell_height", "Granzyme B Z₇₅ (norm. cell height)"),
     # Actin synapse footprint
     ("actin_bottom_mask_area", "Synapse area"),
-]
-
-# ---------------------------------------------------------------------------
-# Per-metric grid layout (ordered). Each panel is one of:
-#   ("single", folder, label, is_wide)          -> 1 image (wide or square)
-#   ("multi",  [folder, folder, ...], label)     -> several images on one slide
-# Related comparisons are grouped onto single multi-image slides to keep the
-# deck compact (substrate 24/48/72 together; the three timecourses together).
-# ---------------------------------------------------------------------------
-GRID_LAYOUT = [
-    ("single", "all_conditions", "all conditions", True),
-    ("multi", ["substrate_24h", "substrate_48h", "substrate_72h"],
-        "substrate comparison (24 / 48 / 72 h)"),
-    ("multi", ["gel_1p5kPa_timecourse", "gel_12kPa_timecourse", "glass_timecourse"],
-        "timecourses: 1.5 kPa, 12 kPa, glass"),
-    ("single", "activation_2h", "effects of activation: aCD3 vs PLL (2 h)", False),
 ]
 
 # ---------------------------------------------------------------------------
@@ -139,11 +193,11 @@ def emit_entry(lines, rel_path, title, wide):
     lines.append('')
 
 
-def emit_multi(lines, rel_paths, title):
-    """Append one multi-image slide entry block (uses the 3-up square layout)."""
+def emit_multi(lines, rel_paths, title, slide=MULTI_SLIDE):
+    """Append one multi-image slide entry block (default: the 3-up square layout)."""
     flow = ", ".join(yq(r) for r in rel_paths)
     lines.append('  - images: [{}]'.format(flow))
-    lines.append('    template_slide: {}'.format(MULTI_SLIDE))
+    lines.append('    template_slide: {}'.format(slide))
     lines.append('    title: {}'.format(yq(title)))
     lines.append('')
 
@@ -172,10 +226,11 @@ def emit_across_layout(lines, skipped, raw, pretty, allcond_dir=None, allcond_wi
             else:
                 skipped.append(rel)
         else:  # "multi"
-            _, folders, label = panel
+            folders, label = panel[1], panel[2]
+            slide = panel[3] if len(panel) > 3 else MULTI_SLIDE
             rels = ["grid_panels/{}/{}.png".format(f, raw) for f in folders]
             if all(exists(r) for r in rels):
-                emit_multi(lines, rels, "{} — {}".format(pretty, label))
+                emit_multi(lines, rels, "{} — {}".format(pretty, label), slide)
                 emitted += 1
             else:
                 skipped.extend(r for r in rels if not exists(r))
@@ -183,13 +238,22 @@ def emit_across_layout(lines, skipped, raw, pretty, allcond_dir=None, allcond_wi
 
 
 def main():
+    global RESULTS_ROOT, PRESENTATION, OUTPUT_PATH, CONFIG_OUT, HEADER
+    global PRESERVE_SLIDES, GRID_LAYOUT
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--dataset", default="06172025", choices=sorted(DATASETS))
+    ds = DATASETS[ap.parse_args().dataset]
+    RESULTS_ROOT, PRESENTATION = ds["results_root"], ds["presentation"]
+    OUTPUT_PATH, CONFIG_OUT, HEADER = ds["output_path"], ds["config_out"], ds["header"]
+    PRESERVE_SLIDES, GRID_LAYOUT = ds["preserve_slides"], ds["grid_layout"]
+
     lines = []
     skipped = []
     n = 0
 
     # ----- header -----
     lines += [
-        "# Naive CTL GzmB / beta-Tubulin -- 12-condition summary deck",
+        "# " + HEADER,
         "#",
         "# AUTO-GENERATED by examples_and_configs/gen_naiveCTL_GzmB_bTub_summary_config.py",
         "# Edit the generator (metric list / titles / comparison order), not this file.",
@@ -202,7 +266,7 @@ def main():
         "presentation: {}".format(yq(PRESENTATION)),
         "output_path: {}".format(yq(OUTPUT_PATH)),
         "template_slide: {}".format(SQUARE_SLIDE),
-        "preserve_slides: [0, 1, 2, 3]",
+        "preserve_slides: [{}]".format(", ".join(str(i) for i in PRESERVE_SLIDES)),
         "base_dir: {}".format(yq(RESULTS_ROOT)),
         "auto_position: true",
         "add_label: false",
