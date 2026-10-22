@@ -22,6 +22,7 @@ Usage:
 """
 
 import json
+import math
 import os
 import re
 import subprocess
@@ -741,7 +742,7 @@ def gel_slides():
         # numbers; b for the whole-field shift, t in the code, like an intercept)
         out.append(("text", "The zero point is where the two colors line up", [
             "Color shift at image position r:   d(r) = m · (r − a) + b",
-            "  Magnification difference m, about a fixed axis a",
+            "  Magnification difference m, about an axis a (the mean zero point)",
             "  Whole-field shift b: one per field, the same at every pixel",
             "Zero point: where d = 0   →   r₀ = a − b / m",
             "If b = 0, the zero point is the axis",
@@ -784,7 +785,7 @@ def gel_slides():
                 "Row: consecutive fields reached by X steps of one sign",
                 "{} rows, {} per region; {} have ≥ 3 fields".format(len(rows), len(rows) // nreg, len(rows3))
                 if len(rows) % nreg == 0 else "{} rows; {} have ≥ 3 fields".format(len(rows), len(rows3)),
-                "Question: does b depend on the row's step direction?",
+                "Question: does the x shift follow the step direction?",
             ], GEL_LABEL + " · stage path and order: ND2 log · {} fields in short rows at the turns".format(n_small)))
         # the stage path, zero point x | y
         if (a_run / "QC_Stage_Path.png").exists():
@@ -799,20 +800,23 @@ def gel_slides():
             sgn = lambda v: "{:+.1f}".format(v).replace("-", "−")
             out.append(("image", "Hardware lead: in every row, the median x shift flips sign with the step direction",
                         prep(a_run / "QC_Row_Shift.png"),
-                        GEL_LABEL + " · rows of ≥ 3 fields: medians {} to {} px (−X), {} to {} px (+X) · within a row, a field is "
-                        "typically {:.1f} px from its row median · number: fields per row".format(
+                        GEL_LABEL + " · rows ≥ 3 fields: medians {} to {} px (−X), {} to {} px (+X) · "
+                        "a field is typically {:.1f} px from its row median".format(
                             sgn(rmed[-1][0]), sgn(rmed[-1][-1]), sgn(rmed[1][-1]), sgn(rmed[1][0]), b_within)))
             if (a_run / "QC_Row_M.png").exists():
-                out.append(("image", "Magnification is the same in every row and direction",
+                # rows differ a little (0.21-0.23 %), but not by direction (FF 2026-10-16: emphasize m)
+                out.append(("image", "Magnification does not follow the step direction",
                             prep(a_run / "QC_Row_M.png"),
-                            GEL_LABEL + " · dot: one field's own fit · bar: row median · dashed: one fit to all fields"))
+                            GEL_LABEL + " · dot: one field's own fit · bar: row median · dashed: one fit to all fields "
+                            "· medians: {:.3f} % (−X rows), {:.3f} % (+X rows)".format(m_neg, m_pos)))
             # what the direction result says and what it cannot, one slide (FF 2026-10-16: merge)
             out.append(("text", "A hardware lead, not yet a mechanism", ([
                 "Magnification: the same in −X and +X rows ({:.3f} vs {:.3f} %)".format(m_neg, m_pos)] if mcol else []) + [
                 "Whole-field x shift: each row's median flips sign with the step",
                 "So something shifts the whole image without rescaling it",
-                "But n = {} rows, confounded with each row's Y position and time".format(len(rows3)),
-                "Fits \"drift between the two color exposures\". Test: the same fields, approached from both directions",
+                "But n = {} rows, confounded with Y position and time".format(len(rows3)),
+                "Fits \"drift between the two color exposures\"",
+                "Test: the same fields, approached from both directions",
             ], GEL_LABEL + " · magnification: median of each field's own fit · rows of ≥ 3 fields; {} fields in shorter rows at the turns".format(n_small)))
     # stage B: tile_all in full, all four runs in one comparison slide
     if "tile_all" in BR:
@@ -823,48 +827,61 @@ def gel_slides():
         out.append(("text", "Predicting the zero point: how", [
             "Split the fields at random in two halves, 100 times",
             "Fit one half: magnification and axis, shared by all its fields",
-            "Predict the other half: zero point = that axis",
-            "Error: each field's own zero point − the prediction",
-            "Residual per tile: no correction · other half's model · own fit",
+            "Predict the other half: zero point = that axis (b = 0)",
+            "Result: off by {:,.0f} px, as large as the field-to-field scatter".format(al["nullErr_med"]),
+            "So the zero point must be measured in every field",
             "All {} fields; a check on the {} at slices {:g}–{:g} follows".format(
                 B["nFieldsKept"], BR["tile_mid80"][1]["nFieldsKept"], *[round(v, 1) for v in BR["tile_mid80"][1]["focusKeep"]])
             if "tile_mid80" in BR else "All {} fields".format(B["nFieldsKept"]),
         ], "{} · bead_null_prediction.m stage B · seed 1".format(GEL_LABEL)))
         src = "{} · all {} fields · tiles · {} random 50/50 splits".format(GEL_LABEL, B["nFieldsKept"], B["nSplits"])
-        out.append(("image", "Predicted zero point: off by {:,.0f} px, like the scatter".format(al["nullErr_med"]),
-                    prep(b_run / "NullPred_Error.png"),
-                    src + " · prediction = the other half's mean zero point · last bar: all errors at or above that value"))
+        # the error histogram is gone (FF 2026-10-16): the result is one line on the "how" slide
         # lead-in for the residual bars (FF 2026-10-16: "needs a real lead in")
         out.append(("text", "Does the other half's model still correct the shifts?", [
-            "No zero point, but magnification and axis may carry over",
-            "Correct each held-out tile with the other half's magnification and axis",
-            "Compare with no correction and with the own fit",
-            "Own fit = best case: each held-out field with its own shift",
+            "Magnification and axis may still carry over",
+            "Correct held-out tiles with the other half's m and axis",
+            "Compare: no correction, and each field's own fit (best case)",
             "bottom, middle, top: splits within that region only",
         ], src + " · residual: what is left of the 640 → 488 shift"))
         out.append(("image", "Other half's m and axis: {:.1f} → {:.1f} px; the rest is b".format(
             al["none_med"], al["model_med"]), prep(b_run / "NullPred_Residual.png"),
             src + " · residual per tile · own fit (each field's own b): {:.1f} px".format(al["oracle_med"])))
-        lab = {"tile_all": "tiles, all", "tile_mid80": "tiles, middle 80 %",
-               "xc_all": "beads (xc), all", "xc_mid80": "beads (xc), middle 80 %"}
-        rows = []
+        # the four variants as a table (FF 2026-10-16: the text version was "very unclear")
+        fk = BR.get("tile_mid80", (None, {"focusKeep": [0, 0]}))[1]["focusKeep"]
+        lab = {"tile_all": ("all", "tiles"), "tile_mid80": ("in focus", "tiles"),
+               "xc_all": ("all", "single beads"), "xc_mid80": ("in focus", "single beads")}
+        trows = []
         for k in ("tile_all", "tile_mid80", "xc_all", "xc_mid80"):
             if k in BR:
                 a2 = BR[k][1]["sets"]["all"]
-                rows.append("{}: off {:,.0f} px · {:.1f} → {:.1f} px (own {:.1f})".format(
-                    lab[k], a2["nullErr_med"], a2["none_med"], a2["model_med"], a2["oracle_med"]))
-        mods = [BR[k][1]["sets"]["all"]["model_med"] for k in BR]
-        ttl = ("Fewer fields, single beads: same residual (±{:.2f} px)".format(max(mods) - min(mods))
-               if max(mods) - min(mods) < 0.1 else "Four variants: tiles or single beads, all or 80 % of fields")
-        out.append(("text", ttl, rows,
-                    "{} · medians over splits · off: zero point · px: none → other half (own fit) · middle 80 %: slices {:g}–{:g}".format(
-                        GEL_LABEL, *BR.get("tile_mid80", (None, {"focusKeep": [0, 0]}))[1]["focusKeep"])))
+                trows.append(["{} {}".format(lab[k][0], BR[k][1]["nFieldsKept"]), lab[k][1],
+                              "{:,.0f}".format(a2["nullErr_med"]), "{:.1f}".format(a2["none_med"]),
+                              "{:.1f}".format(a2["model_med"]), "{:.1f}".format(a2["oracle_med"])])
+        out.append(("table", "Same answer: in-focus fields only, or single beads",
+                    ["fields", "from", "zero point off", "no correction", "other half", "own fit"], trows,
+                    "{} · px, medians over 100 splits · last three: residual per tile or bead · in focus: slices {:g}–{:g}".format(
+                        GEL_LABEL, *[round(v, 1) for v in fk])))
+        # what one zero point for all fields costs (FF 2026-10-16: "if we predicted instead with
+        # the mean null point, how much would this differ?"); figure: bead_null_prediction stage A
+        if a_run is not None and (a_run / "QC_MeanNull_Error.png").exists():
+            bAbs = sorted(math.hypot(float(r["t_x"]), float(r["t_y"])) for r in F)
+            bMed = med(bAbs)
+            # FF 2026-10-16: motivation = correcting real data with one model; concise
+            out.append(("text", "Real data, one model for all fields: each is off by its b", [
+                "One model for all fields: the same magnification and axis",
+                "Typical miss: {:.2f} px ({:.0f} nm), the same across the field".format(bMed, 65 * bMed),
+            ], GEL_LABEL + " · one m and axis fitted to all {} fields · b: each field's whole-field shift".format(len(F))))
+            # the key, non-obvious point in the title (FF 2026-10-16); medians from FieldTable / the figure
+            out.append(("image", "One model for all fields: {:.1f} → {:.1f} px (own fit {:.1f})".format(
+                al["none_med"], bMed, al["oracle_med"]),
+                        prep(a_run / "QC_MeanNull_Error.png"),
+                        GEL_LABEL + " · left: every tile; one model for all fields leaves {:.2f} px (median |b|), own fit ~0.1 "
+                        "· right: one dot per field; +x after −X steps, −x after +X steps".format(bMed)))
         out.append(("text", "What the gel beads say", [
-            "One magnification, {:.2f} %, in every field and step direction".format(B["m_pct"]),
-            "Zero point not predictable from other fields: b sets it",
-            "Other fields' m and axis: {:.1f} → {:.1f} px per tile; the rest is b".format(al["none_med"], al["model_med"]),
-            "So b must be measured per field, as the cell correction does",
-            "Hardware lead: b follows the stage X step direction",
+            "One magnification, {:.2f} %, in every region and step direction".format(B["m_pct"]),
+            "Zero point: not predictable from other fields",
+            "Measure the zero point per field, as the cell correction does",
+            "Hardware lead: the x shift flips with the stage X step direction",
         ], GEL_LABEL + " · tiles, all fields"))
     return out
 
