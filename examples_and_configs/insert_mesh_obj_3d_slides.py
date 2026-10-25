@@ -356,7 +356,9 @@ def main() -> int:
             )
             print(f"Backed up existing output to: {', '.join(sorted(created))}")
         except Exception as exc:
-            print(f"[WARNING] Could not back up existing output: {exc}")
+            # Never overwrite a deck that is in no backup tier (batch_insert_images does the same).
+            print(f"[ERROR] Could not back up existing output ({exc}); not overwriting {output_path}")
+            return 1
 
     try:
         slide_specs = build_slide_specs(

@@ -75,6 +75,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--movie-root", type=Path, default=MOVIE_ROOT)
     parser.add_argument(
+        "--data-root", type=Path, default=None,
+        help="Folder with <cond>/Cell<n>.tif (the .nd2 caption source). Default: the "
+             "movie root's parent (= the default data root for the default movie root).",
+    )
+    parser.add_argument(
         "--hold-last", type=float, default=0.5,
         help="Seconds the final frame is held (PowerPoint drops the last frame). Default 0.5.",
     )
@@ -100,9 +105,9 @@ def collect_movies(movie_root: Path) -> List[Tuple[str, int, Path]]:
     return records
 
 
-def source_nd2_name(cond: str, cell: int) -> str:
+def source_nd2_name(cond: str, cell: int, data_root: Path = DATA_ROOT) -> str:
     """Name of the original .nd2, from the 'Series 0 Name' line of the cell TIFF's Info block."""
-    with tifffile.TiffFile(DATA_ROOT / cond / f"Cell{cell}.tif") as tif:
+    with tifffile.TiffFile(data_root / cond / f"Cell{cell}.tif") as tif:
         info = (tif.imagej_metadata or {}).get("Info", "")
     match = re.search(r"Series 0 Name = (.+?\.nd2)", info)
     return match.group(1) if match else ""
@@ -127,7 +132,8 @@ def _textbox(text: str, top_in: float, height_in: float, font_size_pt: float) ->
     )
 
 
-def build_slide(cond: str, cell: int, avi: Path, hold_seconds: float) -> SlideSpec:
+def build_slide(cond: str, cell: int, avi: Path, hold_seconds: float,
+                data_root: Path = DATA_ROOT) -> SlideSpec:
     poster = avi.with_suffix(".png")  # first frame, written by the Fiji macro
     if not poster.exists():
         raise FileNotFoundError(f"missing poster {poster}")
@@ -146,7 +152,7 @@ def build_slide(cond: str, cell: int, avi: Path, hold_seconds: float) -> SlideSp
     return SlideSpec(
         textboxes=(
             _textbox(title, TITLE_TOP_IN, TITLE_HEIGHT_IN, TITLE_FONT_SIZE_PT),
-            _textbox(source_nd2_name(cond, cell), SOURCE_TOP_IN, NOTE_HEIGHT_IN, NOTE_FONT_SIZE_PT),
+            _textbox(source_nd2_name(cond, cell, data_root), SOURCE_TOP_IN, NOTE_HEIGHT_IN, NOTE_FONT_SIZE_PT),
             _textbox(LEGEND, LEGEND_TOP_IN, NOTE_HEIGHT_IN, NOTE_FONT_SIZE_PT),
         ),
         movies=(
@@ -161,6 +167,7 @@ def build_slide(cond: str, cell: int, avi: Path, hold_seconds: float) -> SlideSp
 
 def main() -> int:
     args = parse_args()
+    data_root = args.data_root if args.data_root is not None else args.movie_root.parent
     records = collect_movies(args.movie_root)
     only = {token.strip() for token in args.only.split(",") if token.strip()}
     if only:
@@ -173,9 +180,17 @@ def main() -> int:
             print(f"{cond} Cell {cell}: {avi}")
         return 0
 
+    # Another --movie-root used to write the manuscript Fig7C deck (DEFAULT_OUTPUT) with .nd2
+    # captions read from the default DATA_ROOT, i.e. another experiment's movies under this
+    # experiment's captions (bug hunt 2026-10-24, second pass).
+    if args.movie_root.resolve() != MOVIE_ROOT.resolve() and args.output == DEFAULT_OUTPUT:
+        print("[ERROR] --movie-root is not the default: pass --output (the default is the "
+              f"manuscript deck {DEFAULT_OUTPUT})")
+        return 1
+
     slides = []
     for cond, cell, avi in records:
-        slides.append(build_slide(cond, cell, avi, args.hold_last))
+        slides.append(build_slide(cond, cell, avi, args.hold_last, data_root))
         print(f"  {cond} Cell {cell}: {avi.with_suffix('.mp4').name}")
 
     output_path = args.output

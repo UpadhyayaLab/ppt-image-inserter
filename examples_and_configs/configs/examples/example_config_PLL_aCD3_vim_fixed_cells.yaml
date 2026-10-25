@@ -13,7 +13,7 @@ template_slide: 1
 preserve_slides: [0, 1]  # Keeps title slide (1) and template slide (2)
 
 # Backup directory for automatic backups (optional)
-# Default: PPT/backups
+# Default: a backups/ folder next to the presentation
 # backup_dir: "custom/backup/location"
 
 # Optional: Specify output path to preserve template

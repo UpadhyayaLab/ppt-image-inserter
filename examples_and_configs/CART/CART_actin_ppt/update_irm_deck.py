@@ -82,6 +82,9 @@ def resolve(prs):
             if sub is None or len(pics) != 2:
                 errors.append(f'slide {i + 1}: montage family/picture count unresolved ({m["stem"]!r}, {len(pics)})')
                 continue
+            if m['date'] not in DATE_FOLDER:              # was a bare KeyError
+                errors.append(f'slide {i + 1}: date {m["date"]!r} not in DATE_FOLDER {sorted(DATE_FOLDER)}')
+                continue
             for ct, pic in zip(('CAT', 'FMC'), pics):
                 centre = (pic.left + pic.width / 2) / EMU_IN
                 if (ct == 'CAT') != (centre < bpd.SLIDE_W / 2):
@@ -252,7 +255,7 @@ def main():
         expected.append((i, pic.shape_id, str(new), old_sha, j))
     titles = add_profile_slides(prs)
     n_new = len(titles)
-    prs.save(str(OUT))
+    bpd.save_with_backup(prs, OUT)   # fixed output name: back up FF's edits first
     print(f'saved {OUT} ({len(prs.slides)} slides); new slides {INSERT_AFTER + 1}-{INSERT_AFTER + n_new}: {titles}')
     exp = [(i if i < INSERT_AFTER else i + n_new, sid, p, old) for i, sid, p, old, _ in expected]
     fails = verify(exp, n_new, src_sha)

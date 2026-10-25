@@ -379,6 +379,7 @@ def main(config_path):
                     store_metadata=True,
                     add_label=add_label,
                     base_dir=base_dir,
+                    label_side=label_side,   # was dropped for plain-list entries only
                 )
                 success_count += 1
                 print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}): {[os.path.basename(p) for p in image_paths]}")

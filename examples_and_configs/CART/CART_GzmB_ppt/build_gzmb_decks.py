@@ -181,6 +181,14 @@ def check_fresh(path, cond=None, tol_s=0.0):
     if not files:
         return
     newest_png = max(p.stat().st_mtime for p in files)
+    if results_mtime(cond) == 0.0:
+        # No CART_results.mat found: the comparison below could never fire, so the gate
+        # silently passed old figures (bug hunt 2026-10-24, second pass). Say so instead.
+        msg = (f'no CART_results.mat for {cond or "any condition"} under {ROOT}: '
+               'freshness of the figures drawn from it is UNCHECKED')
+        if msg not in STALE:
+            STALE.append(msg)
+        return
     if newest_png + tol_s < results_mtime(cond):
         STALE.append(f'{path}  (newest PNG {datetime.datetime.fromtimestamp(newest_png):%Y-%m-%d %H:%M}'
                      f' < results {datetime.datetime.fromtimestamp(results_mtime(cond)):%Y-%m-%d %H:%M})')
@@ -703,7 +711,7 @@ def main():
     if args.compile:
         check_fresh(compile_dir)
     if STALE:
-        print(f'\n[STALE] {len(STALE)} figure source(s) older than the CART_results.mat they are drawn from '
+        print(f'\n[STALE] {len(STALE)} figure source(s) older than, or not checkable against, the CART_results.mat they are drawn from '
               f'(rerun run/refresh_gzmb_figures_20261008.m, or finish_gzmb_20261008 for the compile):')
         for s in STALE:
             print(f'  {s}')

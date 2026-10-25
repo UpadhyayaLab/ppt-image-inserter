@@ -683,7 +683,9 @@ def main() -> int:
             backups_created = backup_presentation(str(output_path), backup_base=str(backup_dir))
             print(f"Backed up existing output to: {', '.join(sorted(backups_created))}")
         except Exception as exc:
-            print(f"[WARNING] Could not back up existing output: {exc}")
+            # Never overwrite a deck that is in no backup tier (batch_insert_images does the same).
+            print(f"[ERROR] Could not back up existing output ({exc}); not overwriting {output_path}")
+            return 1
 
     poster_dir = prepare_poster_dir(DEFAULT_POSTER_DIR)
 

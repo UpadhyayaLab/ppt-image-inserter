@@ -54,12 +54,22 @@ def make_run_scratch_dir(base_dir, max_age_s: float = 86400.0) -> str:
     cutoff = time.time() - max_age_s
     for name in os.listdir(base_dir):
         path = os.path.join(base_dir, name)
+        marker = os.path.join(path, _SCRATCH_MARKER)
         try:
-            if name.startswith("run_") and os.path.getmtime(path) < cutoff:
+            # Only folders this function made (marker inside): base_dir can be a user-given
+            # --poster-dir, where any 'run_*' folder was deleted (bug hunt 2026-10-24, 2nd pass).
+            if (name.startswith("run_") and os.path.isfile(marker)
+                    and os.path.getmtime(marker) < cutoff):
                 shutil.rmtree(path, ignore_errors=True)
         except OSError:
             pass
-    return tempfile.mkdtemp(prefix=f"run_{os.getpid()}_", dir=base_dir)
+    run_dir = tempfile.mkdtemp(prefix=f"run_{os.getpid()}_", dir=base_dir)
+    with open(os.path.join(run_dir, _SCRATCH_MARKER), "w", encoding="utf-8") as fh:
+        fh.write("ppt_image_inserter per-run scratch; safe to delete\n")
+    return run_dir
+
+
+_SCRATCH_MARKER = ".ppt_image_inserter_scratch"
 
 
 @dataclass(frozen=True)

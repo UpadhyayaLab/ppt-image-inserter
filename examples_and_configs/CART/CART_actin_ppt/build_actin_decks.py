@@ -262,21 +262,52 @@ def build_montages(export):
         bpd.export_pngs(Path(export) / 'montages', deck.titles)
 
 
+def panels_fresh(compile_dir, panels):
+    """True unless the extended panels are older than the compile they should be drawn from.
+    The compile and the panels are each 'newest' independently, so a recompile without a
+    panels rerun mixed old-cell-set zone / profile panels with new-cell-set grids, silently
+    (bug hunt 2026-10-24, second pass; build_gzmb_decks has the same kind of gate)."""
+    if panels is None:
+        return True                                # slides show [missing]; reported there
+    if not Path(compile_dir).is_dir():
+        print(f'[STALE] compile dir not found: {compile_dir}')
+        return False
+    # The compile's data file, not any top-level file: a re-saved cell_counts.png/.fig would
+    # otherwise flag current panels as stale. Fall back to every top-level file.
+    data = Path(compile_dir) / 'statistics_summary.mat'
+    comp_files = [data] if data.is_file() else [p for p in Path(compile_dir).iterdir() if p.is_file()]
+    pngs = list(Path(panels).rglob('*.png'))
+    if not comp_files or not pngs:
+        print(f'[STALE] cannot compare {Path(panels).name} with {Path(compile_dir).name}: '
+              'freshness UNCHECKED')
+        return False
+    t_comp = max(p.stat().st_mtime for p in comp_files)
+    t_pan = max(p.stat().st_mtime for p in pngs)
+    if t_pan < t_comp:
+        print(f'[STALE] {Path(panels).name} (newest PNG {datetime.datetime.fromtimestamp(t_pan):%Y-%m-%d %H:%M}) '
+              f'is older than {Path(compile_dir).name} ({datetime.datetime.fromtimestamp(t_comp):%Y-%m-%d %H:%M}): '
+              'rerun run_actin_extended_panels.m on this compile')
+        return False
+    return True
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--deck', default='both', choices=['summary', 'montages', 'both'])
     ap.add_argument('--compile', help='compile dir (default: newest compiled_20260717_20260723_2*)')
     ap.add_argument('--export', help='also export one PNG per slide (named by title) under this dir')
     args = ap.parse_args()
+    fresh = True
     if args.deck in ('summary', 'both'):
         compile_dir = Path(args.compile) if args.compile else newest('compiled_20260717_20260723_2*')
         panels = newest('actin_extended_panels_*')
         if compile_dir is None:
             print('[error] no compile found; run tests/run_actin_newfolder_compile.m'); return 1
+        fresh = panels_fresh(compile_dir, panels)
         build_summary(compile_dir, panels, args.export)
     if args.deck in ('montages', 'both'):
         build_montages(args.export)
-    return 0
+    return 0 if fresh else 1
 
 
 if __name__ == '__main__':

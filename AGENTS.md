@@ -181,8 +181,8 @@ OUTPUT_PATH = PPT_PATH.replace("_template.pptx", ".pptx")
 ### Backup System
 
 - **ALWAYS** create backups before destructive operations (slide deletion, image replacement)
-- Backups are stored in `.backups/` with timestamps
-- Multiple backup tiers: latest, 5min, 10min, 30min, hourly, daily
+- Backups are stored in a `backups/` folder beside the deck (default) or the given `backup_base`
+- Backup tiers: latest, previous (the latest copy it replaced), 5min, 10min, 30min, hourly
 - Users trust the backup system - don't skip it to "save time"
 
 ### Error Handling

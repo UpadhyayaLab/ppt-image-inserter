@@ -73,7 +73,7 @@ OUTPUT_PATH = Path(
 def _n_analyzed(root):
     """Cells the compile analyzed: the 'Total' row of <root>/cell_counts.csv (after the
     compile's filters). The hard-coded n≈109 it replaces was the pre-filter count
-    (bug hunt 2026-10-24: 109 loaded, 31 removed for actin touching the border, 77 kept)."""
+    (bug hunt 2026-10-24: 109 loaded, 77 kept after the compile's filters)."""
     try:
         with open(safe_path(root / "cell_counts.csv"), newline="", encoding="utf-8") as fh:
             for row in csv.reader(fh):

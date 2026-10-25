@@ -109,6 +109,10 @@ def fix(deck):
             pic.left, pic.top, pic.width, pic.height = round(cx - w / 2), round(cy - h / 2), w, h
             n_changed += 1
     out = deck.with_name(deck.stem + '_onescale.pptx')
+    if out.exists():                         # fixed output name: back up FF's edits first
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+        from ppt_image_inserter import backup_presentation
+        backup_presentation(str(out), backup_base=str(out.parent / 'backups'))
     prs.save(str(out))
     print(f'saved {out} ({n_changed} picture(s) rescaled)')
     return out

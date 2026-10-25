@@ -150,8 +150,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--movie-dir",
         type=Path,
-        default=DEFAULT_MOVIE_DIR,
-        help=f"Folder containing CellN_invag_cent_panels.mp4 files. Default: {DEFAULT_MOVIE_DIR}",
+        default=None,
+        help=(
+            "Folder containing CellN_invag_cent_panels.mp4 files. Default: "
+            f"{DEFAULT_MOVIE_DIR}. Another folder needs --experiment-label, and its deck "
+            f"defaults to <movie-dir>/{DEFAULT_OUTPUT.name}."
+        ),
     )
     parser.add_argument(
         "--output",
@@ -176,8 +180,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--experiment-label",
         type=str,
-        default=DEFAULT_EXPERIMENT_LABEL,
-        help=f"Text appended to slide titles. Default: {DEFAULT_EXPERIMENT_LABEL}",
+        default=None,
+        help=(
+            f"Text appended to slide titles. Default: {DEFAULT_EXPERIMENT_LABEL} (the default "
+            "--movie-dir only)."
+        ),
     )
     parser.add_argument(
         "--cells",
@@ -408,6 +415,21 @@ def main() -> int:
     """Run the movie-deck generation workflow."""
     args = parse_args()
 
+    # A non-default --movie-dir used to keep the 20220614 deck path AND the 20220614 title
+    # label, so another experiment's movies replaced that deck labeled 20220614 (bug hunt
+    # 2026-10-24, second pass). Its deck now goes beside its own movies, and it must be named.
+    custom_dir = (args.movie_dir is not None
+                  and args.movie_dir.resolve() != DEFAULT_MOVIE_DIR.resolve())
+    single_mode = not (args.combined_defaults or args.jurkat_combined_defaults)
+    if single_mode and custom_dir and args.experiment_label is None:
+        print("[ERROR] --movie-dir is not the default folder: pass --experiment-label "
+              "(the slide titles name the experiment)")
+        return 1
+    if args.movie_dir is None:
+        args.movie_dir = DEFAULT_MOVIE_DIR
+    if args.experiment_label is None:
+        args.experiment_label = DEFAULT_EXPERIMENT_LABEL
+
     try:
         requested_cells = parse_requested_cells(args.cells)
         if args.combined_defaults:
@@ -442,7 +464,7 @@ def main() -> int:
     elif args.jurkat_combined_defaults:
         output_path = DEFAULT_JURKAT_COMBINED_OUTPUT.resolve()
     else:
-        output_path = DEFAULT_OUTPUT.resolve()
+        output_path = (args.movie_dir / DEFAULT_OUTPUT.name).resolve()   # == DEFAULT_OUTPUT by default
     if args.output is None:   # a subset run never replaces the full deck
         output_path = subset_output_path(output_path, cells=args.cells)
 
@@ -453,7 +475,7 @@ def main() -> int:
     elif args.jurkat_combined_defaults:
         poster_dir_path = DEFAULT_JURKAT_COMBINED_POSTER_DIR
     else:
-        poster_dir_path = DEFAULT_POSTER_DIR
+        poster_dir_path = args.movie_dir / DEFAULT_POSTER_DIR.name   # == DEFAULT_POSTER_DIR by default
 
     ensure_parent_dir(output_path)
 
@@ -463,7 +485,9 @@ def main() -> int:
             backups_created = backup_presentation(str(output_path), backup_base=str(backup_dir))
             print(f"Backed up existing output to: {', '.join(sorted(backups_created))}")
         except Exception as exc:
-            print(f"[WARNING] Could not back up existing output: {exc}")
+            # Never overwrite a deck that is in no backup tier (batch_insert_images does the same).
+            print(f"[ERROR] Could not back up existing output ({exc}); not overwriting {output_path}")
+            return 1
 
     poster_dir = prepare_poster_dir(poster_dir_path.resolve())
 

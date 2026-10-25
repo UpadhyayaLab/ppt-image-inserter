@@ -521,7 +521,11 @@ def _make_movie_spec(
     # last timepoint; the poster (first frame) is unaffected by the padding.
     movie_to_insert = movie_path
     if hold_seconds and hold_seconds > 0:
-        held = poster_path.parent / f"{movie_path.stem}_held.mp4"
+        # Named after the poster, which is unique per slide slot. Named after the movie, two
+        # movies with one filename (the LLS regions' linear_tight.mp4 ...) shared one held
+        # copy, ffmpeg -y overwrote it, and earlier slides played the last movie (bug hunt
+        # 2026-10-24, second pass).
+        held = poster_path.with_name(f"{poster_path.stem}_held.mp4")
         movie_to_insert = pad_movie_hold_last(movie_path, held, hold_seconds)
 
     frame_width, frame_height = extract_first_frame(movie_to_insert, poster_path)
@@ -690,7 +694,9 @@ def main() -> int:
             backups_created = backup_presentation(str(output_path), backup_base=str(backup_dir))
             print(f"Backed up existing output to: {', '.join(sorted(backups_created))}")
         except Exception as exc:
-            print(f"[WARNING] Could not back up existing output: {exc}")
+            # Never overwrite a deck that is in no backup tier (batch_insert_images does the same).
+            print(f"[ERROR] Could not back up existing output ({exc}); not overwriting {output_path}")
+            return 1
 
     poster_dir = prepare_poster_dir(DEFAULT_POSTER_DIR)
 

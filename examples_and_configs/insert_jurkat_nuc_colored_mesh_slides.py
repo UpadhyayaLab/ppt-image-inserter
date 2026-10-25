@@ -61,6 +61,7 @@ from ppt_image_inserter import (
     Model3DSpec,
     TextboxSpec,
     backup_presentation,
+    subset_output_path,
     build_colored_glb,
     build_model3d_deck_via_com,
 )
@@ -357,6 +358,8 @@ def main() -> int:
         return 0
 
     output_path = resolve_output_path(args.output, args.experiment, args.cell, args.field)
+    if args.output is None:   # a --frames subset never replaces the cell's full deck
+        output_path = subset_output_path(output_path, frames=args.frames)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
@@ -403,7 +406,9 @@ def main() -> int:
                 created = backup_presentation(str(output_path), backup_base=str(backup_dir))
                 print(f"Backed up existing output to: {', '.join(sorted(created))}")
             except Exception as exc:
-                print(f"[WARNING] Could not back up existing output: {exc}")
+                # Never overwrite a deck that is in no backup tier (batch_insert_images does the same).
+                print(f"[ERROR] Could not back up existing output ({exc}); not overwriting {output_path}")
+                return 1
 
         print(f"Building deck with {len(slide_specs)} colored model(s) ...")
         inserted = build_model3d_deck_via_com(

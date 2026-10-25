@@ -104,7 +104,9 @@ def get_all_image_positions(
     Useful for templates with multiple placeholder images. Returns positions
     sorted by visual reading order: top-to-bottom, then left-to-right within
     each row (a picture shares the row of the row's topmost picture when their vertical
-    extents overlap by at least half the shorter height; see _reading_order).
+    extents overlap by at least half the shorter height); pictures stacked in one column of
+    a row go top to bottom, so a tall picture beside a grid is followed by that grid column
+    by column. See _reading_order.
 
     Args:
         ppt_path (str): Path to the PowerPoint file
@@ -167,6 +169,12 @@ def _reading_order(positions: List[Dict[str, float]]) -> List[Dict[str, float]]:
     rule, 0.5") split one visual row whose tops straddled a rounding boundary: in a 2x2
     template with bottom-row tops 4.215" and 4.299" the bottom-RIGHT image was filled
     before the bottom-LEFT one (bug hunt 2026-10-24).
+
+    Within a row, pictures stacked in one column (horizontal extents overlapping by at least
+    half the narrower width, the same test transposed) keep top-to-bottom order. Sorting the
+    row by `left` alone put a stack's LOWER picture first when it sat 0.01" further left,
+    e.g. beside a tall picture that merges the stack into one row (bug hunt 2026-10-24,
+    second pass).
     """
     rows: List[List[Dict[str, float]]] = []
     for p in sorted(positions, key=lambda q: (q['top'], q['left'])):
@@ -177,4 +185,19 @@ def _reading_order(positions: List[Dict[str, float]]) -> List[Dict[str, float]]:
                 rows[-1].append(p)
                 continue
         rows.append([p])
-    return [p for row in rows for p in sorted(row, key=lambda q: (q['left'], q['top']))]
+    return [p for row in rows for p in _columns_in_row(row)]
+
+
+def _columns_in_row(row: List[Dict[str, float]]) -> List[Dict[str, float]]:
+    """Order one row's pictures left to right by column, top to bottom within a column."""
+    cols: List[List[Dict[str, float]]] = []
+    for p in sorted(row, key=lambda q: (q['left'], q['top'])):
+        for col in cols:
+            a = col[0]
+            overlap = min(p['left'] + p['width'], a['left'] + a['width']) - max(p['left'], a['left'])
+            if overlap >= 0.5 * max(min(p['width'], a['width']), 1e-9):
+                col.append(p)
+                break
+        else:
+            cols.append([p])
+    return [p for col in cols for p in sorted(col, key=lambda q: (q['top'], q['left']))]

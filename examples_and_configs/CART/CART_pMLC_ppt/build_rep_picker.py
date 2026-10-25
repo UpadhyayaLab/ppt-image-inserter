@@ -14,11 +14,14 @@ from __future__ import annotations
 import argparse
 import base64
 import csv
-import glob
 import io
+import sys
 from pathlib import Path
 
 from PIL import Image
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_pmlc_profiles_deck import newest_run  # noqa: E402  (same folder pick as the decks)
 
 SETS = {
     'pZap70': dict(root=r'L:\FF\CAR T\CAR T data for actin area trouble shoot\results_compiled_tirf',
@@ -28,7 +31,7 @@ SETS = {
     # actin + tests/run_actin_rep_candidates.m); tiles = actin + zones, last metric = area.
     'actin': dict(root=r'\\10.225.56.176\ULab_data\Data_to_share\FF\New folder\results_compiled',
                   pattern='actin_reps_*', cond='Jul_17_{tag}_10min', sub='10 min · Jul 17, 2026',
-                  imgs=('actin', 'zones'), last=('Area', '{:.0f} µm²'),
+                  imgs=('actin', 'zones'), last=('Area', '{:.0f} μm²'),
                   note='Actin (per-cell contrast) + zones; ranked by closeness to the condition '
                        'medians of relative zone actin (zone / synapse MFI) and synapse area.'),
 }
@@ -78,7 +81,11 @@ def main():
     cfg = SETS[a.marker]
     note = cfg.get('note', f"Merge + {a.marker} at fixed {a.marker} contrast {cfg.get('clim')}; "
                            'ranked by closeness to the condition medians.')
-    rd = Path(sorted(glob.glob(str(Path(cfg['root']) / cfg['pattern'])))[-1])
+    # newest_run, not sorted()[-1]: the decks rank folders by date + v<N> tag, so a name-sort
+    # could show FF a different rep folder than the deck uses (bug hunt 2026-10-24, 2nd pass).
+    rd = newest_run(cfg['root'], cfg['pattern'])
+    if rd is None:
+        raise SystemExit(f"[ERROR] no {cfg['pattern']} folder under {cfg['root']}")
     current = {}
     with open(rd / 'picks.csv') as fh:
         for r in csv.DictReader(fh):

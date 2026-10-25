@@ -17,7 +17,7 @@ template_slide: 1
 preserve_slides: [0, 1]
 
 # Backup directory for automatic backups (optional)
-# Default: PPT/backups
+# Default: a backups/ folder next to the presentation
 # backup_dir: "custom/backup/location"
 
 # Auto-detect position from the first image in the template slide
@@ -50,7 +50,7 @@ images:
 | `presentation` | string | Yes | Path to PowerPoint file (relative or absolute) |
 | `template_slide` | integer | Yes | Index of slide to use as template (0-based) |
 | `preserve_slides` | list | No | Slide indices to preserve (default: [0, template_slide]) |
-| `backup_dir` | string | No | Backup directory path (default: PPT/backups) |
+| `backup_dir` | string | No | Backup directory path (default: backups/ next to the presentation) |
 | `auto_position` | boolean | No | Auto-detect image position from template (default: true) |
 | `position` | object | No | Manual position settings (left, top, width, height in inches) |
 | `base_dir` | string | Yes | Base directory for image paths |
@@ -115,14 +115,14 @@ Delete a slide from the presentation. **Note:** Backups are automatically create
 delete_slide(
     ppt_path: str,
     slide_index: int,
-    backup_base: str = 'PPT/backups'
+    backup_base: str = None        # None: backups/ beside the deck
 ) -> None
 ```
 
 **Parameters:**
 - `ppt_path`: Path to the PowerPoint file
 - `slide_index`: Index of slide to delete (0-based)
-- `backup_base`: Base directory for backups (default: 'PPT/backups')
+- `backup_base`: Base directory for backups (default: a `backups` folder beside the deck)
 
 **Note:** This function automatically creates timestamped backups before deleting the slide.
 
@@ -135,7 +135,7 @@ up, so a loop fills the `latest` tier with a partly deleted deck.
 delete_slides(
     ppt_path: str,
     slide_indices,                 # 0-based, original numbering
-    backup_base: str = 'PPT/backups',
+    backup_base: str = None,       # None: backups/ beside the deck
     backup: bool = True
 ) -> int                           # number of slides deleted
 ```
@@ -243,7 +243,7 @@ get_all_image_positions(
 - `ppt_path`: Path to the PowerPoint file
 - `slide_index`: Slide number (0-based index)
 
-**Returns:** List of position dicts (same format as `get_image_position()`), one per image, in reading order: rows top to bottom, left to right within a row (a picture shares the row of the row's topmost picture when their vertical extents overlap by at least half the shorter height). List a multi-image slide's images in that order. Returns an empty list if the slide has no images.
+**Returns:** List of position dicts (same format as `get_image_position()`), one per image, in reading order: rows top to bottom, left to right within a row (a picture shares the row of the row's topmost picture when their vertical extents overlap by at least half the shorter height). Pictures stacked in one column of a row go top to bottom, so a tall picture beside a grid is followed by the grid column by column. List a multi-image slide's images in that order. Returns an empty list if the slide has no images.
 
 **Example:**
 ```python
@@ -306,18 +306,19 @@ Create backups in multiple time-interval categories. Implements a smart backup s
 ```python
 backup_presentation(
     ppt_path: str,
-    backup_base: str = 'PPT/backups'
+    backup_base: str = None        # None: backups/ beside the deck
 ) -> dict
 ```
 
 **Parameters:**
 - `ppt_path`: Path to the PowerPoint file to backup
-- `backup_base`: Base directory for backups (default: 'PPT/backups')
+- `backup_base`: Base directory for backups (default: a `backups` folder beside the deck)
 
 **Returns:** Dictionary mapping category names to backup file paths for backups created
 
 **Backup Categories:**
 - `'latest'`: Always creates a backup (0 seconds threshold)
+- `'previous'`: The `'latest'` copy it replaced (two quick reruns still keep the pre-run deck)
 - `'5min'`: Creates backup if >5 minutes since last backup in this category
 - `'10min'`: Creates backup if >10 minutes since last backup
 - `'30min'`: Creates backup if >30 minutes since last backup

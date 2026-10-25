@@ -49,6 +49,16 @@ PJ = Path(r'\\10.225.56.176\ULab_data\User_data\Kiet\results_compiled\pmlc_joint
 OUT_DIR = Path(r'K:\FF\PPT\PPT_autogeneration\CART\grant')
 OUT = OUT_DIR / f'CART_grant_actin_pMLC_{datetime.date.today():%Y%m%d}.pptx'
 
+# Results folder the hand-written bullets were last checked against (None = not recorded);
+# bpd.flag_text_version warns when the newest panels come from a different run.
+# 2026-10-24: all five bullets hold. Actin: actin_pooled_panels_v4_20260929\zone_stats.csv +
+# compiled_20260717_20260723_20260917\statistics_summary.csv (FMC larger and distal-shifted in
+# 2/2 experiments). pMLC: grant_pmlc_panels_v4_20260929 / extended_panels_20260917 zone_stats.csv
+# (FMC more total, more peripheral, less distal pMLC in 3/3). The keys are the panel folders
+# the check compares against (PNG-only folders; the stats live beside them as listed).
+GRANT_TEXT_VERIFIED = {('grant', 'actin'): 'pooled_10min_violins_20260929',
+                       ('grant', 'pMLC'): 'pooled_paper_panels_v2_20260929'}
+
 X0 = 0.38                                   # wireframe left margin
 GREEN = RGBColor(0x11, 0x99, 0x11); MAGENTA = RGBColor(0xB0, 0x10, 0xB0)
 GREY = RGBColor(0x55, 0x55, 0x55)
@@ -73,6 +83,9 @@ def axes_rows(png):
     where > 40 % of pixels are dark (the frame's horizontal lines)."""
     a = np.asarray(Image.open(png).convert('L'))
     rows = np.where((a < 80).mean(axis=1) > 0.4)[0]
+    if rows.size < 2:                    # no frame found (re-styled panel): caller falls back
+        print(f'[warning] no axes frame found in {Path(png).name}; panels C and D not height-matched')
+        return None
     return rows.min() / a.shape[0], rows.max() / a.shape[0]
 
 
@@ -162,6 +175,7 @@ def actin_slide(deck):
     bullets(s, X0 + 9.86, 4.0, 2.95, 2.8,
             ['• FMC synapses larger',
              '• FMC actin shifted to the edge: more distal, less central'])
+    bpd.flag_text_version(s, ('grant', 'actin'), vio, GRANT_TEXT_VERIFIED)
     footer(s, 'Quantification pooled across 2 experiments (Jul 17 + Jul 23, 2026); '
               'representative cells from Jul 17.')
     return s
@@ -194,8 +208,10 @@ def pmlc_slide(deck):
     x_d = X0 + (12.58 - 2.62) / 3
     bpd.fit_in_box(s, c_png, X0, 4.45, 2.62, 2.62)
     letter(s, X0, 4.45, 'C')
-    if c_png and d_png and Path(c_png).is_file() and Path(d_png).is_file():
-        (ct, cb), (dt, db) = axes_rows(c_png), axes_rows(d_png)
+    c_rows = axes_rows(c_png) if c_png and Path(c_png).is_file() else None
+    d_rows = axes_rows(d_png) if d_png and Path(d_png).is_file() else None
+    if c_rows and d_rows and d_rows[1] > d_rows[0]:
+        (ct, cb), (dt, db) = c_rows, d_rows
         with Image.open(c_png) as im:
             cw, chh = im.size
         c_h = 2.62 * min(1, chh / cw)                  # C's displayed height in its 2.62 box
@@ -213,6 +229,7 @@ def pmlc_slide(deck):
             ['• FMC: more pMLC than CAT (in each of 3 experiments)',
              '• pMLC peaks in the peripheral zone, inside the actin edge',
              '• FMC: more peripheral, less distal pMLC'])
+    bpd.flag_text_version(s, ('grant', 'pMLC'), pool, GRANT_TEXT_VERIFIED)
     # footer in the blank area right of D (D's legend now reaches the usual footer line)
     footer(s, 'Quantification pooled across 3 experiments (Mar 12, May 10, Jun 07, 2026); '
               'pMLC MFI normalized to each experiment\u2019s CAT median. Representative cells from Jun 07.',

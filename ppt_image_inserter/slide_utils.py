@@ -7,6 +7,7 @@ from pptx.slide import Slide
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 import copy
 import os
+from typing import Optional
 from .backup import backup_presentation
 
 
@@ -124,14 +125,14 @@ def remove_all_text_from_slide(slide: Slide) -> int:
     return text_removed
 
 
-def delete_slide(ppt_path: str, slide_index: int, backup_base: str = 'PPT/backups') -> None:
+def delete_slide(ppt_path: str, slide_index: int, backup_base: Optional[str] = None) -> None:
     """
     Delete a slide from the presentation using XML manipulation.
 
     Args:
         ppt_path (str): Path to the PowerPoint file
         slide_index (int): Slide index to delete (0-based, so slide 1 = index 0)
-        backup_base (str): Base directory for backups (default: 'PPT/backups')
+        backup_base (str): Base directory for backups (default: a 'backups' folder beside the deck)
 
     Raises:
         FileNotFoundError: If PowerPoint file doesn't exist
@@ -144,7 +145,7 @@ def delete_slide(ppt_path: str, slide_index: int, backup_base: str = 'PPT/backup
     delete_slides(ppt_path, [slide_index], backup_base=backup_base)
 
 
-def delete_slides(ppt_path: str, slide_indices, backup_base: str = 'PPT/backups',
+def delete_slides(ppt_path: str, slide_indices, backup_base: Optional[str] = None,
                   backup: bool = True) -> int:
     """
     Delete several slides in ONE open/save, after ONE tiered backup of the deck as it was.
@@ -156,7 +157,7 @@ def delete_slides(ppt_path: str, slide_indices, backup_base: str = 'PPT/backups'
     Args:
         ppt_path (str): Path to the PowerPoint file
         slide_indices (iterable of int): Slide indices to delete (0-based, original numbering)
-        backup_base (str): Base directory for backups (default: 'PPT/backups')
+        backup_base (str): Base directory for backups (default: a 'backups' folder beside the deck)
         backup (bool): Back up the deck before deleting (default True). Pass False only
             when the caller has already backed up what this file replaced.
 

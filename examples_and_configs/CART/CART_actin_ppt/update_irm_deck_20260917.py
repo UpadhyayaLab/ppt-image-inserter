@@ -201,7 +201,7 @@ def main():
         uid.swap(prs.slides[i], pic, new)
         expected.append((i, pic.shape_id, str(new), old_sha))
     index_map, n_new, ranges = add_slides(prs)
-    prs.save(str(OUT))
+    bad.bpd.save_with_backup(prs, OUT)   # fixed output name: back up FF's edits first
     print(f'saved {OUT} ({len(prs.slides)} slides); ' + '; '.join(f'{k} {a}-{b}' for k, (a, b) in ranges.items()))
     uid.SRC, uid.OUT, uid.INSERT_AFTER = SRC, OUT, INSERT_AFTER   # reuse the original verifier
     exp = [(index_map[i], sid, p, old) for i, sid, p, old in expected if i in index_map]

@@ -40,6 +40,22 @@ SCORE_FIELDS = ['pMLC_synapse_central_MFI_norm', 'pMLC_synapse_peripheral_MFI_no
                 'pMLC_synapse_distal_MFI_norm', 'pMLC_synapse_MFI', 'actin_bottom_mask_area']
 
 
+def checked_pick(tag, override, rows):
+    """The override for `tag` if FF set one, else the rank-1 cell -- and the override MUST be
+    in `rows`, the QC-passing ranked set (cell_found, not skipped, finite scores). Unchecked,
+    a cell dropped or renumbered by a reprocess still rendered as the 'representative' cell
+    (bug hunt 2026-10-24, second pass)."""
+    ranked = [r[0] for r in rows]
+    if tag not in override:
+        return ranked[0]
+    cell = override[tag]
+    if cell not in ranked:
+        raise SystemExit(f'[ERROR] override {tag}={cell!r} is not in the QC-passing ranked set '
+                         f'({len(ranked)} cells); re-pick it from the candidate gallery')
+    print(f'  override {tag}={cell} (rank {ranked.index(cell) + 1} of {len(ranked)})')
+    return cell
+
+
 def cond_dir(date, cond):
     return NAS / ROOTS[date][0] / cond / 'converted' / 'cropped' / 'split_channels'
 
@@ -84,7 +100,7 @@ def main_pzap70():
             for r in rows[:40]:
                 w.writerow([r[0], f'{r[1]:.3f}'] + [f'{x:.4g}' for x in r[2:]])
         ranked = [r[0] for r in rows]
-        first = override.get(tag, ranked[0])
+        first = checked_pick(tag, override, rows)
         mk = lambda cond, cell: {'tag': tag, 'cond': cond, 'cond_dir': str(cdir), 'cell': cell,  # noqa: E731
                                  'config': 'd20250217_actin_pzap70_pzap70_config'}
         firsts.append(mk(f'D3_{tag}_15min', first))
@@ -125,7 +141,7 @@ def main_actin():
             w.writerow(['MEDIAN', ''] + [f'{x:.4g}' for x in med])
             for r in rows[:40]:
                 w.writerow([r[0], f'{r[1]:.3f}'] + [f'{x:.4g}' for x in r[2:]])
-        cell = ACTIN_OVERRIDE.get(tag, rows[0][0])
+        cell = checked_pick(tag, ACTIN_OVERRIDE, rows)
         picks.append({'tag': tag, 'cond': f'Jul_17_{tag}_10min', 'cond_dir': str(cdir), 'cell': cell,
                       'config': 'd20260717_actin_irm_newfolder_config'})
         print(f'[pick] {tag}: {cell}  (n ranked {len(rows)})')
@@ -174,7 +190,7 @@ def main():
             w.writerow(['MEDIAN', ''] + [f'{x:.4g}' for x in med])
             for r in rows[:40]:
                 w.writerow([r[0], f'{r[1]:.3f}'] + [f'{x:.4g}' for x in r[2:]])
-        cell = OVERRIDE.get(tag, rows[0][0])
+        cell = checked_pick(tag, OVERRIDE, rows)
         picks.append({'tag': tag, 'cond': f'{DATE}_{cond}', 'cond_dir': str(cond_dir(DATE, cond)),
                       'cell': cell, 'config': ROOTS[DATE][1]})
         print(f'[pick] {tag}: {cell}')

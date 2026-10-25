@@ -41,7 +41,21 @@ from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))   # repo root: ppt_image_inserter
+from ppt_image_inserter import backup_presentation  # noqa: E402
+
 NAS = Path(r'\\10.225.56.176\ULab_data\User_data\Kiet\results_compiled\pmlc_joint')
+
+
+def save_with_backup(prs, out):
+    """Back up an existing deck at `out` (tiered, <deck folder>/backups), then save `prs`
+    over it. Output names are dated, so a same-day rebuild replaced FF's hand edits with no
+    copy anywhere (bug hunt 2026-10-24, second pass). Shared by the CART deck builders."""
+    out = Path(out)
+    if out.exists():
+        made = backup_presentation(str(out), backup_base=str(out.parent / 'backups'))
+        print(f'backed up {out.name} -> {", ".join(sorted(made))}')
+    prs.save(str(out))
 
 
 def newest_run(root, pattern):
@@ -146,6 +160,54 @@ def has(tag, tp):
     return tp in AVAIL.get(tag, TPS)
 
 
+# Results folder each block of hand-written takeaway text was last checked against (None =
+# not recorded). The panels beside the text come from the NEWEST run, so after a reprocess
+# the text used to describe old numbers under new plots with nothing saying so (bug hunt
+# 2026-10-24, second pass). Update an entry after re-checking its text against that folder.
+TEXT_VERIFIED = {
+    ('pMLC', 'puncta'): 'extended_panels_20260917',   # the per-zone puncta stats first appear here
+    ('pZap70', 'puncta'): 'pzap70_extended_panels_20260915',
+    # 2026-10-24: both pMLC bullets hold in zone_stats.csv here (peripheral norm highest zone
+    # in every replicate x condition; FMC more peripheral / less distal / more total pMLC at
+    # 10 min in 3/3 replicates).
+    ('pMLC', 'reps'): 'extended_panels_20260917',
+    # pZap70: bullet 1 holds (6/6) in pzap70_extended_panels_20260916, but bullet 2 ("Actin
+    # zones: no consistent CAT vs FMC difference") does not: central actin norm is lower in
+    # FMC in 5/6 panels and peripheral higher in 6/6. Left unrecorded pending FF.
+    ('pZap70', 'reps'): None,
+}
+STALE_ORANGE = RGBColor(0xE0, 0x70, 0x00)
+
+
+def flag_text_version(slide, key, used_dir, verified_map=None, stats=None):
+    """Warn (console, and on the slide when known-stale) if the takeaway text `key` was
+    checked against a different results folder than the panels now come from. `stats`: the
+    file the text summarizes; byte-identical in both folders = still current."""
+    verified = (TEXT_VERIFIED if verified_map is None else verified_map).get(key)
+    used = Path(used_dir).name if used_dir else None
+    label = ' '.join(key)
+    if verified is None:
+        print(f'[UNVERIFIED TEXT] {label} takeaways: folder they were checked against not '
+              f'recorded (TEXT_VERIFIED); panels from {used}')
+        return
+    if used == verified:
+        return
+    if stats and used_dir:
+        a, b = Path(used_dir) / stats, Path(used_dir).parent / verified / stats
+        if a.is_file() and b.is_file() and a.read_bytes() == b.read_bytes():
+            print(f'[text ok] {label}: {stats} in {used} is identical to {verified}')
+            return
+    msg = (f'{label} takeaways were checked against {verified}; panels now from {used}. '
+           're-check the text, then update TEXT_VERIFIED')
+    print(f'[STALE TEXT] {msg}')
+    # Small marker in the top-right corner (clear of the bullets and footers at the bottom);
+    # the full message goes in the slide notes.
+    add_text(slide, SLIDE_W - 3.3, 0.0, 3.25, 0.25, 'TEXT NOT RE-CHECKED (see notes)', 9,
+             bold=True, color=STALE_ORANGE, align=PP_ALIGN.RIGHT)
+    notes = slide.notes_slide.notes_text_frame
+    notes.text = (notes.text + '\n' if notes.text else '') + 'STALE TEXT: ' + msg
+
+
 # ---- layout helpers ---------------------------------------------------------------
 def add_text(slide, left, top, width, height, text, size, *, bold=False, color=BLACK,
              align=PP_ALIGN.LEFT):
@@ -227,7 +289,7 @@ class Deck:
             for sh in list(sl.shapes):
                 if sh.has_text_frame:
                     el = sh._element; tree.remove(el); tree.append(el)
-        self.prs.save(str(OUT))
+        save_with_backup(self.prs, OUT)
 
 
 # ---- stats ------------------------------------------------------------------------
@@ -325,6 +387,7 @@ def reps_slide(deck):
             fit_in_box(s, png, left0 + j * (img + gap), top, img, img)
     add_text(s, 0.9, top0 + 2 * (img + gap) + 0.02, SLIDE_W - 1.8, 1.25, REP_BULLETS,
              17 if len(REP_BULLETS) > 2 else 18, bold=True)
+    flag_text_version(s, (MARKER, 'reps'), EXT)
     return s
 
 
@@ -401,16 +464,29 @@ def export_pngs(export_dir, titles):
             print(f'[skip export] {OUT.name} is open in PowerPoint; close it there to export slide PNGs')
             return
     export_dir = Path(export_dir); export_dir.mkdir(parents=True, exist_ok=True)
-    for f in export_dir.glob('*.png'):
-        f.unlink()
+    # Remove only the previous export's slide PNGs (listed in the manifest; before the first
+    # manifest, this function's own 'NN title.png' names). Every *.png used to go, including
+    # files FF kept in a folder passed to --export (bug hunt 2026-10-24, second pass).
+    manifest = export_dir / '.slide_export_manifest.txt'
+    if manifest.is_file():
+        stale = [export_dir / n for n in manifest.read_text(encoding='utf-8').splitlines() if n.strip()]
+    else:
+        stale = [f for f in export_dir.glob('*.png') if re.match(r'^\d{2} .+\.png$', f.name)]
+    for f in stale:
+        if f.is_file():
+            f.unlink()
+    written = []
     pres = app.Presentations.Open(str(OUT), WithWindow=False)
     try:
         for i, t in enumerate(titles, start=1):
             name = re.sub(r'[^A-Za-z0-9+\-, ]+', ' ', t.replace(MINUS, '-').replace(DASH, '-'))
             name = re.sub(r'\s+', ' ', name).strip()
-            pres.Slides(i).Export(os.path.join(str(export_dir), f'{i:02d} {name}.png'), 'PNG', 1920, 1080)
+            png_name = f'{i:02d} {name}.png'
+            pres.Slides(i).Export(os.path.join(str(export_dir), png_name), 'PNG', 1920, 1080)
+            written.append(png_name)
     finally:
         pres.Close()                              # our presentation only; the app stays running
+        manifest.write_text('\n'.join(written) + '\n', encoding='utf-8')
     print(f'exported {len(titles)} slide PNGs -> {export_dir}')
 
 
@@ -484,23 +560,35 @@ def puncta_reps_slide(deck, bullets):
         r = picks.get(tag)
         f = (Path(r['cond_dir']) / 'prog_fixed_cells' / MARKER / 'synapse' / 'peak_to_mean_bandpass'
              / f"cell_{r['cell']}_peak_to_mean_bandpass.png") if r else None
-        files.append(f)
+        files.append(f if f is not None and f.is_file() else None)
     sizes = []
     for f in files:
+        if f is None:
+            sizes.append(None)
+            continue
         with Image.open(f) as im:
             sizes.append(im.size)
     box_w, box_h, gap, top = 5.6, 4.9, 0.4, 1.2   # room under the images for 3 bullet lines
-    scale = min(box_w / max(w for w, _ in sizes), box_h / max(h for _, h in sizes))   # in/px, shared
+    present = [sz for sz in sizes if sz]
+    scale = (min(box_w / max(w for w, _ in present), box_h / max(h for _, h in present))
+             if present else 0.0)                 # in/px, shared by the present images
     left0 = (SLIDE_W - (2 * box_w + gap)) / 2
-    for j, (tag, f, (w, h)) in enumerate(zip(('CAT', 'FMC'), files, sizes)):
+    for j, (tag, f, sz) in enumerate(zip(('CAT', 'FMC'), files, sizes)):
         bl = left0 + j * (box_w + gap)
         add_text(s, bl, 0.68, box_w, 0.5, tag, 28, bold=True,
                  color=CAT_BLUE if tag == 'CAT' else FMC_RED, align=PP_ALIGN.CENTER)
+        if sz is None:                            # no pick / no render: visible placeholder
+            print(f'[missing] {tag} puncta rep (picks.csv row or render)')
+            add_text(s, bl, top + box_h / 2 - 0.2, box_w, 0.4, f'[missing] {tag} puncta rep',
+                     12, color=GREY, align=PP_ALIGN.CENTER)
+            continue
+        w, h = sz
         s.shapes.add_picture(str(f), Inches(bl + (box_w - w * scale) / 2), Inches(top + (box_h - h * scale) / 2),
                              width=Inches(w * scale))
     if bullets:
         add_text(s, 0.9, top + box_h + 0.05, SLIDE_W - 1.8, 1.3, bullets,
                  16 if len(bullets) > 2 else 18, bold=True)
+        flag_text_version(s, (MARKER, 'puncta'), EXT, stats='puncta_stats.csv')
     return s
 
 
@@ -518,7 +606,7 @@ def build_puncta(args):
     title_slide(deck, f'{MARKER} Puncta at the CAR-T Synapse: CAT vs FMC', stats_csv='puncta_stats.csv')
     puncta_reps_slide(deck, PUNCTA_BULLETS[MARKER])
     # FF 2026-09-16: one slide per metric (1 x datasets) -- bigger plots, clear titles.
-    titles = {'puncta_per_um2': f'{MARKER} Puncta Density (Puncta per µm²)',
+    titles = {'puncta_per_um2': f'{MARKER} Puncta Density (Puncta per μm²)',
               'peak_median': f'{MARKER} Puncta Peak / Synapse Mean',
               'puncta_to_nonpuncta': f'{MARKER} Puncta / Non-Puncta MFI'}
     for f, _ in PUNCTA:
@@ -546,9 +634,10 @@ def build_puncta(args):
     return 0
 
 
-# FF: super basic summary; from extended_panels_20260916\puncta_stats.csv (per replicate).
+# FF: super basic summary; from extended_panels_20260917\puncta_stats.csv (per replicate; the
+# per-zone puncta metrics behind bullets 2-3 are not in the 20260916 file).
 PUNCTA_BULLETS = {
-    'pMLC': ['• Whole-synapse puncta density (~1.2 per µm²): nearly the same in CAT and FMC',
+    'pMLC': ['• Whole-synapse puncta density (~1.2 per μm²): nearly the same in CAT and FMC',
              '• By zone: FMC has more peripheral and fewer distal puncta in all 9 comparisons',
              '• Puncta peak / mean: distal puncta dimmer in FMC in all 9 comparisons; central and peripheral mixed'],
     # pZap70 (pzap70_extended_panels_20260915\puncta_stats.csv): no metric agrees in all experiments.

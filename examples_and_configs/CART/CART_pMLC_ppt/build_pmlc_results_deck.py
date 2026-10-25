@@ -32,6 +32,9 @@ from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_pmlc_profiles_deck import save_with_backup  # noqa: E402
+
 NAS = Path(r'\\10.225.56.176\ULab_data\User_data\Kiet\results_compiled\pmlc_joint')
 GRIDS = NAS / 'compiled_pmlc_v2_20260831' / 'grid_panels'
 OVERLAYS = NAS / 'combined_overlays_20260913'
@@ -40,7 +43,7 @@ OUT = OUT_DIR / f'CART_pMLC_results_all_replicates_{datetime.date.today():%Y%m%d
 
 SLIDE_W, SLIDE_H = 13.333, 7.5           # 16:9 review deck
 BLACK = RGBColor(0, 0, 0); GREY = RGBColor(0x55, 0x55, 0x55)
-MU = '\u00b5'
+MU = '\u03bc'   # Greek mu (repo rule), not the micro sign U+00B5
 
 # Metric -> display title. Region-norm metrics carry the batch-safe claim; the
 # profile/gradient show the peripheral pMLC ring; MFI + inner-outer are the
@@ -192,7 +195,7 @@ def main():
 
     for sl in prs.slides:
         text_to_front(sl)
-    prs.save(str(OUT))
+    save_with_backup(prs, OUT)   # dated name: a same-day rerun used to drop hand edits
     print(f'\nsaved {OUT} ({len(prs.slides)} slides)')
     return 0
 
