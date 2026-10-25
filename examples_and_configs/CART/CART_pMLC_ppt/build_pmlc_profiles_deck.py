@@ -44,9 +44,34 @@ from pptx.enum.text import PP_ALIGN
 NAS = Path(r'\\10.225.56.176\ULab_data\User_data\Kiet\results_compiled\pmlc_joint')
 
 
+def newest_run(root, pattern):
+    """Newest run folder under root matching pattern: ranked by the last YYYYMMDD in the
+    name, then its 'v<N>_' tag (none = 0), then folder mtime. A plain sorted()[-1] kept
+    'pooled_paper_panels_v2_20260929' above a later default-named '..._20261101' ('v' > '2';
+    bug hunt 2026-10-24). Shared by the CART deck builders."""
+    def key(p):
+        name = Path(p).name
+        dates = re.findall(r'(?<!\d)(20\d{6})(?!\d)', name)
+        ver = re.search(r'(?:^|_)v(\d+)_', name)
+        return (dates[-1] if dates else '', int(ver.group(1)) if ver else 0, Path(p).stat().st_mtime)
+    hits = [p for p in glob.glob(str(Path(root) / pattern)) if Path(p).is_dir()]
+    return Path(max(hits, key=key)) if hits else None
+
+
+def one_match(folder, pattern):
+    """The ONE file in folder matching pattern, else None (-> the slide shows its missing /
+    pending placeholder) with a printed warning. Two matches mean a stale render beside a
+    new pick, and builders taking [0] vs [-1] then showed different cells (bug hunt 2026-10-24)."""
+    hits = sorted(Path(folder).glob(pattern)) if folder else []
+    if len(hits) > 1:
+        print(f'[ambiguous] {len(hits)} files match {pattern} in {folder}: '
+              f'{[h.name for h in hits]} -- left out; delete the stale ones')
+        return None
+    return hits[0] if hits else None
+
+
 def newest(pattern):
-    hits = sorted(glob.glob(str(NAS / pattern)))
-    return Path(hits[-1]) if hits else None
+    return newest_run(NAS, pattern)
 
 
 EXT = newest('extended_panels_*')
@@ -96,10 +121,8 @@ ZONE_PUNCTA = [('puncta_per_um2', 'Puncta Density'),
 def configure_pzap70():
     global EXT, PROF, VIO, OUT, TPS, TP_LBL, DATASETS, REPLICATES, ZONE_FIELD, MARKER, AVAIL
     global REPS, REP_TITLE, REP_GLOB, REP_BULLETS
-    hits = sorted(glob.glob(str(PZAP70_ROOT / 'pzap70_extended_panels_*')))
-    EXT = Path(hits[-1]) if hits else None
-    rhits = sorted(glob.glob(str(PZAP70_ROOT / 'pzap70_reps_*')))
-    REPS = Path(rhits[-1]) if rhits else None
+    EXT = newest_run(PZAP70_ROOT, 'pzap70_extended_panels_*')
+    REPS = newest_run(PZAP70_ROOT, 'pzap70_reps_*')
     REP_TITLE = f'Representative Synapses, 15 min {DASH} Feb 2025 D3'
     REP_GLOB = 'rep_D3_{c}_15min_*_{suffix}.png'           # rank-1 picks (alternates are rep_alt*)
     # FF 2026-09-15: super basic summary; numbers are in the effect-table slides.
@@ -281,7 +304,8 @@ def _effect_table(s, zrows, metrics):
 
 def reps_slide(deck):
     """Representative cells (near-median picks, same field of view; actin per-cell
-    montage contrast, pMLC at the pipeline's fixed CLim): rows CAT / FMC, columns
+    montage contrast, pMLC at CLim [0 500] -- tests/run_pmlc_rep_render.m overrides the
+    config's [0 1000]): rows CAT / FMC, columns
     Actin / pMLC / Merge + zones, one scale bar (last image), two takeaways below."""
     s = deck.slide(REP_TITLE)
     img, gap, lab_w = 2.45, 0.08, 1.3
@@ -297,28 +321,65 @@ def reps_slide(deck):
         add_text(s, left0 - lab_w, top + img / 2 - 0.35, lab_w - 0.1, 0.7, c, 32, bold=True,
                  color=CAT_BLUE if c == 'CAT' else FMC_RED, align=PP_ALIGN.RIGHT)
         for j, (suffix, _, _) in enumerate(cols):
-            png = next(iter(sorted(REPS.glob(REP_GLOB.format(c=c, suffix=suffix)))), None) if REPS else None
+            png = one_match(REPS, REP_GLOB.format(c=c, suffix=suffix))
             fit_in_box(s, png, left0 + j * (img + gap), top, img, img)
     add_text(s, 0.9, top0 + 2 * (img + gap) + 0.02, SLIDE_W - 1.8, 1.25, REP_BULLETS,
              17 if len(REP_BULLETS) > 2 else 18, bold=True)
     return s
 
 
-def title_slide(deck, title=None):
+# Stats timepoint strings a timepoint slot holds: the 2023 pZap70 sets imaged one 6 min
+# point, stored in the 5min slot.
+SLOT_TIMEPOINTS = {'5min': ('5 min', '6 min')}
+
+
+def tested_n(stats_rows, dataset, cond, slot):
+    """n behind the statistics for one dataset / condition / timepoint slot: 'n' or
+    'lo–hi' over the metrics in stats_rows (non-finite cells are dropped per metric), or
+    None when the stats have no row for it."""
+    tps = SLOT_TIMEPOINTS.get(slot, (slot.replace('min', ' min'),))
+    ns = {int(r[f'n_{cond}']) for r in stats_rows
+          if r['Dataset'] == dataset and r['Timepoint'] in tps and r.get(f'n_{cond}', '').isdigit()}
+    if not ns:
+        return None
+    return f'{min(ns)}' if len(ns) == 1 else f'{min(ns)}–{max(ns)}'
+
+
+def title_slide(deck, title=None, stats_csv='zone_stats.csv'):
+    """Cells per condition as used in the statistics (stats_csv n_CAT / n_FMC). The
+    n_per_condition.csv count it showed before is taken BEFORE non-finite cells are dropped
+    (plot_pmlc_extended_panels.m), up to ~10% above the n tested (bug hunt 2026-10-24).
+    Datasets with no stats rows (the Pooled row of the never-pooled puncta deck) are left out."""
     s = deck.slide(title or f'{MARKER} and Actin Distribution at the CAR-T Synapse: CAT vs FMC')
     nrows = read_csv(EXT / 'n_per_condition.csv') and list(csv.reader(open(
         EXT / 'n_per_condition.csv', encoding='utf-8-sig', newline='')))
-    if nrows:
-        tbl = s.shapes.add_table(len(nrows), len(nrows[0]), Inches(1.5), Inches(2.2),
-                                 Inches(SLIDE_W - 3.0), Inches(0.42 * len(nrows))).table
-        for i, row in enumerate(nrows):
-            for j, v in enumerate(row):
-                tbl.cell(i, j).text = ('Cells per condition' if (i == 0 and j == 0) else
-                                       v.replace('_', ' ').replace('min', ' min') if i == 0 else
-                                       ('–' if v == '0' else v))   # not imaged, not "0 cells"
-                for para in tbl.cell(i, j).text_frame.paragraphs:
-                    for run in para.runs:
-                        run.font.size = Pt(14); run.font.bold = (i == 0 or j == 0)
+    stats = read_csv(EXT / stats_csv)
+    if not nrows or not stats:
+        print(f'[warn] title slide: no n_per_condition.csv or {stats_csv} in {EXT}; cell-count table left out')
+        return
+    head, body = nrows[0], []
+    slot_lbl = dict(zip(TPS, TP_LBL))
+    for row in nrows[1:]:
+        cells = []
+        for col, v in zip(head[1:], row[1:]):
+            cond, slot = col.split('_', 1)
+            n = tested_n(stats, row[0], cond, slot)
+            cells.append(n if n is not None else '–')   # not imaged / not tested, not "0 cells"
+        if any(c != '–' for c in cells):
+            body.append([row[0]] + cells)
+        else:
+            print(f'[info] title slide: no {stats_csv} rows for {row[0]}; row left out')
+    header = ['Cells per condition (in the statistics)'] + [
+        f"{col.split('_', 1)[0]} {slot_lbl.get(col.split('_', 1)[1], col.split('_', 1)[1])}" for col in head[1:]]
+    rows = [header] + body
+    tbl = s.shapes.add_table(len(rows), len(header), Inches(1.5), Inches(2.2),
+                             Inches(SLIDE_W - 3.0), Inches(0.42 * len(rows))).table
+    for i, row in enumerate(rows):
+        for j, v in enumerate(row):
+            tbl.cell(i, j).text = v
+            for para in tbl.cell(i, j).text_frame.paragraphs:
+                for run in para.runs:
+                    run.font.size = Pt(14); run.font.bold = (i == 0 or j == 0)
 
 
 def export_pngs(export_dir, titles):
@@ -454,7 +515,7 @@ def build_puncta(args):
     prows = read_csv(EXT / 'puncta_stats.csv')
     reps = [d for d in DATASETS if d[0] != 'Pooled']  # no pooled column
     deck = Deck()
-    title_slide(deck, f'{MARKER} Puncta at the CAR-T Synapse: CAT vs FMC')
+    title_slide(deck, f'{MARKER} Puncta at the CAR-T Synapse: CAT vs FMC', stats_csv='puncta_stats.csv')
     puncta_reps_slide(deck, PUNCTA_BULLETS[MARKER])
     # FF 2026-09-16: one slide per metric (1 x datasets) -- bigger plots, clear titles.
     titles = {'puncta_per_um2': f'{MARKER} Puncta Density (Puncta per µm²)',

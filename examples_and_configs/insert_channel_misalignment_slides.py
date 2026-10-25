@@ -1002,15 +1002,18 @@ def build_plan():
              ["median distance from zero point", "{:,.0f} px".format(PANELS["2024_dist"]["median"]),
               "{:,.0f} px".format(PANELS["2026_dist"]["median"])],
          ], "640 vs 488 nm channel · 2024 analyzed at each field's best focus, 2026 at a fixed mid-slice"))
+    # Rows keyed by each year's real FOV number (the field slides use the same numbers). By
+    # list position, 2026 FOV 5 / 6 sat in rows "field 3 / 4" (bug hunt 2026-10-24).
     rows = []
-    for i in range(max(len(b24["fovs"]), len(b26["fovs"]))):
-        r24 = "{:.2f} px".format(1000 * b24["per"][b24["fovs"][i]]["m"]) if i < len(b24["fovs"]) else "–"
-        r26 = "{:.2f} px".format(1000 * b26["per"][b26["fovs"][i]]["m"]) if i < len(b26["fovs"]) else "–"
-        rows.append(["field {}".format(i + 1), r24, r26])
+    for f in sorted(set(b24["fovs"]) | set(b26["fovs"])):
+        r24 = "{:.2f} px".format(1000 * b24["per"][f]["m"]) if f in b24["fovs"] else "–"
+        r26 = "{:.2f} px".format(1000 * b26["per"][f]["m"]) if f in b26["fovs"] else "–"
+        rows.append(["field {}".format(f), r24, r26])
     rows.append(["all fields", "{:.2f} px".format(g24), "{:.2f} px".format(g26)])
     add(("table", "Shift growth per 1000 px, every field",
          ["", "2024 (Aashli)", "2026 (Vishavdeep)"], rows,
-         "fit per field, centroid shifts, 640 → 488 nm; 2026 fields are FOV 1, 2, 5, 6"))
+         "fit per field, centroid shifts, 640 → 488 nm; field numbers are each year's own "
+         "(the two years imaged different beads)"))
     fa24, fa26 = PANELS["2024_plots"]["arrow_field"], PANELS["2026_plots"]["arrow_field"]
     add(("image", "Same straight line: {:.1f} vs {:.1f} px per 1000 px".format(g24, g26),
          PANEL_DIR / "shift_vs_dist_2024_vs_2026.png",

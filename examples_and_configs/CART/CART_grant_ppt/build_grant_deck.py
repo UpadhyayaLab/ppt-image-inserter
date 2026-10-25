@@ -28,7 +28,6 @@ from __future__ import annotations
 
 import argparse
 import datetime
-import glob
 import sys
 from pathlib import Path
 
@@ -40,11 +39,10 @@ from pptx.util import Inches, Pt  # noqa: E402
 import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 
-sys.path.insert(0, r'K:\FF\Code\Scripts\Frank\utility\Claude\PPT_editing\code')
-try:
-    from ppt_image_inserter import backup_presentation  # noqa: E402
-except Exception:                                        # pragma: no cover
-    backup_presentation = None
+# This repo's package for the tiered backup (was a copy under PPT_editing\code whose
+# failed import silently disabled backups; bug hunt 2026-10-24).
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from ppt_image_inserter import backup_presentation  # noqa: E402
 
 NF = Path(r'\\10.225.56.176\ULab_data\Data_to_share\FF\New folder\results_compiled')
 PJ = Path(r'\\10.225.56.176\ULab_data\User_data\Kiet\results_compiled\pmlc_joint')
@@ -57,13 +55,13 @@ GREY = RGBColor(0x55, 0x55, 0x55)
 
 
 def newest(root, pattern):
-    hits = sorted(glob.glob(str(root / pattern)))
-    return Path(hits[-1]) if hits else None
+    d = bpd.newest_run(root, pattern)
+    print(f'  {pattern:<28s} -> {d}')
+    return d
 
 
 def rep_png(rep_dir, pattern):
-    hits = sorted(rep_dir.glob(pattern)) if rep_dir else []
-    return hits[0] if hits else None
+    return bpd.one_match(rep_dir, pattern)
 
 
 def letter(s, x, y, ch):

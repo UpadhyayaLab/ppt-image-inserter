@@ -26,10 +26,12 @@ from .slide_utils import (
     remove_pictures_from_slide,
     remove_all_text_from_slide,
     delete_slide,
+    delete_slides,
 )
 
 from .backup import (
     backup_presentation,
+    subset_output_path,
 )
 
 from .metadata import (
@@ -49,6 +51,7 @@ from .movies import (
     TextboxSpec,
     build_movie_deck_via_com,
     force_autoplay_in_pptx,
+    make_run_scratch_dir,
 )
 
 from .models3d import (
@@ -91,9 +94,11 @@ __all__ = [
     'remove_pictures_from_slide',
     'remove_all_text_from_slide',
     'delete_slide',
+    'delete_slides',
 
     # Backup system
     'backup_presentation',
+    'subset_output_path',
 
     # Metadata extraction
     'extract_image_metadata',
@@ -110,6 +115,7 @@ __all__ = [
     'SlideSpec',
     'build_movie_deck_via_com',
     'force_autoplay_in_pptx',
+    'make_run_scratch_dir',
 
     # 3D-model helpers
     'Model3DSpec',

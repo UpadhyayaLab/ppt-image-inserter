@@ -151,9 +151,45 @@ def check(p):
     return p
 
 
+STALE: list[str] = []
+_RESULTS_MTIME: dict[str, float] = {}
+
+
+def results_mtime(cond=None):
+    """mtime of <cond>'s CART_results.mat, or (cond None) the newest of every condition's and
+    FMC_10_merged's: the per-cell results each figure is drawn from."""
+    key = cond or '*'
+    if key not in _RESULTS_MTIME:
+        if cond:
+            pats = [ROOT / cond / 'converted' / 'cropped' / 'split_channels' / 'CART_results.mat']
+        else:
+            pats = [ROOT / '*' / 'converted' / 'cropped' / 'split_channels' / 'CART_results.mat',
+                    ROOT / 'FMC_10_merged' / 'CART_results.mat']
+        ts = [Path(p).stat().st_mtime for pat in pats for p in glob.glob(str(pat))]
+        _RESULTS_MTIME[key] = max(ts) if ts else 0.0
+    return _RESULTS_MTIME[key]
+
+
+def check_fresh(path, cond=None, tol_s=0.0):
+    """A figure older than the results it is drawn from is stale (bug hunt 2026-10-23: a failed
+    refresh step left the previous date's folder, which newest() then picked silently).
+    tol_s: per-cell QC montages are written by the same CART_fixed_cells run minutes BEFORE it
+    saves CART_results.mat, so montage_png allows 1 h."""
+    if path is None or not path.exists():
+        return
+    files = [path] if path.is_file() else list(path.rglob('*.png'))
+    if not files:
+        return
+    newest_png = max(p.stat().st_mtime for p in files)
+    if newest_png + tol_s < results_mtime(cond):
+        STALE.append(f'{path}  (newest PNG {datetime.datetime.fromtimestamp(newest_png):%Y-%m-%d %H:%M}'
+                     f' < results {datetime.datetime.fromtimestamp(results_mtime(cond)):%Y-%m-%d %H:%M})')
+
+
 def newest(pattern):
-    hits = sorted(p for p in glob.glob(str(ROOT / pattern)) if Path(p).is_dir())
-    return Path(hits[-1]) if hits else None
+    d = bpd.newest_run(ROOT, pattern)
+    check_fresh(d)
+    return d
 
 
 def start(deck_name):
@@ -242,6 +278,8 @@ def montage_png(cond, sub):
     png = bad.first_page(folder)
     if png is None:
         MISSING.append(folder / 'montages_filtered')
+    else:
+        check_fresh(Path(png), cond, tol_s=3600)
     return png
 
 
@@ -662,12 +700,18 @@ def main():
         build_montages(args.export)
     if args.deck in ('overview', 'all'):
         build_overview(compile_dir, args.export)
+    if args.compile:
+        check_fresh(compile_dir)
+    if STALE:
+        print(f'\n[STALE] {len(STALE)} figure source(s) older than the CART_results.mat they are drawn from '
+              f'(rerun run/refresh_gzmb_figures_20261008.m, or finish_gzmb_20261008 for the compile):')
+        for s in STALE:
+            print(f'  {s}')
     if MISSING:
         print(f'\n[MISSING] {len(MISSING)} panel(s):')
         for m in MISSING:
             print(f'  {m}')
-        return 1
-    return 0
+    return 1 if (MISSING or STALE) else 0
 
 
 if __name__ == '__main__':

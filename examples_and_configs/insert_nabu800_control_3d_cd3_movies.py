@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import re
 import shutil
+import tempfile
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -37,7 +38,9 @@ from ppt_image_inserter import (
     SlideSpec,
     TextboxSpec,
     backup_presentation,
+    subset_output_path,
     build_movie_deck_via_com,
+    make_run_scratch_dir,
 )
 
 try:
@@ -58,7 +61,7 @@ EXPT_04142022_BASE = (
 )
 
 DEFAULT_OUTPUT = Path("K:/FF/PPT/PPT_autogeneration/Live Cells/Jurkat raw, mesh movies.pptx")
-DEFAULT_POSTER_DIR = Path(__file__).resolve().parent / "_movie_posters_tmp"
+DEFAULT_POSTER_DIR = Path(tempfile.gettempdir()) / "ppt_nabu800_cd3_posters"   # scratch stays out of the repo
 
 PER_EXPT_OUTPUT_DIR = Path("K:/FF/PPT/PPT_autogeneration/Live Cells")
 
@@ -626,11 +629,11 @@ def ensure_parent_dir(output_path: Path) -> None:
 
 
 def prepare_poster_dir(poster_dir: Path) -> Path:
-    """Create a clean poster-cache directory."""
-    if poster_dir.exists():
-        shutil.rmtree(poster_dir, ignore_errors=True)
-    poster_dir.mkdir(parents=True, exist_ok=True)
-    return poster_dir
+    """A fresh scratch folder for THIS run under poster_dir (removed when main() ends).
+    Not one shared folder wiped at start: two runs at once overwrote each other's posters
+    and held movie copies, so a deck could embed another experiment's movie (bug hunt
+    2026-10-24)."""
+    return Path(make_run_scratch_dir(poster_dir))
 
 
 def main() -> int:
@@ -670,6 +673,8 @@ def main() -> int:
     print(f"Will create {len(cell_sets) * 4} slide(s)")
 
     output_path = resolve_output_path(args.output, args.experiment)
+    if args.output is None:   # a subset run never replaces the full deck
+        output_path = subset_output_path(output_path, cells=args.cells)
     ensure_parent_dir(output_path)
 
     if output_path.exists():
@@ -700,6 +705,8 @@ def main() -> int:
     except Exception as exc:
         print(f"[ERROR] Failed while building/saving slides: {exc}")
         return 1
+    finally:
+        shutil.rmtree(poster_dir, ignore_errors=True)
 
     print(f"[SUCCESS] Saved presentation: {output_path}")
     return 0

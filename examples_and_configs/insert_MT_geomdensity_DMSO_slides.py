@@ -2,7 +2,7 @@
 insert_MT_geomdensity_DMSO_slides.py
 
 Build the microtubule (MT) geometry-density summary deck for the Jan-23-2024
-Nocodazole experiment, DMSO arm only (single condition, n≈109).
+Nocodazole experiment, DMSO arm only (single condition; n read from cell_counts.csv).
 
 MT is a cytoplasmic (struct_out_nuc) channel: the question is whether MT density
 enriches in / tracks nuclear invaginations and concave NE, sampled in the
@@ -27,6 +27,7 @@ Usage:
     conda run -n PPT_editing python examples_and_configs/insert_MT_geomdensity_DMSO_slides.py --list
 """
 
+import csv
 import math
 import os
 import sys
@@ -58,9 +59,25 @@ OUTPUT_PATH = Path(
     "nuc_mesh_struct_outside_nuc/MT geom-density vs NE geometry, DMSO (Noco 20240123).pptx"
 )
 
+def _n_analyzed(root):
+    """Cells the compile analyzed: the 'Total' row of <root>/cell_counts.csv (after the
+    compile's filters). The hard-coded n≈109 it replaces was the pre-filter count
+    (bug hunt 2026-10-24: 109 loaded, 31 removed for actin touching the border, 77 kept)."""
+    try:
+        with open(root / "cell_counts.csv", newline="", encoding="utf-8") as fh:
+            for row in csv.reader(fh):
+                if row and row[0].strip() == "Total":
+                    return int(row[-1])
+    except (OSError, ValueError) as e:
+        print(f"[WARNING] could not read n from cell_counts.csv: {e}")
+    return None
+
+
 DECK_TITLE = "Microtubule density vs nuclear-envelope geometry"
+N_CELLS = _n_analyzed(ROOT)
 DECK_SUBTITLE = (
-    "Fixed Jurkats · Nocodazole exp, DMSO arm (Jan 23 2024) · single condition, n≈109 · "
+    "Fixed Jurkats · Nocodazole exp, DMSO arm (Jan 23 2024) · single condition"
+    + (f", n={N_CELLS}" if N_CELLS is not None else "") + " · "
     "MT = cytoplasmic (struct_out_nuc), sampled at perinuc 0.5 µm (0.5 µm outside NE) · compiled 2026-07-12"
 )
 

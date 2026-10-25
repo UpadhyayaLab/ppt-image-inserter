@@ -286,12 +286,20 @@ try {{
     $buildError = $_
     throw
 }} finally {{
+    # Close our own presentation, discarding it on a build error: left open, it lingered
+    # in the user's PowerPoint and kept the Quit guard below from ever firing.
     try {{
-        if ($presentation -and -not $buildError) {{ $presentation.Close() }}
+        if ($presentation) {{
+            if ($buildError) {{ $presentation.Saved = -1 }}
+            $presentation.Close()
+        }}
     }} catch {{
     }}
+    # PowerPoint is single-instance: New-Object attached to the user's running PowerPoint
+    # if there was one. Quit only when no presentation is left open (the user's decks or a
+    # concurrent build's); an unconditional Quit closed them (bug hunt 2026-10-24).
     try {{
-        if ($app) {{ $app.Quit() }}
+        if ($app -and $app.Presentations.Count -eq 0) {{ $app.Quit() }}
     }} catch {{
     }}
 }}

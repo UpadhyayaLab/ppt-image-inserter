@@ -32,6 +32,7 @@ from ppt_image_inserter import (  # noqa: E402
     SlideSpec,
     TextboxSpec,
     backup_presentation,
+    subset_output_path,
     build_movie_deck_via_com,
 )
 from insert_ctl_nuc_cent_coculture_seg_qc_movies import (  # noqa: E402
@@ -178,6 +179,8 @@ def main() -> int:
         print(f"  {cond} Cell {cell}: {avi.with_suffix('.mp4').name}")
 
     output_path = args.output
+    if args.output == DEFAULT_OUTPUT:   # a subset run never replaces the full deck
+        output_path = subset_output_path(output_path, only=args.only)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.exists():
         backup_presentation(str(output_path), backup_base=str(output_path.parent / "backups"))

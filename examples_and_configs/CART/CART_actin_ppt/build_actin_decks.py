@@ -146,8 +146,7 @@ MONTAGES = [
 
 
 def newest(pattern):
-    hits = sorted(p for p in glob.glob(str(RC / pattern)) if Path(p).is_dir())
-    return Path(hits[-1]) if hits else None
+    return bpd.newest_run(RC, pattern)
 
 
 def tight_grid(deck, title, pngs, col_labels, row_labels=None, key=False):

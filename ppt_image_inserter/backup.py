@@ -3,9 +3,29 @@ Backup system for PowerPoint presentations.
 """
 
 import os
+import re
 import shutil
 import datetime
+from pathlib import Path
 from typing import Dict
+
+
+def subset_output_path(output_path, **subset) -> Path:
+    """Output path for a SUBSET run (--cells / --since / --fovs / --only ...) when no
+    --output was given: '<stem> (subset <name> <value>; ...)<suffix>' beside the full deck.
+
+    Subset runs used to write the full deck's default path, so a quick '--cells 1,2'
+    check replaced the whole deck (bug hunt 2026-10-24). Returns output_path unchanged
+    when every subset value is empty.
+    """
+    output_path = Path(output_path)
+    parts = [f"{k} {v}" for k, v in subset.items() if v not in (None, "", [], (), set())]
+    if not parts:
+        return output_path
+    tag = re.sub(r"[^A-Za-z0-9,;._ -]+", "-", "; ".join(parts))[:60].strip()
+    out = output_path.with_name(f"{output_path.stem} (subset {tag}){output_path.suffix}")
+    print(f"Subset run -> {out} (the full deck {output_path.name} is left as is)")
+    return out
 
 
 def backup_presentation(ppt_path: str, backup_base: str = 'PPT/backups') -> Dict[str, str]:
@@ -83,8 +103,13 @@ def backup_presentation(ppt_path: str, backup_base: str = 'PPT/backups') -> Dict
             should_backup = time_diff >= threshold_seconds
 
         if should_backup:
-            # Copy the file (preserving metadata)
             shutil.copy2(ppt_path, backup_path)
+            # Stamp the backup with the time it was MADE. copy2 keeps the source's mtime,
+            # so the tier test above measured the deck's content age instead: after two
+            # quick reruns of a deck last saved >1 h ago every tier looked stale and all
+            # were overwritten with the newest copy (bug hunt 2026-10-24).
+            now_ts = timestamp.timestamp()
+            os.utime(backup_path, (now_ts, now_ts))
             created_backups[category] = backup_path
 
     return created_backups

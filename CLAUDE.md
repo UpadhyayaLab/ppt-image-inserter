@@ -75,6 +75,7 @@ from ppt_image_inserter import insert_image, copy_slide_replace_image
   - `remove_pictures_from_slide()` - Remove all pictures from slide
   - `remove_all_text_from_slide()` - Remove all text elements
   - `delete_slide()` - Delete slide with automatic backup
+  - `delete_slides()` - Delete several slides after ONE backup (never loop `delete_slide`)
 
 - **`workflow.py`** - High-level workflow functions
   - `copy_slide_replace_image()` - Main workflow for batch processing (duplicate template, replace image)

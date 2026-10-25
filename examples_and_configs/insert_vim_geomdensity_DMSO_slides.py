@@ -2,7 +2,7 @@
 insert_vim_geomdensity_DMSO_slides.py
 
 Build the Vimentin geometry-density summary deck for the Jan-23-2024
-Nocodazole experiment, DMSO arm only (single condition, n≈109).
+Nocodazole experiment, DMSO arm only (single condition; n in the compile's cell_counts.csv).
 
 Vimentin is a cytoplasmic (struct_out_nuc) channel: the question is whether Vimentin density
 enriches in / tracks nuclear invaginations and concave NE, sampled in the

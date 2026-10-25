@@ -31,6 +31,7 @@ Usage:
     conda run -n PPT_editing python examples_and_configs/insert_MT_near_invag_DMSO_baseline_slides.py --list
 """
 
+import csv
 import math
 import os
 import sys
@@ -69,11 +70,25 @@ OUTPUT_PATH = Path(
     "nuc_mesh_struct_outside_nuc/MT density near nuclear invaginations, DMSO baseline (Noco 20240123).pptx"
 )
 
+def _n_analyzed(root):
+    """Cells the compile analyzed: the 'Total' row of <root>/cell_counts.csv (after the
+    compile's filters). The hard-coded n≈109 it replaces was the pre-filter count
+    (bug hunt 2026-10-24: 109 loaded, 31 removed for actin touching the border, 77 kept)."""
+    try:
+        with open(safe_path(root / "cell_counts.csv"), newline="", encoding="utf-8") as fh:
+            for row in csv.reader(fh):
+                if row and row[0].strip() == "Total":
+                    return int(row[-1])
+    except (OSError, ValueError) as e:
+        print(f"[WARNING] could not read n from cell_counts.csv: {e}")
+    return None
+
+
 DECK_TITLE = "Microtubule density near nuclear invaginations"
-# n≈109 matches the sibling deck reading this same compile
-# (insert_MT_geomdensity_DMSO_slides.py); re-check on rebuild.
+N_CELLS = _n_analyzed(ROOT)
 DECK_SUBTITLE = (
-    "Fixed Jurkats · Nocodazole exp, DMSO arm (Jan 23 2024) · single condition (DMSO alone), n≈109 · "
+    "Fixed Jurkats · Nocodazole exp, DMSO arm (Jan 23 2024) · single condition (DMSO alone)"
+    + (f", n={N_CELLS}" if N_CELLS is not None else "") + " · "
     "MT = cytoplasmic (struct_out_nuc), sampled near the NE · compiled " + COMPILED
 )
 
@@ -302,7 +317,7 @@ def build_plan():
     for geom, nice, extra in (
         ("hulldist", "MT density vs invagination depth (hull-boundary distance)",
          " · x = distance below the convex hull (= invagination depth)"),
-        ("mincurv", "MT density vs min curvature", " · concave (min curv < 0) toward the right"),
+        ("mincurv", "MT density vs min curvature", " · concave (min curv < 0) toward the left"),
         ("meancurv", "MT density vs mean curvature", ""),
     ):
         p = PROFILES / "MT_geomdens_{}_Jan_23_2024_(DMSO).png".format(geom)

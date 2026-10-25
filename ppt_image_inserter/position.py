@@ -103,7 +103,8 @@ def get_all_image_positions(
 
     Useful for templates with multiple placeholder images. Returns positions
     sorted by visual reading order: top-to-bottom, then left-to-right within
-    each row (tops are rounded to the nearest 0.5" to group images in the same row).
+    each row (a picture shares the row of the row's topmost picture when their vertical
+    extents overlap by at least half the shorter height; see _reading_order).
 
     Args:
         ppt_path (str): Path to the PowerPoint file
@@ -153,8 +154,27 @@ def get_all_image_positions(
         }
         positions.append(position_info)
 
-    # Sort by visual reading order: top-to-bottom, then left-to-right within each row.
-    # Round top to nearest 0.5" to group images that share a row despite minor pixel offsets.
-    positions.sort(key=lambda p: (round(p['top'] * 2) / 2, round(p['left'], 1)))
+    return _reading_order(positions)
 
-    return positions
+
+def _reading_order(positions: List[Dict[str, float]]) -> List[Dict[str, float]]:
+    """Sort positions top-to-bottom by row, then left-to-right within a row.
+
+    A picture joins the current row when its vertical extent overlaps the row's FIRST
+    (topmost) picture by at least half the shorter of the two heights. Comparing with the
+    first picture, not the row's growing span, keeps a tall picture or a staircase layout
+    from chaining several visual rows into one. Rounding tops to a grid (the previous
+    rule, 0.5") split one visual row whose tops straddled a rounding boundary: in a 2x2
+    template with bottom-row tops 4.215" and 4.299" the bottom-RIGHT image was filled
+    before the bottom-LEFT one (bug hunt 2026-10-24).
+    """
+    rows: List[List[Dict[str, float]]] = []
+    for p in sorted(positions, key=lambda q: (q['top'], q['left'])):
+        if rows:
+            a = rows[-1][0]
+            overlap = min(p['top'] + p['height'], a['top'] + a['height']) - max(p['top'], a['top'])
+            if overlap >= 0.5 * max(min(p['height'], a['height']), 1e-9):
+                rows[-1].append(p)
+                continue
+        rows.append([p])
+    return [p for row in rows for p in sorted(row, key=lambda q: (q['left'], q['top']))]

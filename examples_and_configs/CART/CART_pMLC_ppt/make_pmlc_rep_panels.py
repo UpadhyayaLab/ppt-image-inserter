@@ -132,6 +132,10 @@ def main_actin():
     with open(out / 'picks.csv', 'w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=['tag', 'cond', 'cond_dir', 'cell', 'config'])
         w.writeheader(); w.writerows(picks)
+    # Stale renders must not be re-adopted (as the pMLC / pZap70 branches): a same-day
+    # re-pick left two cells' rep_*.png side by side (bug hunt 2026-10-24).
+    for old in out.glob('rep_*.png'):
+        old.unlink()
     print(f'-> {out / "picks.csv"}')
     return 0
 

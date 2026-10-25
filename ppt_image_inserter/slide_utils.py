@@ -141,27 +141,55 @@ def delete_slide(ppt_path: str, slide_index: int, backup_base: str = 'PPT/backup
         >>> delete_slide('presentation.pptx', 3)  # Deletes slide 4 in PowerPoint UI
         >>> delete_slide('presentation.pptx', 3, backup_base='custom/backups')  # Custom backup location
     """
-    # Validate input file
+    delete_slides(ppt_path, [slide_index], backup_base=backup_base)
+
+
+def delete_slides(ppt_path: str, slide_indices, backup_base: str = 'PPT/backups',
+                  backup: bool = True) -> int:
+    """
+    Delete several slides in ONE open/save, after ONE tiered backup of the deck as it was.
+
+    Use this instead of calling delete_slide in a loop: each delete_slide call backs up,
+    so a loop overwrote the 'latest' tier with partly deleted decks, and a rerun within
+    5 min of the previous run left the pre-run deck in no tier (bug hunt 2026-10-24).
+
+    Args:
+        ppt_path (str): Path to the PowerPoint file
+        slide_indices (iterable of int): Slide indices to delete (0-based, original numbering)
+        backup_base (str): Base directory for backups (default: 'PPT/backups')
+        backup (bool): Back up the deck before deleting (default True). Pass False only
+            when the caller has already backed up what this file replaced.
+
+    Returns:
+        int: Number of slides deleted
+
+    Raises:
+        FileNotFoundError: If PowerPoint file doesn't exist
+        IndexError: If any slide index is out of range (nothing is deleted or backed up)
+    """
     if not os.path.exists(ppt_path):
         raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
 
-    # Load presentation
-    prs = Presentation(ppt_path)
+    indices = sorted(set(slide_indices), reverse=True)   # high to low keeps the rest valid
+    if not indices:
+        return 0
 
-    # Validate slide index
-    if slide_index < 0 or slide_index >= len(prs.slides):
+    prs = Presentation(ppt_path)
+    n_slides = len(prs.slides)
+    bad = [i for i in indices if i < 0 or i >= n_slides]
+    if bad:
         raise IndexError(
-            f"Slide index {slide_index} out of range (presentation has {len(prs.slides)} slides)"
+            f"Slide index(es) {sorted(bad)} out of range (presentation has {n_slides} slides)"
         )
 
-    # Create backup before deletion
-    backups = backup_presentation(ppt_path, backup_base=backup_base)
+    if backup:
+        backup_presentation(ppt_path, backup_base=backup_base)
 
-    # Delete the slide using XML manipulation
-    # Drop the relationship and remove from slide list
-    rId = prs.slides._sldIdLst[slide_index].rId
-    prs.part.drop_rel(rId)
-    del prs.slides._sldIdLst[slide_index]
+    # Drop each slide's relationship and remove it from the slide list
+    for slide_index in indices:
+        rId = prs.slides._sldIdLst[slide_index].rId
+        prs.part.drop_rel(rId)
+        del prs.slides._sldIdLst[slide_index]
 
-    # Save the presentation
     prs.save(ppt_path)
+    return len(indices)

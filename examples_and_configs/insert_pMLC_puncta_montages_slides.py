@@ -42,6 +42,8 @@ from pptx.util import Inches, Pt
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from ppt_image_inserter import backup_presentation  # noqa: E402
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -314,8 +316,8 @@ def main() -> None:
         f"Kinds: {len(KINDS)}\n"
         f"Slides emitted: {len(slide_specs)}\n"
         f"Present cells: {present_count} / {2 * len(slide_specs)}\n"
-        f"Per-slide PPI: each slide pins its own PPI to the larger of its CAT/FMC\n"
-        f"  montages so cells fit exactly with no overflow.\n"
+        f"Deck PPI: ONE px/in for every slide, pinned to the largest montage in the deck\n"
+        f"  (fits every cell box, and every slide shows one physical scale).\n"
         f"Source PPUM = {PPUM_SOURCE} px/\u03bcm (locked).\n"
     )
     print(f"Writing deck to: {OUTPUT_PATH}\n")
@@ -324,13 +326,18 @@ def main() -> None:
     prs.slide_width = Inches(SLIDE_W)
     prs.slide_height = Inches(SLIDE_H)
 
+    # One px/in for the whole deck (FF's one-scale rule, montage_scale.py): a per-slide PPI
+    # shrank each slide by its own factor, 652-774 px/in across the 9 slides (2026-10-24).
+    all_present = [
+        p for (_, cat_img, fmc_img, _, _, _) in slide_specs
+        for p in (cat_img, fmc_img)
+        if p is not None and _path_exists(p)
+    ]
+    deck_ppi = compute_deck_ppi(all_present, CELL_W, IMG_H) if all_present else 100.0
+
     slides_added = 0
     for (title, cat_img, fmc_img, cat_dir, fmc_dir, log_key) in slide_specs:
-        present_on_slide = [
-            p for p in (cat_img, fmc_img)
-            if p is not None and _path_exists(p)
-        ]
-        slide_ppi = compute_deck_ppi(present_on_slide, CELL_W, IMG_H) if present_on_slide else 100.0
+        slide_ppi = deck_ppi
         bar_cm = (SCALEBAR_PX / slide_ppi) * 2.54
 
         _, missing = build_compare_slide(prs, title, cat_img, fmc_img, slide_ppi)
@@ -349,6 +356,8 @@ def main() -> None:
             src = cat_dir if cell == "CAT" else fmc_dir
             missing_total.append(f"{log_key}/{cell}  ({src})")
 
+    if Path(out_path).exists():    # the output name is fixed: back up the previous deck first
+        backup_presentation(str(out_path), backup_base=str(Path(out_path).parent / "backups"))
     prs.save(str(out_path))
     print(f"\nDone. {slides_added} slides written to:\n  {out_path}")
 

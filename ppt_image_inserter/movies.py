@@ -38,6 +38,30 @@ _CMEDIANODE_TAG = f"{{{P_NAMESPACE}}}cMediaNode"
 _ALIGN_MAP = {"left": 1, "center": 2, "right": 3, "justify": 4}
 
 
+def make_run_scratch_dir(base_dir, max_age_s: float = 86400.0) -> str:
+    """Create a fresh scratch folder for ONE deck build (posters, held movie copies)
+    under ``base_dir`` and return its path; the caller removes it when done.
+
+    Per run, not shared: scripts that wiped and reused one fixed folder let two runs at
+    once overwrite each other's files (movie names repeat across experiments), so a deck
+    could embed another experiment's movie (bug hunt 2026-10-24). Run folders older than
+    ``max_age_s`` (left by crashed runs) are pruned.
+    """
+    import shutil
+    import time
+
+    os.makedirs(base_dir, exist_ok=True)
+    cutoff = time.time() - max_age_s
+    for name in os.listdir(base_dir):
+        path = os.path.join(base_dir, name)
+        try:
+            if name.startswith("run_") and os.path.getmtime(path) < cutoff:
+                shutil.rmtree(path, ignore_errors=True)
+        except OSError:
+            pass
+    return tempfile.mkdtemp(prefix=f"run_{os.getpid()}_", dir=base_dir)
+
+
 @dataclass(frozen=True)
 class TextboxSpec:
     """One textbox to add to a slide. All measurements are in points."""
@@ -238,12 +262,20 @@ try {{
     $buildError = $_
     throw
 }} finally {{
+    # Close our own presentation, discarding it on a build error: left open, it lingered
+    # in the user's PowerPoint and kept the Quit guard below from ever firing.
     try {{
-        if ($presentation -and -not $buildError) {{ $presentation.Close() }}
+        if ($presentation) {{
+            if ($buildError) {{ $presentation.Saved = -1 }}
+            $presentation.Close()
+        }}
     }} catch {{
     }}
+    # PowerPoint is single-instance: New-Object attached to the user's running PowerPoint
+    # if there was one. Quit only when no presentation is left open (the user's decks or a
+    # concurrent build's); an unconditional Quit closed them (bug hunt 2026-10-24).
     try {{
-        if ($app) {{ $app.Quit() }}
+        if ($app -and $app.Presentations.Count -eq 0) {{ $app.Quit() }}
     }} catch {{
     }}
 }}

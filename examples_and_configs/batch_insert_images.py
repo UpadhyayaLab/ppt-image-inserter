@@ -30,7 +30,7 @@ def safe_exists(path):
 # Add parent directory to path to import ppt_image_inserter
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ppt_image_inserter import delete_slide, copy_slide_replace_image, copy_slide_replace_images, backup_presentation, get_all_image_positions, add_label_to_existing_slide
+from ppt_image_inserter import delete_slides, copy_slide_replace_image, copy_slide_replace_images, backup_presentation, get_all_image_positions, add_label_to_existing_slide
 
 
 def validate_slide_index(slide_index, field_name):
@@ -200,38 +200,11 @@ def main(config_path):
         if output_dir and not os.path.exists(output_dir):
             print(f"[ERROR] Output directory does not exist: {output_dir}")
             sys.exit(1)
+        # The backup + template copy happen after validation (below), so a failed
+        # validation leaves the existing output untouched.
 
-        # Backup existing output file before overwriting (if it exists)
-        if os.path.exists(output_path):
-            print(f"[WARNING] Output file exists and will be overwritten")
-            print(f"Creating backup of existing output file in {backup_dir}...")
-            try:
-                backups_created = backup_presentation(output_path, backup_base=backup_dir)
-                print(f"  Backed up to: {', '.join(backups_created.keys())}")
-            except Exception as e:
-                print(f"[WARNING] Backup failed: {e}")
-
-        # Copy template to output location
-        try:
-            import shutil
-            shutil.copy2(ppt_file, output_path)
-        except Exception as e:
-            print(f"[ERROR] Failed to copy template: {e}")
-            sys.exit(1)
-
-        # Update ppt_file to point to output for all subsequent operations
-        ppt_file = output_path
-
-        # Add metadata label to template slide in the output file
-        if add_label:
-            try:
-                added = add_label_to_existing_slide(ppt_file, template_slide_index, base_dir=base_dir)
-                if added:
-                    print(f"Added metadata label to template slide")
-            except Exception as e:
-                print(f"[WARNING] Could not add label to template slide: {e}")
-
-    # Validate all template slides exist and have images
+    # Validate all template slides exist and have images (read from the template; in
+    # output_path mode the output is a copy of it)
     prs = Presentation(ppt_file)
     total_slides = len(prs.slides)
 
@@ -306,6 +279,42 @@ def main(config_path):
 
     print(f"All {len(images)} image spec(s) validated successfully\n")
 
+    # Template preservation mode: back up the existing output, then replace it with a fresh
+    # copy of the template. Only now, after validation: run earlier, a failed validation
+    # had already overwritten the output while reporting "No slides were modified".
+    if output_path:
+        if os.path.exists(output_path):
+            print(f"[WARNING] Output file exists and will be overwritten")
+            print(f"Creating backup of existing output file in {backup_dir}...")
+            try:
+                backups_created = backup_presentation(output_path, backup_base=backup_dir)
+                print(f"  Backed up to: {', '.join(backups_created.keys())}")
+            except Exception as e:
+                # Never overwrite an output that is in no backup tier.
+                print(f"[ERROR] Backup of the existing output failed ({e}); not overwriting {output_path}")
+                sys.exit(1)
+
+        # Copy template to output location
+        try:
+            import shutil
+            shutil.copy2(ppt_file, output_path)
+        except Exception as e:
+            print(f"[ERROR] Failed to copy template: {e}")
+            sys.exit(1)
+
+        # Update ppt_file to point to output for all subsequent operations
+        ppt_file = output_path
+
+        # Add metadata label to template slide in the output file (original numbering:
+        # no slide has been deleted yet)
+        if add_label:
+            try:
+                added = add_label_to_existing_slide(ppt_file, original_template_slide_index, base_dir=base_dir)
+                if added:
+                    print(f"Added metadata label to template slide")
+            except Exception as e:
+                print(f"[WARNING] Could not add label to template slide: {e}")
+
     # Step 1: Delete old slides (except preserved ones)
 
     prs = Presentation(ppt_file)
@@ -315,9 +324,12 @@ def main(config_path):
     slides_to_delete = [idx for idx in range(total_slides) if idx not in preserve_slides]
 
     if slides_to_delete:
-        # Delete in reverse order to maintain indices
-        for slide_idx in reversed(slides_to_delete):
-            delete_slide(ppt_file, slide_idx, backup_base=backup_dir)
+        # ONE backup of the deck as it was, then all deletions in one save. (A delete_slide
+        # per slide backed up each partly deleted state into 'latest'.) In output_path mode
+        # ppt_file is a fresh copy of the unchanged template and the output it replaced was
+        # backed up above, so backing up here would only overwrite that backup.
+        delete_slides(ppt_file, slides_to_delete, backup_base=backup_dir,
+                      backup=not output_path)
 
     # Step 2: Create new slides from images
     remaining_images = images

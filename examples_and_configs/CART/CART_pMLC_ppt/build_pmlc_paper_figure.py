@@ -3,8 +3,8 @@ r"""build_pmlc_paper_figure.py  Assemble the pMLC component of Figure 1 as ONE
 extensive slide and graft it onto a COPY of the CAR-T draft deck.
 
 The original draft (CAR T cell_short_figures_draft_20260827.pptx) is only read +
-copied; a new dated copy gets the appended figure slide. A tiered backup of the
-copy is written first (ppt_image_inserter.backup_presentation).
+copied; a new dated copy gets the appended figure slide. An existing same-day output
+is backed up (ppt_image_inserter.backup_presentation) before the copy replaces it.
 
 The slide (portrait, matched to the draft's 7.5 x 10.83 in page) is data-driven:
   Panel A  representative micrographs, matched contrast -- CAT row over FMC row,
@@ -25,7 +25,6 @@ Run:    python build_pmlc_paper_figure.py
 from __future__ import annotations
 
 import datetime
-import glob
 import shutil
 import sys
 from pathlib import Path
@@ -36,25 +35,27 @@ from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 
-# ppt_image_inserter for the tiered backup helper.
-sys.path.insert(0, r'K:\FF\Code\Scripts\Frank\utility\Claude\PPT_editing\code')
-try:
-    from ppt_image_inserter import backup_presentation
-except Exception:                                   # pragma: no cover
-    backup_presentation = None
+# This repo's package for the tiered backup (was a copy under PPT_editing\code whose
+# failed import silently disabled backups; bug hunt 2026-10-24).
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from ppt_image_inserter import backup_presentation  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_pmlc_profiles_deck import newest_run, one_match  # noqa: E402  (shared run / rep pickers)
 
 NAS = Path(r'\\10.225.56.176\ULab_data\User_data\Kiet\results_compiled\pmlc_joint')
 PPT_DIR = Path(r'K:\FF\PPT\PPT_autogeneration\CART\pMLC')
 DRAFT = PPT_DIR / 'CAR T cell_short_figures_draft_20260827.pptx'
 OUT = PPT_DIR / f'CAR T cell_short_figures_draft_{datetime.date.today():%Y%m%d}.pptx'
+# pMLC display range of the rep panels: tests/run_pmlc_rep_render.m sets ropts.pmlc_clim =
+# [0 500], overriding the dataset config's fixed_clim [0 1000] (FF 2026-09-14). Keep in sync.
+PMLC_CLIM = (0, 500)
 
 BLACK = RGBColor(0, 0, 0); GREY = RGBColor(0x55, 0x55, 0x55)
 GREEN = RGBColor(0x11, 0x99, 0x11); MAGENTA = RGBColor(0xAA, 0x11, 0xAA)
 
 
 def newest(pattern):
-    hits = sorted(glob.glob(str(NAS / pattern)))
-    return Path(hits[-1]) if hits else None
+    return newest_run(NAS, pattern)
 
 
 REPS = newest('paper_reps_*')
@@ -79,7 +80,11 @@ QUANT = [
     ('pMLC_synapse_distal_MFI_norm_pooled_10min.png',           'G', 'Distal pMLC (10 min)'),
     ('pMLC_synapse_central_MFI_norm_pooled_10min.png',          'H', 'Central pMLC (10 min)'),
     ('pMLC_synapse_peripheral_MFI_norm_pooled_timecourse.png',  'I', 'Peripheral pMLC (5/10/15 min)'),
-    ('pMLC_synapse_MFI_pooled_timecourse.png',                  'J', 'Synapse pMLC (5/10/15 min)'),
+    # CAT-normalized, not raw: raw synapse MFI tracks staining batch (CAT 10 min medians
+    # differ ~2.3x across the 3 days), so pooling it showed **** at 5 min where the
+    # normalized data are n.s. (plot_pmlc_pooled_paper_panels.m; bug hunt 2026-10-24).
+    # (the panel's own y-axis reads 'pMLC MFI / CAT Median'; a longer caption wraps into it)
+    ('pMLC_synapse_MFI_normCAT_pooled_timecourse.png',          'J', 'Synapse pMLC (5/10/15 min)'),
 ]
 
 
@@ -118,24 +123,24 @@ def placeholder(slide, left, top, w, h, label):
 
 
 def rep_file(tag, chan):
-    if REPS is None:
-        return None
-    hits = sorted(REPS.glob(f'rep_*_{tag}_*_{chan}.png'))
-    return hits[-1] if hits else None
+    return one_match(REPS, f'rep_*_{tag}_*_{chan}.png')
 
 
 def main():
     if not DRAFT.is_file():
         print(f'[error] draft not found: {DRAFT}')
         return 1
-    shutil.copy2(DRAFT, OUT)
-    print(f'copied draft -> {OUT}')
-    if backup_presentation is not None:
+    # Back up an existing same-day OUT BEFORE the draft copy overwrites it (it held FF's
+    # hand edits; backing up after the copy only ever saved the unedited draft).
+    if OUT.exists():
         try:
             backup_presentation(str(OUT), backup_base=str(PPT_DIR / 'backups'))
-            print('tiered backup written')
+            print(f'tiered backup of the existing {OUT.name} written')
         except Exception as e:
-            print(f'[warn] backup failed: {e}')
+            print(f'[error] backup of the existing {OUT} failed ({e}); not overwriting it')
+            return 1
+    shutil.copy2(DRAFT, OUT)
+    print(f'copied draft -> {OUT}')
 
     prs = Presentation(str(OUT))
     W = prs.slide_width / 914400.0
@@ -169,8 +174,8 @@ def main():
                                      col_w - 0.06, row_h - 0.06)):
                 placeholder(s, grid_left + ci * col_w, ry, col_w, row_h, f'{rlab} {clab}')
     add_text(s, grid_left, a_top + 2 * row_h - 0.02, grid_w, 0.22,
-             'Jun 07, 10 min; pMLC matched contrast (CLim 0-1000); scale bar 5 '
-             '\u00b5m. Representative; swappable.', 8, color=GREY)
+             f'Jun 07, 10 min; pMLC matched contrast (CLim {PMLC_CLIM[0]}-{PMLC_CLIM[1]}); scale bar 5 '
+             '\u03bcm. Representative; swappable.', 8, color=GREY)
 
     # ---- Panels B..I: pooled CAT-vs-FMC quantification (3-col flow) ----------
     q_top = a_top + 2 * row_h + 0.28

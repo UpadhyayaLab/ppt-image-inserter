@@ -294,7 +294,7 @@ def build_plan():
          "MT density vs invagination depth (hull-boundary distance)",
          " · x = distance below the convex hull (= invagination depth)"),
         ("02b_MT_avg_minCurvature.png", "MT density vs min curvature",
-         " · concave (min curv < 0) toward the right"),
+         " · concave (min curv < 0) toward the left"),
         ("02c_MT_avg_meanCurvature.png", "MT density vs mean curvature", ""),
     ):
         p = CURATED / fname

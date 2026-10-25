@@ -126,6 +126,20 @@ delete_slide(
 
 **Note:** This function automatically creates timestamped backups before deleting the slide.
 
+#### `delete_slides()`
+Delete several slides in one open/save, after ONE tiered backup of the deck as it was.
+Use this instead of calling `delete_slide()` in a loop: every `delete_slide()` call backs
+up, so a loop fills the `latest` tier with a partly deleted deck.
+
+```python
+delete_slides(
+    ppt_path: str,
+    slide_indices,                 # 0-based, original numbering
+    backup_base: str = 'PPT/backups',
+    backup: bool = True
+) -> int                           # number of slides deleted
+```
+
 #### `list_slides()`
 Get information about all slides in a presentation.
 
@@ -229,7 +243,7 @@ get_all_image_positions(
 - `ppt_path`: Path to the PowerPoint file
 - `slide_index`: Slide number (0-based index)
 
-**Returns:** List of position dicts (same format as `get_image_position()`), one per image, in the order shapes were added to the slide (z-order). Returns an empty list if the slide has no images.
+**Returns:** List of position dicts (same format as `get_image_position()`), one per image, in reading order: rows top to bottom, left to right within a row (a picture shares the row of the row's topmost picture when their vertical extents overlap by at least half the shorter height). List a multi-image slide's images in that order. Returns an empty list if the slide has no images.
 
 **Example:**
 ```python
@@ -384,7 +398,7 @@ Processes microscopy data analysis results into a presentation deck
 import os
 import yaml
 from pptx import Presentation
-from ppt_image_inserter import delete_slide, copy_slide_replace_image
+from ppt_image_inserter import delete_slides, copy_slide_replace_image
 
 # Load configuration
 with open('config_nuclear_morphology_2024.yaml', 'r') as f:
@@ -397,8 +411,7 @@ images = config['images']
 # Step 1: Delete old slides (keep title and template)
 print("Deleting old slides...")
 prs = Presentation(ppt_file)
-for slide_idx in reversed(range(2, len(prs.slides))):
-    delete_slide(ppt_file, slide_idx)
+delete_slides(ppt_file, range(2, len(prs.slides)))   # one backup, one save
 
 print(f"Slides 1-2 remain.\n")
 

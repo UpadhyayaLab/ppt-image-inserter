@@ -164,7 +164,8 @@ $slide = $pres.Slides.Add(1, 12)                 # 12 = ppLayoutBlank
 $shape = $slide.Shapes.Add3DModel($glbPath, 0, -1, $leftPt, $topPt, $wPt, $hPt)
 $shape.Model3D.RotationX = 20; $shape.Model3D.RotationY = -30
 $pres.SaveAs($outPptx, 24)                        # 24 = ppSaveAsOpenXMLPresentation
-$pres.Close(); $app.Quit()
+$pres.Close()
+if ($app.Presentations.Count -eq 0) { $app.Quit() }   # never close decks the user has open
 ```
 
 ---
