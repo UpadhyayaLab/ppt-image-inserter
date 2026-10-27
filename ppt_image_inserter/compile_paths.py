@@ -84,7 +84,29 @@ def resolve_latest_compile(parent, glob="*", *, must_exist=True):
             )
         return None
     candidates.sort(key=lambda dp: (dp[0], dp[1].name))
-    return candidates[-1][1].resolve()
+    best_date, best = candidates[-1]
+    _warn_newer_suffixed(parent, glob, best_date, best.name)
+    return best.resolve()
+
+
+_DATE_ANY = re.compile(r"_(20\d{6})_")   # an underscore-delimited date inside the name
+
+
+def _warn_newer_suffixed(parent, glob, best_date, best_name):
+    """Print a warning when a matching folder has a NEWER date that is not at the end of its
+    name (e.g. ``..._20260801_rerun``). Such folders are skipped by design, and the older
+    compile used to be returned with nothing on screen (bug hunt 2026-10-26)."""
+    try:
+        names = os.listdir(str(parent))
+    except OSError:
+        return
+    for name in sorted(names):
+        if _DATE_TAIL.search(name) or not fnmatch.fnmatchcase(name, glob):
+            continue
+        dates = _DATE_ANY.findall(name)
+        if dates and max(dates) > best_date and (Path(parent) / name).is_dir():
+            print("[WARNING] resolve_latest_compile: using {} although {} is newer "
+                  "(its date is not the name's trailing _YYYYMMDD)".format(best_name, name))
 
 
 def compile_date_from(path):

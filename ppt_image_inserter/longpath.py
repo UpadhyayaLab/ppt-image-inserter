@@ -41,7 +41,13 @@ def safe_path(p):
     """
     ap = os.path.abspath(str(p))
     if os.name == "nt" and not ap.startswith("\\\\?\\"):
-        ap = "\\\\?\\" + ap
+        if ap.startswith("\\\\"):
+            # UNC \\server\share\... -> \\?\UNC\server\share\... ; a bare \\?\ prefix gave
+            # \\?\\\server\..., which Windows rejects, so path_exists() called existing NAS
+            # files missing (bug hunt 2026-10-26).
+            ap = "\\\\?\\UNC\\" + ap[2:]
+        else:
+            ap = "\\\\?\\" + ap
     return ap
 
 

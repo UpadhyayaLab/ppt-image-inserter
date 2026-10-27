@@ -162,10 +162,12 @@ def get_all_image_positions(
 def _reading_order(positions: List[Dict[str, float]]) -> List[Dict[str, float]]:
     """Sort positions top-to-bottom by row, then left-to-right within a row.
 
-    A picture joins the current row when its vertical extent overlaps the row's FIRST
-    (topmost) picture by at least half the shorter of the two heights. Comparing with the
-    first picture, not the row's growing span, keeps a tall picture or a staircase layout
-    from chaining several visual rows into one. Rounding tops to a grid (the previous
+    A picture joins the current row when its vertical extent overlaps the row's TALLEST
+    picture (the first of them on ties) by at least half the shorter of the two heights.
+    Comparing with one picture, not the row's growing span, keeps a staircase layout from
+    chaining several visual rows into one. The anchor was the row's first (topmost) picture,
+    so a tall picture sitting 0.05" below a grid's top row joined it but the grid's lower
+    row did not: images 3 and 4 swapped between 1.00" and 1.05" (bug hunt 2026-10-26). Rounding tops to a grid (the previous
     rule, 0.5") split one visual row whose tops straddled a rounding boundary: in a 2x2
     template with bottom-row tops 4.215" and 4.299" the bottom-RIGHT image was filled
     before the bottom-LEFT one (bug hunt 2026-10-24).
@@ -179,7 +181,7 @@ def _reading_order(positions: List[Dict[str, float]]) -> List[Dict[str, float]]:
     rows: List[List[Dict[str, float]]] = []
     for p in sorted(positions, key=lambda q: (q['top'], q['left'])):
         if rows:
-            a = rows[-1][0]
+            a = max(rows[-1], key=lambda q: q['height'])   # first of the tallest on ties
             overlap = min(p['top'] + p['height'], a['top'] + a['height']) - max(p['top'], a['top'])
             if overlap >= 0.5 * max(min(p['height'], a['height']), 1e-9):
                 rows[-1].append(p)

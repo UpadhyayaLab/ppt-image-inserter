@@ -5,10 +5,13 @@ Slide manipulation utilities for PowerPoint presentations.
 from pptx import Presentation
 from pptx.slide import Slide
 from pptx.enum.shapes import MSO_SHAPE_TYPE
+from pptx.opc.constants import RELATIONSHIP_TYPE as RT
 import copy
 import os
 from typing import Optional
 from .backup import backup_presentation
+
+_R_NS = '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}'
 
 
 def duplicate_slide(prs: Presentation, slide_index: int) -> Slide:
@@ -48,17 +51,40 @@ def duplicate_slide(prs: Presentation, slide_index: int) -> Slide:
         if parent is not None:
             parent.remove(shape._element)
 
+    # Re-create the source slide's relationships (images, hyperlinks, media, charts) on the
+    # new slide. Copying the shape XML alone left ids like r:embed="rId2" dangling, and they
+    # then resolved to the first picture added to the new slide: a picture inside a group on
+    # the template silently showed the new image (bug hunt 2026-10-26).
+    rid_map = {}
+    for rId, rel in source_slide.part.rels.items():
+        if rel.reltype in (RT.SLIDE_LAYOUT, RT.NOTES_SLIDE):
+            continue
+        if rel.is_external:
+            rid_map[rId] = new_slide.part.relate_to(rel.target_ref, rel.reltype, is_external=True)
+        else:
+            rid_map[rId] = new_slide.part.relate_to(rel.target_part, rel.reltype)
+
     # Copy all shapes from source to new slide
     for shape in source_slide.shapes:
         # Deep copy the shape's XML element
         el = shape.element
         newel = copy.deepcopy(el)
+        _remap_rids(newel, rid_map)
 
         # Insert into the new slide's shape tree
         # Insert before 'p:extLst' if it exists, otherwise append
         new_slide.shapes._spTree.insert_element_before(newel, 'p:extLst')
 
     return new_slide
+
+
+def _remap_rids(element, rid_map) -> None:
+    """Point every r:* attribute (r:embed, r:link, r:id, ...) under `element` at the new
+    slide's rId for the same target. One pass per attribute, so ids never re-map twice."""
+    for node in element.iter():
+        for key, val in node.attrib.items():
+            if key.startswith(_R_NS) and val in rid_map:
+                node.set(key, rid_map[val])
 
 
 def remove_pictures_from_slide(slide: Slide) -> int:
@@ -79,6 +105,7 @@ def remove_pictures_from_slide(slide: Slide) -> int:
         you call prs.save().
     """
     pictures_removed = 0
+    image_rids = set()
 
     # Iterate through shapes in reverse to avoid index issues during removal
     # Convert to list first since we're modifying the collection
@@ -86,6 +113,8 @@ def remove_pictures_from_slide(slide: Slide) -> int:
 
     for shape in shapes_list:
         if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
+            for blip in shape._element.xpath('.//a:blip'):
+                image_rids.update(v for k, v in blip.attrib.items() if k.startswith(_R_NS))
             # Remove via XML element manipulation
             parent = shape._element.getparent()
             if parent is not None:
@@ -94,6 +123,17 @@ def remove_pictures_from_slide(slide: Slide) -> int:
             else:
                 # Rare edge case - log but continue
                 print(f"Warning: Could not remove picture '{shape.name}' - parent is None")
+
+    # Drop the removed pictures' image relationships that nothing on the slide still uses
+    # (a grouped copy of the same image keeps its rel), so the template image that
+    # duplicate_slide re-linked is not left on every new slide. Counted here, not with
+    # part.drop_rel: python-pptx counts only r:id references, never r:embed, so drop_rel
+    # dropped shared rels and raised KeyError on a second picture of the same image.
+    still_used = {v for node in slide._element.iter()
+                  for k, v in node.attrib.items() if k.startswith(_R_NS)}
+    for rId in image_rids - still_used:
+        if rId in slide.part.rels:
+            slide.part.rels.pop(rId)
 
     return pictures_removed
 

@@ -56,6 +56,35 @@ def checked_pick(tag, override, rows):
     return cell
 
 
+def pick_then_write(out, ranked, fields, override):
+    """Pick every tag (checked_pick), and only then create `out` with candidates_<tag>.csv.
+
+    ranked: {tag: (rows, med)}. `out` was created before the picks could fail, so a failed
+    override left an empty paper_reps_<today> that newest_run then took as the newest reps
+    folder (bug hunt 2026-10-26). On failure the candidates still go to disk, for re-picking,
+    under failed_<out name>, which the decks' 'paper_reps_*' globs never match."""
+    try:
+        picks = {tag: checked_pick(tag, override, rows) for tag, (rows, _) in ranked.items()}
+    except SystemExit:
+        failed = out.with_name('failed_' + out.name)
+        _write_candidates(failed, ranked, fields)
+        print(f'candidates for re-picking: {failed}')
+        raise
+    _write_candidates(out, ranked, fields)
+    return picks
+
+
+def _write_candidates(out, ranked, fields):
+    out.mkdir(parents=True, exist_ok=True)
+    for tag, (rows, med) in ranked.items():
+        with open(out / f'candidates_{tag}.csv', 'w', newline='') as fh:
+            w = csv.writer(fh)
+            w.writerow(['cell', 'score_sum_robust_z'] + fields)
+            w.writerow(['MEDIAN', ''] + [f'{x:.4g}' for x in med])
+            for r in rows[:40]:
+                w.writerow([r[0], f'{r[1]:.3f}'] + [f'{x:.4g}' for x in r[2:]])
+
+
 def cond_dir(date, cond):
     return NAS / ROOTS[date][0] / cond / 'converted' / 'cropped' / 'split_channels'
 
@@ -88,19 +117,14 @@ def main_pzap70():
     fields = ['pZap70_synapse_central_MFI_norm', 'pZap70_synapse_peripheral_MFI_norm',
               'pZap70_synapse_distal_MFI_norm', 'pZap70_synapse_MFI', 'actin_bottom_mask_area']
     override = {'CAT': '23', 'FMC': '68'}   # FF 2026-09-15: chosen from the pZap70 picker gallery
-    out.mkdir(parents=True, exist_ok=True)
+    cdirs = {tag: base / folders[tag] / 'converted' / 'cells' / 'channels' for tag in TAGS}
+    ranked_rows = {tag: rank_rows(cdirs[tag], fields) for tag in TAGS}
+    chosen = pick_then_write(out, ranked_rows, fields, override)
     alts, firsts = [], []
     for tag in TAGS:
-        cdir = base / folders[tag] / 'converted' / 'cells' / 'channels'
-        rows, med = rank_rows(cdir, fields)
-        with open(out / f'candidates_{tag}.csv', 'w', newline='') as fh:
-            w = csv.writer(fh)
-            w.writerow(['cell', 'score_sum_robust_z'] + fields)
-            w.writerow(['MEDIAN', ''] + [f'{x:.4g}' for x in med])
-            for r in rows[:40]:
-                w.writerow([r[0], f'{r[1]:.3f}'] + [f'{x:.4g}' for x in r[2:]])
-        ranked = [r[0] for r in rows]
-        first = checked_pick(tag, override, rows)
+        cdir = cdirs[tag]
+        ranked = [r[0] for r in ranked_rows[tag][0]]
+        first = chosen[tag]
         mk = lambda cond, cell: {'tag': tag, 'cond': cond, 'cond_dir': str(cdir), 'cell': cell,  # noqa: E731
                                  'config': 'd20250217_actin_pzap70_pzap70_config'}
         firsts.append(mk(f'D3_{tag}_15min', first))
@@ -130,21 +154,15 @@ def main_actin():
     base = nf / '20260717_CART_3_5_7_10_actin'
     fields = ['actin_bottom_slice_central_MFI_norm', 'actin_bottom_slice_peripheral_MFI_norm',
               'actin_bottom_slice_distal_MFI_norm', 'actin_bottom_mask_area']
-    out.mkdir(parents=True, exist_ok=True)
+    cdirs = {tag: base / f'{tag}_10min' / 'split_channels' for tag in TAGS}
+    ranked_rows = {tag: rank_rows(cdirs[tag], fields, 'actin_only_results.mat') for tag in TAGS}
+    chosen = pick_then_write(out, ranked_rows, fields, ACTIN_OVERRIDE)
     picks = []
     for tag in TAGS:
-        cdir = base / f'{tag}_10min' / 'split_channels'
-        rows, med = rank_rows(cdir, fields, 'actin_only_results.mat')
-        with open(out / f'candidates_{tag}.csv', 'w', newline='') as fh:
-            w = csv.writer(fh)
-            w.writerow(['cell', 'score_sum_robust_z'] + fields)
-            w.writerow(['MEDIAN', ''] + [f'{x:.4g}' for x in med])
-            for r in rows[:40]:
-                w.writerow([r[0], f'{r[1]:.3f}'] + [f'{x:.4g}' for x in r[2:]])
-        cell = checked_pick(tag, ACTIN_OVERRIDE, rows)
-        picks.append({'tag': tag, 'cond': f'Jul_17_{tag}_10min', 'cond_dir': str(cdir), 'cell': cell,
+        cell = chosen[tag]
+        picks.append({'tag': tag, 'cond': f'Jul_17_{tag}_10min', 'cond_dir': str(cdirs[tag]), 'cell': cell,
                       'config': 'd20260717_actin_irm_newfolder_config'})
-        print(f'[pick] {tag}: {cell}  (n ranked {len(rows)})')
+        print(f'[pick] {tag}: {cell}  (n ranked {len(ranked_rows[tag][0])})')
     with open(out / 'picks.csv', 'w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=['tag', 'cond', 'cond_dir', 'cell', 'config'])
         w.writeheader(); w.writerows(picks)
@@ -179,18 +197,12 @@ def main():
         return main_pzap70()
     if '--marker' in sys.argv and sys.argv[sys.argv.index('--marker') + 1] == 'actin':
         return main_actin()
-    OUT.mkdir(parents=True, exist_ok=True)
+    ranked_rows = {tag: rank_cells(DATE, f'{tag}_{TIMEPOINT}') for tag in TAGS}
+    chosen = pick_then_write(OUT, ranked_rows, SCORE_FIELDS, OVERRIDE)
     picks = []
     for tag in TAGS:
         cond = f'{tag}_{TIMEPOINT}'
-        rows, med = rank_cells(DATE, cond)
-        with open(OUT / f'candidates_{tag}.csv', 'w', newline='') as fh:
-            w = csv.writer(fh)
-            w.writerow(['cell', 'score_sum_robust_z'] + SCORE_FIELDS)
-            w.writerow(['MEDIAN', ''] + [f'{x:.4g}' for x in med])
-            for r in rows[:40]:
-                w.writerow([r[0], f'{r[1]:.3f}'] + [f'{x:.4g}' for x in r[2:]])
-        cell = checked_pick(tag, OVERRIDE, rows)
+        cell = chosen[tag]
         picks.append({'tag': tag, 'cond': f'{DATE}_{cond}', 'cond_dir': str(cond_dir(DATE, cond)),
                       'cell': cell, 'config': ROOTS[DATE][1]})
         print(f'[pick] {tag}: {cell}')

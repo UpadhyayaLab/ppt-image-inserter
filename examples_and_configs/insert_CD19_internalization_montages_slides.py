@@ -61,10 +61,12 @@ TITLE_COLORS = {
 }
 
 
-def color_title(slide, words):
+def color_title(slide, words, exclude=()):
     """Recolor the given whole words of the slide title (its first text box). With a
     colon in the title only the key after the LAST colon is colored, so 'puncta' in
-    'plane with most puncta: outline, puncta' stays white."""
+    'plane with most puncta: outline, puncta' stays white. A word inside one of the
+    EXCLUDE phrases stays white too ('CD19' in the view name 'Plane with Most CD19 >1 um
+    Deep' is not the channel key)."""
     tb = next(sh for sh in slide.shapes if sh.has_text_frame)
     para = tb.text_frame.paragraphs[0]
     text = para.text
@@ -73,9 +75,11 @@ def color_title(slide, words):
         r._r.getparent().remove(r._r)
     pat = re.compile(r"\b(" + "|".join(map(re.escape, words)) + r")\b")
     start = text.rfind(":") + 1                  # 0 when there is no colon
+    skip = [(i, i + len(ph)) for ph in exclude if ph
+            for i in [k.start() for k in re.finditer(re.escape(ph), text)]]
     segs, pos = [], 0
     for m in pat.finditer(text):
-        if m.start() < start:
+        if m.start() < start or any(a <= m.start() < b for a, b in skip):
             continue
         segs += [(text[pos:m.start()], "FFFFFF"), (m.group(0), words[m.group(0)])]
         pos = m.end()

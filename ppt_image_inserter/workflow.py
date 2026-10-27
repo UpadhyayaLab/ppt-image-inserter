@@ -9,19 +9,23 @@ from pptx.enum.text import PP_ALIGN
 from PIL import Image as PILImage
 import os
 import sys
+from .longpath import safe_path
 
 
 def _safe_exists(path: str) -> bool:
     """Check file existence, using extended-length path prefix on Windows to bypass MAX_PATH."""
-    if sys.platform == "win32" and len(path) > 240:
-        return os.path.exists("\\\\?\\" + path.replace("/", "\\"))
-    return os.path.exists(path)
+    return os.path.exists(_to_open_path(path))
 
 
 def _to_open_path(path: str) -> str:
-    """Return a path safe for open()/PIL/pptx on Windows, using \\?\ prefix for long paths."""
+    r"""Return a path safe for open()/PIL/pptx on Windows, using \\?\ prefix for long paths.
+
+    Goes through longpath.safe_path (absolute path first; UNC as \\?\UNC\...): prefixing the
+    raw string turned relative paths into invalid \\?\ paths and UNC paths into
+    \\?\\\server\..., both reported missing (bug hunt 2026-10-26).
+    """
     if sys.platform == "win32" and len(path) > 240:
-        return "\\\\?\\" + path.replace("/", "\\")
+        return safe_path(path)
     return path
 from .position import get_image_position, get_all_image_positions
 from .slide_utils import duplicate_slide, remove_pictures_from_slide

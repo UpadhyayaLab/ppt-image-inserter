@@ -23,14 +23,13 @@ from pptx import Presentation
 def safe_exists(path):
     """Check file existence, using extended-length path prefix on Windows to bypass MAX_PATH (260 chars)."""
     if sys.platform == "win32" and len(path) > 240:
-        win_path = "\\\\?\\" + path.replace("/", "\\")
-        return os.path.exists(win_path)
+        return os.path.exists(safe_path(path))   # handles UNC and relative paths
     return os.path.exists(path)
 
 # Add parent directory to path to import ppt_image_inserter
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ppt_image_inserter import delete_slides, copy_slide_replace_image, copy_slide_replace_images, backup_presentation, get_all_image_positions, add_label_to_existing_slide
+from ppt_image_inserter import delete_slides, copy_slide_replace_image, copy_slide_replace_images, backup_presentation, get_all_image_positions, add_label_to_existing_slide, safe_path
 
 
 def validate_slide_index(slide_index, field_name):
@@ -61,10 +60,33 @@ def normalize_preserve_slides(preserve_slides):
 
 
 def get_image_spec_template_slide(image_spec, default_template_slide):
-    """Return the original template slide index for an image spec."""
-    if isinstance(image_spec, dict) and 'images' in image_spec:
+    """Return the original template slide index for an image spec (any dict entry may
+    override it; a legacy {path:, template_slide:} entry used to be filled from the
+    default template with its own template_slide ignored, bug hunt 2026-10-26)."""
+    if isinstance(image_spec, dict):
         return image_spec.get('template_slide', default_template_slide)
     return default_template_slide
+
+
+def get_manual_position(config):
+    """The config's manual `position` (inches) when `auto_position: false`, else None.
+
+    Both keys are documented in CLAUDE.md, but the script never read them: a config with
+    `auto_position: false` was silently auto-positioned (bug hunt 2026-10-26). Applies to
+    single-image entries; multi-image slides always take their template's positions.
+    """
+    if config.get('auto_position', True) is not False:
+        if 'position' in config:
+            print("[WARNING] 'position' is ignored unless 'auto_position: false' is set")
+        return None
+    pos = config.get('position')
+    keys = ('left', 'top', 'width', 'height')
+    if not isinstance(pos, dict) or not all(isinstance(pos.get(k), (int, float)) for k in keys):
+        print(f"[ERROR] auto_position is false, so 'position' must give numeric {', '.join(keys)} "
+              f"(inches); found: {pos}")
+        sys.exit(1)
+    print(f"Manual position for single-image slides: {pos}")
+    return {k: float(pos[k]) for k in keys}
 
 
 def collect_template_slide_indices(images, default_template_slide):
@@ -172,6 +194,7 @@ def main(config_path):
     original_template_slide_index = template_slide_index
     add_label = config.get('add_label', True)
     label_side = config.get('label_side', 'right')
+    manual_position = get_manual_position(config)
 
     # Get preserve_slides, default to [0, template_slide] if not specified
     preserve_slides = normalize_preserve_slides(
@@ -440,13 +463,15 @@ def main(config_path):
                     error_count += 1
                     continue
 
+                slide_template = template_slide_remap[
+                    get_image_spec_template_slide(image_spec, original_template_slide_index)]
                 try:
                     # Copy template slide and insert image
                     new_idx = copy_slide_replace_image(
                         ppt_file,
-                        template_slide_index,
+                        slide_template,
                         image_path,
-                        position=None,  # Auto-detect from template
+                        position=manual_position,  # None: auto-detect from template
                         store_metadata=True,
                         add_label=add_label,
                         base_dir=base_dir,
@@ -475,7 +500,7 @@ def main(config_path):
                     ppt_file,
                     template_slide_index,
                     image_path,
-                    position=None,  # Auto-detect from template
+                    position=manual_position,  # None: auto-detect from template
                     store_metadata=True,
                     add_label=add_label,
                     base_dir=base_dir,

@@ -142,8 +142,12 @@ def configure_pzap70():
     # FF 2026-09-15: super basic summary; numbers are in the effect-table slides.
     # FF 2026-09-16: the zone shift is NOT a takeaway (differs by timepoint); main result =
     # higher synapse MFI in FMC at every timepoint of every experiment (6/6 panels).
+    # Bullet 2 was "Actin zones: no consistent CAT vs FMC difference", which zone_stats.csv
+    # contradicts (bug hunt 2026-10-26); now the counts from pzap70_extended_panels_20260916
+    # (actin_bottom_slice_{peripheral,central}_MFI_norm, p_BH_panel < 0.05).
     REP_BULLETS = ['• FMC: higher pZap70 MFI at the synapse at every timepoint in every experiment',
-                   '• Actin zones: no consistent CAT vs FMC difference']
+                   '• Actin: FMC higher in peripheral zone (6/6 panels, 3 significant), '
+                   'lower in central zone (5/6, 4 significant)']
     PROF = EXT / 'profiles' if EXT else None
     VIO = EXT / 'violins' if EXT else None
     OUT = Path(r'K:\FF\PPT\PPT_autogeneration\CART\pZap70') / \
@@ -171,10 +175,9 @@ TEXT_VERIFIED = {
     # in every replicate x condition; FMC more peripheral / less distal / more total pMLC at
     # 10 min in 3/3 replicates).
     ('pMLC', 'reps'): 'extended_panels_20260917',
-    # pZap70: bullet 1 holds (6/6) in pzap70_extended_panels_20260916, but bullet 2 ("Actin
-    # zones: no consistent CAT vs FMC difference") does not: central actin norm is lower in
-    # FMC in 5/6 panels and peripheral higher in 6/6. Left unrecorded pending FF.
-    ('pZap70', 'reps'): None,
+    # pZap70 2026-10-26: bullet 1 holds (6/6); bullet 2 rewritten to the zone_stats.csv counts
+    # (peripheral actin norm higher in FMC 6/6, 3 significant; central lower 5/6, 4 significant).
+    ('pZap70', 'reps'): 'pzap70_extended_panels_20260916',
 }
 STALE_ORANGE = RGBColor(0xE0, 0x70, 0x00)
 
@@ -635,11 +638,13 @@ def build_puncta(args):
 
 
 # FF: super basic summary; from extended_panels_20260917\puncta_stats.csv (per replicate; the
-# per-zone puncta metrics behind bullets 2-3 are not in the 20260916 file).
+# per-zone puncta metrics behind bullets 2-3 are not in the 20260916 file). "9/9, 7 significant":
+# direction in 9 of 9 replicate x timepoint comparisons, p_BH_panel < 0.05 in 7 of them. The old
+# "in all 9" counted direction only, beside effect tables showing n.s. cells (bug hunt 2026-10-26).
 PUNCTA_BULLETS = {
-    'pMLC': ['• Whole-synapse puncta density (~1.2 per μm²): nearly the same in CAT and FMC',
-             '• By zone: FMC has more peripheral and fewer distal puncta in all 9 comparisons',
-             '• Puncta peak / mean: distal puncta dimmer in FMC in all 9 comparisons; central and peripheral mixed'],
+    'pMLC': ['• Whole-synapse puncta density (~1.2 per μm²): FMC slightly lower (7/9, 3 significant)',
+             '• By zone, FMC: more peripheral puncta (9/9, 7 significant), fewer distal (9/9, 7 significant)',
+             '• Peak / mean: distal puncta dimmer in FMC (9/9, 6 significant); central and peripheral mixed'],
     # pZap70 (pzap70_extended_panels_20260915\puncta_stats.csv): no metric agrees in all experiments.
     'pZap70': ['• No consistent CAT vs FMC difference in puncta density or puncta brightness across experiments']}
 PUNCTA_REP_TITLE = {'pMLC': 'Representative pMLC Puncta, 10 min',
