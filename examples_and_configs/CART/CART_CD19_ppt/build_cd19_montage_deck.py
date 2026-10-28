@@ -203,6 +203,37 @@ def interleave(per_exp):
     return [spec for key in order for spec in groups[key]]
 
 
+def folder_date(root: Path):
+    """The date in the experiment folder name nearest the root (03102026_... = MMDDYYYY,
+    20261001_... = YYYYMMDD), as (folder, {candidate dates}); (None, set()) if no folder on
+    the path carries an 8-digit date. Only a LEADING date counts: experiment folders start with
+    theirs, while dated output folders (cd19_montages_20261027) end with the render date."""
+    for part in reversed(Path(root).parts):
+        found = set()
+        for tok in re.findall(r'^(\d{8})(?!\d)', part):
+            for fmt in ('%Y%m%d', '%m%d%Y'):
+                try:
+                    found.add(datetime.datetime.strptime(tok, fmt).date())
+                except ValueError:
+                    pass
+        if found:
+            return part, found
+    return None, set()
+
+
+def check_exp_labels(dates, labels, roots) -> None:
+    """Abort when an --exp label's date is not the date in its root's experiment folder.
+    Labels were paired with roots by argument order only, so swapped labels titled and named
+    the deck for the wrong experiment with nothing on screen (bug hunt 2026-10-27)."""
+    for d, lab, root in zip(dates, labels, roots):
+        folder, found = folder_date(root)
+        if not found:
+            print(f'[WARNING] no date in {root}; cannot check --exp "{lab}" against it')
+        elif d not in found:
+            raise SystemExit(f'--exp "{lab}" does not match {folder} ({root}); '
+                             'give the labels in the order of the roots')
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('roots', nargs='+', help='<experiment>/cd19_montages, one per experiment')
@@ -217,6 +248,7 @@ def main():
     # FF 2026-10-26: "there should also not be SEPARATE ppts for the two different
     # experiments" -- one deck over every experiment, oldest first, as the CAR T decks.
     dates = [datetime.datetime.strptime(e, '%b %d, %Y').date() for e in args.exp]
+    check_exp_labels(dates, args.exp, args.roots)
     exps = sorted(zip(dates, args.exp, map(Path, args.roots)))
     tag = '_'.join(f'{d:%Y%m%d}' for d, _, _ in exps)
 

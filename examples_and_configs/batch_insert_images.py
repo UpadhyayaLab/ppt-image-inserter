@@ -439,7 +439,8 @@ def main(config_path):
                         ppt_file,
                         slide_template,
                         image_paths,
-                        positions=None,
+                        # Optional per-entry boxes (inches); default: the template's placeholders
+                        positions=image_spec.get('positions'),
                         store_metadata=True,
                         add_label=add_label,
                         base_dir=base_dir,

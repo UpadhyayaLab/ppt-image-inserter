@@ -14,7 +14,8 @@ Slides: title; one slide per metric with the experiments side by side (shared y,
 only); last, the summary table (verdict per metric x timepoint, each experiment's stars).
 No notes slide (FF 2026-10-25: "not useful"). Review-deck rules: paper-figures skill section 8.
 
-Output: K:\FF\PPT\PPT_autogeneration\CART\CD19\CART_CD19_replicates_<yyyymmdd>.pptx
+Output: K:\FF\PPT\PPT_autogeneration\CART\CD19\CART_CD19_analysis_summary_<yyyymmdd>.pptx
+(FF 2026-10-27: "call it analysis_summary not replicates"; was CART_CD19_replicates_*)
 Run (PowerShell, base miniforge -- has python-pptx + pywin32):
   & 'C:\Users\Upadhyaya_Lab\miniforge3\python.exe' build_cd19_replicates_deck.py `
       --replicates '\\10.225.56.176\ULab_data\User_data\Kiet\volscope_replicates_03102026_20261001' --export
@@ -195,7 +196,7 @@ def main():
                     help='export slide PNGs to <replicates>/deck_png_<yyyymmdd>')
     args = ap.parse_args()
     today = datetime.date.today().strftime('%Y%m%d')
-    out = DECK_DIR / f'CART_CD19_replicates_{today}.pptx'
+    out = DECK_DIR / f'CART_CD19_analysis_summary_{today}.pptx'
     if (out.parent / f'~${out.name}').exists():
         raise SystemExit(f'{out.name} is open in PowerPoint -- close it first')
     bpd.OUT = out                                   # Deck.save / export_pngs read OUT

@@ -170,7 +170,7 @@ def has(tag, tp):
 # 2026-10-24, second pass). Update an entry after re-checking its text against that folder.
 TEXT_VERIFIED = {
     ('pMLC', 'puncta'): 'extended_panels_20260917',   # the per-zone puncta stats first appear here
-    ('pZap70', 'puncta'): 'pzap70_extended_panels_20260915',
+    ('pZap70', 'puncta'): 'pzap70_extended_panels_20260916',   # rewritten 2026-10-27
     # 2026-10-24: both pMLC bullets hold in zone_stats.csv here (peripheral norm highest zone
     # in every replicate x condition; FMC more peripheral / less distal / more total pMLC at
     # 10 min in 3/3 replicates).
@@ -645,8 +645,13 @@ PUNCTA_BULLETS = {
     'pMLC': ['• Whole-synapse puncta density (~1.2 per μm²): FMC slightly lower (7/9, 3 significant)',
              '• By zone, FMC: more peripheral puncta (9/9, 7 significant), fewer distal (9/9, 7 significant)',
              '• Peak / mean: distal puncta dimmer in FMC (9/9, 6 significant); central and peripheral mixed'],
-    # pZap70 (pzap70_extended_panels_20260915\puncta_stats.csv): no metric agrees in all experiments.
-    'pZap70': ['• No consistent CAT vs FMC difference in puncta density or puncta brightness across experiments']}
+    # pZap70 (pzap70_extended_panels_20260916\puncta_stats.csv, same counting). The old single
+    # bullet "no consistent difference in puncta density or puncta brightness" hid two
+    # brightness metrics that do move with FMC in 5/6 panels (bug hunt 2026-10-27).
+    'pZap70': ['• Puncta density: no consistent difference (FMC lower 4/6, 3 significant; '
+               'higher 2/6, 2 significant)',
+               '• Puncta peak / synapse mean: higher in FMC (5/6, 4 significant)',
+               '• Puncta / non-puncta MFI: lower in FMC (5/6, 4 significant)']}
 PUNCTA_REP_TITLE = {'pMLC': 'Representative pMLC Puncta, 10 min',
                     'pZap70': f'Representative pZap70 Puncta, 15 min {DASH} Feb 2025 D3'}
 
