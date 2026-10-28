@@ -129,6 +129,8 @@ preserve_slides: [0, 1]              # Default: [0, template_slide]
 backup_dir: "custom/backup/location" # Default: backups/ folder next to the presentation file
 output_path: "output/new.pptx"       # Template preservation mode (see below)
 auto_position: true                   # Default: true (auto-detect from template image)
+trim_whitespace: false               # Default: false; true crops each image's white margin so it fills its box
+# Per entry (dict form): subtitle: "..." adds a smaller line under that slide's title
 
 # Manual position override (only used if auto_position is false)
 position:

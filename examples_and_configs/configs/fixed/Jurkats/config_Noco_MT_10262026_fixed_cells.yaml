@@ -17,7 +17,7 @@
 # Panels: <metric>_per_experiment_grid.png carry the brackets (Wilcoxon
 # rank-sum, BH over the 4 declared pairs). One experiment; wells never pooled.
 #
-# Source compile: results_compilation_20261027, final (18:01): PLL 42, CD3 DMSO
+# Source compile: results_compilation_20261028 (04:42, overnight image rerun; numbers as in 20261027): PLL 42, CD3 DMSO
 # 39, 5 μM 31, 10 μM 40 cells; FF's 9 manual exclusions, mesh failures and the
 # centrin filter (centrosome_max_signal > 50) applied; 12 flagged cells kept.
 
@@ -28,14 +28,19 @@ output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Eff
 template_slide: 1
 preserve_slides: [0, 1]
 
-# Auto-detect position from the first image in the template slide
-auto_position: true
+# Plots fill the whole area under the title (FF 2026-10-28: "plots can and should
+# be a lot bigger"); the template's 6.68 x 5.74 in box left wide panels 2.6 in tall.
+# Each plot is fit inside this box, aspect kept, centered.
+auto_position: false
+position: {left: 0.3, top: 1.17, width: 12.73, height: 6.15}
+# Crop each plot's white margin so the plot itself fills the box (FF 2026-10-28).
+trim_whitespace: true
 
 label_side: left
 add_label: false          # no source file name at the bottom of slides (FF 2026-10-27)
 
 # Base directory for the metric panels; geom-density panels use absolute paths.
-base_dir: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/grid_panels"
+base_dir: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/grid_panels"
 
 images:
   # --- 1. Did the drug work? (MT side view / broadest slice slides) ---
@@ -47,18 +52,100 @@ images:
   # Bars: Wilson 95% CI; Fisher exact, BH over the 4 declared pairs.
   - images:
       - centrosome_center_z_rel_bottom_actin_plane_per_experiment_grid.png
-      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/polarization/cent_polarized_lt2um_fraction.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/polarization/cent_polarized_lt2um_fraction.png"
     positions:
-      - {left: 0.6, top: 1.17, width: 5.9, height: 5.74}
-      - {left: 6.83, top: 1.17, width: 5.9, height: 5.74}
+      # Violin is landscape since the 18 pt tick redraw (1563 x 906), so it gets the wider box.
+      - {left: 0.3, top: 1.17, width: 7.6, height: 6.15}
+      - {left: 8.1, top: 1.17, width: 4.93, height: 6.15}
     title: "Centrosome-synapse distance"
 
   - path: nuc_cent_closest_dist_per_experiment_grid.png
     title: "Nucleus-centrosome closest distance"
 
+  # Same distance from the centrin mask instead of its centroid (FF 2026-10-28).
+  - path: nuc_cent_mask_closest_dist_per_experiment_grid.png
+    title: "Nucleus-centrosome closest distance (centrin mask)"
+
+  # Paper Figure 5 F's readout on this experiment (FF 2026-10-28): mask field < -1 μm
+  # (positive = inside the hull); plot_condition_fraction_bars, Fisher vs PLL DMSO in
+  # the _stats.csv beside it (all n.s.).
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/key_evidence/centrosome_mask_closest_chull_dist_um_fraction_bars.png"
+    title: "Centrosome more than 1 μm outside the nuclear hull"
+
   # --- 3. Invagination near the centrosome (hull mesh deck) ---
   - path: chull_max_D_by_cent_per_experiment_grid.png
     title: "Invagination depth near centrosome"
+
+  # Same depth over the whole nucleus (FF 2026-10-28).
+  - path: chull_max_D_per_experiment_grid.png
+    title: "Invagination depth over the full nucleus"
+
+  # Figure 1 supplement-style Near/Away curvature, paired per cell (FF 2026-10-28):
+  # plot_deepest_region_in_vs_away, region 'cent', Figure 1's filter and paper style;
+  # paired signed-rank (BH) in the _paired_signrank.csv beside each panel.
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/for_paper/noco_near_vs_away/min_near_vs_away_cent_noco.png"
+    title: "Min curvature near vs away from centrosome"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/for_paper/noco_near_vs_away/mean_near_vs_away_cent_noco.png"
+    title: "Mean curvature near vs away from centrosome"
+
+  # Whole-nucleus surface shape (FF 2026-10-28, via the TCell session).
+  - path: concave_ratio_per_experiment_grid.png
+    title: "Concave surface fraction"
+  - path: n_invag_regions_0p5um_per_experiment_grid.png
+    title: "Number of invaginations ≥ 0.5 μm deep"
+  - path: invag_ratio_per_experiment_grid.png
+    title: "Invagination ratio (concave + saddle faces)"
+
+  # Per-cell scatter, Pearson r/p/n per condition in its legend (FF 2026-10-28, via the TCell session).
+  # Depth / coupling slides are side-by-side pairs (FF 2026-10-28): left = all kept cells,
+  # right = the 10 artifact nuclei left out of depth and coupled/decoupled only.
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_mt_noco_all_cells/MT_all_perinuc_MFI_VS_chull_max_D_by_cent.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_mt_noco_artifacts_excluded/MT_all_perinuc_MFI_VS_chull_max_D_by_cent.png"
+    positions:
+      - {left: 0.3, top: 1.95, width: 6.25, height: 5.45}
+      - {left: 6.78, top: 1.95, width: 6.25, height: 5.45}
+    title: "Invagination depth near centrosome vs leftover perinuclear MT"
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_mt_height_noco/MT_all_perinuc_MFI_VS_centrosome_center_z_rel_bottom_actin_plane.png"
+    title: "Centrosome-synapse distance vs leftover perinuclear MT"
+
+  # Centrosome-synapse distance vs depth, near the centrosome then anywhere (the control);
+  # Pearson r/p/n per condition in each legend (FF 2026-10-28, via the TCell session).
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_all_cells/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D_by_cent.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_artifacts_excluded/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D_by_cent.png"
+    positions:
+      - {left: 0.3, top: 1.95, width: 6.25, height: 5.45}
+      - {left: 6.78, top: 1.95, width: 6.25, height: 5.45}
+    title: "Depth near centrosome vs centrosome-synapse distance"
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_all_cells/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_artifacts_excluded/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D.png"
+    positions:
+      - {left: 0.3, top: 1.95, width: 6.25, height: 5.45}
+      - {left: 6.78, top: 1.95, width: 6.25, height: 5.45}
+    title: "Depth over the whole nucleus vs centrosome-synapse distance"
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
+
+  # Cell-shape controls for the depth link (FF 2026-10-28, via the TCell session).
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_shape_all_cells/nuc_height_VS_chull_max_D_by_cent.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_shape_artifacts_excluded/nuc_height_VS_chull_max_D_by_cent.png"
+    positions:
+      - {left: 0.3, top: 1.95, width: 6.25, height: 5.45}
+      - {left: 6.78, top: 1.95, width: 6.25, height: 5.45}
+    title: "Depth near centrosome vs nuclear height"
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_shape_all_cells/actin_MIP_area_VS_chull_max_D_by_cent.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_shape_artifacts_excluded/actin_MIP_area_VS_chull_max_D_by_cent.png"
+    positions:
+      - {left: 0.3, top: 1.95, width: 6.25, height: 5.45}
+      - {left: 6.78, top: 1.95, width: 6.25, height: 5.45}
+    title: "Depth near centrosome vs cell spread area"
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
 
   - path: chull_mean_D_cent_global_ratio_per_experiment_grid.png
     title: "Centrosomal Invagination Index (global)"
@@ -111,114 +198,114 @@ images:
   - path: MT_ratio_above_below_0_5um_per_experiment_grid.png
     title: "Microtubule ratio above/below 0.5 μm"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/02a_MT_avg_hulldist.tiff"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/02a_MT_avg_hulldist.tiff"
     title: "MT density vs distance to convex hull (mean ± SEM)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/02b_MT_avg_minCurvature.tiff"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/02b_MT_avg_minCurvature.tiff"
     title: "MT density vs min curvature (mean ± SEM)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/02c_MT_avg_meanCurvature.tiff"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/02c_MT_avg_meanCurvature.tiff"
     title: "MT density vs mean curvature (mean ± SEM)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/03a_MT_enrichment_hulldist_gt0.5um.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/03a_MT_enrichment_hulldist_gt0.5um.png"
     title: "MT enrichment in invaginations > 0.5 μm deep"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/03b_MT_enrichment_hulldist_gt1.0um.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/03b_MT_enrichment_hulldist_gt1.0um.png"
     title: "MT enrichment in invaginations > 1.0 μm deep"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/03c_MT_enrichment_minCurvature_lt0.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/03c_MT_enrichment_minCurvature_lt0.png"
     title: "MT enrichment on concave surface (min curvature < 0)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/03d_MT_enrichment_minCurvature_ltm0.25.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/03d_MT_enrichment_minCurvature_ltm0.25.png"
     title: "MT enrichment on strongly concave surface (min curvature < −0.25)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/03e_MT_enrichment_meanCurvature.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/03e_MT_enrichment_meanCurvature.png"
     title: "MT enrichment on concave surface (mean curvature < 0)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/04a_MT_correlation_hulldist.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/04a_MT_correlation_hulldist.png"
     title: "MT density vs distance to convex hull: per-cell Pearson r"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/04b_MT_correlation_minCurvature.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/04b_MT_correlation_minCurvature.png"
     title: "MT density vs min curvature: per-cell Pearson r"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/04c_MT_correlation_meanCurvature.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/04c_MT_correlation_meanCurvature.png"
     title: "MT density vs mean curvature: per-cell Pearson r"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/05c1_MT_prox_vs_distal_hulldist.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/05c1_MT_prox_vs_distal_hulldist.png"
     title: "MT density vs distance to convex hull: near vs far from centrosome"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/05c2_MT_prox_vs_distal_minCurvature.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/05c2_MT_prox_vs_distal_minCurvature.png"
     title: "MT density vs min curvature: near vs far from centrosome"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/05c3_MT_prox_vs_distal_meanCurvature.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/05c3_MT_prox_vs_distal_meanCurvature.png"
     title: "MT density vs mean curvature: near vs far from centrosome"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/05c5_MT_near_cent_level.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/05c5_MT_near_cent_level.png"
     title: "MT density near centrosome / whole surface"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/05c6_MT_prox_over_distal_ratio.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/05c6_MT_prox_over_distal_ratio.png"
     title: "MT density near / far from centrosome"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/05c4_MT_vs_centrosome_distance.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/05c4_MT_vs_centrosome_distance.png"
     title: "MT density vs distance from centrosome along the nucleus"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/MT_loc_wrto_invag/06a_MT_avg_normalangle.tiff"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/MT_loc_wrto_invag/06a_MT_avg_normalangle.tiff"
     title: "MT density vs surface orientation (dorsal, lateral, ventral)"
 
   # --- 6b. Where DNA sits relative to the invaginations ---
   - path: deepest_region_periph_ratio_025um_per_experiment_grid.png
     title: "DNA levels near invag"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/02a_DNA_avg_hulldist.tiff"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/02a_DNA_avg_hulldist.tiff"
     title: "DNA density vs distance to convex hull (mean ± SEM)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/02b_DNA_avg_minCurvature.tiff"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/02b_DNA_avg_minCurvature.tiff"
     title: "DNA density vs min curvature (mean ± SEM)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/02c_DNA_avg_meanCurvature.tiff"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/02c_DNA_avg_meanCurvature.tiff"
     title: "DNA density vs mean curvature (mean ± SEM)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/03a_DNA_enrichment_hulldist_gt0.5um.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/03a_DNA_enrichment_hulldist_gt0.5um.png"
     title: "DNA enrichment in invaginations > 0.5 μm deep"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/03b_DNA_enrichment_hulldist_gt1.0um.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/03b_DNA_enrichment_hulldist_gt1.0um.png"
     title: "DNA enrichment in invaginations > 1.0 μm deep"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/03c_DNA_enrichment_minCurvature_lt0.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/03c_DNA_enrichment_minCurvature_lt0.png"
     title: "DNA enrichment on concave surface (min curvature < 0)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/03d_DNA_enrichment_minCurvature_ltm0.25.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/03d_DNA_enrichment_minCurvature_ltm0.25.png"
     title: "DNA enrichment on strongly concave surface (min curvature < −0.25)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/03e_DNA_enrichment_meanCurvature.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/03e_DNA_enrichment_meanCurvature.png"
     title: "DNA enrichment on concave surface (mean curvature < 0)"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/04a_DNA_correlation_hulldist.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/04a_DNA_correlation_hulldist.png"
     title: "DNA density vs distance to convex hull: per-cell Pearson r"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/04b_DNA_correlation_minCurvature.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/04b_DNA_correlation_minCurvature.png"
     title: "DNA density vs min curvature: per-cell Pearson r"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/04c_DNA_correlation_meanCurvature.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/04c_DNA_correlation_meanCurvature.png"
     title: "DNA density vs mean curvature: per-cell Pearson r"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/05c1_DNA_prox_vs_distal_hulldist.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/05c1_DNA_prox_vs_distal_hulldist.png"
     title: "DNA density vs distance to convex hull: near vs far from centrosome"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/05c2_DNA_prox_vs_distal_minCurvature.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/05c2_DNA_prox_vs_distal_minCurvature.png"
     title: "DNA density vs min curvature: near vs far from centrosome"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/05c3_DNA_prox_vs_distal_meanCurvature.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/05c3_DNA_prox_vs_distal_meanCurvature.png"
     title: "DNA density vs mean curvature: near vs far from centrosome"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/05c5_DNA_near_cent_level.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/05c5_DNA_near_cent_level.png"
     title: "DNA density near centrosome / whole surface"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/05c6_DNA_prox_over_distal_ratio.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/05c6_DNA_prox_over_distal_ratio.png"
     title: "DNA density near / far from centrosome"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/05c4_DNA_vs_centrosome_distance.png"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/05c4_DNA_vs_centrosome_distance.png"
     title: "DNA density vs distance from centrosome along the nucleus"
 
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261027/DNA_loc_wrto_invag/06a_DNA_avg_normalangle.tiff"
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/DNA_loc_wrto_invag/06a_DNA_avg_normalangle.tiff"
     title: "DNA density vs surface orientation (dorsal, lateral, ventral)"

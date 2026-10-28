@@ -194,6 +194,8 @@ def main(config_path):
     original_template_slide_index = template_slide_index
     add_label = config.get('add_label', True)
     label_side = config.get('label_side', 'right')
+    # Crop each image's white margin so plots fill their box (default off)
+    trim_whitespace = bool(config.get('trim_whitespace', False))
     manual_position = get_manual_position(config)
 
     # Get preserve_slides, default to [0, template_slide] if not specified
@@ -403,6 +405,7 @@ def main(config_path):
                     add_label=add_label,
                     base_dir=base_dir,
                     label_side=label_side,   # was dropped for plain-list entries only
+                    trim_whitespace=trim_whitespace,
                 )
                 success_count += 1
                 print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}): {[os.path.basename(p) for p in image_paths]}")
@@ -445,7 +448,9 @@ def main(config_path):
                         add_label=add_label,
                         base_dir=base_dir,
                         title=slide_title,
+                        subtitle=image_spec.get('subtitle'),
                         label_side=label_side,
+                        trim_whitespace=trim_whitespace,
                     )
                     success_count += 1
                     print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}, template {original_slide_template}): {[os.path.basename(p) for p in image_paths]}")
@@ -477,7 +482,9 @@ def main(config_path):
                         add_label=add_label,
                         base_dir=base_dir,
                         title=image_spec.get('title', None),
+                        subtitle=image_spec.get('subtitle'),
                         label_side=label_side,
+                        trim_whitespace=trim_whitespace,
                     )
                     success_count += 1
                     print(f"  Created slide: {os.path.basename(image_path)}")
@@ -506,6 +513,7 @@ def main(config_path):
                     add_label=add_label,
                     base_dir=base_dir,
                     label_side=label_side,
+                    trim_whitespace=trim_whitespace,
                 )
                 success_count += 1
                 print(f"  Created slide: {os.path.basename(image_path)}")

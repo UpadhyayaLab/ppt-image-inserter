@@ -120,7 +120,9 @@ PHYS = "physical_scale_images/{combo}/montages"
 SEG = "actin/bottom_slice_seg/montages"
 
 # FF 2026-10-27: XY [10 500], XZ [10 750] on bg-subtracted MT, same for all four
-# conditions (above the CD3 DMSO 99.5th percentiles, 415.6 and 658.6).
+# conditions (above the CD3 DMSO 99.5th percentiles, 415.6 and 658.6); XY lowered
+# to [10 200] the same day (params.MT_display_clim in the Noco dataset config), and
+# every well's *_fixedclim PNGs were rendered after that (bug hunt 2026-10-28).
 FIXED_CLIM_NOTE = "Pending: fixed-contrast MT montages (TCell pipeline)"
 
 MT_NUC = [("MT", MAGENTA), ("DNA", CYAN)]
@@ -174,7 +176,7 @@ HULL_PPU = 56                 # px/μm of every hull tile (the run's --ppu)
 HULL_METRIC = "chull_max_D_by_cent"
 RESULTS_MAT = "Jurkats_Noco_MT_20261026_results.mat"
 # The final compile's kept cells (kept_ids); condition_name -> well folder.
-COMPILE_TRACING = EXP_ROOT / "results_compilation_20261027" / "cell_tracing.csv"
+COMPILE_TRACING = EXP_ROOT / "results_compilation_20261028" / "cell_tracing.csv"
 COMPILE_WELLS = {"PLL_DMSO": "A4_PLL_DMSO_", "CD3_DMSO": "A1_DMSO_aCD3_",
                  "CD3_Noco5uM": "B1_5uM_aCD3_", "CD3_Noco10uM": "B2_10uM_aCD3_"}
 PACK_SHELVES = 3              # packed decks: rows of cells per condition block
@@ -195,6 +197,10 @@ ELEV_TEST_OUT = "Noco_Jurkats_hull_elev_test_10262026.pptx"
 XZ_PPU = SCALEBAR_PX / SCALEBAR_UM
 XZ_ZSTEP_UM = 0.3
 XZ_BELOW_PLANES = 2           # tiles end this many z planes below the actin bottom slice
+# Black figure margin under the image in every physical-scale PNG
+# (set_figure_for_physical_scale.m: margin_px 20 at ppum 20 = 1 μm; 20 rows measured).
+# Ignoring it put the cut ~3.3 planes lower than XZ_BELOW_PLANES (bug hunt 2026-10-28).
+XZ_FIG_MARGIN_UM = 1.0
 XZ_ID_BOX = (40, 30)          # (w, h) px of the burned-in cell id, bottom right
 # FF 2026-10-27: for XZ MIPs every cell is not needed; one montage type, one
 # slide (the first 12 cells per condition).
@@ -234,6 +240,15 @@ COMPARE_XY = [
     ("MT_bz_fixedclim", "MT_nuc_bz", "Did the drug work? MT, broadest slice",
      [("MT contrast 10–200", MAGENTA)]),
 ]
+# Second MT contrast (FF 2026-10-28: right after the first): fixed-contrast
+# family -> (its _fixedclim_low twin, legend), slide 2 of the same deck.
+# Windows: params.MT_display_clim_extra in the Noco dataset config.
+COMPARE_LOW = {
+    "MT_xz_nolines_fixedclim": ("MT_xz_nolines_fixedclim_low", [("MT contrast 10–200", MAGENTA)]),
+    "MT_cent_xz_nolines_fixedclim": ("MT_cent_xz_nolines_fixedclim_low",
+                                     [("MT contrast 10–200", GREEN), ("Centrin", MAGENTA)]),
+    "MT_bz_fixedclim": ("MT_bz_fixedclim_low", [("MT contrast 0–50", MAGENTA)]),
+}
 COMPARE_OUT = "Noco_Jurkats_compare_{i}_{combo}_10262026.pptx"
 # px/μm of actin/bottom_slice_seg PNGs: the pipeline's montage scale, same as the
 # XZ MIPs (segment_actin_single_plane.m, ppum 20 at 100 dpi on a 96-dpi session).
@@ -266,8 +281,8 @@ STRIP_FOOTER = "Side view toward the centrosome. Magenta dot = centrosome. Bar =
 # placeholder note or None). A block with a note shows a "pending" slide while
 # its montages don't exist; a block without one is skipped with a warning.
 # The MT contrast is named in the channel label above the images (FF: not in
-# the title): fixed XY 10–500 / XZ 10–750, or per-cell contrast.
-MT_XY_FIXED = ("MT contrast 10–500", MAGENTA)
+# the title): fixed XY 10–200 / XZ 10–750, or per-cell contrast.
+MT_XY_FIXED = ("MT contrast 10–200", MAGENTA)
 MT_XZ_FIXED = ("MT contrast 10–750", MAGENTA)
 MT_PER_CELL = ("MT per-cell contrast", MAGENTA)
 DNA_C = ("DNA", CYAN)
@@ -331,6 +346,23 @@ SECTIONS = [
             [("Actin", GRAY), ("Mask outline", RED)], None),
     ]),
 ]
+# The legends above are the superseded run's colors. The new run (prog_fixed_cells)
+# draws actin yellow, centrin and MT magenta, DNA cyan (params.actin_xz_colors in
+# the TCell Noco dataset config, 2026-10-27), so its actin families get these
+# legends instead (bug hunt 2026-10-28): family -> channels.
+NEW_RUN_DIR = "prog_fixed_cells"
+NEW_RUN_LEGENDS = {
+    "actin_MT_xz_nolines": [("Actin", YELLOW), ("MT per-cell contrast", MAGENTA)],
+    "actin_cent_xz_nolines": [("Actin", YELLOW), ("Centrin", MAGENTA)],
+    "actin_cent_nuc_xz_nolines": [("Actin", YELLOW), ("Centrin", MAGENTA), ("DNA", CYAN)],
+    "actin_nuc_xz_nolines": [("Actin", YELLOW), ("DNA", CYAN)],
+}
+
+
+def run_legend(combo: str, prog: str, channels: list) -> list:
+    """The channel legend for family combo as drawn by run folder prog."""
+    return NEW_RUN_LEGENDS.get(combo, channels) if prog == NEW_RUN_DIR else channels
+
 
 # Slide layout (inches). 13.333 x 7.5 widescreen.
 SLIDE_W = 13.333
@@ -729,6 +761,7 @@ def collect_specs(layout: str, conditions=CONDITIONS, prog_dir: str = PROG_DIR) 
                 continue
             prog = (FIXED_CLIM_PROG_DIR if "_fixedclim" in subpath or subpath in fixed_twins
                     else prog_dir)
+            channels = run_legend(Path(subpath).parent.name, prog, channels)
             chunks = {}
             for folder, label in conditions:
                 d = EXP_ROOT / prog / folder / Path(subpath)
@@ -962,14 +995,16 @@ def rank_pick(tiles: list, depth: dict, n: int) -> list:
 
 def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, headings: dict,
                       ppu: float, footer: str, channels=None, colorbar: bool = False,
-                      slide_bar: bool = True, side_notes: list = None) -> int:
+                      slide_bar: bool = True, side_notes: list = None,
+                      page_channels: list = None) -> int:
     """Packed montage deck (FF 2026-10-27: 12 cells per condition, large).
     pages: one {condition label: [(tile label, tile image), ...]} per slide.
     The four conditions sit 2 x 2 (CONDITIONS order); each block holds
     PACK_SHELVES rows of PACK_PER_SHELF cells, tiles packed edge to edge
     (shelf packing, in the order given) and bottom-aligned on each shelf's
     baseline. One PPI for every tile on every slide, so cells compare at
-    physical scale across conditions; one 5 μm bar per slide (ppu = tile px/μm)."""
+    physical scale across conditions; one 5 μm bar per slide (ppu = tile px/μm).
+    page_channels: one channel legend per slide (default: channels on every slide)."""
     if not pages:
         return 0
     gap = 0.06
@@ -1006,7 +1041,8 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
     for k, page in enumerate(pages):
         # title: one string (numbered k/n), or one title per page.
         slide = new_slide(prs, title[k] if isinstance(title, list) else
-                          title + (f" {k + 1}/{len(pages)}" if len(pages) > 1 else ""), channels)
+                          title + (f" {k + 1}/{len(pages)}" if len(pages) > 1 else ""),
+                          page_channels[k] if page_channels else channels)
         for b, (_, label) in enumerate(CONDITIONS):
             left, top = MARGIN + (b % 2) * (block_w + 0.20), GRID_TOP + (b // 2) * (block_h + 0.12)
             # headings: one {label: text} for every slide, or one per slide.
@@ -1229,8 +1265,10 @@ def xz_tile(path: Path, bottom_slice: float, box_path: Path = None):
             b = a
         b[h - XZ_ID_BOX[1]:, w - XZ_ID_BOX[0]:] = 0
     # Cut XZ_BELOW_PLANES below the actin bottom slice (FF 2026-10-27: a
-    # little margin under the coverslip, not aggressive).
-    y_cut = min(h, h - int(round((bottom_slice - XZ_BELOW_PLANES - 0.5) * XZ_ZSTEP_UM * XZ_PPU)))
+    # little margin under the coverslip, not aggressive). The stack bottom sits
+    # XZ_FIG_MARGIN_UM above the PNG's bottom row.
+    y_cut = min(h, h - int(round((XZ_FIG_MARGIN_UM + (bottom_slice - XZ_BELOW_PLANES - 0.5)
+                                  * XZ_ZSTEP_UM) * XZ_PPU)))
     ys, xs = np.nonzero(b[:y_cut].max(axis=-1) > 15)
     if len(xs) == 0:
         return None
@@ -1271,9 +1309,10 @@ def xz_tiles(combo: str, sources: dict, kept_only: bool = False) -> dict:
         files = percell_files(phys / combo / "cells")
         # Fixed-contrast families crop on their per-cell-contrast twin (same
         # geometry); MT + centrin has none, so it crops on per-cell MT.
+        fixed = combo.removesuffix("_low")
         twin = {"MT_cent_xz_nolines_fixedclim": "MT_xz_nolines"}.get(
-            combo, combo.replace("_fixedclim", ""))
-        twins = percell_files(phys / twin / "cells") if combo.endswith("_fixedclim") else {}
+            fixed, fixed.replace("_fixedclim", ""))
+        twins = percell_files(phys / twin / "cells") if fixed.endswith("_fixedclim") else {}
         for cid in sorted(files):
             if (keep is not None and cid not in keep) or cid not in bottoms or np.isnan(bottoms[cid]):
                 continue
@@ -1302,29 +1341,42 @@ def build_compare_decks() -> int:
             n_pages = max(1, max((-(-len(t) // per_page) for t in tiles.values()), default=1))
         pages = [{lab: t[k * per_page:(k + 1) * per_page] for lab, t in tiles.items()}
                  for k in range(n_pages)]
-        titles = title if n_pages == 1 else [f"{title} {k + 1}/{n_pages}" for k in range(n_pages)]
+        titles = [title] if n_pages == 1 else [f"{title} {k + 1}/{n_pages}" for k in range(n_pages)]
+        page_channels = [channels] * len(pages)
+        if combo in COMPARE_LOW:
+            low, low_channels = COMPARE_LOW[combo]
+            low_tiles = xz_tiles(low, COMPARE_SOURCES, kept_only=True)
+            pages.append({lab: t[:per_page] for lab, t in low_tiles.items()})
+            titles.append(title)
+            page_channels.append(low_channels)
         n += build_packed_deck(
             OUT_DIR / COMPARE_OUT.format(i=i, combo=combo), combo, titles, pages, pending,
             XZ_PPU, f"Each cell cut {XZ_BELOW_PLANES} planes below its actin bottom slice; all "
             "cells aligned on it. Excluded cells left out. Bars = 5 μm.", channels=channels,
-            slide_bar=False)
+            slide_bar=False, page_channels=page_channels)
     n += build_synapse_deck(len(COMPARE_SLIDES) + 1)
     for i, (combo, box_combo, title, channels) in enumerate(COMPARE_XY, start=len(COMPARE_SLIDES) + 2):
-        page = {}
-        for folder, label in CONDITIONS:
-            page[label] = []
-            prog = COMPARE_SOURCES.get(folder)
-            if prog is None:
-                continue
-            keep = kept_ids(folder)
-            phys = EXP_ROOT / prog / folder / "physical_scale_images"
-            files, boxes = percell_files(phys / combo / "cells"), percell_files(phys / box_combo / "cells")
-            for cid in sorted(c for c in files if c in keep)[:per_page]:
-                page[label].append((str(cid), with_scalebar(xy_tile(files[cid], boxes.get(cid)), XZ_PPU)))
+        families = [(combo, channels)]
+        if combo in COMPARE_LOW:
+            families.append(COMPARE_LOW[combo])
+        pages = []
+        for fam, _ in families:
+            page = {}
+            for folder, label in CONDITIONS:
+                page[label] = []
+                prog = COMPARE_SOURCES.get(folder)
+                if prog is None:
+                    continue
+                keep = kept_ids(folder)
+                phys = EXP_ROOT / prog / folder / "physical_scale_images"
+                files, boxes = percell_files(phys / fam / "cells"), percell_files(phys / box_combo / "cells")
+                for cid in sorted(c for c in files if c in keep)[:per_page]:
+                    page[label].append((str(cid), with_scalebar(xy_tile(files[cid], boxes.get(cid)), XZ_PPU)))
+            pages.append(page)
         n += build_packed_deck(
-            OUT_DIR / COMPARE_OUT.format(i=i, combo=combo), combo, title, [page], pending, XZ_PPU,
-            "Broadest slice of each cell. Excluded cells left out. Bars = 5 μm.",
-            channels=channels, slide_bar=False)
+            OUT_DIR / COMPARE_OUT.format(i=i, combo=combo), combo, [title] * len(pages), pages,
+            pending, XZ_PPU, "Broadest slice of each cell. Excluded cells left out. Bars = 5 μm.",
+            channels=channels, slide_bar=False, page_channels=[ch for _, ch in families])
     return n
 
 
@@ -1392,7 +1444,7 @@ def build_xz_packed_deck(prog_dir: str = PROG_DIR) -> int:
         n += build_packed_deck(
             OUT_DIR / XZ_PACKED_OUT.format(combo=combo), combo, f"{title} ({TP_LABEL})", pages, {},
             XZ_PPU, "Each cell cut at its coverslip (actin bottom slice); all cells aligned on it. "
-            "Bars = 5 μm.", channels=channels, slide_bar=False)
+            "Bars = 5 μm.", channels=run_legend(combo, prog_dir, channels), slide_bar=False)
     return n
 
 

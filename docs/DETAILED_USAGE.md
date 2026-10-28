@@ -52,6 +52,8 @@ images:
 | `preserve_slides` | list | No | Slide indices to preserve (default: [0, template_slide]) |
 | `backup_dir` | string | No | Backup directory path (default: backups/ next to the presentation) |
 | `auto_position` | boolean | No | Auto-detect image position from template (default: true) |
+| `trim_whitespace` | boolean | No | Crop each image's white margin so the content fills its box (default: false) |
+| `subtitle` (per image entry) | string | No | A smaller line under that slide's title (dict entries with a `title`) |
 | `position` | object | No | Manual position settings (left, top, width, height in inches) |
 | `base_dir` | string | Yes | Base directory for image paths |
 | `images` | list | Yes | List of image filenames to insert |

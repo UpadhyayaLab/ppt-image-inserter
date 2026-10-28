@@ -44,6 +44,7 @@ TITLE_TOP = 0.0
 TITLE_WIDTH = 11.0
 TITLE_HEIGHT = 1.5
 TITLE_FONT_SIZE_PT = 32
+SUBTITLE_FONT_SIZE_PT = 18
 
 
 def _get_cnvpr(shape):
@@ -108,8 +109,10 @@ def _remove_generated_labels(slide: Slide) -> int:
     return labels_removed
 
 
-def _add_title(slide: Slide, text: str) -> None:
-    """Add a centered bold title textbox at the top of a slide."""
+def _add_title(slide: Slide, text: str, subtitle: str = None) -> None:
+    """Add a centered bold title textbox at the top of a slide; an optional
+    subtitle goes in the same box as a smaller second paragraph, so it sits
+    under the title however many lines the title wraps to."""
     try:
         txBox = slide.shapes.add_textbox(
             Inches(TITLE_LEFT), Inches(TITLE_TOP),
@@ -122,6 +125,12 @@ def _add_title(slide: Slide, text: str) -> None:
         para.font.size = Pt(TITLE_FONT_SIZE_PT)
         para.font.bold = True
         para.alignment = PP_ALIGN.CENTER
+        if subtitle:
+            sub = tf.add_paragraph()
+            sub.text = subtitle
+            sub.font.size = Pt(SUBTITLE_FONT_SIZE_PT)
+            sub.font.bold = False
+            sub.alignment = PP_ALIGN.CENTER
     except Exception as e:
         print(f"[WARNING] Could not add title: {e}")
 
@@ -199,7 +208,7 @@ def _add_text_label(
 
 def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, position=None,
                              store_metadata=True, add_label=True, base_dir=None, title=None,
-                             label_side='right'):
+                             label_side='right', trim_whitespace=False, subtitle=None):
     """
     Copy a slide and replace its image with a new one (single-image version).
 
@@ -215,6 +224,9 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
                                    If None, auto-detects from first image in source slide
         store_metadata (bool): If True, stores the image path in the picture's alt text. Default: True
         add_label (bool): If True, adds a visible text label. Default: True
+        trim_whitespace (bool): If True, crops the image's white margin so the
+                                content fills the box. Default: False
+        subtitle (str, optional): A smaller line under the title (needs title)
 
     Returns:
         int: Index of the newly created slide
@@ -247,12 +259,28 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         base_dir=base_dir,
         title=title,
         label_side=label_side,
+        trim_whitespace=trim_whitespace,
+        subtitle=subtitle,
     )
+
+
+def _content_crop(img, pad_frac=0.01):
+    """Fractions (left, top, right, bottom) of img that are white margin, keeping a
+    pad of pad_frac of each side; None when the image has no non-white content."""
+    rgb = img.convert("RGB")
+    bbox = PILImage.eval(rgb, lambda v: 255 - v).getbbox()  # non-white pixels
+    if bbox is None:
+        return None
+    w, h = rgb.size
+    px, py = round(pad_frac * w), round(pad_frac * h)
+    x0, y0 = max(bbox[0] - px, 0), max(bbox[1] - py, 0)
+    x1, y1 = min(bbox[2] + px, w), min(bbox[3] + py, h)
+    return x0 / w, y0 / h, 1 - x1 / w, 1 - y1 / h
 
 
 def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, positions=None,
                                store_metadata=True, add_label=False, base_dir=None, title=None,
-                               label_side='right'):
+                               label_side='right', trim_whitespace=False, subtitle=None):
     """
     Copy a slide and replace its images with new ones (supports multiple images per slide).
 
@@ -273,6 +301,9 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
         store_metadata (bool): If True, stores image paths in pictures' alt text. Default: True
         add_label (bool): If True, adds visible text labels. Default: False (usually too cluttered
                          for multi-image slides)
+        trim_whitespace (bool): If True, crops each image's white margin so the content
+                                fills its box. Default: False
+        subtitle (str, optional): A smaller line under the title (needs title)
 
     Returns:
         int: Index of the newly created slide
@@ -351,7 +382,12 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
         # Get image native dimensions to compute aspect ratio
         with PILImage.open(_to_open_path(img_path)) as img:
             img_w, img_h = img.size
+            crop = _content_crop(img) if trim_whitespace else None
 
+        # Trimmed: fit the content's aspect, then crop the margin off the picture
+        if crop is not None:
+            img_w *= 1 - crop[0] - crop[2]
+            img_h *= 1 - crop[1] - crop[3]
         img_aspect = img_w / img_h
         box_w, box_h = pos['width'], pos['height']
         box_aspect = box_w / box_h
@@ -376,6 +412,8 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
             width=Inches(final_width),
             height=Inches(final_height),
         )
+        if crop is not None:
+            picture.crop_left, picture.crop_top, picture.crop_right, picture.crop_bottom = crop
         pictures.append(picture)
 
         # Store metadata in alt text if requested
@@ -394,7 +432,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
 
     # Add title if provided
     if title:
-        _add_title(new_slide, title)
+        _add_title(new_slide, title, subtitle)
 
     # Save the presentation
     prs.save(ppt_path)
