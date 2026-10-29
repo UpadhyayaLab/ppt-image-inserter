@@ -22,7 +22,7 @@ and the Add3DModel COM pattern of models3d.py. The deck must be closed in PowerP
 never kills POWERPNT.
 
 Run:  python build_cd19_methods_deck.py [--export DIR]
-Out:  K:\FF\PPT\PPT_autogeneration\CART\CD19\CART_CD19_methods_<today>.pptx
+Out:  K:\FF\PPT\PPT_autogeneration\CART\CD19\CART_coculture_fixed_methods_<today>.pptx
 """
 from __future__ import annotations
 
@@ -62,7 +62,7 @@ V = EXP / COND / 'converted' / 'cells' / 'channels' / 'volscope'
 TILES = EXP / 'cd19_figures' / 'methods_20261028'
 SEG = EXP / 'tests' / 'methods_deck' / COND / 'parts'
 MIP_ROOT = EXP / 'tests' / 'methods_deck' / 'mip_contrast'    # volscope_mask_qc(..., MIP_PCT)
-MIP_PCTS = (80, 70)
+MIP_PCTS = (70,)               # FF 2026-10-29: the 80th slide dropped, "we do not need 3 slides"
 # label-free renders (no cell number in any image; TCell dev/runs/run_methods_deck_nolabels.m)
 NOLAB = EXP / 'tests' / 'methods_deck' / 'nolabel'
 REL_TOP = 2 ** SIG_LIM         # relative density scale top, 4x (the widget's top end)
@@ -73,18 +73,27 @@ RGB = {'CAR': RGBColor(0x40, 0xE0, 0xFF), 'CD19': RGBColor(0xFF, 0x4F, 0xD8),
        'Hoechst': RGBColor(0xE6, 0xC2, 0x00)}             # Hoechst darker than the tile yellow, readable on white
 CD19_MAG = np.array([1.0, 79 / 255, 216 / 255])            # config #ff4fd8
 GREY = np.array([0.42, 0.42, 0.42])
+# the segmentation slides' outline colors (FF 2026-10-29: the legend words in them): ilastik =
+# volscope_mask_qc's ylw [1 0.85 0], the T cell outline = BODY_COLOR [1 0 0]
+# (run_methods_deck_onebar.m); on the white caption the darker Hoechst yellow, readable
+SEG_YELLOW, SEG_RED = RGBColor(0xFF, 0xD9, 0x00), RGBColor(0xFF, 0x00, 0x00)
 
 
-def header(slide, left, top, width, height, parts, size):
-    """One centred bold line; (text, RGBColor or None) parts, None = black."""
+def header(slide, left, top, width, height, parts, size, align=PP_ALIGN.CENTER, base=None,
+           wrap=False):
+    """One bold line, centred by default; (text, RGBColor or None) parts, None = BASE
+    (default black). WRAP: wrap at the box width (the headers never did)."""
     tb = slide.shapes.add_textbox(Inches(left), Inches(top), Inches(width), Inches(height))
+    if wrap:
+        tb.text_frame.word_wrap = True
     p = tb.text_frame.paragraphs[0]
-    p.alignment = PP_ALIGN.CENTER
+    p.alignment = align
     for text, col in parts:
         r = p.add_run()
         r.text = text
         r.font.size, r.font.bold = Pt(size), True
-        r.font.color.rgb = col or bpd.BLACK
+        r.font.color.rgb = col or base or bpd.BLACK
+    return tb
 
 
 def chan(name):
@@ -185,6 +194,7 @@ try {{
         $s.Model3D.RotationX = [single]$md.rx
         $s.Model3D.RotationY = [single]$md.ry
         $s.Model3D.RotationZ = [single]$md.rz
+        $s.AlternativeText = ''     # the GLB's file name carries the cell number
     }}
     $pres.Save()
 }} finally {{
@@ -222,12 +232,14 @@ def arrow(slide, x0, y0, x1, y1, rgb=RGBColor(0xFF, 0xDD, 0x00)):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--export', type=Path, default=None)
-    ap.add_argument('--rx', type=float, default=35, help='opening tilt of the 3D models, deg')
-    ap.add_argument('--ry', type=float, default=-40)
-    ap.add_argument('--rz', type=float, default=0)
+    # the shared deck's opening view (every build since 2026-10-28 passed --rx 20 --ry 40
+    # --rz 90; a rebuild with the old defaults 35/-40/0 turned the models, 2026-10-29)
+    ap.add_argument('--rx', type=float, default=20, help='opening tilt of the 3D models, deg')
+    ap.add_argument('--ry', type=float, default=40)
+    ap.add_argument('--rz', type=float, default=90)
     args = ap.parse_args()
     today = datetime.date.today().strftime('%Y%m%d')
-    bpd.OUT = DECK_DIR / f'CART_CD19_methods_{today}.pptx'
+    bpd.OUT = DECK_DIR / f'CART_coculture_fixed_methods_{today}.pptx'
     if (bpd.OUT.parent / f'~${bpd.OUT.name}').exists():
         raise SystemExit(f'{bpd.OUT.name} is open in PowerPoint -- close it first')
     row = next(r for r in csv.DictReader(open(EXP / 'comparison' / 'data' / COND / 'cells.csv',
@@ -247,6 +259,7 @@ def main():
     cols = [('CAR', 'CAR'), ('CD19', 'CD19'), ('Hoechst', 'Hoechst'), ('merge', None)]
     left0, top, bw = 2.15, 1.45, 2.7
     for j, (key, name) in enumerate(cols):
+        # FF 2026-10-29: no ' (target)' after CD19 (added after the audit, then removed)
         parts = (chan(name) if name else
                  [('CAR', RGB['CAR']), (' + ', None), ('CD19', RGB['CD19']), (' + ', None),
                   ('Hoechst', RGB['Hoechst'])])
@@ -262,7 +275,7 @@ def main():
     # whole image, not the cell -- the review of 2026-10-28)
     bpd.add_text(s, 0.4, 7.0, bpd.SLIDE_W - 0.8, 0.4,
                  'CD19 110–300. CAR 110 to its 95th percentile inside the T cell, per view. '
-                 'Hoechst 110 to its 99.5th percentile in the image. 5 μm bars.', 13,
+                 'Hoechst 110 to its 99.5th percentile in the image. 5 μm bar.', 13,
                  bold=True, color=bpd.GREY)
 
     # 3 segmentation, then the same slide with the projection at lower CAR ceilings (FF
@@ -278,8 +291,13 @@ def main():
             print(f'segmentation slide, projection at the {p}th, left out: no renders in {d}')
             continue
         # FF 2026-10-28: "you have to say that segmentation is being done on CAR"; no jargon
-        s = deck.slide('Segmenting the T cell from its CAR signal')
-        rows = [('All planes, projected', p), ('Widest plane', 95)]
+        # FF 2026-10-29: the lower-ceiling version says so in its title
+        s = deck.slide('Segmenting the T cell from its CAR signal'
+                       + ('' if p == 95 else ' (different CAR contrast)'))
+        # FF 2026-10-29: "specify Plane of maximal cross-sectional area" (each view's own
+        # slice of largest outline area, WIDEST_EACH); two lines, the label column is 3.9 in
+        rows = [(['All planes, projected'], p),
+                (['Plane of maximal', 'cross-sectional area'], 95)]
         lab_w, gap, ph, head = 3.9, 0.12, 2.55, 0.42
         for i, (f, (what, pct)) in enumerate(zip(parts, rows)):
             # volscope_mask_qc LABELS false: no text in the image (no cell number); the three
@@ -288,23 +306,38 @@ def main():
             iw = ph * Image.open(f).size[0] / Image.open(f).size[1]
             x_img = (bpd.SLIDE_W - iw + lab_w + gap) / 2
             bpd.fit_in_box(s, f, x_img, y, iw, ph)
+            if i == 0:
+                # the outline legend in the top image's empty black band, over XY (FF
+                # 2026-10-29): 16 pt is 2.03 in wide, the XY third 2.30 in; the band above
+                # every pixel of the XY third is >= 0.35 in on the 95th and 70th panels, the
+                # ink 0.08-0.28 in below the image top (zero insets)
+                lg = header(s, x_img + 0.1, y + 0.03, 2.15, 0.3,
+                            [('ilastik', SEG_YELLOW), ('   ', None), ('postprocessed', SEG_RED)],
+                            16, align=PP_ALIGN.LEFT)
+                tf = lg.text_frame
+                tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
             for k, v in enumerate(('XY', 'XZ', 'YZ')):
                 bpd.add_text(s, x_img + iw * k / 3, y - head, iw / 3, head, v, 20, bold=True,
                              align=PP_ALIGN.CENTER)
             bpd.add_text(s, x_img - gap - lab_w, y + 0.5, lab_w, 1.5,
-                         [what, f'CAR 110 to the {pct}th percentile',
+                         [*what, f'CAR 110 to the {pct}th percentile',
                           'of CAR inside the outline'], 20, bold=True, align=PP_ALIGN.RIGHT)
-        bpd.add_text(s, 0.4, 6.95, bpd.SLIDE_W - 0.8, 0.5,
-                     'Gray: CAR. Yellow: ilastik\u2019s classification of the CAR image. '
-                     'Red: the final T cell outline, used for all measurements. 5 \u03bcm bars.',
-                     16, bold=True, color=bpd.GREY)
+        # FF 2026-10-29: the caption stays, its color words in their colors
+        header(s, 0.4, 6.95, bpd.SLIDE_W - 0.8, 0.5,
+               [('Gray: CAR. ', None), ('Yellow', RGB['Hoechst']),
+                (': ilastik\u2019s classification of the CAR image. ', None), ('Red', SEG_RED),
+                (': the final T cell outline, used for all measurements. 5 \u03bcm bar.', None)],
+               16, align=PP_ALIGN.LEFT, base=bpd.GREY, wrap=True)
 
     # 4 example cells, CAT and FMC 60 min (FF 2026-10-28: "you may as well show CAT 60 min
     # too"); each condition's FIRST mask-QC page = its first 25 cells, NOT every cell
     s = deck.slide('T cell outlines, the first 25 cells of each condition, 60 min')
     for j, cond in enumerate(('CAT_60min', 'FMC_60min')):
         qdir = NOLAB / 'outlines' / cond / 'montages_car_mask_cell'   # no tile labels
-        page = min(qdir.glob('montage_cells_*.png'), key=lambda p: int(p.stem.split('_')[2]))
+        # lowest first cell; on a tie the NEWEST (an exclusion rerun renames 1_36 -> 1_37 and
+        # leaves the old page beside it)
+        page = min(qdir.glob('montage_cells_*.png'),
+                   key=lambda p: (int(p.stem.split('_')[2]), -p.stat().st_mtime))
         x0 = 0.4 + j * 6.35
         bpd.add_text(s, x0, 0.85, 6.15, 0.55, cond.replace('_', ' ').replace('min', ' min'),
                      26, bold=True, align=PP_ALIGN.CENTER)
@@ -334,7 +367,7 @@ def main():
                   f'Threshold (red tick): this cell\u2019s median smoothed CD19 + 2 \u00d7 its '
                   f'median absolute deviation = {g["thresh"]:.0f}. Synapse: the largest '
                   f'connected region above it, {area:.0f} \u03bcm\u00b2.'],
-                 20, bold=True, color=bpd.GREY)
+                 18, bold=True, color=bpd.GREY)     # 18: at 20 the third line hit the edge
 
     # 6 3D: relative density + the detected synapse (after the detection slide,
     # FF 2026-10-28: "you should show slide 7 before 6 right?")
@@ -354,26 +387,38 @@ def main():
     # 7 internalized CD19 (FF 2026-10-28: smaller, a scale bar, the plane named below it; no
     # height above the coverslip, no object outlines, "way too much text"). Arrowheads mark
     # the spots in this plane (the exported objects' centroids), off the spots themselves.
+    # FF 2026-10-29: CAR | CD19 | merge of that plane, no T cell outline
     s = deck.slide('Internalized CD19')
     oz = next(csv.DictReader(open(TILES / f'{COND}_{LABEL}_objects.csv', newline='')))
-    x_t, y_t, w_t = 0.8, 1.0, 4.6                       # square tile in a square box
-    bpd.fit_in_box(s, TILES / f'{COND}_{LABEL}_objects.png', x_t, y_t, w_t, w_t)
     cents = [tuple(map(float, c.split(';'))) for c in oz['centroids_frac'].split('|') if c]
-    for k, (r, c, rad) in enumerate(cents):
-        # alternate sides; the tip stops just short of the spot's edge (FF 2026-10-28:
-        # "make sure arrowheads are closer to puncta"), so each arrow names one spot
-        ux, uy = (0.77, -0.64) if k % 2 == 0 else (-0.77, 0.64)
-        tx, ty = x_t + c * w_t, y_t + r * w_t
-        gap = rad * w_t + 0.04
-        arrow(s, tx + ux * (gap + 0.6), ty + uy * (gap + 0.6), tx + ux * gap, ty + uy * gap)
-    bpd.add_text(s, 0.1, 5.75, 6.0, 0.6, 'Plane with the most internalized CD19', 24,
-                 bold=True, align=PP_ALIGN.CENTER)
-    bpd.add_text(s, 6.2, 3.0, 6.9, 1.2,
-                 [f'{oz["n_objects"]} CD19 spots inside this T cell,',
-                  'not connected to its surface'], 26, bold=True)
+    w_t, gap_t, y_t = 3.7, 0.25, 1.45                   # three square tiles, centered
+    x0 = (bpd.SLIDE_W - 3 * w_t - 2 * gap_t) / 2
+    for j, (ch, parts) in enumerate((('CAR', chan('CAR')), ('CD19', chan('CD19')),
+                                     ('merge', [('CAR', RGB['CAR']), (' + ', None),
+                                                ('CD19', RGB['CD19'])]))):
+        x_t = x0 + j * (w_t + gap_t)
+        header(s, x_t, 0.95, w_t, 0.45, parts, 24)
+        bpd.fit_in_box(s, TILES / f'{COND}_{LABEL}_objects_{ch}.png', x_t, y_t, w_t, w_t)
+        for k, (r, c, rad) in enumerate(cents):
+            # alternate sides; the tip stops just short of the spot's edge (FF 2026-10-28:
+            # "make sure arrowheads are closer to puncta"), so each arrow names one spot
+            ux, uy = (0.77, -0.64) if k % 2 == 0 else (-0.77, 0.64)
+            tx, ty = x_t + c * w_t, y_t + r * w_t
+            gap = rad * w_t + 0.03
+            arrow(s, tx + ux * (gap + 0.45), ty + uy * (gap + 0.45), tx + ux * gap, ty + uy * gap)
+    bpd.add_text(s, 0.4, y_t + w_t + 0.15, bpd.SLIDE_W - 0.8, 1.0,
+                 ['Plane with the most internalized CD19',
+                  # FF 2026-10-29: "remove 'not connected to its surface'"
+                  f'{oz["n_objects"]} CD19 spots inside this T cell'],
+                 24, bold=True, align=PP_ALIGN.CENTER)
     bpd.add_text(s, 0.4, 6.95, bpd.SLIDE_W - 0.8, 0.45,
-                 f'Arrowheads: {len(cents)} spots in this plane. White: T cell outline. '
-                 'CD19 110–300. 5 μm bar.', 16, bold=True, color=bpd.GREY)
+                 f'Arrowheads: {len(cents)} spots in this plane. CD19 110–300; CAR 110 to its '
+                 '95th percentile inside the T cell. 5 μm bars.', 16, bold=True, color=bpd.GREY)
+    # No alt text: python-pptx writes each picture's file name into it, and those names carry
+    # the cell number, which must not travel with the shared deck (audit 2026-10-29).
+    for sl in deck.prs.slides:
+        for el in sl.shapes._spTree.iter('{http://schemas.openxmlformats.org/presentationml/2006/main}cNvPr'):
+            el.set('descr', '')
     deck.save()
 
     box = dict(top=1.5 * 72, height=4.8 * 72, rx=args.rx, ry=args.ry, rz=args.rz)

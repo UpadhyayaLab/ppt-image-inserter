@@ -14,7 +14,7 @@ Slides: title; one slide per metric with the experiments side by side (shared y,
 only); last, the summary table (verdict per metric x timepoint, each experiment's stars).
 No notes slide (FF 2026-10-25: "not useful"). Review-deck rules: paper-figures skill section 8.
 
-Output: K:\FF\PPT\PPT_autogeneration\CART\CD19\CART_CD19_analysis_summary_<yyyymmdd>.pptx
+Output: K:\FF\PPT\PPT_autogeneration\CART\CD19\CART_coculture_fixed_analysis_summary_<yyyymmdd>.pptx
 (FF 2026-10-27: "call it analysis_summary not replicates"; was CART_CD19_replicates_*)
 Run (PowerShell, base miniforge -- has python-pptx + pywin32):
   & 'C:\Users\Upadhyaya_Lab\miniforge3\python.exe' build_cd19_replicates_deck.py `
@@ -197,7 +197,7 @@ def main():
                     help='export slide PNGs to <replicates>/deck_png_<yyyymmdd>')
     args = ap.parse_args()
     today = datetime.date.today().strftime('%Y%m%d')
-    out = DECK_DIR / f'CART_CD19_analysis_summary_{today}.pptx'
+    out = DECK_DIR / f'CART_coculture_fixed_analysis_summary_{today}.pptx'
     if (out.parent / f'~${out.name}').exists():
         raise SystemExit(f'{out.name} is open in PowerPoint -- close it first')
     bpd.OUT = out                                   # Deck.save / export_pngs read OUT
@@ -206,14 +206,11 @@ def main():
     deck = bpd.Deck()
     s = deck.prs.slides.add_slide(deck.prs.slide_layouts[6])
     deck.titles.append('Title')
-    bpd.add_text(s, 0.5, 2.3, bpd.SLIDE_W - 1.0, 1.0, 'CD19 internalization: fixed coculture data',
+    # FF 2026-10-29: was "CD19 internalization: fixed coculture data"
+    bpd.add_text(s, 0.5, 2.3, bpd.SLIDE_W - 1.0, 1.0, 'Fixed coculture data: analysis summary',
                  40, bold=True, align=PP_ALIGN.CENTER)
-    bpd.add_text(s, 0.5, 3.4, bpd.SLIDE_W - 1.0, 0.6,
-                 ' vs '.join(experiment_label(e['name']) for e in spec['experiments'])
-                 + '  \u00b7  CAT vs FMC  \u00b7  '
-                 + ' / '.join(t.replace(' min', '') for t in spec['tp_labels']) + ' min',
-                 24, align=PP_ALIGN.CENTER)
-    bpd.add_text(s, 0.5, 4.2, bpd.SLIDE_W - 1.0, 0.5, datetime.date.today().strftime('%B %d, %Y'),
+    # FF 2026-10-29: the "Mar 10 vs Oct 1 \u00b7 CAT vs FMC \u00b7 10 / 30 / 60 min" subtitle removed
+    bpd.add_text(s, 0.5, 3.4, bpd.SLIDE_W - 1.0, 0.5, datetime.date.today().strftime('%B %d, %Y'),
                  20, color=bpd.GREY, align=PP_ALIGN.CENTER)
 
     missing = []

@@ -13,7 +13,7 @@ merge), at three planes, then the puncta-ranked sheets:
                                        cd19_synapse/objects; was Widest Plane until 2026-10-28)
     Plane with Most CD19 >1 μm Deep    the z with the most CD19 > 1 um inside the membrane
     Plane with Most Puncta             the z with the most internalized-CD19 voxels
-    25 Cells with Most Puncta          the 'most' sheet, same plane as above (CD19 and merge
+    Cells with Most Puncta (up to 25)          the 'most' sheet, same plane as above (CD19 and merge
                                        only: FF 2026-10-26 "there is no point showing CAR
                                        alone there")
 
@@ -31,7 +31,7 @@ ppts for the two different experiments"), as the CAR T all-experiment decks
 then its timepoints; every title ends "<experiment>, <tp> min"; one px/in for the deck.
 Run:  python build_cd19_montage_deck.py <root> [<root> ...] --exp "Mar 10, 2026" ["Oct 1, 2026" ...]
           [--deck qc] [--export DIR]
-Out:  K:\FF\PPT\PPT_autogeneration\CART\CD19\CART_CD19_{montages,mask_qc}_<yyyymmdd>_<yyyymmdd>_<today>.pptx
+Out:  K:\FF\PPT\PPT_autogeneration\CART\CD19\CART_coculture_fixed_{montages,mask_qc}_<yyyymmdd>_<yyyymmdd>_<today>.pptx
 """
 from __future__ import annotations
 
@@ -43,7 +43,8 @@ import sys
 from pathlib import Path
 
 from PIL import ImageFont
-from pptx.util import Pt
+from pptx.enum.shapes import MSO_SHAPE_TYPE
+from pptx.util import Inches, Pt
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, r'K:\FF\Code\Scripts\PPT_image_inserter\examples_and_configs')
@@ -65,7 +66,7 @@ DASH = gz.DASH
 PLANES = [('synapse', 'Synapse Plane'),
           ('deep1um', 'Plane with Most CD19 >1 μm Deep'),
           ('puncta', 'Plane with Most Puncta')]
-QC_PLANES = [('widest', 'Widest Plane')]
+QC_PLANES = [('widest', 'Plane of Maximal Cross-Sectional Area')]   # FF 2026-10-29: maximal area, not widest
 # The contact views (FF 2026-10-28: "pls add montages of this nature to the montage ppt" -- the
 # CAR + CD19 + Hoechst views of the contact check), sheets from volscope
 # dev/contact_check_sheet.py --montage-root, style folder 'contact', after the planes above.
@@ -98,20 +99,21 @@ FIRST25 = 'Cells: the first 25 usable cells, in cell order.'
 # No parentheses (FF 2026-10-28: "parentheses is super confusing"); every usable cell has a
 # synapse patch, so the synapse views need no fallback (checked over both experiments).
 PLANE_NOTE = {
-    'Synapse Plane': 'Plane: the z where the synapse is largest. ' + FIRST25,
+    'Synapse Plane': 'Plane: the z of maximal synapse cross-sectional area. ' + FIRST25,
     'Plane with Most CD19 >1 μm Deep': ('Plane: the z with the most CD19 more than 1 μm inside '
-                                        'the T cell. Cells without any: the z where the cell is '
-                                        'widest. ' + FIRST25),
+                                        'the T cell. Cells without any: the z of maximal T cell '
+                                        'cross-sectional area. ' + FIRST25),
     'Plane with Most Puncta': ('Plane: the z with the most internalized CD19. Cells without any: '
-                               'the z where the cell is widest. ' + FIRST25),
-    '25 Cells with Most Puncta': ('Cells: the 25 with the most internalized CD19 puncta. Plane: '
+                               'the z of maximal T cell cross-sectional area. ' + FIRST25),
+    'Cells with Most Puncta (up to 25)': ('Cells: up to 25 with the most internalized CD19 puncta; cells without '
+                                  'any are left out. Plane: '
                                   'the z with the most internalized CD19.'),
-    'Widest Plane': 'Plane: the z where the T cell is widest.',
+    'Plane of Maximal Cross-Sectional Area': 'Plane: the z of maximal T cell cross-sectional area.',
 }
 CONTACT_WIN = 'CAR: 110 to its 95th percentile in the T cell. Hoechst: 110 to its 99.5th percentile in the cell. '
 CONTACT_NOTE = {   # the contact views' notes (style 'contact')
-    'Synapse Plane': 'Plane: the z where the synapse is largest. ' + CONTACT_WIN + FIRST25,
-    'Synapse Slice (XZ)': ('Slice: the y row where the synapse is largest; z up, coverslip at the '
+    'Synapse Plane': 'Plane: the z of maximal synapse cross-sectional area. ' + CONTACT_WIN + FIRST25,
+    'Synapse Slice (XZ)': ('Slice: the y of maximal synapse cross-sectional area; z up, coverslip at the '
                            'bottom. ' + CONTACT_WIN + FIRST25),
     'XY MIP': 'Maximum over all z. ' + CONTACT_WIN + FIRST25,
     'XZ MIP': 'Maximum over y; z up, coverslip at the bottom. ' + CONTACT_WIN + FIRST25,
@@ -136,25 +138,39 @@ def conditions(plane_dir):
     return {t: (v.get('CAT'), v.get('FMC')) for t, v in sorted(tps.items())}
 
 
+def current_pages(found):
+    """The newest render's pages only. A rerun after an exclusion renames its pages
+    (montage_cells_1_33 -> _1_35) and leaves the old ones beside them, so a range sort put
+    the excluded cell back on the first page and doubled the QC pages (2026-10-29). Newest
+    first, a page is kept unless its cell range overlaps one already kept."""
+    kept = []
+    for p in sorted(found, key=lambda p: p.stat().st_mtime, reverse=True):
+        a, b = cd19._parse_chunk_range(p)
+        if all(b < c or a > d for c, d in (cd19._parse_chunk_range(q) for q in kept)):
+            kept.append(p)
+    return sorted(kept, key=lambda p: cd19._parse_chunk_range(p)[0])
+
+
 def first_page(plane_dir, cond, style):
     """The first 25 cells: the page with the lowest first-cell index (bad.first_page rule)."""
-    if cond is None:
-        return None
-    found = cd19._list_chunk_files(plane_dir / cond / f'montages_{style}')
-    return min(found, key=lambda p: cd19._parse_chunk_range(p)[0]) if found else None
+    pages = all_pages(plane_dir, cond, style)
+    return pages[0] if pages else None
 
 
 def all_pages(plane_dir, cond, style):
     if cond is None:
         return []
-    found = cd19._list_chunk_files(plane_dir / cond / f'montages_{style}')
-    return sorted(found, key=lambda p: cd19._parse_chunk_range(p)[0])
+    return current_pages(cd19._list_chunk_files(plane_dir / cond / f'montages_{style}'))
 
 
 def most_sheet(plane_dir, cond, style):
     if cond is None:
         return None
-    return next(iter(sorted(plane_dir.glob(f'{cond}_montage_{style}_most*.png'))), None)
+    # the NEWEST: since the sheet stops at the last cell with puncta (2026-10-29) its name
+    # carries its own count (_most19), and a name sort would still pick an older _most25
+    found = sorted(plane_dir.glob(f'{cond}_montage_{style}_most*.png'),
+                   key=lambda p: p.stat().st_mtime)
+    return found[-1] if found else None
 
 
 def windows(plane_dir):
@@ -173,7 +189,9 @@ def contrast(win, names):
 def fit_title(slide, title):
     """One line: shrink the 24 pt title only when it would wrap (long merge titles)."""
     pt = TITLE_PT
-    while pt > 16 and ImageFont.truetype(_FONT, pt * 10).getlength(title) / 720 > TITLE_W_IN - 0.2:
+    # floor 14 pt (FF 2026-10-29: the QC title 'Plane of Maximal Cross-Sectional Area' ran off
+    # both slide edges at the old 16 pt floor; 14 pt is 22 px at FF's 1500 px)
+    while pt > 14 and ImageFont.truetype(_FONT, pt * 10).getlength(title) / 720 > TITLE_W_IN - 0.2:
         pt -= 1
     if pt != TITLE_PT:
         tb = next(sh for sh in slide.shapes if sh.has_text_frame)
@@ -218,7 +236,7 @@ def experiment_specs(root, exp, deck_kind, families):
             continue
         views = [(plane_words, first_page)]
         if plane == 'puncta':
-            views.append(('25 Cells with Most Puncta', most_sheet))
+            views.append(('Cells with Most Puncta (up to 25)', most_sheet))
         for view_words, pick in views:
             for style, word, names in fams:
                 if pick is most_sheet and style == 'car':
@@ -226,7 +244,10 @@ def experiment_specs(root, exp, deck_kind, families):
                 if plane in ('deep1um', 'puncta') and style == 'car':
                     continue                         # FF 2026-10-28: CAR alone at the deep / puncta planes removed
                 for tp, (cat, fmc) in tps.items():
-                    how = (f'Fixed Contrast CD19 {win["CD19"][0]:g}–{win["CD19"][1]:g}'
+                    # CD19 alone is fixed on the contact slides; CAR and Hoechst are scaled
+                    # per cell (CONTACT_WIN), which "Fixed Contrast" alone hid (audit 2026-10-29)
+                    how = (f'Fixed Contrast CD19 {win["CD19"][0]:g}–{win["CD19"][1]:g}; '
+                           'CAR, Hoechst per Cell'
                            if style == 'contact' else contrast(win, names))
                     specs.append((f'{word}, {view_words} ({how}) {DASH} '
                                   f'{exp}, {tp} min',
@@ -318,7 +339,7 @@ def main():
     ppi = bad.mont.compute_group_ppi(pngs, gz.OV_CELL_W, gz.OV_IMG_H)
 
     name = 'montages' if args.deck == 'montages' else 'mask_qc'
-    bpd.OUT = OUT_DIR / f'CART_CD19_{name}_{tag}_{TODAY}.pptx'
+    bpd.OUT = OUT_DIR / f'CART_coculture_fixed_{name}_{tag}_{TODAY}.pptx'
     if (bpd.OUT.parent / f'~${bpd.OUT.name}').exists():   # as build_cd19_replicates_deck
         raise SystemExit(f'{bpd.OUT.name} is open in PowerPoint -- close it first')
     deck = gz.OvDeck()
@@ -337,6 +358,11 @@ def main():
     for title, style, sides, group in specs:
         gz.ov_montage_slide(deck, title, sides, ppi)
         slide = deck.prs.slides[-1]
+        # top-align: a short sheet (a puncta sheet stopping at its last cell, a QC last page)
+        # was centered, starting a row below its neighbor
+        for sh in slide.shapes:
+            if sh.shape_type == MSO_SHAPE_TYPE.PICTURE:
+                sh.top = Inches(gz.OV_IMG_TOP)
         fit_title(slide, title)
         notes = CONTACT_NOTE if style == 'contact' else PLANE_NOTE
         note = notes.get(group[0] if group else QC_PLANES[0][1], '')
