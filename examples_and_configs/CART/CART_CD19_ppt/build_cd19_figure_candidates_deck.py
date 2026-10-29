@@ -26,7 +26,9 @@ import re
 import sys
 from pathlib import Path
 
+from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
+from pptx.util import Inches, Pt
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'CART_pMLC_ppt'))
 import build_pmlc_profiles_deck as bpd  # noqa: E402
@@ -117,8 +119,55 @@ def candidate_slide(deck, root, exp, cond, lst, rows, hi):
 CHANNELS = [('_caronly', 'CAR'), ('_cd19only', 'CD19'), ('', 'CAR + CD19')]
 # candidates.csv list -> slide wording (FF 2026-10-28, his words: "T cell on top of target?
 # next to it?"); the class limits live in the run script (synapse_normal_angle_deg)
+RULE_CELLS = ('Cells: target visible in both views (≥ 10 µm² of CD19 ≥ 2 µm from the '
+              'T cell), FMC projected area ≥ CAT’s, then closest to the condition median '
+              '(FMC 60 min next to target: C2-cell12, chosen by eye).')
 PHENOTYPE = {'on_top': 'T cell on top of target', 'next_to': 'T cell next to target'}
+# Angle class limits (synapse_normal_angle_deg, deg from straight down), the `classes` of
+# TCell dev/runs/run_cd19_fig_allcells_20261028.m. Both the check of each --pair-cells
+# phenotype and the slide's rule line read these, so the text cannot drift from the check.
+PHENO_DEG = {'on_top': (0, 45), 'next_to': (70, 110)}
 VIEWS = [('xy', 'Widest plane'), ('side', 'Side view (XZ)')]
+
+
+def read_info(root, cond, cell):
+    with open(root / cond / f'{cond}_{cell}_info.csv', newline='') as h:
+        return next(csv.DictReader(h))
+
+
+def car_windows(info):
+    """'110–187' when both views share a window, else 'XY 110–187 · XZ 110–186'."""
+    xy = info['car_window'].replace('-', '–')
+    side = (info.get('car_window_side') or info['car_window']).replace('-', '–')
+    return xy if side == xy else f'XY {xy} · XZ {side}'
+
+
+def car_rule_text(rule):
+    """The CAR sentence of a slide, from the rule cd19_engagement_figure.m recorded."""
+    m = re.match(r'^(view_|mask_)?p([\d.]+)(_nosyn)?$', rule)
+    if rule == 'fixed':
+        return 'CAR: one fixed window for every cell.'
+    if not m:
+        raise SystemExit(f'unknown CAR rule {rule!r}: add its wording to car_rule_text')
+    kind, pct, nosyn = m.groups()
+    if kind == 'view_':
+        return f'CAR: 110 to the {pct}th percentile inside the T cell outline, set per view.'
+    if kind == 'mask_':
+        return f'CAR: 110 to the {pct}th percentile inside the T cell, one window per cell.'
+    return (f'CAR: 110 to the cell’s own {pct}th percentile'
+            + (', synapse left out.' if nosyn else '.'))
+
+
+def pair_angle(root, cond, cell):
+    """synapse_normal_angle_deg of a pair cell, from the root's synapse_angle.csv."""
+    f = root / 'synapse_angle.csv'
+    if not f.is_file():
+        raise SystemExit(f'{f} missing: the on top / next to label cannot be checked')
+    with open(f, newline='') as h:
+        for r in csv.DictReader(h):
+            if r['condition'] == cond and r['cell'] == cell:
+                return float(r['synapse_normal_angle_deg'])
+    raise SystemExit(f'{cond} {cell} not in {f}')
 
 
 def channel_slide(deck, root, exp, r, hi):
@@ -144,8 +193,8 @@ def channel_slide(deck, root, exp, r, hi):
                 missing.append(p.name)
                 continue
             bpd.fit_in_box(s, p, left0 + j * bw, y, bw - 0.08, bh - 0.06)
-    with open(root / cond / f'{cond}_{cell}_info.csv', newline='') as h:
-        car = next(csv.DictReader(h))['car_window'].replace('-', '–')
+    # both views' windows: the side tiles use car_window_side, which can differ from XY's
+    car = car_windows(read_info(root, cond, cell))
     bpd.add_text(s, 0.1, top + bh / 2 + 0.4, left0 - 0.2, 1.6,
                  [f"synapse CD19: p{r['rank_synapse']}", f"CD19 inside: p{r['rank_inside']}",
                   f"of {r['n_ranked']} cells", f'CAR {car}']
@@ -155,6 +204,26 @@ def channel_slide(deck, root, exp, r, hi):
     return missing
 
 
+# Channel names in their own display colors (FF 2026-10-28: "CAR label should be cyan CD19
+# magenta"), the config's #40e0ff / #ff4fd8, the tiles' tints (cd19_engagement_figure.m).
+CHANNEL_RGB = {'CAR': RGBColor(0x40, 0xE0, 0xFF), 'CD19': RGBColor(0xFF, 0x4F, 0xD8)}
+
+
+def channel_header(slide, left, top, width, height, text, size):
+    """A centered bold header with each channel name ('CAR', 'CD19') in its color."""
+    tb = slide.shapes.add_textbox(Inches(left), Inches(top), Inches(width), Inches(height))
+    para = tb.text_frame.paragraphs[0]
+    para.alignment = PP_ALIGN.CENTER
+    for part in re.split(r'(CAR|CD19)', text):
+        if not part:
+            continue
+        r = para.add_run()
+        r.text = part
+        r.font.size = Pt(size)
+        r.font.bold = True
+        r.font.color.rgb = CHANNEL_RGB.get(part, bpd.BLACK)
+
+
 def pair_slides(args, rows):
     """--layout pairs (FF 2026-10-28: "one slide per timepoint, CAT FMC comparison for each.
     1 rep cell each view"): --pair-cells cond:cell,... ; per time point CAT | FMC side by side,
@@ -162,12 +231,25 @@ def pair_slides(args, rows):
     by_time = dict(kv.split('=') for kv in args.cd19_hi_time.split(',') if kv)
     # cond:cell[:phenotype]; a phenotype (on_top / next_to) gives one slide per (time, phenotype)
     want = [(p.split(':') + [''])[:3] for p in args.pair_cells.split(',') if p]
-    angle = {}
-    fa = args.root / 'synapse_angle.csv'       # the run script's copy of the stage column
-    if fa.is_file():
-        with open(fa, newline='') as h:
-            angle = {(r['condition'], r['cell']): r['synapse_normal_angle_deg']
-                     for r in csv.DictReader(h)}
+    drop = {tuple(d.split(':', 1)) for d in args.drop.split(',') if d}
+    want = [w for w in want if (w[0], w[1]) not in drop]   # --drop holds here too
+    for c, l, ph in want:
+        if ph and ph not in PHENO_DEG:
+            raise SystemExit(f'{c}:{l}: phenotype {ph!r} is not one of {sorted(PHENO_DEG)}')
+        if ph:                           # the typed label must match the measured angle
+            a, (lo, hi_deg) = pair_angle(args.root, c, l), PHENO_DEG[ph]
+            if not lo <= a <= hi_deg:
+                raise SystemExit(f'{c} {l}: synapse {a:.0f}° from down, outside {ph} '
+                                 f'({lo}–{hi_deg}°)')
+    rules_car = {read_info(args.root, c, l).get('car_rule') or '' for c, l, _ in want}
+    if rules_car == {''}:                # tiles from before car_rule was recorded
+        if not args.car_rule:
+            raise SystemExit('these tiles do not record their CAR rule: pass --car-rule '
+                             '(the run script\'s opts.car_win, e.g. view_p95)')
+        rules_car = {args.car_rule}
+    elif '' in rules_car or len(rules_car) > 1 or (args.car_rule and {args.car_rule} != rules_car):
+        raise SystemExit(f'CAR rules disagree: tiles {sorted(rules_car)}, --car-rule {args.car_rule}')
+    car_sentence = car_rule_text(rules_car.pop())
     groups = sorted({(cond_key(c)[1], ph) for c, _, ph in want},
                     key=lambda g: (g[0], g[1] != 'on_top'))
     deck = bpd.Deck()
@@ -176,53 +258,45 @@ def pair_slides(args, rows):
         hi = int(by_time.get(str(t), args.cd19_hi))
         cells = sorted([(c, l) for c, l, p in want if cond_key(c)[1] == t and p == ph],
                        key=lambda w: cond_key(w[0]))
+        if [c.split('_')[0] for c, _ in cells] != ['CAT', 'FMC']:
+            raise SystemExit(f'{t} min {ph or ""}: needs one CAT and one FMC cell, got '
+                             f'{cells} (--drop both to leave the slide out)')
         what = f', {PHENOTYPE[ph]}' if ph in PHENOTYPE else ''
-        s = deck.slide(f'{t} min{what}: CAT vs FMC (CD19 110–{hi}) {DASH} {args.exp}')
+        # no experiment in the title; the window worded as the montage deck's (FF 2026-10-28)
+        s = deck.slide(f'{t} min{what}: CAT vs FMC (Fixed Contrast CD19 110–{hi})')
         top, left0, ggap = 1.6, 2.15, 0.3
         bw = min((bpd.SLIDE_W - left0 - 0.15 - ggap) / (len(CHANNELS) * len(cells)),
                  (bpd.SLIDE_H - top - 0.5) / len(VIEWS))
         bh = bw + 0.04                       # rows packed: square tiles, a small gap
         for g, (cond, cell) in enumerate(cells):
             x0 = left0 + g * (len(CHANNELS) * bw + ggap)
-            car = ''
-            fi = args.root / cond / f'{cond}_{cell}_info.csv'
-            if fi.is_file():
-                with open(fi, newline='') as h:
-                    rr = next(csv.DictReader(h))
-                car = rr['car_window'].replace('-', '–')
-                side = (rr.get('car_window_side') or '').replace('-', '–')
-                if side and side != car:        # per-view CAR windows ('view_p95')
-                    car = f'XY {car}, XZ {side}'
             bpd.add_text(s, x0, 0.68, len(CHANNELS) * bw, 0.42,
                          f"{cond_label(cond).split()[0]} {DASH} {cell}", 18, bold=True,
                          align=PP_ALIGN.CENTER)
             for j, (sfx, head) in enumerate(CHANNELS):
-                bpd.add_text(s, x0 + j * bw, 1.1, bw, 0.4, head, 14, bold=True,
-                             align=PP_ALIGN.CENTER)
+                channel_header(s, x0 + j * bw, 1.1, bw, 0.4, head, 14)
                 for i, (view, _) in enumerate(VIEWS):
                     p = tile(args.root, cond, cell, view + sfx, hi)
                     if not p.is_file():
                         missing.append(p.name)
                         continue
                     bpd.fit_in_box(s, p, x0 + j * bw, top + i * bh, bw - 0.06, bh - 0.06)
-            a = angle.get((cond, cell), '')
-            note = [f'CAR {car}'] + ([f'synapse {float(a):.0f}° from down']
-                                     if a not in ('', 'NaN') else [])
-            bpd.add_text(s, x0, top + len(VIEWS) * bh + 0.02, len(CHANNELS) * bw, 0.4,
-                         ' · '.join(note), 12, bold=True, color=bpd.GREY,
-                         align=PP_ALIGN.CENTER)
+            # (no per-cell CAR window / angle line under the tiles, FF 2026-10-28: "can be
+            # removed"; the values stay in each cell's _info.csv and synapse_angle.csv)
         for i, (_, vlab) in enumerate(VIEWS):
             bpd.add_text(s, 0.05, top + i * bh + bh / 2 - 0.3, left0 - 0.12, 0.6, vlab, 14,
                          bold=True, align=PP_ALIGN.RIGHT)
         # The rules, on the slide (FF 2026-10-28: "these rules should be on the slides
         # (written concisely)"); the empty band under the tiles.
-        rules = [f'CD19: 110–{hi}, the same for CAT and FMC. CAR: 110 to the 95th '
-                 'percentile inside the T cell outline, set per view.',
-                 'XY: the plane with the largest synapse area. XZ: the slice with the most '
-                 'synapse.']
+        rules = [f'CD19: 110–{hi}, the same for CAT and FMC. {car_sentence}',
+                 ('XY: the plane with the largest synapse area. XZ: the slice with the most '
+                  'synapse.')]
         if ph in PHENOTYPE:
-            rules.append('On top of target: synapse within 45° of straight down. '
-                         'Next to target: 70–110°.')
+            rules.append(f"On top of target: synapse within {PHENO_DEG['on_top'][1]}° of "
+                         f"straight down. Next to target: {PHENO_DEG['next_to'][0]}–"
+                         f"{PHENO_DEG['next_to'][1]}°.")
+        if args.rule_cells:                 # how the cells were picked (run script's rule)
+            rules.append(RULE_CELLS)
         bpd.add_text(s, 0.4, top + len(VIEWS) * bh + 0.55, bpd.SLIDE_W - 0.8, 1.0, rules, 13,
                      bold=True, color=bpd.GREY, align=PP_ALIGN.LEFT)
     return deck, missing
@@ -311,6 +385,13 @@ def main():
     ap.add_argument('--xy-label', default=None,
                     help='row label of the XY tiles (default "Widest plane"); the renderer\'s '
                          'xy_plane decides which plane they are')
+    ap.add_argument('--rule-cells', action='store_true',
+                    help='--layout pairs: add the RULE_CELLS footer line (the target-visible, '
+                         'closest-to-median pick of run_cd19_fig_allcells_20261028.m)')
+    ap.add_argument('--car-rule', default='',
+                    help='--layout pairs: the CAR rule (opts.car_win, e.g. view_p95) for tiles '
+                         'whose _info.csv predates its car_rule column; checked against it '
+                         'when present')
     ap.add_argument('--side-label', default=None,
                     help='row label of the XZ tiles (default "Side view (XZ)")')
     ap.add_argument('--cd19-hi-time', default='',

@@ -39,10 +39,11 @@ are the pipeline's (TCell-3D-Morphodynamics src/plotting: xz_channel_color.m,
 save_*_xz_mip_physical.m, visualize_cytoplasmic_channel_with_nucleus*.m).
 The synapse-mask montages carry no scalebar, as in the June actin deck.
 
-PROG_DIR points at last night's per-cell outputs (prog_fixed_cells_superseded:
-7 PLL cells there were cropped to part of the cell, and the 3 cells FF excluded
-since are still in). Repoint at prog_fixed_cells and drop ", prelim" from the
-output names once the full analyze rerun finishes.
+PROG_DIR points at the full rerun (prog_fixed_cells; repointed 2026-10-28 from
+prog_fixed_cells_superseded, whose 7 PLL cells were cropped to part of the
+cell). Strips and packed XZ tiles show only the compile's kept cells
+(kept_ids); the pipeline's chunk montages are pre-rendered with every cell, so
+the grid/single decks still include cells the compile dropped.
 
 --well <folder> builds a one-well check deck from the new run only
 (prog_fixed_cells), one sheet per slide (FF 2026-10-27: 10 µM first).
@@ -85,15 +86,15 @@ EXP_ROOT = Path(
     "L:/FF/Nucleus_centrosome/nocodazole_fixed/"
     "10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_"
 )
-PROG_DIR = "prog_fixed_cells_superseded"
+PROG_DIR = "prog_fixed_cells"
 # The fixed-contrast MT montages are rendered post hoc from the rerun's outputs,
 # into prog_fixed_cells/<well>/physical_scale_images/*_fixedclim (TCell session).
 FIXED_CLIM_PROG_DIR = "prog_fixed_cells"
 
 OUT_DIR = Path("K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco")
 OUTPUTS = {
-    "grid":   OUT_DIR / "Noco_Jurkats_montages_10262026, prelim.pptx",
-    "single": OUT_DIR / "Noco_Jurkats_montages_10262026, one condition per slide, prelim.pptx",
+    "grid":   OUT_DIR / "Noco_Jurkats_montages_10262026.pptx",
+    "single": OUT_DIR / "Noco_Jurkats_montages_10262026, one condition per slide.pptx",
 }
 
 TAG = "10/26/2026"
@@ -181,10 +182,16 @@ COMPILE_WELLS = {"PLL_DMSO": "A4_PLL_DMSO_", "CD3_DMSO": "A1_DMSO_aCD3_",
                  "CD3_Noco5uM": "B1_5uM_aCD3_", "CD3_Noco10uM": "B2_10uM_aCD3_"}
 PACK_SHELVES = 3              # packed decks: rows of cells per condition block
 PACK_PER_SHELF = 4            # cells per row: 12 per condition per slide
+HULL_PER_SHELF = 5            # hull slides: 15 cells per condition, 3 slides (FF 2026-10-28)
 HULL_LABEL_FONT_PT = 18
 HULL_FOOT_H = 0.45
 HULL_OUT = "Noco_Jurkats_hull_dist_10262026.pptx"
-HULL_FOOTER = ("Number = invagination depth near centrosome (μm); each nucleus viewed to best "
+# Segmentation-artifact cells (results.mat cell_id), left off the hull slides
+# only (FF 2026-10-28; other montages keep them). Same list as ARTIFACT_CELLS in
+# TCell-3D-Morphodynamics dev/analyses/noco_mt_20261026/bycent_vs_global_depth.py.
+HULL_ARTIFACT_CELLS = {"A1_DMSO_aCD3_": {37, 7}, "B1_5uM_aCD3_": {35, 22, 15},
+                       "B2_10uM_aCD3_": {16, 10, 23, 15, 44}}
+HULL_FOOTER = ("Number = invagination depth near centrosome (μm); each nucleus rotated to best "
                "show it. Dot = centrosome. Bars = 5 μm.")
 # Blender test, level vs camera tilted to the centrosome (--elev-test).
 ELEV_TEST_ROOT = Path("L:/FF/blender_renderings/_raw/noco1026_hull_elev_test_20261027")
@@ -214,15 +221,15 @@ XZ_PACKED_PAGES = 1
 COMPARE_SOURCES = {"B2_10uM_aCD3_": "prog_fixed_cells", "A1_DMSO_aCD3_": "prog_fixed_cells",
                    "B1_5uM_aCD3_": "prog_fixed_cells", "A4_PLL_DMSO_": "prog_fixed_cells"}
 COMPARE_SLIDES = [
-    ("MT_xz_nolines_fixedclim", "Did the drug work? MT, side view",
+    ("MT_xz_nolines_fixedclim", "Noco effects on MT, side view",
      [("MT contrast 10–750", MAGENTA)]),
     # Noco colors from the 10 μM re-render (FF 2026-10-27): actin yellow, MT and
     # centrin magenta, DNA cyan; MT green only where it meets centrin.
-    ("actin_cent_xz_nolines", "Centrosome position, side view",
+    ("actin_cent_xz_nolines", "Centrosome repositioning, side view",
      [("Actin", YELLOW), ("Centrin", MAGENTA)]),
     ("cent_nuc_xz", "Centrosome and nucleus, side view",
      [("Centrin", MAGENTA), ("DNA", CYAN)]),
-    ("actin_nuc_xz_nolines", "Nuclear shape, side view",
+    ("actin_nuc_xz_nolines", "Nuclear flattening, side view",
      [("Actin", YELLOW), ("DNA", CYAN)]),
     ("MT_cent_xz_nolines_fixedclim", "MT and centrosome, side view",
      [("MT contrast 10–750", GREEN), ("Centrin", MAGENTA)]),
@@ -233,11 +240,13 @@ COMPARE_ALL_CELLS = {"actin_cent_xz_nolines"}
 # Notes drawn beside a cell's tile (FF 2026-10-27): (well, cell id) -> text.
 # A1 18: tall, unspread cell; not cut off (checked on the raw field stack, 06.tif).
 TILE_NOTES = {("A1_DMSO_aCD3_", 18): "strange cell shape"}
+# Cell-id label on each montage tile (off: FF 2026-10-28, "remove cell #").
+TILE_IDS = False
 # Top views at the broadest slice (FF 2026-10-27), same packing: (family, family
 # with the same geometry to find the crop box in, title, channel legend). Fixed-
 # contrast MT is too dim to crop on, so the box comes from the per-cell twin.
 COMPARE_XY = [
-    ("MT_bz_fixedclim", "MT_nuc_bz", "Did the drug work? MT, broadest slice",
+    ("MT_bz_fixedclim", "MT_nuc_bz", "Noco effects on MT, broadest slice of nucleus",
      [("MT contrast 10–200", MAGENTA)]),
 ]
 # Second MT contrast (FF 2026-10-28: right after the first): fixed-contrast
@@ -254,6 +263,13 @@ COMPARE_OUT = "Noco_Jurkats_compare_{i}_{combo}_10262026.pptx"
 # XZ MIPs (segment_actin_single_plane.m, ppum 20 at 100 dpi on a 96-dpi session).
 SYN_PPU = XZ_PPU
 XZ_PACKED_OUT = "Noco_Jurkats_{combo}_packed_10262026.pptx"
+# One deck with every comparison slide and the hull slides (--combined), in
+# this order of builder tags (the review numbering 1, 1b, 2, 2a, 3, 4, then
+# hull beside the nuclear slides, then synapse).
+COMBINED_OUT = "Noco_Jurkats_compare_all_10262026.pptx"
+COMBINED_ORDER = ["MT_xz_nolines_fixedclim", "MT_bz_fixedclim", "actin_cent_xz_nolines",
+                  "MT_cent_xz_nolines_fixedclim", "cent_nuc_xz", "actin_nuc_xz_nolines",
+                  "hull", "synapse"]
 COLORBAR_DIR = Path("L:/FF/blender_renderings/_raw/noco1026_colorbars")
 COLORBAR_DARK = COLORBAR_DIR / "colorbar_chull_dist_invag_depth_0-2um.png"        # black text
 COLORBAR_LIGHT = COLORBAR_DIR / "colorbar_chull_dist_invag_depth_0-2um_light.png"  # requested
@@ -711,18 +727,20 @@ def add_colorbar(slide) -> None:
 
 
 def collect_strips(conditions, source: str, suffix: str = "") -> List[tuple]:
-    """[(label, [(cell_id, excluded, path), ...])] for wells that have strips."""
+    """[(label, [(cell_id, excluded, path), ...])] for wells that have strips;
+    only the compile's kept cells (kept_ids)."""
     out = []
     for folder, label in conditions:
         if folder not in STRIPS[source]:
             continue
         d, prefix = STRIPS[source][folder]
         pat = re.compile(STRIP_RE.format(prefix=re.escape(prefix), suffix=re.escape(suffix)))
+        keep = kept_ids(folder)
         found = []
         if os.path.isdir(d):
             for name in os.listdir(d):
                 m = pat.match(name)
-                if m:
+                if m and int(m.group(1)) in keep:
                     found.append((int(m.group(1)), bool(m.group(2)), d / name))
         if found:
             out.append((label, sorted(found)))
@@ -996,8 +1014,11 @@ def rank_pick(tiles: list, depth: dict, n: int) -> list:
 def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, headings: dict,
                       ppu: float, footer: str, channels=None, colorbar: bool = False,
                       slide_bar: bool = True, side_notes: list = None,
-                      page_channels: list = None) -> int:
+                      page_channels: list = None, sink: dict = None,
+                      per_shelf: int = PACK_PER_SHELF) -> int:
     """Packed montage deck (FF 2026-10-27: 12 cells per condition, large).
+    sink: {"prs": Presentation, "tags": []} appends the slides to that deck
+    (one tag per slide) instead of saving out_path (--combined).
     pages: one {condition label: [(tile label, tile image), ...]} per slide.
     The four conditions sit 2 x 2 (CONDITIONS order); each block holds
     PACK_SHELVES rows of PACK_PER_SHELF cells, tiles packed edge to edge
@@ -1015,7 +1036,7 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
     shelf_area_h = block_h - LABEL_H
 
     def shelves(tiles):
-        return [tiles[i:i + PACK_PER_SHELF] for i in range(0, len(tiles), PACK_PER_SHELF)]
+        return [tiles[i:i + per_shelf] for i in range(0, len(tiles), per_shelf)]
 
     def col_widths(sh):
         # Column grid (FF 2026-10-27: rows should align): each column as wide
@@ -1023,21 +1044,27 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
         return [max(s[j][1].width for s in sh if j < len(s)) for j in range(len(sh[0]))]
 
     # The largest PPI any block needs (widest grid, tallest stack) sets the scale.
+    # A side note takes SIDE_NOTE_W of the block's width.
     ppi = 0.0
-    for page in pages:
-        for tiles in page.values():
+    for k, page in enumerate(pages):
+        for label, tiles in page.items():
             sh = shelves(tiles)
             if not sh:
                 continue
             cw = col_widths(sh)
-            widest = sum(cw) / (block_w - gap * (len(cw) - 1))
+            note_w = SIDE_NOTE_W if side_notes and side_notes[k].get(label) else 0.0
+            widest = sum(cw) / (block_w - note_w - gap * (len(cw) - 1))
             stack = sum(max(im.height for _, im in s) for s in sh)
             ppi = max(ppi, widest, stack / (shelf_area_h - gap * (len(sh) - 1)))
     print(f"\n[{tag}] {len(pages)} slides, PPI {ppi:.1f} (5 μm = {5 * ppu / ppi * 2.54:.2f} cm)")
 
-    prs = Presentation()
-    prs.slide_width = Inches(SLIDE_W)
-    prs.slide_height = Inches(SLIDE_H)
+    if sink is None:
+        prs = Presentation()
+        prs.slide_width = Inches(SLIDE_W)
+        prs.slide_height = Inches(SLIDE_H)
+    else:
+        prs = sink["prs"]
+        sink["tags"] += [tag] * len(pages)
     for k, page in enumerate(pages):
         # title: one string (numbered k/n), or one title per page.
         slide = new_slide(prs, title[k] if isinstance(title, list) else
@@ -1089,9 +1116,10 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
                         nb.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
                         nb.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
                     tw = max(im.width / ppi, 0.6)
-                    add_textbox(slide, left_t, x - 0.04, y - 0.04, tw + 0.08, TILE_LABEL_H,
-                                font_pt=TILE_LABEL_PT, color=WHITE,
-                                bold=True).text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
+                    if left_t:
+                        add_textbox(slide, left_t, x - 0.04, y - 0.04, tw + 0.08, TILE_LABEL_H,
+                                    font_pt=TILE_LABEL_PT, color=WHITE,
+                                    bold=True).text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
                     if right_t:
                         add_textbox(slide, right_t, x - 0.04, y - 0.04, tw + 0.08, TILE_LABEL_H,
                                     font_pt=TILE_LABEL_PT, color=YELLOW,
@@ -1107,12 +1135,23 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
             bar.fill.solid()
             bar.fill.fore_color.rgb = WHITE
             bar.line.fill.background()
-        box = add_textbox(slide, footer, MARGIN + 0.2 + bar_w, y - 0.17,
-                          SLIDE_W - 2 * MARGIN - 0.3 - bar_w, HULL_FOOT_H - 0.05,
-                          font_pt=STRIP_FOOT_FONT_PT, color=GRAY)
-        box.text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
+        # footer: one gray string, or [(text, color), ...] runs.
+        if footer:
+            runs = [(footer, GRAY)] if isinstance(footer, str) else footer
+            box = add_textbox(slide, runs[0][0], MARGIN + 0.2 + bar_w, y - 0.17,
+                              SLIDE_W - 2 * MARGIN - 0.3 - bar_w, HULL_FOOT_H - 0.05,
+                              font_pt=STRIP_FOOT_FONT_PT, color=runs[0][1])
+            para = box.text_frame.paragraphs[0]
+            para.alignment = PP_ALIGN.LEFT
+            for text, color in runs[1:]:
+                run = para.add_run()
+                run.text = text
+                run.font.size = Pt(STRIP_FOOT_FONT_PT)
+                run.font.color.rgb = color
         if colorbar:
             add_colorbar(slide)
+    if sink is not None:
+        return len(pages)
     if out_path.exists():
         backup_presentation(str(out_path))
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1121,7 +1160,7 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
     return len(pages)
 
 
-def build_hull_deck(out_path: Path) -> int:
+def build_hull_deck(out_path: Path, sink: dict = None) -> int:
     """Hull Surf. Dist. tiles only, packed: EVERY rendered cell (FF
     2026-10-27: "for the mesh based things I need to see every cell"), each
     condition ordered by HULL_METRIC, deepest first, 12 per condition per
@@ -1130,7 +1169,7 @@ def build_hull_deck(out_path: Path) -> int:
     order. Each tile carries its own 5 μm bar and its depth; no cell id or
     camera angle (FF: not needed)."""
     import numpy as np
-    per_page = PACK_SHELVES * PACK_PER_SHELF
+    per_page = PACK_SHELVES * HULL_PER_SHELF
     depth = {f: hull_metric(f) for f, _ in CONDITIONS}
     hull = collect_hull()
     # While views differed between wells the heading named the view (FF
@@ -1143,7 +1182,7 @@ def build_hull_deck(out_path: Path) -> int:
     for order, name in (("id", "cell-id order"),):
         tiles, vals = {}, {}
         for f, lab in CONDITIONS:
-            keep = kept_ids(f)
+            keep = kept_ids(f) - HULL_ARTIFACT_CELLS.get(f, set())
             kept = [c for c in hull[lab] if not c[1] and c[0] in keep]
             if order == "depth":
                 kept = rank_pick(kept, depth[f], len(kept))
@@ -1167,7 +1206,8 @@ def build_hull_deck(out_path: Path) -> int:
                                f"μ={np.nanmean(shown):.2f} μm (shown)")
             notes.append(nt)
     return build_packed_deck(out_path, "hull", titles, pages, names, HULL_PPU, HULL_FOOTER,
-                             colorbar=True, slide_bar=False, side_notes=notes)
+                             colorbar=True, slide_bar=False, side_notes=notes, sink=sink,
+                             per_shelf=HULL_PER_SHELF)
 
 
 def build_elev_test_deck(out_path: Path) -> int:
@@ -1321,12 +1361,27 @@ def xz_tiles(combo: str, sources: dict, kept_only: bool = False) -> dict:
                 # A 5 μm bar under every tile (FF 2026-10-27); same strip on
                 # every tile, so the coverslip baselines stay aligned.
                 note = TILE_NOTES.get((folder, cid))
-                tiles[label].append(((str(cid), "", note) if note else str(cid),
+                tiles[label].append(((tile_id(cid), "", note) if note else tile_id(cid),
                                      with_scalebar(t, XZ_PPU)))
     return tiles
 
 
-def build_compare_decks() -> int:
+def tile_id(cid: int) -> str:
+    """A tile's cell-id label, or none (TILE_IDS)."""
+    return str(cid) if TILE_IDS else ""
+
+
+def contrast_in_title(title: str, channels: list):
+    """Move an "MT contrast a–b" legend entry into the slide title (FF 2026-10-28):
+    the legend then reads plain "MT"."""
+    for name, _ in channels:
+        if name.startswith("MT contrast"):
+            title = f"{title}: {name}"
+    return title, [("MT" if name.startswith("MT contrast") else name, color)
+                   for name, color in channels]
+
+
+def build_compare_decks(sink: dict = None) -> int:
     """The comparison deck, one slide type at a time (FF 2026-10-27): each
     COMPARE_SLIDES entry -> its own deck, 12 cells per condition (every cell,
     paged, for COMPARE_ALL_CELLS), excluded cells left out. Wells not yet in
@@ -1341,20 +1396,22 @@ def build_compare_decks() -> int:
             n_pages = max(1, max((-(-len(t) // per_page) for t in tiles.values()), default=1))
         pages = [{lab: t[k * per_page:(k + 1) * per_page] for lab, t in tiles.items()}
                  for k in range(n_pages)]
+        base = title
+        title, channels = contrast_in_title(title, channels)
         titles = [title] if n_pages == 1 else [f"{title} {k + 1}/{n_pages}" for k in range(n_pages)]
         page_channels = [channels] * len(pages)
         if combo in COMPARE_LOW:
             low, low_channels = COMPARE_LOW[combo]
             low_tiles = xz_tiles(low, COMPARE_SOURCES, kept_only=True)
             pages.append({lab: t[:per_page] for lab, t in low_tiles.items()})
-            titles.append(title)
+            low_title, low_channels = contrast_in_title(base, low_channels)
+            titles.append(low_title)
             page_channels.append(low_channels)
         n += build_packed_deck(
             OUT_DIR / COMPARE_OUT.format(i=i, combo=combo), combo, titles, pages, pending,
-            XZ_PPU, f"Each cell cut {XZ_BELOW_PLANES} planes below its actin bottom slice; all "
-            "cells aligned on it. Excluded cells left out. Bars = 5 μm.", channels=channels,
-            slide_bar=False, page_channels=page_channels)
-    n += build_synapse_deck(len(COMPARE_SLIDES) + 1)
+            XZ_PPU, "", channels=channels,   # no footer (FF 2026-10-28: "remove text")
+            slide_bar=False, page_channels=page_channels, sink=sink)
+    n += build_synapse_deck(len(COMPARE_SLIDES) + 1, sink)
     for i, (combo, box_combo, title, channels) in enumerate(COMPARE_XY, start=len(COMPARE_SLIDES) + 2):
         families = [(combo, channels)]
         if combo in COMPARE_LOW:
@@ -1371,12 +1428,36 @@ def build_compare_decks() -> int:
                 phys = EXP_ROOT / prog / folder / "physical_scale_images"
                 files, boxes = percell_files(phys / fam / "cells"), percell_files(phys / box_combo / "cells")
                 for cid in sorted(c for c in files if c in keep)[:per_page]:
-                    page[label].append((str(cid), with_scalebar(xy_tile(files[cid], boxes.get(cid)), XZ_PPU)))
+                    page[label].append((tile_id(cid), with_scalebar(xy_tile(files[cid], boxes.get(cid)), XZ_PPU)))
             pages.append(page)
+        moved = [contrast_in_title(title, ch) for _, ch in families]
         n += build_packed_deck(
-            OUT_DIR / COMPARE_OUT.format(i=i, combo=combo), combo, [title] * len(pages), pages,
-            pending, XZ_PPU, "Broadest slice of each cell. Excluded cells left out. Bars = 5 μm.",
-            channels=channels, slide_bar=False, page_channels=[ch for _, ch in families])
+            OUT_DIR / COMPARE_OUT.format(i=i, combo=combo), combo, [t for t, _ in moved], pages,
+            pending, XZ_PPU, "",   # no footer (FF 2026-10-28)
+            channels=moved[0][1], slide_bar=False, page_channels=[ch for _, ch in moved],
+            sink=sink)
+    return n
+
+
+def build_combined_deck(out_path: Path) -> int:
+    """Every comparison slide plus the Hull Surf. Dist. slides in one deck
+    (FF 2026-10-28), in COMBINED_ORDER; the per-slide decks stay as they are."""
+    prs = Presentation()
+    prs.slide_width = Inches(SLIDE_W)
+    prs.slide_height = Inches(SLIDE_H)
+    sink = {"prs": prs, "tags": []}
+    n = build_compare_decks(sink) + build_hull_deck(OUT_DIR / HULL_OUT, sink)
+    # Reorder (stable within a family): slides were added in builder order.
+    lst = prs.slides._sldIdLst
+    els = list(lst)
+    for el in els:
+        lst.remove(el)
+    for k in sorted(range(len(els)), key=lambda k: COMBINED_ORDER.index(sink["tags"][k])):
+        lst.append(els[k])
+    if out_path.exists():
+        backup_presentation(str(out_path))
+    prs.save(str(out_path))
+    print(f"[combined] {n} slides -> {out_path}")
     return n
 
 
@@ -1403,7 +1484,7 @@ def xy_tile(path: Path, box_path: Path = None):
                              max(0, xs.min() - pad):min(w, xs.max() + 1 + pad)])
 
 
-def build_synapse_deck(i: int) -> int:
+def build_synapse_deck(i: int, sink: dict = None) -> int:
     """Comparison slide i: the actin synapse mask (the pipeline's bottom-slice
     actin with the mask outline, actin/bottom_slice_seg/Cell_<id>_plane_<n>.png),
     packed like the XZ slides: cell-id order, excluded cells left out, each
@@ -1421,23 +1502,24 @@ def build_synapse_deck(i: int) -> int:
         for cid in sorted(c for c in files if c in keep)[:per_page]:
             with Image.open(_winlong(files[cid])) as im:
                 t = content_crop(im.convert("RGB"))
-            page[label].append((str(cid), with_scalebar(t, SYN_PPU) if SYN_PPU else t))
+            page[label].append((tile_id(cid), with_scalebar(t, SYN_PPU) if SYN_PPU else t))
     bars = "Bars = 5 μm." if SYN_PPU else "Scale bar pending."
     return build_packed_deck(
         OUT_DIR / COMPARE_OUT.format(i=i, combo="synapse_mask"), "synapse", "Synapse, actin bottom slice",
-        [page], pending, SYN_PPU or 1.0, f"Red = synapse mask outline. Excluded cells left out. {bars}",
-        channels=[("Actin", GRAY), ("Mask outline", RED)], slide_bar=False)
+        # "Red = ..." drawn in red (FF 2026-10-28).
+        [page], pending, SYN_PPU or 1.0, [("Red = synapse mask outline. ", RED), (bars, GRAY)],
+        channels=[("Actin", GRAY), ("Mask outline", RED)], slide_bar=False, sink=sink)
 
 
 def build_xz_packed_deck(prog_dir: str = PROG_DIR) -> int:
     """XZ side views, packed (FF 2026-10-27), one slide set per XZ_PACKED
     family: 12 cells per condition per slide in cell-id order, every cell cut
-    at its coverslip and all cells aligned on it. Excluded cells are not
-    removed here (prototype)."""
+    at its coverslip and all cells aligned on it. Only the compile's kept
+    cells (kept_ids)."""
     n = 0
     per_page = PACK_SHELVES * PACK_PER_SHELF
     for combo, title, channels in XZ_PACKED:
-        tiles = xz_tiles(combo, {f: prog_dir for f, _ in CONDITIONS})
+        tiles = xz_tiles(combo, {f: prog_dir for f, _ in CONDITIONS}, kept_only=True)
         n_pages = min(XZ_PACKED_PAGES, max(-(-len(t) // per_page) for t in tiles.values()))
         pages = [{lab: t[k * per_page:(k + 1) * per_page] for lab, t in tiles.items()}
                  for k in range(n_pages)]
@@ -1463,8 +1545,12 @@ def main() -> None:
                     help="comparison deck slides (COMPARE_SLIDES), one deck per slide")
     ap.add_argument("--elev-test", action="store_true",
                     help="hull tiles, level vs camera tilted to the centrosome (Blender test)")
+    ap.add_argument("--combined", action="store_true",
+                    help="every comparison slide plus the hull slides in one deck")
     args = ap.parse_args()
-    if args.hull:
+    if args.combined:
+        n = build_combined_deck(OUT_DIR / COMBINED_OUT)
+    elif args.hull:
         n = build_hull_deck(OUT_DIR / HULL_OUT)
     elif args.xz_packed:
         n = build_xz_packed_deck()

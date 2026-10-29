@@ -162,16 +162,17 @@ def summary_slide(deck, spec, rows, labels):
     # Color key: two columns of two, between the table and the footnote.
     for i, (k, text) in enumerate(VERDICT_KEY):
         x = left + (i % 2) * width / 2
-        y = 6.5 + (i // 2) * 0.32
+        y = 6.44 + (i // 2) * 0.32
         sw = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x), Inches(y + 0.04),
                                 Inches(0.42), Inches(0.24))
         sw.fill.solid(); sw.fill.fore_color.rgb = VERDICT_COLOR[k]
         sw.line.color.rgb = RGBColor(0x80, 0x80, 0x80)
         bpd.add_text(s, x + 0.5, y, width / 2 - 0.6, 0.32, text, 14)
-    bpd.add_text(s, left, bpd.SLIDE_H - 0.36, width, 0.34,
+    bpd.add_text(s, left, bpd.SLIDE_H - 0.42, width, 0.42,
                  f"Each cell: verdict, then {' | '.join(experiment_label(e) for e in exps)} "
                  f"(BH-adjusted p, each experiment's own tests: Fisher's exact test for "
-                 f"% of cells, rank-sum otherwise)", 12,
+                 f"% of cells, rank-sum otherwise). Direction (CAT < FMC): the sign of Cliff’s "
+                 f"δ, or the larger % for % of cells.", 11,
                  color=bpd.GREY, align=PP_ALIGN.CENTER)
 
 

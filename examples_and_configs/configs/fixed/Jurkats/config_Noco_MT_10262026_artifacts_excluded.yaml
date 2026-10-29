@@ -1,0 +1,152 @@
+# Batch Image Replacement Configuration
+# Noco 10/26/2026 fixed Jurkats: the depth / curvature / coupling results, one plot per
+# slide, plots re-rendered without their in-figure title (no date, no "segmentation
+# artifacts excluded"). FF 2026-10-28: "make new versions of the results slides (this is
+# in addition not replacing) without any titles like segmentation artifacts excluded or
+# dates". Then paired (FF 2026-10-28, via the TCell session): each all-cells slide, then
+# its twin with the 10 segmentation-artifact nuclei left out; slide subtitle
+# "All cells" / "Artifacts excluded" (label on the slide, not in the plot).
+# The full summary deck (config_Noco_MT_10262026_fixed_cells.yaml) is unchanged.
+#
+# Plots: TCell session re-render into noco_bycent_plots\<folder>_all_cells_notitle\ and
+# <folder>_artifacts_excluded_notitle\, same file names in both.
+# Slide titles = the summary deck's.
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Effects of Noco, Fixed Cells_MT_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Effects of Noco, MT, 10262026, all cells and artifacts excluded.pptx"
+
+template_slide: 1
+preserve_slides: [0, 1]
+
+# Same plot box and trimming as the summary deck.
+auto_position: false
+position: {left: 0.3, top: 1.17, width: 12.73, height: 6.15}
+trim_whitespace: true
+
+label_side: left
+add_label: false
+
+base_dir: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots"
+
+images:
+  # --- Invagination ---
+  - path: grid_panels_all_cells_notitle/chull_max_D_by_cent_per_experiment_grid.png
+    title: "Invagination depth near centrosome"
+    subtitle: "All cells"
+  - path: grid_panels_artifacts_excluded_notitle/chull_max_D_by_cent_per_experiment_grid.png
+    title: "Invagination depth near centrosome"
+    subtitle: "Artifacts excluded"
+  - path: grid_panels_all_cells_notitle/chull_max_D_per_experiment_grid.png
+    title: "Invagination depth over the full nucleus"
+    subtitle: "All cells"
+  - path: grid_panels_artifacts_excluded_notitle/chull_max_D_per_experiment_grid.png
+    title: "Invagination depth over the full nucleus"
+    subtitle: "Artifacts excluded"
+
+  # --- Paper Figure 1 E near/away ratio ---
+  - path: ratio_all_cells_notitle/chull_mean_D_near_over_away_per_experiment_grid.png
+    title: "Mean Hull Surf. Dist.: Near / Away"
+    subtitle: "All cells"
+  - path: ratio_artifacts_excluded_notitle/chull_mean_D_near_over_away_per_experiment_grid.png
+    title: "Mean Hull Surf. Dist.: Near / Away"
+    subtitle: "Artifacts excluded"
+
+  - path: nva_all_cells_notitle/min_near_vs_away_cent_noco.png
+    title: "Min curvature near vs away from centrosome"
+    subtitle: "All cells"
+  - path: nva_artifacts_excluded_notitle/min_near_vs_away_cent_noco.png
+    title: "Min curvature near vs away from centrosome"
+    subtitle: "Artifacts excluded"
+  - path: nva_all_cells_notitle/mean_near_vs_away_cent_noco.png
+    title: "Mean curvature near vs away from centrosome"
+    subtitle: "All cells"
+  - path: nva_artifacts_excluded_notitle/mean_near_vs_away_cent_noco.png
+    title: "Mean curvature near vs away from centrosome"
+    subtitle: "Artifacts excluded"
+  - path: grid_panels_all_cells_notitle/concave_ratio_per_experiment_grid.png
+    title: "Concave surface fraction"
+    subtitle: "All cells"
+  - path: grid_panels_artifacts_excluded_notitle/concave_ratio_per_experiment_grid.png
+    title: "Concave surface fraction"
+    subtitle: "Artifacts excluded"
+  - path: grid_panels_all_cells_notitle/n_invag_regions_0p5um_per_experiment_grid.png
+    title: "Number of invaginations ≥ 0.5 μm deep"
+    subtitle: "All cells"
+  - path: grid_panels_artifacts_excluded_notitle/n_invag_regions_0p5um_per_experiment_grid.png
+    title: "Number of invaginations ≥ 0.5 μm deep"
+    subtitle: "Artifacts excluded"
+  - path: grid_panels_all_cells_notitle/invag_ratio_per_experiment_grid.png
+    title: "Invagination ratio (concave + saddle faces)"
+    subtitle: "All cells"
+  - path: grid_panels_artifacts_excluded_notitle/invag_ratio_per_experiment_grid.png
+    title: "Invagination ratio (concave + saddle faces)"
+    subtitle: "Artifacts excluded"
+
+  # --- Key result: whole nucleus left, near the centrosome right (summary slide 15) ---
+  # Paired too (FF 2026-10-28, via the TCell session: "one slide non-excluded then one
+  # excluded"). All-cells r: near the centrosome from the TCell session
+  # (correlation_summary_all.txt), whole nucleus from the all-cells scatter's legend;
+  # no all-cells Spearman, so that clause is on the excluded slide only.
+  - images:
+      - scatters_all_cells_notitle/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D.png
+      - scatters_all_cells_notitle/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D_by_cent.png
+    positions:
+      - {left: 0.3, top: 2.25, width: 6.25, height: 5.2}
+      - {left: 6.78, top: 2.25, width: 6.25, height: 5.2}
+    title: "Nocodazole: the higher the centrosome, the deeper the nuclear invagination"
+    subtitle: "All cells. Pearson r, 5 μM / 10 μM: whole nucleus +0.71 / +0.48, near the centrosome +0.62 / +0.42 · CD3 DMSO +0.36 / +0.34"
+  - images:
+      - scatters_artifacts_excluded_notitle/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D.png
+      - scatters_artifacts_excluded_notitle/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D_by_cent.png
+    positions:
+      - {left: 0.3, top: 2.25, width: 6.25, height: 5.2}
+      - {left: 6.78, top: 2.25, width: 6.25, height: 5.2}
+    title: "Nocodazole: the higher the centrosome, the deeper the nuclear invagination"
+    subtitle: "Artifacts excluded. Pearson r, 5 μM / 10 μM: whole nucleus +0.78 / +0.48, near the centrosome +0.68 / +0.47 · CD3 DMSO +0.38 / +0.34, resting on two cells (Spearman +0.10 / +0.08)"
+
+  # --- Coupling scatters ---
+  # Two-line titles push the subtitle down: these slides use a lower plot box
+  # (one-image `images:` entries, so they can carry `positions:`).
+  - images: [scatters_mt_noco_all_cells_notitle/MT_all_perinuc_MFI_VS_chull_max_D_by_cent.png]
+    positions: &low_box
+      - {left: 0.3, top: 1.75, width: 12.73, height: 5.6}
+    title: "Invagination depth near centrosome vs leftover perinuclear MT"
+    subtitle: "All cells"
+  - images: [scatters_mt_noco_artifacts_excluded_notitle/MT_all_perinuc_MFI_VS_chull_max_D_by_cent.png]
+    positions: *low_box
+    title: "Invagination depth near centrosome vs leftover perinuclear MT"
+    subtitle: "Artifacts excluded"
+  # No depth axis, so no artifact filtering: single slide, all kept cells. Already
+  # untitled (TCell session, 2026-10-28): used as-is.
+  - images: [scatters_mt_height_noco/MT_all_perinuc_MFI_VS_centrosome_center_z_rel_bottom_actin_plane.png]
+    positions: *low_box
+    title: "Centrosome-synapse distance vs leftover perinuclear MT"
+    subtitle: "All cells"
+  - images: [scatters_all_cells_notitle/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D_by_cent.png]
+    positions: *low_box
+    title: "Depth near centrosome vs centrosome-synapse distance"
+    subtitle: "All cells"
+  - images: [scatters_artifacts_excluded_notitle/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D_by_cent.png]
+    positions: *low_box
+    title: "Depth near centrosome vs centrosome-synapse distance"
+    subtitle: "Artifacts excluded"
+  - images: [scatters_all_cells_notitle/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D.png]
+    positions: *low_box
+    title: "Depth over the whole nucleus vs centrosome-synapse distance"
+    subtitle: "All cells"
+  - images: [scatters_artifacts_excluded_notitle/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D.png]
+    positions: *low_box
+    title: "Depth over the whole nucleus vs centrosome-synapse distance"
+    subtitle: "Artifacts excluded"
+  - path: scatters_shape_all_cells_notitle/nuc_height_VS_chull_max_D_by_cent.png
+    title: "Depth near centrosome vs nuclear height"
+    subtitle: "All cells"
+  - path: scatters_shape_artifacts_excluded_notitle/nuc_height_VS_chull_max_D_by_cent.png
+    title: "Depth near centrosome vs nuclear height"
+    subtitle: "Artifacts excluded"
+  - path: scatters_shape_all_cells_notitle/actin_MIP_area_VS_chull_max_D_by_cent.png
+    title: "Depth near centrosome vs cell spread area"
+    subtitle: "All cells"
+  - path: scatters_shape_artifacts_excluded_notitle/actin_MIP_area_VS_chull_max_D_by_cent.png
+    title: "Depth near centrosome vs cell spread area"
+    subtitle: "Artifacts excluded"

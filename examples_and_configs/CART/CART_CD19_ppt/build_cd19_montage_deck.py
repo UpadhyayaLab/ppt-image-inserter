@@ -9,7 +9,8 @@ squares); the contrast in the title as "(Fixed Contrast low–high)"; the '5 μm
 
 Views, one channel family each as the actin / pMLC / GzmB decks (CAR, CD19, CAR + CD19
 merge), at three planes, then the puncta-ranked sheets:
-    Widest Plane                       the cell body's widest z
+    Synapse Plane                      the z with the most synapse voxels (volscope
+                                       cd19_synapse/objects; was Widest Plane until 2026-10-28)
     Plane with Most CD19 >1 μm Deep    the z with the most CD19 > 1 um inside the membrane
     Plane with Most Puncta             the z with the most internalized-CD19 voxels
     25 Cells with Most Puncta          the 'most' sheet, same plane as above (CD19 and merge
@@ -23,7 +24,7 @@ layout 'montage'), under <experiment>/cd19_montages/<plane>/:
     display_windows.csv
 
 Two decks (FF 2026-10-26: "QC should be its own deck"): --deck montages (CAR, CD19, merge;
-default) and --deck qc (CAR with the body-mask outline).
+default) and --deck qc (CAR with the T cell outline).
 One deck over every experiment given (FF 2026-10-26: "there should also not be SEPARATE
 ppts for the two different experiments"), as the CAR T all-experiment decks
 (insert_MT_qc_CAT_vs_FMC_202311_202406_slides.py): per view, each experiment oldest first,
@@ -58,9 +59,21 @@ OUT_DIR = Path(r'K:\FF\PPT\PPT_autogeneration\CART\CD19')
 TODAY = f'{datetime.date.today():%Y%m%d}'
 DASH = gz.DASH
 
-PLANES = [('widest', 'Widest Plane'),
+# The montage deck's first plane is the synapse plane, not the widest (FF 2026-10-28: "our xy
+# synapse plane is more appropriate than 'widest'", replacing it); the QC deck keeps the
+# widest plane, which shows the whole body outline.
+PLANES = [('synapse', 'Synapse Plane'),
           ('deep1um', 'Plane with Most CD19 >1 μm Deep'),
           ('puncta', 'Plane with Most Puncta')]
+QC_PLANES = [('widest', 'Widest Plane')]
+# The contact views (FF 2026-10-28: "pls add montages of this nature to the montage ppt" -- the
+# CAR + CD19 + Hoechst views of the contact check), sheets from volscope
+# dev/contact_check_sheet.py --montage-root, style folder 'contact', after the planes above.
+CONTACT_PLANES = [('contact_synapse', 'Synapse Plane'),
+                  ('contact_xz', 'Synapse Slice (XZ)'),
+                  ('contact_mipxy', 'XY MIP'),
+                  ('contact_mipxz', 'XZ MIP')]
+CONTACT_FAMILY = [('contact', 'CAR, CD19 and Hoechst', ['CD19'])]   # CAR / Hoechst: per view / per cell
 # (style folder, title word, channels whose window the title states)
 # CAR first (FF 2026-10-26: "CAR single channel should come first").
 # car_mask = mask QC, the CAR T synapse-slice QC style (body-mask edge red), worded as the
@@ -73,15 +86,42 @@ DECKS = {
     # car_mask_cell: each cell at its own window ONLY (FF 2026-10-26: "for QC montages remove
     # fixed contrast entirely"; the fixed-window 'car_mask' sheets are no longer shown);
     # names=None -> the title states the per-cell rule instead
-    'qc': [('car_mask_cell', 'CAR, Body Mask Outline', None)],
+    'qc': [('car_mask_cell', 'CAR, T Cell Outline', None)],
 }
 # The QC deck (FF 2026-10-26: "just broadest slice with 25 per page", all usable cells) shows
 # EVERY page of the widest plane, CAT page k beside FMC page k; its sheets come from
 # volscope dev/run_cd19_mask_qc_widest.m under <experiment>/cd19_mask_qc_widest/.
+# How each view's plane (and cells) were chosen, one line under the sheets (FF 2026-10-28: "the
+# notes on how the planes were chosen should be added to montage ppts"); from
+# dev/show_internalized_cells.m pick_z and run_cd19_montage_families.m.
+FIRST25 = 'Cells: the first 25 usable cells, in cell order.'
+# No parentheses (FF 2026-10-28: "parentheses is super confusing"); every usable cell has a
+# synapse patch, so the synapse views need no fallback (checked over both experiments).
+PLANE_NOTE = {
+    'Synapse Plane': 'Plane: the z where the synapse is largest. ' + FIRST25,
+    'Plane with Most CD19 >1 μm Deep': ('Plane: the z with the most CD19 more than 1 μm inside '
+                                        'the T cell. Cells without any: the z where the cell is '
+                                        'widest. ' + FIRST25),
+    'Plane with Most Puncta': ('Plane: the z with the most internalized CD19. Cells without any: '
+                               'the z where the cell is widest. ' + FIRST25),
+    '25 Cells with Most Puncta': ('Cells: the 25 with the most internalized CD19 puncta. Plane: '
+                                  'the z with the most internalized CD19.'),
+    'Widest Plane': 'Plane: the z where the T cell is widest.',
+}
+CONTACT_WIN = 'CAR: 110 to its 95th percentile in the T cell. Hoechst: 110 to its 99.5th percentile in the cell. '
+CONTACT_NOTE = {   # the contact views' notes (style 'contact')
+    'Synapse Plane': 'Plane: the z where the synapse is largest. ' + CONTACT_WIN + FIRST25,
+    'Synapse Slice (XZ)': ('Slice: the y row where the synapse is largest; z up, coverslip at the '
+                           'bottom. ' + CONTACT_WIN + FIRST25),
+    'XY MIP': 'Maximum over all z. ' + CONTACT_WIN + FIRST25,
+    'XZ MIP': 'Maximum over y; z up, coverslip at the bottom. ' + CONTACT_WIN + FIRST25,
+}
+NOTE_H = 0.35                                  # in, taken off the sheets' height for the note
 DECK_TITLE = {'montages': 'CAR T Cell Project: CD19 Internalization',
-              'qc': 'CAR T Cell Project: CD19 Internalization, Body Mask QC'}
+              'qc': 'CAR T Cell Project: CD19 Internalization, T Cell Outline QC'}
 # Merge slides: the channel names in the title in their image colors (the merge's key).
-TITLE_COLORS = {'merge': {'CAR': '40E0FF', 'CD19': 'FF4FD8'}}
+TITLE_COLORS = {'merge': {'CAR': '40E0FF', 'CD19': 'FF4FD8'},
+                'contact': {'CAR': '40E0FF', 'CD19': 'FF4FD8', 'Hoechst': 'FFDD00'}}
 TITLE_PT, TITLE_W_IN = 24, bpd.SLIDE_W - 0.1      # ov_montage_slide's title box
 _FONT = r'C:\Windows\Fonts\calibrib.ttf'
 
@@ -147,7 +187,13 @@ def experiment_specs(root, exp, deck_kind, families):
     = (view, family) for a montage slide; None for QC, whose pages stay in experiment order
     with each own-window page beside its fixed-window twin."""
     specs, all_tps = [], set()
-    for plane, plane_words in PLANES:
+    plan = ([(p, w, families) for p, w in QC_PLANES] if deck_kind == 'qc' else
+            # the 3-colour views right after the synapse plane's 2-colour merge (FF 2026-10-28:
+            # "move 3 color merge after 2 color merge"), then the other planes
+            [(p, w, families) for p, w in PLANES[:1]] +
+            [(p, w, CONTACT_FAMILY) for p, w in CONTACT_PLANES] +
+            [(p, w, families) for p, w in PLANES[1:]])
+    for plane, plane_words, fams in plan:
         pdir = root / plane
         if not pdir.is_dir():
             print(f'  no {pdir} -- skipped')
@@ -157,10 +203,10 @@ def experiment_specs(root, exp, deck_kind, families):
         if deck_kind == 'qc':
             for tp, (cat, fmc) in tps.items():
                 pages = {st: (all_pages(pdir, cat, st), all_pages(pdir, fmc, st))
-                         for st, _, _ in families}
+                         for st, _, _ in fams}
                 n = max(max(len(pc), len(pf)) for pc, pf in pages.values())
                 for k in range(n):
-                    for style, word, names in families:   # own window only
+                    for style, word, names in fams:   # own window only
                         pc, pf = pages[style]
                         sides = [(cd19.page_label(c, pg[k]), pg[k]) if k < len(pg) else ('', None)
                                  for c, pg in ((cat, pc), (fmc, pf))]
@@ -174,11 +220,15 @@ def experiment_specs(root, exp, deck_kind, families):
         if plane == 'puncta':
             views.append(('25 Cells with Most Puncta', most_sheet))
         for view_words, pick in views:
-            for style, word, names in families:
+            for style, word, names in fams:
                 if pick is most_sheet and style == 'car':
                     continue                         # puncta-ranked: no CAR-only slides
+                if plane in ('deep1um', 'puncta') and style == 'car':
+                    continue                         # FF 2026-10-28: CAR alone at the deep / puncta planes removed
                 for tp, (cat, fmc) in tps.items():
-                    specs.append((f'{word}, {view_words} ({contrast(win, names)}) {DASH} '
+                    how = (f'Fixed Contrast CD19 {win["CD19"][0]:g}–{win["CD19"][1]:g}'
+                           if style == 'contact' else contrast(win, names))
+                    specs.append((f'{word}, {view_words} ({how}) {DASH} '
                                   f'{exp}, {tp} min',
                                   style, [('CAT', pick(pdir, cat, style)),
                                           ('FMC', pick(pdir, fmc, style))],
@@ -262,7 +312,9 @@ def main():
     if not pngs:
         raise SystemExit(f'no montage sheets under {args.roots}')
     missing = [f'{t}: {lab}' for t, _, sides, _ in specs for lab, p in sides if p is None and lab]
-    # One scale group: every sheet is 26 um tiles at native pixels.
+    # One scale group: every sheet is 26 um tiles at native pixels. The sheets give up NOTE_H
+    # at the bottom for the plane note (ov_montage_slide reads gz.OV_IMG_H at call time).
+    gz.OV_IMG_H = bpd.SLIDE_H - gz.OV_IMG_TOP - 0.05 - NOTE_H
     ppi = bad.mont.compute_group_ppi(pngs, gz.OV_CELL_W, gz.OV_IMG_H)
 
     name = 'montages' if args.deck == 'montages' else 'mask_qc'
@@ -282,13 +334,23 @@ def main():
     today = datetime.date.today()
     bpd.add_text(s, 4.37, 4.6, 4.6, 0.5, f'{today:%B} {today.day}, {today.year}', 20,
                  align=PP_ALIGN.CENTER)
-    for title, style, sides, _ in specs:
+    for title, style, sides, group in specs:
         gz.ov_montage_slide(deck, title, sides, ppi)
         slide = deck.prs.slides[-1]
         fit_title(slide, title)
+        notes = CONTACT_NOTE if style == 'contact' else PLANE_NOTE
+        note = notes.get(group[0] if group else QC_PLANES[0][1], '')
+        if note:
+            # one line, never cut off (FF 2026-10-28): shrink from 13 pt until it fits
+            pt = 13
+            while pt > 9 and (ImageFont.truetype(_FONT, int(pt * 10)).getlength(note) / 720
+                              > bpd.SLIDE_W - 0.4):
+                pt -= 0.5
+            bad.mont.add_textbox(slide, note, 0.05, bpd.SLIDE_H - NOTE_H, bpd.SLIDE_W - 0.1,
+                                 NOTE_H - 0.03, font_pt=pt, color=bad.mont.WHITE, bold=True)
         if style in TITLE_COLORS:
             cd19.color_title(slide, TITLE_COLORS[style],   # view names keep white
-                             exclude=[w for _, w in PLANES])
+                             exclude=[w for _, w in PLANES + QC_PLANES + CONTACT_PLANES])
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     deck.save()
     print(f'saved {bpd.OUT} ({len(deck.prs.slides)} slides, {ppi:.1f} px/in)')

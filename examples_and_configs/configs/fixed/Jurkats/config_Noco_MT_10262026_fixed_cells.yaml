@@ -77,24 +77,82 @@ images:
     title: "Invagination depth near centrosome"
 
   # Same depth over the whole nucleus (FF 2026-10-28).
-  - path: chull_max_D_per_experiment_grid.png
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/grid_panels_all_cells/chull_max_D_per_experiment_grid.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/grid_panels_artifacts_excluded/chull_max_D_per_experiment_grid.png"
+    positions:   # landscape grids: full width, just under the subtitle
+      - {left: 0.1, top: 2.0, width: 6.52, height: 4.3}
+      - {left: 6.71, top: 2.0, width: 6.52, height: 4.3}
     title: "Invagination depth over the full nucleus"
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
+
+  # Paper Figure 1 E near/away ratio; replaces the Centrosomal Invagination Index (FF 2026-10-28).
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/ratio_all_cells/chull_mean_D_near_over_away_per_experiment_grid.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/ratio_artifacts_excluded/chull_mean_D_near_over_away_per_experiment_grid.png"
+    positions:   # landscape grids: full width, just under the subtitle
+      - {left: 0.1, top: 2.0, width: 6.52, height: 4.3}
+      - {left: 6.71, top: 2.0, width: 6.52, height: 4.3}
+    title: "Mean Hull Surf. Dist.: Near / Away"
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
 
   # Figure 1 supplement-style Near/Away curvature, paired per cell (FF 2026-10-28):
   # plot_deepest_region_in_vs_away, region 'cent', Figure 1's filter and paper style;
   # paired signed-rank (BH) in the _paired_signrank.csv beside each panel.
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/for_paper/noco_near_vs_away/min_near_vs_away_cent_noco.png"
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/nva_all_cells/min_near_vs_away_cent_noco.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/nva_artifacts_excluded/min_near_vs_away_cent_noco.png"
+    positions:
+      - {left: 0.3, top: 1.95, width: 6.25, height: 5.45}
+      - {left: 6.78, top: 1.95, width: 6.25, height: 5.45}
     title: "Min curvature near vs away from centrosome"
-  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/for_paper/noco_near_vs_away/mean_near_vs_away_cent_noco.png"
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/nva_all_cells/mean_near_vs_away_cent_noco.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/nva_artifacts_excluded/mean_near_vs_away_cent_noco.png"
+    positions:
+      - {left: 0.3, top: 1.95, width: 6.25, height: 5.45}
+      - {left: 6.78, top: 1.95, width: 6.25, height: 5.45}
     title: "Mean curvature near vs away from centrosome"
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
 
   # Whole-nucleus surface shape (FF 2026-10-28, via the TCell session).
-  - path: concave_ratio_per_experiment_grid.png
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/grid_panels_all_cells/concave_ratio_per_experiment_grid.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/grid_panels_artifacts_excluded/concave_ratio_per_experiment_grid.png"
+    positions:   # landscape grids: full width, just under the subtitle
+      - {left: 0.1, top: 2.0, width: 6.52, height: 4.3}
+      - {left: 6.71, top: 2.0, width: 6.52, height: 4.3}
     title: "Concave surface fraction"
-  - path: n_invag_regions_0p5um_per_experiment_grid.png
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/grid_panels_all_cells/n_invag_regions_0p5um_per_experiment_grid.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/grid_panels_artifacts_excluded/n_invag_regions_0p5um_per_experiment_grid.png"
+    positions:   # landscape grids: full width, just under the subtitle
+      - {left: 0.1, top: 2.0, width: 6.52, height: 4.3}
+      - {left: 6.71, top: 2.0, width: 6.52, height: 4.3}
     title: "Number of invaginations ≥ 0.5 μm deep"
-  - path: invag_ratio_per_experiment_grid.png
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/grid_panels_all_cells/invag_ratio_per_experiment_grid.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/grid_panels_artifacts_excluded/invag_ratio_per_experiment_grid.png"
+    positions:   # landscape grids: full width, just under the subtitle
+      - {left: 0.1, top: 2.0, width: 6.52, height: 4.3}
+      - {left: 6.71, top: 2.0, width: 6.52, height: 4.3}
     title: "Invagination ratio (concave + saddle faces)"
+    subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
+
+  # Key result (FF 2026-10-28, title and numbers line FF's picks, via the TCell session): the
+  # artifacts-excluded scatters, whole nucleus left, near the centrosome right. Every r in the
+  # subtitle matches the two legends; Spearman from bycent_vs_global_depth.py.
+  - images:
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_artifacts_excluded/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D.png"
+      - "L:/FF/Nucleus_centrosome/nocodazole_fixed/10262026_jurkats_noco_h3k27me3640LP35_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261028/noco_bycent_plots/scatters_artifacts_excluded/centrosome_center_z_rel_bottom_actin_plane_VS_chull_max_D_by_cent.png"
+    positions:
+      - {left: 0.3, top: 2.25, width: 6.25, height: 5.2}
+      - {left: 6.78, top: 2.25, width: 6.25, height: 5.2}
+    title: "Nocodazole: the higher the centrosome, the deeper the nuclear invagination"
+    subtitle: "Pearson r, 5 μM / 10 μM: whole nucleus +0.78 / +0.48, near the centrosome +0.68 / +0.47 · CD3 DMSO +0.38 / +0.34, resting on two cells (Spearman +0.10 / +0.08)"
 
   # Per-cell scatter, Pearson r/p/n per condition in its legend (FF 2026-10-28, via the TCell session).
   # Depth / coupling slides are side-by-side pairs (FF 2026-10-28): left = all kept cells,
@@ -146,9 +204,6 @@ images:
       - {left: 6.78, top: 1.95, width: 6.25, height: 5.45}
     title: "Depth near centrosome vs cell spread area"
     subtitle: "Left: all kept cells. Right: 10 nuclei with segmentation artifacts left out of depth and coupled/decoupled only. Depth and coupling conclusions: right."
-
-  - path: chull_mean_D_cent_global_ratio_per_experiment_grid.png
-    title: "Centrosomal Invagination Index (global)"
 
   - path: avg_normal_angle_by_cent_per_experiment_grid.png
     title: "Invag Orientation (near centrosome)"
