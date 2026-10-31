@@ -1,0 +1,163 @@
+# Batch Image Replacement Configuration
+# Noco 10/29/2026 fixed Jurkats, H3K27me3 (C1) + DNA: results deck.
+# Conditions (compile order): PLL DMSO, CD3 DMSO, CD3 Noco 5 μM, CD3 Noco 10 μM.
+#
+# ONE SETTING: base_dir is the compile folder; every image path below is relative to it,
+# so a recompile = change base_dir, rerun this config. Same folder after the recompile with
+# the actin-mask rerun cells (TCell session, 2026-10-31).
+#
+# Backbone: the curated H3K27me3_loc_wrto_invag/ and DNA_loc_wrto_invag/ sets (their
+# README.txt / key_evidence.json give figures and captions), in README order, except that the H3K27me3 panels outside paper
+# Figure 6 / S6.1 go at the end (FF 2026-10-31: "move H3K27me3 stuff to the end. there is a ton
+# of nonsense. Except for metrics going into figure 6").
+# Exception: the two "at deepest invagination near centrosome" slides come from grid_panels/;
+# the curated set has no by-centrosome copy of those panels.
+# Figure review passed 2026-10-31 (TCell session), after the 05c0 label fix.
+#
+# Build:  python examples_and_configs/batch_insert_images.py <this file>
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Effects of Noco, Fixed Cells_MT_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/H3K27me3_20261029/Effects of Noco, H3K27me3, 10292026.pptx"
+
+template_slide: 1
+backup_dir: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/H3K27me3_20261029/backups"
+preserve_slides: [0, 1]
+
+auto_position: false
+position: {left: 0.3, top: 1.17, width: 12.73, height: 6.15}
+trim_whitespace: true
+
+label_side: left
+add_label: false
+# The template's placeholder is an old violin, not part of this set (bug hunt 2026-10-31).
+remove_template_slide: true
+
+base_dir: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10292026_jurkats_noco_h3k27me3640LP45_p549LP45_egfpcentrin2488LP45_h405LP40_/results_compilation_20261031"
+
+images:
+  - path: H3K27me3_loc_wrto_invag/09a_cell_counts_filter_breakdown.tiff
+    title: "Cell counts per QC filter"
+
+  # --- Centrosome position and the invaginations next to it ---
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_centrosome_center_z_rel_bottom_actin_plane_per_experiment_grid.png
+    title: "Centrosome-synapse distance"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_nuc_cent_closest_dist_per_experiment_grid.png
+    title: "Nucleus-centrosome closest distance"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_nuc_cent_closest_dist_unfloored_per_experiment_grid.png
+    title: "Nucleus-centrosome closest distance, signed"
+    subtitle: "Below 0 = centrosome inside the nucleus mask"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_chull_max_D_by_cent_per_experiment_grid.png
+    title: "Invagination depth near centrosome"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_chull_mean_D_cent_global_ratio_per_experiment_grid.png
+    title: "Centrosomal Invagination Index (global)"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_avg_normal_angle_by_cent_per_experiment_grid.png
+    title: "Region Orientation (near centrosome)"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_deepest_invag_volume_per_experiment_grid.png
+    title: "Deepest invagination volume"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_deepest_invag_fraction_chull_volume_per_experiment_grid.png
+    title: "Deepest invag: frac of convex hull volume"
+
+  # --- Paper Figure 6 metrics (D, E) and S6.1 (A, B): H3K27me3 and DNA at invaginations ---
+  # H3K27me3 MFI: moved up from the end section (FF 2026-10-31)
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_MFI_per_experiment_grid.png
+    title: "H3K27me3 MFI"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_deepest_region_periph_ratio_025um_per_experiment_grid.png
+    title: "H3K27me3 levels near deepest invagination"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_deepest_region_periph_ratio_025um_per_experiment_grid_DNA.png
+    title: "DNA levels near deepest invagination"
+  - path: grid_panels/H3K27me3_deepest_region_by_cent_periph_ratio_025um_per_experiment_grid.png
+    title: "H3K27me3 at deepest invagination near centrosome"
+    subtitle: "Same ratio as two slides back, deepest region restricted to the centrosome-proximal surface"
+  - path: grid_panels/nuc_deepest_region_by_cent_periph_ratio_025um_per_experiment_grid.png
+    title: "DNA at deepest invagination near centrosome"
+    subtitle: "Same ratio as two slides back, deepest region restricted to the centrosome-proximal surface"
+  - path: H3K27me3_loc_wrto_invag/02_chan_hulldist_H3K27me3.tiff
+    title: "Density vs hull-boundary distance"
+  - path: H3K27me3_loc_wrto_invag/04a_H3K27me3_correlation_hulldist.png
+    title: "Per-cell correlation vs hull distance"
+    subtitle: "Inner 0.25 μm"
+  - path: H3K27me3_loc_wrto_invag/02_chan_mincurv_H3K27me3.tiff
+    title: "Density vs min curvature"
+
+  # --- Nuclear shape and size ---
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_nuc_aspect_ratio_per_experiment_grid.png
+    title: "Nuclear aspect ratio"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_nuc_solidity_per_experiment_grid.png
+    title: "Nuclear solidity"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_nuc_volume_mesh_per_experiment_grid.png
+    title: "Nuclear volume"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_nuc_SA_mesh_per_experiment_grid.png
+    title: "Nuclear surface area"
+
+  # --- Synapse (actin at the coverslip) ---
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_actin_bottom_mask_area_per_experiment_grid.png
+    title: "Synapse Area"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_actin_bottom_MFI_per_experiment_grid.png
+    title: "Actin MFI at synapse"
+  - path: H3K27me3_loc_wrto_invag/08_H3K27me3_actin_bottom_inner_outer_ratio_per_experiment_grid.png
+    title: "Actin inner/outer synapse ratio"
+
+  # --- Other H3K27me3 / DNA panels (FF 2026-10-31: moved to the end; not in the paper) ---
+  - path: H3K27me3_loc_wrto_invag/02_chan_meancurv_H3K27me3.tiff
+    title: "Density vs mean curvature"
+  - path: H3K27me3_loc_wrto_invag/03a_H3K27me3_enrichment_hulldist_gt0.5um.png
+    title: "Enrichment in deep invaginations (hull distance > 0.5 μm)"
+    subtitle: "Inner 0.25 μm"
+  - path: H3K27me3_loc_wrto_invag/03b_H3K27me3_enrichment_hulldist_gt1.0um.png
+    title: "Enrichment in deep invaginations (hull distance > 1.0 μm)"
+    subtitle: "Inner 0.25 μm"
+  - path: H3K27me3_loc_wrto_invag/03c_H3K27me3_enrichment_minCurvature_lt0.png
+    title: "Enrichment on concave surface (min curv < 0)"
+    subtitle: "Inner 0.25 μm"
+  - path: H3K27me3_loc_wrto_invag/03d_H3K27me3_enrichment_minCurvature_ltm0.25.png
+    title: "Enrichment on strongly concave surface (min curv < −0.25)"
+    subtitle: "Inner 0.25 μm"
+  - path: H3K27me3_loc_wrto_invag/03e_H3K27me3_enrichment_meanCurvature.png
+    title: "Enrichment on concave surface (mean curv < 0)"
+    subtitle: "Inner 0.25 μm"
+  - path: H3K27me3_loc_wrto_invag/04b_H3K27me3_correlation_minCurvature.png
+    title: "Per-cell correlation vs min curvature"
+    subtitle: "Inner 0.25 μm"
+  - path: H3K27me3_loc_wrto_invag/04c_H3K27me3_correlation_meanCurvature.png
+    title: "Per-cell correlation vs mean curvature"
+    subtitle: "Inner 0.25 μm"
+  - path: H3K27me3_loc_wrto_invag/05c1_H3K27me3_prox_vs_distal_hulldist.png
+    title: "Hull distance near vs away from centrosome"
+    subtitle: "H3K27me3 · Inner 0.25 μm · Proximal = near centrosome"
+  - path: DNA_loc_wrto_invag/05c1_DNA_prox_vs_distal_hulldist.png
+    title: "Hull distance near vs away from centrosome"
+    subtitle: "DNA · Inner 0.25 μm · Proximal = near centrosome"
+  - path: H3K27me3_loc_wrto_invag/05c2_H3K27me3_prox_vs_distal_minCurvature.png
+    title: "Min curvature near vs away from centrosome"
+    subtitle: "H3K27me3 · Inner 0.25 μm · Proximal = near centrosome"
+  - path: DNA_loc_wrto_invag/05c2_DNA_prox_vs_distal_minCurvature.png
+    title: "Min curvature near vs away from centrosome"
+    subtitle: "DNA · Inner 0.25 μm · Proximal = near centrosome"
+  - path: H3K27me3_loc_wrto_invag/05c3_H3K27me3_prox_vs_distal_meanCurvature.png
+    title: "Mean curvature near vs away from centrosome"
+    subtitle: "H3K27me3 · Inner 0.25 μm · Proximal = near centrosome"
+  - path: DNA_loc_wrto_invag/05c3_DNA_prox_vs_distal_meanCurvature.png
+    title: "Mean curvature near vs away from centrosome"
+    subtitle: "DNA · Inner 0.25 μm · Proximal = near centrosome"
+  - images:
+      - H3K27me3_loc_wrto_invag/05c5_H3K27me3_near_cent_level.png
+      - DNA_loc_wrto_invag/05c5_DNA_near_cent_level.png
+    positions: &pair_box
+      - {left: 0.3, top: 1.4, width: 6.25, height: 5.95}
+      - {left: 6.78, top: 1.4, width: 6.25, height: 5.95}
+    title: "Near centrosome / whole surface"
+  - images:
+      - H3K27me3_loc_wrto_invag/05c6_H3K27me3_prox_over_distal_ratio.png
+      - DNA_loc_wrto_invag/05c6_DNA_prox_over_distal_ratio.png
+    positions: *pair_box
+    title: "Near / away from centrosome"
+  - path: H3K27me3_loc_wrto_invag/05c0_H3K27me3_vs_centrosome_distance_PAIRED.png
+    title: "Signal vs surface distance from centrosome"
+    subtitle: "Inner 0.25 μm"
+  - path: H3K27me3_loc_wrto_invag/06_chan_normalangle_H3K27me3.tiff
+    title: "Density vs surface orientation"
+
+  # --- Statistics tables: placeholder until FF settles the layout ---
+  - path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/H3K27me3_20261029/stats_tables_placeholder.png"
+    title: "Statistics tables"
+    subtitle: "Placeholder: layout not decided yet"

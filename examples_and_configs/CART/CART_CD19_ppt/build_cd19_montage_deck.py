@@ -110,7 +110,7 @@ PLANE_NOTE = {
                                   'the z with the most internalized CD19.'),
     'Plane of Maximal Cross-Sectional Area': 'Plane: the z of maximal T cell cross-sectional area.',
 }
-CONTACT_WIN = 'CAR: 110 to its 95th percentile in the T cell. Hoechst: 110 to its 99.5th percentile in the cell. '
+CONTACT_WIN = 'CAR: 110 to its 95th percentile in the T cell. Hoechst: 110 to its 99.5th percentile in the image. '
 CONTACT_NOTE = {   # the contact views' notes (style 'contact')
     'Synapse Plane': 'Plane: the z of maximal synapse cross-sectional area. ' + CONTACT_WIN + FIRST25,
     'Synapse Slice (XZ)': ('Slice: the y of maximal synapse cross-sectional area; z up, coverslip at the '
@@ -126,6 +126,10 @@ TITLE_COLORS = {'merge': {'CAR': '40E0FF', 'CD19': 'FF4FD8'},
                 'contact': {'CAR': '40E0FF', 'CD19': 'FF4FD8', 'Hoechst': 'FFDD00'}}
 TITLE_PT, TITLE_W_IN = 24, bpd.SLIDE_W - 0.1      # ov_montage_slide's title box
 _FONT = r'C:\Windows\Fonts\calibrib.ttf'
+# Pages further than this behind a folder's newest page belong to an older render. The pages of
+# one render share a minute; renders are about a day apart (cd19_mask_qc_widest_20261027, measured
+# 2026-10-31).
+RENDER_GAP_S = 3600
 
 
 def conditions(plane_dir):
@@ -142,12 +146,21 @@ def current_pages(found):
     """The newest render's pages only. A rerun after an exclusion renames its pages
     (montage_cells_1_33 -> _1_35) and leaves the old ones beside them, so a range sort put
     the excluded cell back on the first page and doubled the QC pages (2026-10-29). Newest
-    first, a page is kept unless its cell range overlaps one already kept."""
+    first, a page stays only if it is within RENDER_GAP_S of the newest and overlaps no kept
+    page. Time alone kept both pages of a rerun inside the gap; overlap alone kept an old page
+    whose cells were all excluded (bug hunt 2026-10-31)."""
+    found = sorted(found, key=lambda p: p.stat().st_mtime, reverse=True)
+    if not found:
+        return []
+    newest = found[0].stat().st_mtime
     kept = []
-    for p in sorted(found, key=lambda p: p.stat().st_mtime, reverse=True):
+    for p in found:
         a, b = cd19._parse_chunk_range(p)
-        if all(b < c or a > d for c, d in (cd19._parse_chunk_range(q) for q in kept)):
+        if (newest - p.stat().st_mtime <= RENDER_GAP_S and
+                all(b < c or a > d for c, d in (cd19._parse_chunk_range(q) for q in kept))):
             kept.append(p)
+        else:
+            print(f'  [stale page, left out] {p.parent.parent.name}/{p.parent.name}/{p.name}')
     return sorted(kept, key=lambda p: cd19._parse_chunk_range(p)[0])
 
 

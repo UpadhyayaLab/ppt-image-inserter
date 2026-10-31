@@ -1,0 +1,34 @@
+deck_title: "Cellpose QC: G1A1_h3k27me3_aCD3_dmso_ (Jurkat nocodazole H3K27me3 10292026)"
+output_pptx: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Cellpose_qc/H3K27me3_20261029/noco_10292026_G1A1_h3k27me3_aCD3_dmso_.pptx"
+cache_dir:   "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Cellpose_qc/cache/noco_10292026_G1A1_h3k27me3_aCD3_dmso_"
+
+raw_dir:    "L:/FF/Nucleus_centrosome/nocodazole_fixed/10292026_jurkats_noco_h3k27me3640LP45_p549LP45_egfpcentrin2488LP45_h405LP40_/G1A1_h3k27me3_aCD3_dmso_"
+mask_dir:   "L:/FF/Nucleus_centrosome/nocodazole_fixed/10292026_jurkats_noco_h3k27me3640LP45_p549LP45_egfpcentrin2488LP45_h405LP40_/G1A1_h3k27me3_aCD3_dmso_/cellpose_masks"
+
+raw_pattern:  "{fov}.tif"
+mask_pattern: "cellpose_mask_reviewed_{fov}.tif"  # crops added / re-cropped after review (reviewed_masks.py, 2026-10-30)
+
+actin_channel:   1
+hoechst_channel: 3
+
+pixel_size_um: 0.065
+scalebar_um:   5
+
+actin_low_pct:    1.0
+actin_high_pct:   99.5
+
+hoechst_low_pct:  2.0
+hoechst_high_pct: 99.5
+hoechst_min_lo:   120
+hoechst_color:    [255, 0, 0]
+
+grid_rows: 3
+grid_cols: 3
+
+image_format: "jpg"
+jpeg_quality: 90
+
+concurrent_fovs: 3
+
+fov_ids: auto
+fov_id_filter: '^\d+$'

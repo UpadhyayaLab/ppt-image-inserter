@@ -15,7 +15,7 @@ internalized CD19 objects).
 Inputs (all exports of the pipeline, drawn, never re-measured):
   tiles    volscope dev/contact_check_sheet.py --split   -> <exp>/cd19_figures/methods_<date>/
   seg      volscope_mask_qc(..., only={cond/label}, compare=true) -> <exp>/tests/methods_deck/
-  mesh     <V>/meshes/<label>_mesh.mat (V µm (y,x,z), F, face_sig_sig_0_05um_skin)
+  mesh     <V>/meshes/<label>_mesh.mat (V μm (y,x,z), F, face_sig_sig_0_05um_skin)
   synapse  <V>/cd19_synapse/faces/<label>_synapse.mat (synapse_faces), qc/<label>_synapse.png
 3D: PPT_image_inserter ppt_image_inserter/glb.py (build_colored_glb, lit)
 and the Add3DModel COM pattern of models3d.py. The deck must be closed in PowerPoint; this
@@ -46,6 +46,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / 'CART_pMLC_ppt'))
 sys.path.insert(0, r'K:\FF\Code\Scripts\PPT_image_inserter')
 import build_pmlc_profiles_deck as bpd  # noqa: E402
+from build_cd19_montage_deck import current_pages  # noqa: E402
 from ppt_image_inserter.glb import build_colored_glb  # noqa: E402
 
 # The volscope widget's own functions, so the deck's colors are the widget's numbers (one
@@ -101,16 +102,31 @@ def chan(name):
 
 
 # ---------------------------------------------------------------- 3D ----------------
-def mesh_glbs(out_dir):
+def mesh_glbs(out_dir, syn_mat=None, vdir=None, label=None, face_view=None):
     """Three colored GLBs of the cell's mesh: CD19 relative density, the synapse patch, and
     the smoothed CD19 the synapse cut runs on. glTF is Y-up, so the cell's z (up from the
-    coverslip) becomes Y; centred at the origin."""
-    om, curv = load_mesh_mat(V / 'meshes' / f'{LABEL}_mesh.mat')
+    coverslip) becomes Y; centred at the origin. SYN_MAT: another synapse stage output's
+    faces/<label>_synapse.mat (default: the pipeline's), e.g. a high_k sweep in tests/.
+    VDIR / LABEL: another cell's volscope folder and label (default: the deck's cell).
+    FACE_VIEW: a face mask to turn toward the viewer (display only): the mesh turns about
+    the vertical so the mask's centroid faces front, then tilts by its elevation, held to
+    +-60 deg so z stays up."""
+    vdir, label = vdir or V, label or LABEL
+    prefix = f'{COND}_{LABEL}' if vdir == V else label
+    om, curv = load_mesh_mat(vdir / 'meshes' / f'{label}_mesh.mat')
     f = np.asarray(om.faces, np.int64) - 1
     xyz = om.vertices_um[:, [2, 1, 0]].copy()                 # package (z,y,x) -> (x,y,z)
     xyz -= xyz.mean(axis=0)
     gl = np.column_stack([xyz[:, 0], xyz[:, 2], -xyz[:, 1]])  # (x, z, -y): z up
-    sf = loadmat(str(V / 'cd19_synapse' / 'faces' / f'{LABEL}_synapse.mat'),
+    if face_view is not None and np.any(face_view):
+        d = gl[f[np.asarray(face_view, bool)]].mean(axis=(0, 1))   # mask centroid
+        az = np.arctan2(d[0], d[2])                    # turn about y: centroid to +z (front)
+        ca, sa = np.cos(-az), np.sin(-az)
+        gl = gl @ np.array([[ca, 0, -sa], [0, 1, 0], [sa, 0, ca]])
+        el = np.clip(np.arctan2(d[1], np.hypot(d[0], d[2])), -np.pi / 3, np.pi / 3)
+        ce, se = np.cos(el), np.sin(el)                # tilt about x: centroid toward the eye
+        gl = gl @ np.array([[1, 0, 0], [0, ce, se], [0, -se, ce]])
+    sf = loadmat(str(syn_mat or vdir / 'cd19_synapse' / 'faces' / f'{label}_synapse.mat'),
                  variable_names=['synapse_faces', 'field_raw', 'field_smooth', 'thresh'])
     syn = np.asarray(sf['synapse_faces']).reshape(-1) > 0
     smooth = np.asarray(sf['field_smooth'], float).reshape(-1)
@@ -122,7 +138,7 @@ def mesh_glbs(out_dir):
     # widget's top end, 2^SIG_LIM = 4x, on a LINEAR scale (FF 2026-10-28: "why is colorbar
     # nonlinear???? that is a huge huge mistake" -- the widget's log2 ramp is not used here).
     # Unmeasured faces gray.
-    skin = np.asarray(loadmat(str(V / 'meshes' / f'{LABEL}_mesh.mat'),
+    skin = np.asarray(loadmat(str(vdir / 'meshes' / f'{label}_mesh.mat'),
                               variable_names=['face_sig_sig_0_05um_skin'])
                       ['face_sig_sig_0_05um_skin'], float).reshape(-1)
     ratio = _face_enrichment(skin, curv.face_areas_um2)
@@ -134,11 +150,11 @@ def mesh_glbs(out_dir):
     # models; raw faces above vmax saturate (the colorbar's top reads >= vmax)
     t_raw = np.nan_to_num(np.clip(raw / vmax, 0, 1))[:, None]
     if not (syn.size == smooth.size == raw.size == t_rel.shape[0] == f.shape[0]):
-        raise SystemExit(f'{LABEL}: face counts disagree ({f.shape[0]} faces)')
+        raise SystemExit(f'{label}: face counts disagree ({f.shape[0]} faces)')
     out = {}
     for name, col in (('cd19', ramp(t_rel)), ('synapse', np.where(syn[:, None], CD19_MAG, GREY)),
                       ('smooth', ramp(t_sm)), ('raw', ramp(t_raw))):
-        out[name] = out_dir / f'{COND}_{LABEL}_mesh_{name}.glb'
+        out[name] = out_dir / f'{prefix}_mesh_{name}.glb'
         # lit material: PowerPoint shades it, so the shape reads in 3D. glTF COLOR_0 is
         # linear, so the sRGB colors are linearized or they render washed out.
         build_colored_glb(gl, f, col ** 2.2, out[name], unlit=False)
@@ -150,11 +166,12 @@ def ramp(t):
     return (1 - t) * GREY + t * CD19_MAG
 
 
-def colorbar(slide, left, top, height, ticks, title, thresh_frac=None):
+def colorbar(slide, left, top, height, ticks, title, thresh_frac=None,
+             thresh_label='threshold'):
     """A vertical gray -> magenta bar EXPORTED as an image from ramp(), the same function that
     colors the mesh (FF 2026-10-28: "you should export it not draw in ppt"), with TICKS =
     [(frac, text)] from the bottom, TITLE above and an optional red threshold tick at
-    THRESH_FRAC as slide text (labels stay editable overlays)."""
+    THRESH_FRAC, named THRESH_LABEL, as slide text (labels stay editable overlays)."""
     w = 0.28
     t = np.linspace(1, 0, 512)[:, None]                  # top = 1
     px = np.repeat((ramp(t) * 255).round().astype(np.uint8)[:, None, :], 24, axis=1)
@@ -174,7 +191,7 @@ def colorbar(slide, left, top, height, ticks, title, thresh_frac=None):
                                         Inches(left + w + 0.15), Inches(y))
         ln.line.color.rgb = red
         ln.line.width = Pt(4)
-        bpd.add_text(slide, left + w + 0.2, y - 0.27, 1.7, 0.54, 'threshold', 24, bold=True,
+        bpd.add_text(slide, left + w + 0.2, y - 0.27, 1.7, 0.54, thresh_label, 24, bold=True,
                      color=red)
     tb = bpd.add_text(slide, left - 1.0, top - 1.15, w + 2.0, 1.1, title, 24, bold=True,
                       align=PP_ALIGN.CENTER)
@@ -187,8 +204,10 @@ $data = Get-Content -LiteralPath '{manifest}' -Raw | ConvertFrom-Json
 $app = New-Object -ComObject PowerPoint.Application
 $pres = $app.Presentations.Open($data.pptx, 0, 0, 0)
 try {{
-    $slide = $pres.Slides.Item([int]$data.slide)
     foreach ($md in $data.models) {{
+        $n = $data.slide
+        if ($md.slide) {{ $n = $md.slide }}            # a model may name its own slide
+        $slide = $pres.Slides.Item([int]$n)
         $s = $slide.Shapes.Add3DModel($md.path, 0, -1, [single]$md.left, [single]$md.top,
                                       [single]$md.width, [single]$md.height)
         $s.Model3D.RotationX = [single]$md.rx
@@ -205,7 +224,9 @@ try {{
 
 
 def add_models(pptx, slide_no, models):
-    """Add native 3D models to an existing deck (models3d.py's Add3DModel pattern)."""
+    """Add native 3D models to an existing deck (models3d.py's Add3DModel pattern), on
+    SLIDE_NO, or on a model's own 'slide' when it names one (one PowerPoint session for a
+    whole deck of models)."""
     man = {'pptx': str(pptx), 'slide': slide_no, 'models': models}
     with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False, encoding='utf-8') as h:
         json.dump(man, h)
@@ -334,10 +355,9 @@ def main():
     s = deck.slide('T cell outlines, the first 25 cells of each condition, 60 min')
     for j, cond in enumerate(('CAT_60min', 'FMC_60min')):
         qdir = NOLAB / 'outlines' / cond / 'montages_car_mask_cell'   # no tile labels
-        # lowest first cell; on a tie the NEWEST (an exclusion rerun renames 1_36 -> 1_37 and
-        # leaves the old page beside it)
-        page = min(qdir.glob('montage_cells_*.png'),
-                   key=lambda p: (int(p.stem.split('_')[2]), -p.stat().st_mtime))
+        # the newest render's first page (an exclusion rerun renames 1_36 -> 1_37 and leaves
+        # the old page beside it)
+        page = current_pages(qdir.glob('montage_cells_*.png'))[0]
         x0 = 0.4 + j * 6.35
         bpd.add_text(s, x0, 0.85, 6.15, 0.55, cond.replace('_', ' ').replace('min', ' min'),
                      26, bold=True, align=PP_ALIGN.CENTER)

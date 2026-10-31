@@ -17,6 +17,8 @@ output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Eff
 
 template_slide: 1
 preserve_slides: [0, 1]
+# The template's placeholder is an old violin, not part of this set (bug hunt 2026-10-31).
+remove_template_slide: true
 
 # Same plot box and trimming as the summary deck.
 auto_position: false
@@ -70,10 +72,10 @@ images:
     title: "Concave surface fraction"
     subtitle: "Artifacts excluded"
   - path: grid_panels_all_cells_notitle/n_invag_regions_0p5um_per_experiment_grid.png
-    title: "Number of invaginations ≥ 0.5 μm deep"
+    title: "Number of invaginations > 0.5 μm deep"
     subtitle: "All cells"
   - path: grid_panels_artifacts_excluded_notitle/n_invag_regions_0p5um_per_experiment_grid.png
-    title: "Number of invaginations ≥ 0.5 μm deep"
+    title: "Number of invaginations > 0.5 μm deep"
     subtitle: "Artifacts excluded"
   - path: grid_panels_all_cells_notitle/invag_ratio_per_experiment_grid.png
     title: "Invagination ratio (concave + saddle faces)"

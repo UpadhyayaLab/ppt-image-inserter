@@ -119,7 +119,7 @@ def candidate_slide(deck, root, exp, cond, lst, rows, hi):
 CHANNELS = [('_caronly', 'CAR'), ('_cd19only', 'CD19'), ('', 'CAR + CD19')]
 # candidates.csv list -> slide wording (FF 2026-10-28, his words: "T cell on top of target?
 # next to it?"); the class limits live in the run script (synapse_normal_angle_deg)
-RULE_CELLS = ('Cells: target visible in both views (≥ 10 µm² of CD19 ≥ 2 µm from the '
+RULE_CELLS = ('Cells: target visible in both views (≥ 10 μm² of CD19 ≥ 2 μm from the '
               'T cell), FMC projected area ≥ CAT’s, then closest to the condition median '
               '(FMC 60 min next to target: C2-cell12, chosen by eye).')
 PHENOTYPE = {'on_top': 'T cell on top of target', 'next_to': 'T cell next to target'}
@@ -128,6 +128,13 @@ PHENOTYPE = {'on_top': 'T cell on top of target', 'next_to': 'T cell next to tar
 # phenotype and the slide's rule line read these, so the text cannot drift from the check.
 PHENO_DEG = {'on_top': (0, 45), 'next_to': (70, 110)}
 VIEWS = [('xy', 'Widest plane'), ('side', 'Side view (XZ)')]
+# The plane each view shows, by the rule cd19_engagement_figure.m recorded per cell (xy_rule,
+# side_rule of _info.csv): (row label, rule sentence), so a slide cannot state a plane rule
+# its tiles were not rendered with (bug hunt 2026-10-31).
+XY_RULES = {'synapse': ('Synapse plane (XY)', 'XY: the plane with the largest synapse area.'),
+            'widest': ('Widest plane', 'XY: the plane with the largest T cell area.')}
+SIDE_RULES = {'synapse': ('Synapse side view (XZ)', 'XZ: the slice with the most synapse.'),
+              'centroid': ('Side view (XZ)', 'XZ: the slice through the T cell center.')}
 
 
 def read_info(root, cond, cell):
@@ -156,6 +163,30 @@ def car_rule_text(rule):
         return f'CAR: 110 to the {pct}th percentile inside the T cell, one window per cell.'
     return (f'CAR: 110 to the cell’s own {pct}th percentile'
             + (', synapse left out.' if nosyn else '.'))
+
+
+def plane_rules(args, want):
+    """(xy_rule, side_rule) shared by the pair cells, from their _info.csv. A cell that fell
+    back to the widest plane (no synapse voxels) disagrees with its neighbors and stops the
+    deck. Tiles from before these columns need --plane-rule, as --car-rule."""
+    found = {}
+    for c, l, _ in want:
+        info = read_info(args.root, c, l)
+        found[f'{c} {l}'] = (info.get('xy_rule') or '', info.get('side_rule') or '')
+    typed = tuple(args.plane_rule.split(',')) if args.plane_rule else None
+    rules = set(found.values())
+    if rules == {('', '')}:              # tiles from before the plane rules were recorded
+        if not typed:
+            raise SystemExit('these tiles do not record their plane rule: pass --plane-rule '
+                             '(the run script\'s opts.xy_plane,side_row, e.g. synapse,synapse)')
+        rules = {typed}
+    elif ('', '') in rules or len(rules) > 1 or (typed and {typed} != rules):
+        raise SystemExit(f'plane rules disagree: tiles {found}, --plane-rule {args.plane_rule}')
+    rule = rules.pop()
+    if len(rule) != 2 or rule[0] not in XY_RULES or rule[1] not in SIDE_RULES:
+        raise SystemExit(f'unknown plane rule {rule!r}: XY one of {sorted(XY_RULES)}, '
+                         f'XZ one of {sorted(SIDE_RULES)}')
+    return rule
 
 
 def pair_angle(root, cond, cell):
@@ -250,6 +281,11 @@ def pair_slides(args, rows):
     elif '' in rules_car or len(rules_car) > 1 or (args.car_rule and {args.car_rule} != rules_car):
         raise SystemExit(f'CAR rules disagree: tiles {sorted(rules_car)}, --car-rule {args.car_rule}')
     car_sentence = car_rule_text(rules_car.pop())
+    xy_rule, side_rule = plane_rules(args, want)
+    if not args.xy_label:
+        VIEWS[0] = ('xy', XY_RULES[xy_rule][0])
+    if not args.side_label:
+        VIEWS[1] = ('side', SIDE_RULES[side_rule][0])
     groups = sorted({(cond_key(c)[1], ph) for c, _, ph in want},
                     key=lambda g: (g[0], g[1] != 'on_top'))
     deck = bpd.Deck()
@@ -289,8 +325,7 @@ def pair_slides(args, rows):
         # The rules, on the slide (FF 2026-10-28: "these rules should be on the slides
         # (written concisely)"); the empty band under the tiles.
         rules = [f'CD19: 110–{hi}, the same for CAT and FMC. {car_sentence}',
-                 ('XY: the plane with the largest synapse area. XZ: the slice with the most '
-                  'synapse.')]
+                 f'{XY_RULES[xy_rule][1]} {SIDE_RULES[side_rule][1]}']
         if ph in PHENOTYPE:
             rules.append(f"On top of target: synapse within {PHENO_DEG['on_top'][1]}° of "
                          f"straight down. Next to target: {PHENO_DEG['next_to'][0]}–"
@@ -383,8 +418,9 @@ def main():
                     help='cond:cell,... left out of the deck (FF 2026-10-28: drop cells where '
                          '"we see very little target")')
     ap.add_argument('--xy-label', default=None,
-                    help='row label of the XY tiles (default "Widest plane"); the renderer\'s '
-                         'xy_plane decides which plane they are')
+                    help='row label of the XY tiles (default "Widest plane"; --layout pairs: '
+                         'from the tiles\' xy_rule); the renderer\'s xy_plane decides which '
+                         'plane they are')
     ap.add_argument('--rule-cells', action='store_true',
                     help='--layout pairs: add the RULE_CELLS footer line (the target-visible, '
                          'closest-to-median pick of run_cd19_fig_allcells_20261028.m)')
@@ -392,8 +428,13 @@ def main():
                     help='--layout pairs: the CAR rule (opts.car_win, e.g. view_p95) for tiles '
                          'whose _info.csv predates its car_rule column; checked against it '
                          'when present')
+    ap.add_argument('--plane-rule', default='',
+                    help='--layout pairs: xy,side, the plane rules (opts.xy_plane,side_row, e.g. '
+                         'synapse,synapse) for tiles whose _info.csv predates its xy_rule and '
+                         'side_rule columns; checked against them when present')
     ap.add_argument('--side-label', default=None,
-                    help='row label of the XZ tiles (default "Side view (XZ)")')
+                    help='row label of the XZ tiles (default "Side view (XZ)"; --layout pairs: '
+                         'from the tiles\' side_rule)')
     ap.add_argument('--cd19-hi-time', default='',
                     help='--layout channels: CD19 ceiling per time point, e.g. "10=300" '
                          '(FF 2026-10-28: one window per time point, CAT and FMC the same)')

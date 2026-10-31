@@ -30,6 +30,7 @@ import math
 import sys
 from pathlib import Path
 
+from PIL import Image
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN
@@ -114,11 +115,29 @@ def load(replicates):
     return spec, rows, labels
 
 
-def summary_slide(deck, spec, rows, labels):
-    s = deck.slide('Do the two experiments agree? (CAT vs FMC, per timepoint)')
+SUMMARY_MAX_ROWS = 10   # two-line rows; 11 already reached the color key
+
+
+def summary_slides(deck, spec, rows, labels):
+    """The summary table, split CD19 | CAR-involving metrics (slide order already groups them)
+    and further if a part exceeds SUMMARY_MAX_ROWS: 14 metrics on one slide ran under the key
+    and off the slide (2026-10-30, after the CAR totals and surface MFI were added)."""
+    metrics = slide_order(spec)
+    parts = [p for p in ([m for m in metrics if 'car' not in m],
+                         [m for m in metrics if 'car' in m]) if p]
+    if len(metrics) <= SUMMARY_MAX_ROWS:
+        parts = [metrics]
+    chunks = [p[i:i + SUMMARY_MAX_ROWS] for p in parts
+              for i in range(0, len(p), SUMMARY_MAX_ROWS)]
+    for k, chunk in enumerate(chunks, 1):
+        summary_slide(deck, spec, rows, labels, chunk,
+                      f' ({k} of {len(chunks)})' if len(chunks) > 1 else '')
+
+
+def summary_slide(deck, spec, rows, labels, metrics, suffix=''):
+    s = deck.slide('Do the two experiments agree? (CAT vs FMC, per timepoint)' + suffix)
     exps = [e['name'] for e in spec['experiments']]
     tps = spec['tp_labels']
-    metrics = slide_order(spec)
     by = {(r['Metric'], r['Timepoint']): r for r in rows}
     left, top, width = 0.3, 0.85, bpd.SLIDE_W - 0.6
     shape = s.shapes.add_table(len(metrics) + 1, len(tps) + 1, Inches(left), Inches(top),
@@ -176,7 +195,9 @@ def summary_slide(deck, spec, rows, labels):
                  color=bpd.GREY, align=PP_ALIGN.CENTER)
 
 
-def metric_slide(deck, spec, replicates, metric, label):
+def metric_slide(deck, spec, replicates, metric, label, kind='by_timepoint'):
+    """One slide: the experiments' <metric>_<kind>.png side by side. kind 'over_time' is
+    compare_experiments.py --over-time's every-cell-type-over-time panel."""
     exps = spec['experiments']
     s = deck.slide(label)
     n = len(exps)
@@ -186,7 +207,7 @@ def metric_slide(deck, spec, replicates, metric, label):
         x = 0.2 + i * (bw + gap)
         bpd.add_text(s, x, 0.66, bw, 0.45, experiment_label(e['name']), 20, bold=True,
                      align=PP_ALIGN.CENTER)
-        bpd.fit_in_box(s, replicates / e['name'] / f'{metric}_by_timepoint.png',
+        bpd.fit_in_box(s, replicates / e['name'] / f'{metric}_{kind}.png',
                        x, top, bw, bpd.SLIDE_H - top - 0.1)
 
 
@@ -195,8 +216,15 @@ def main():
     ap.add_argument('--replicates', type=Path, default=REPLICATES)
     ap.add_argument('--export', action='store_true',
                     help='export slide PNGs to <replicates>/deck_png_<yyyymmdd>')
+    ap.add_argument('--email', metavar='NAME',
+                    help='just the panels for an email (FF 2026-10-30: "nothing more"): per '
+                         'metric the CAT vs FMC slide, then the over-time one when drawn; no '
+                         'title slide, no summary table. Writes CART_coculture_<NAME>_<date>.pptx '
+                         'from a compare_experiments.py --violins [--over-time] --out folder')
     args = ap.parse_args()
     today = datetime.date.today().strftime('%Y%m%d')
+    if args.email:
+        return email_deck(args, today)
     out = DECK_DIR / f'CART_coculture_fixed_analysis_summary_{today}.pptx'
     if (out.parent / f'~${out.name}').exists():
         raise SystemExit(f'{out.name} is open in PowerPoint -- close it first')
@@ -215,18 +243,90 @@ def main():
 
     missing = []
     for m in slide_order(spec):
-        for e in spec['experiments']:
-            if not (args.replicates / e['name'] / f'{m}_by_timepoint.png').is_file():
-                missing.append(f"{e['name']} / {m}")
-        metric_slide(deck, spec, args.replicates, m, labels.get(m, m))
+        # the over-time slide (both cell types, 10/30/60) right after the CAT vs FMC one
+        kinds = ['by_timepoint'] + (['over_time'] if m in spec.get('over_time', []) else [])
+        for kind in kinds:
+            for e in spec['experiments']:
+                if not (args.replicates / e['name'] / f'{m}_{kind}.png').is_file():
+                    missing.append(f"{e['name']} / {m}_{kind}")
+            metric_slide(deck, spec, args.replicates, m, labels.get(m, m), kind)
     # The summary table closes the deck, after the panels it summarizes (FF 2026-10-25).
-    summary_slide(deck, spec, rows, labels)
+    summary_slides(deck, spec, rows, labels)
     deck.save()
     print(f'wrote {out}')
     for k in missing:
         print(f'[MISSING] {k}')
     if args.export:
         bpd.export_pngs(args.replicates / f'deck_png_{today}', deck.titles)
+    return 1 if missing else 0
+
+
+# What each email metric is measured over, in italics under its slide (FF 2026-10-30: "we need
+# to specify this is over full cell ... just in text in italics at the bottom"). car_total is
+# the sum of CAR over every in-cell voxel, car_mfi the mean (volscope docs/methods/outputs.md).
+EMAIL_NOTES = {
+    'car_total': 'CAR signal summed over the full cell.',
+    'car_mfi': 'CAR mean intensity per voxel over the full cell.',
+}
+
+
+def email_slide(deck, spec, replicates, metric, label, kinds):
+    """One slide per metric (FF 2026-10-30: "slides 1 and 2 and 3 and 4 can be merged"): a
+    row per panel kind (CAT vs FMC, then over time), a column per experiment, the experiment
+    named once above its column, the metric's note in italics at the bottom."""
+    exps = spec['experiments']
+    # the unit stays on the y-axes; the title is the quantity (FF 2026-10-30: "drop a.u.")
+    s = deck.slide(label.replace(' (a.u.)', ''))
+    top, gap, foot = 1.0, 0.3, 0.5
+    rh = (bpd.SLIDE_H - top - foot) / len(kinds)
+    # The rows set the panels' height, so each column is only as wide as its widest panel
+    # at that height, and the columns sit together in the middle: full-width columns left
+    # a wide empty band between the experiments (first merged render, 2026-10-30).
+    pngs = [[replicates / e['name'] / f'{metric}_{kind}.png' for kind in kinds] for e in exps]
+
+    def width_at(png, h):
+        if not png.is_file():
+            return h
+        with Image.open(png) as im:
+            return h * im.size[0] / im.size[1]
+    cw = [max(width_at(f, rh - 0.05) for f in col) for col in pngs]
+    x = (bpd.SLIDE_W - sum(cw) - gap * (len(cw) - 1)) / 2
+    for e, col, w in zip(exps, pngs, cw):
+        bpd.add_text(s, x, 0.58, w, 0.4, experiment_label(e['name']), 18, bold=True,
+                     align=PP_ALIGN.CENTER)
+        for r, png in enumerate(col):
+            bpd.fit_in_box(s, png, x, top + r * rh, w, rh - 0.05)
+        x += w + gap
+    note = EMAIL_NOTES.get(metric)
+    if note:
+        tb = bpd.add_text(s, 0.2, bpd.SLIDE_H - foot, bpd.SLIDE_W - 0.4, foot - 0.05, note, 20,
+                          align=PP_ALIGN.CENTER)
+        for para in tb.text_frame.paragraphs:
+            for run in para.runs:
+                run.font.italic = True
+
+
+def email_deck(args, today):
+    out = DECK_DIR / f'CART_coculture_{args.email}_{today}.pptx'
+    if (out.parent / f'~${out.name}').exists():
+        raise SystemExit(f'{out.name} is open in PowerPoint -- close it first')
+    bpd.OUT = out
+    spec, _, labels = load(args.replicates)
+    deck = bpd.Deck()
+    missing = []
+    for m in slide_order(spec):
+        kinds = ['by_timepoint'] + (['over_time'] if m in spec.get('over_time', []) else [])
+        for kind in kinds:
+            for e in spec['experiments']:
+                if not (args.replicates / e['name'] / f'{m}_{kind}.png').is_file():
+                    missing.append(f"{e['name']} / {m}_{kind}")
+        email_slide(deck, spec, args.replicates, m, labels.get(m, m), kinds)
+    deck.save()
+    print(f'wrote {out}')
+    for k in missing:
+        print(f'[MISSING] {k}')
+    if args.export:
+        bpd.export_pngs(args.replicates / f'deck_png_{args.email}_{today}', deck.titles)
     return 1 if missing else 0
 
 

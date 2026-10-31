@@ -89,13 +89,14 @@ def resolve_latest_compile(parent, glob="*", *, must_exist=True):
     return best.resolve()
 
 
-_DATE_ANY = re.compile(r"_(20\d{6})_")   # an underscore-delimited date inside the name
+_DATE_ANY = re.compile(r"_(20\d{6})(?!\d)")   # a date anywhere in the name, also before a letter
 
 
 def _warn_newer_suffixed(parent, glob, best_date, best_name):
     """Print a warning when a matching folder has a NEWER date that is not at the end of its
-    name (e.g. ``..._20260801_rerun``). Such folders are skipped by design, and the older
-    compile used to be returned with nothing on screen (bug hunt 2026-10-26)."""
+    name (e.g. ``..._20260801_rerun`` or ``..._20260801b``). Such folders are skipped by design,
+    and the older compile used to be returned with nothing on screen (bug hunt 2026-10-26;
+    a letter straight after the date still slipped through, 2026-10-31)."""
     try:
         names = os.listdir(str(parent))
     except OSError:

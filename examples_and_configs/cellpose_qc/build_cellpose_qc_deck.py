@@ -27,6 +27,7 @@ YAML schema (selected keys):
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 import threading
@@ -41,7 +42,9 @@ from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from mip_mask_compositor import build_fov_composites  # noqa: E402
+from ppt_image_inserter import backup_presentation  # noqa: E402
 
 _print_lock = threading.Lock()
 
@@ -69,6 +72,24 @@ GRID_H = SLIDE_H - GRID_TOP - 0.10
 CELL_LABEL_H = 0.28
 CELL_LABEL_FONT_PT = 12
 CELL_GAP = 0.08
+
+# A cached composite is reused only if its raw and mask files still have the times recorded
+# when it was drawn, and it was drawn with these settings. It used to be reused whenever the
+# file existed, so a changed mask or mask_pattern kept the old outlines, printing only "cached"
+# (bug hunt 2026-10-31). Recorded times, not "newer than the composite": a mask restored from a
+# backup keeps its old date (second pass, same day). skip_plain is here because a pass with it on
+# leaves the plain composites out of date while recording the new times (same day).
+CACHE_STAMP = "cache_settings.json"
+CACHE_SETTINGS = (
+    "raw_dir", "mask_dir",
+    "raw_pattern", "mask_pattern", "actin_channel", "hoechst_channel", "pixel_size_um",
+    "scalebar_um", "actin_low_pct", "actin_high_pct", "hoechst_low_pct", "hoechst_high_pct",
+    "hoechst_min_lo", "hoechst_color", "image_format", "jpeg_quality", "skip_plain",
+)
+# Composite file names the last pass drew or confirmed. combine_with_nuc_decks.py and
+# contact_sheet.py read this instead of globbing, so a FOV that lost its mask or left fov_ids
+# no longer comes back with its old composite and no marker (bug hunt 2026-10-31).
+CURRENT_LIST = "current_composites.json"
 
 
 def load_config(path: Path) -> Dict[str, Any]:
@@ -234,9 +255,31 @@ def build_slide(prs, title: str, items, rows: int, cols: int) -> None:
             )
 
 
+def _outdated(composite: Path, recorded: Optional[List[float]], sources: List[float]) -> bool:
+    """True when the composite is missing or its source files' times are not the recorded ones."""
+    return not composite.exists() or recorded != sources
+
+
+def _cache_settings(cfg: Dict[str, Any]) -> Dict[str, Any]:
+    return {k: cfg.get(k) for k in CACHE_SETTINGS}
+
+
+def _read_stamp(cache_dir: Path) -> Dict[str, Any]:
+    """The last complete pass's {"settings": ..., "sources": {fov: [raw, mask mtime]}}."""
+    stamp = cache_dir / CACHE_STAMP
+    return json.loads(stamp.read_text(encoding="utf-8")) if stamp.exists() else {}
+
+
+def current_composites(cache_dir: Path) -> Optional[set]:
+    """File names the last pass drew or confirmed; None for a cache built before the list."""
+    path = cache_dir / CURRENT_LIST
+    return set(json.loads(path.read_text(encoding="utf-8"))) if path.exists() else None
+
+
 def _process_fov(
     fov: str, cfg: Dict[str, Any], raw_dir: Path, mask_dir: Path,
-    cache_dir: Path, ext: str, has_hoechst: bool,
+    cache_dir: Path, ext: str, has_hoechst: bool, force: bool = False,
+    recorded: Optional[List[float]] = None,
 ) -> Dict[str, Any]:
     """Generate the missing composite(s) for one FOV. Pure, thread-safe."""
     raw_path = raw_dir / cfg["raw_pattern"].format(fov=fov)
@@ -252,11 +295,12 @@ def _process_fov(
         return {"fov": fov, "status": "missing_mask", "detail": str(mask_path),
                 "plain": None, "with_nuc": None}
 
-    need_plain = (not skip_plain) and (not plain_path.exists())
-    need_nuc = has_hoechst and not nuc_path.exists()
+    sources = [raw_path.stat().st_mtime, mask_path.stat().st_mtime]
+    need_plain = (not skip_plain) and (force or _outdated(plain_path, recorded, sources))
+    need_nuc = has_hoechst and (force or _outdated(nuc_path, recorded, sources))
 
     if not need_plain and not need_nuc:
-        return {"fov": fov, "status": "cached",
+        return {"fov": fov, "status": "cached", "sources": sources,
                 "plain": plain_path, "with_nuc": nuc_path}
 
     build_fov_composites(
@@ -277,7 +321,7 @@ def _process_fov(
         image_format=str(cfg["image_format"]),
         jpeg_quality=int(cfg["jpeg_quality"]),
     )
-    return {"fov": fov, "status": "composed",
+    return {"fov": fov, "status": "composed", "sources": sources,
             "plain": plain_path, "with_nuc": nuc_path}
 
 
@@ -299,6 +343,8 @@ def _assemble_deck(
         title = f"{deck_title} - FOVs {first_fov}-{last_fov}"
         build_slide(prs, title, chunk, rows, cols)
     out_pptx.parent.mkdir(parents=True, exist_ok=True)
+    if out_pptx.exists():
+        backup_presentation(str(out_pptx))
     prs.save(str(out_pptx))
     return slide_idx
 
@@ -322,6 +368,12 @@ def build_deck(cfg: Dict[str, Any]) -> Dict[str, List[str]]:
     _log(f"Found {len(fov_ids)} FOV ids; grid {rows}x{cols} per slide; "
          f"hoechst={'on' if has_hoechst else 'off'}; workers={n_workers}")
 
+    stamp = _read_stamp(cache_dir)
+    force = stamp.get("settings") != _cache_settings(cfg)
+    if force:
+        _log("Cache settings changed or not recorded: recomposing every FOV")
+    recorded = {} if force else stamp.get("sources", {})
+
     results: Dict[str, Dict[str, Any]] = {}
 
     def _record(r: Dict[str, Any]) -> None:
@@ -337,12 +389,13 @@ def build_deck(cfg: Dict[str, Any]) -> Dict[str, List[str]]:
 
     if n_workers == 1:
         for fov in fov_ids:
-            _record(_process_fov(fov, cfg, raw_dir, mask_dir, cache_dir, ext, has_hoechst))
+            _record(_process_fov(fov, cfg, raw_dir, mask_dir, cache_dir, ext, has_hoechst, force,
+                                 recorded.get(fov)))
     else:
         with ThreadPoolExecutor(max_workers=n_workers) as ex:
             futures = {
                 ex.submit(_process_fov, fov, cfg, raw_dir, mask_dir, cache_dir,
-                          ext, has_hoechst): fov
+                          ext, has_hoechst, force, recorded.get(fov)): fov
                 for fov in fov_ids
             }
             for fut in as_completed(futures):
@@ -354,8 +407,21 @@ def build_deck(cfg: Dict[str, Any]) -> Dict[str, List[str]]:
                     results[fov] = {"fov": fov, "status": "error",
                                     "plain": None, "with_nuc": None}
 
-    # Preserve original fov_ids order for slides.
+    # Stamped only after a pass with no failed FOV, so the next pass redoes a failed one.
+    if not any(r["status"] == "error" for r in results.values()):
+        # FOVs outside this pass keep their record; after a settings change they have none,
+        # so they are redrawn when they next come up.
+        sources = {**recorded, **{f: r["sources"] for f, r in results.items() if "sources" in r}}
+        (cache_dir / CACHE_STAMP).write_text(
+            json.dumps({"settings": _cache_settings(cfg), "sources": sources}), encoding="utf-8")
+
     skip_plain = bool(cfg.get("skip_plain", False)) and has_hoechst
+    # Written after every pass: a failed or missing FOV has no paths, so it drops out at once.
+    current = sorted(p.name for r in results.values()
+                     for p in (None if skip_plain else r["plain"], r["with_nuc"]) if p is not None)
+    (cache_dir / CURRENT_LIST).write_text(json.dumps(current), encoding="utf-8")
+
+    # Preserve original fov_ids order for slides.
     if not skip_plain:
         plain_items: List[Tuple[str, Optional[Path]]] = [
             (fov, results[fov]["plain"]) for fov in fov_ids

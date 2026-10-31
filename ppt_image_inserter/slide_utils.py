@@ -189,6 +189,7 @@ def delete_slides(ppt_path: str, slide_indices, backup_base: Optional[str] = Non
                   backup: bool = True) -> int:
     """
     Delete several slides in ONE open/save, after ONE tiered backup of the deck as it was.
+    Also drops orphan slide parts, so call it even with no slides to delete.
 
     Use this instead of calling delete_slide in a loop: each delete_slide call backs up,
     so a loop overwrote the 'latest' tier with partly deleted decks, and a rerun within
@@ -212,8 +213,6 @@ def delete_slides(ppt_path: str, slide_indices, backup_base: Optional[str] = Non
         raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
 
     indices = sorted(set(slide_indices), reverse=True)   # high to low keeps the rest valid
-    if not indices:
-        return 0
 
     prs = Presentation(ppt_path)
     n_slides = len(prs.slides)
@@ -222,6 +221,18 @@ def delete_slides(ppt_path: str, slide_indices, backup_base: Optional[str] = Non
         raise IndexError(
             f"Slide index(es) {sorted(bad)} out of range (presentation has {n_slides} slides)"
         )
+
+    # Orphan slide parts (related to the presentation but not in its slide list) go even when
+    # nothing is deleted. The Noco MT template carries 21 (slide3..23.xml); add_slide names its
+    # part slide<N+1>.xml, so with N small a new slide reused an orphan's name: two
+    # ppt/slides/slide19.xml in one zip, which PowerPoint refuses to open (CilioD montage deck,
+    # 2026-10-31). Skipping this when no slide was deleted left preserve_slides [0, 1] exposed
+    # (bug hunt 2026-10-31).
+    listed = {sldId.rId for sldId in prs.slides._sldIdLst}
+    orphans = [rId for rId, rel in prs.part.rels.items()
+               if rel.reltype == RT.SLIDE and rId not in listed]
+    if not indices and not orphans:
+        return 0
 
     if backup:
         backup_presentation(ppt_path, backup_base=backup_base)
@@ -232,5 +243,22 @@ def delete_slides(ppt_path: str, slide_indices, backup_base: Optional[str] = Non
         prs.part.drop_rel(rId)
         del prs.slides._sldIdLst[slide_index]
 
+    for rId in orphans:
+        prs.part.drop_rel(rId)
+    _drop_links_to_removed_slides(prs)
+    prs.part.rename_slide_parts([sldId.rId for sldId in prs.slides._sldIdLst])
     prs.save(ppt_path)
     return len(indices)
+
+
+def _drop_links_to_removed_slides(prs: Presentation) -> None:
+    """Remove links from kept slides to slides no longer in the deck. Such a link keeps the
+    removed slide's part in the package under its old name, which the renumbering of the
+    kept slides then duplicates (bug hunt 2026-10-31)."""
+    listed = {prs.part.related_part(sldId.rId) for sldId in prs.slides._sldIdLst}
+    for slide in prs.slides:
+        for rId, rel in list(slide.part.rels.items()):
+            if rel.reltype == RT.SLIDE and rel.target_part not in listed:
+                for node in slide._element.xpath(f'//*[@r:id="{rId}"]'):
+                    node.getparent().remove(node)
+                slide.part.rels.pop(rId)

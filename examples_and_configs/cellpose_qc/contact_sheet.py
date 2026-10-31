@@ -11,6 +11,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+from build_cellpose_qc_deck import current_composites
+
 ap = argparse.ArgumentParser()
 ap.add_argument("cache_dir")
 ap.add_argument("out")
@@ -21,6 +23,16 @@ args = ap.parse_args()
 
 fs = sorted(p for p in Path(args.cache_dir).glob(f"*{args.suffix}.jpg")
             if re.match(r"^\d+" + re.escape(args.suffix) + r"$", p.stem))
+current = current_composites(Path(args.cache_dir))
+if current is None:
+    print("No list of current composites: showing all of them; rebuild the condition to check them")
+else:
+    stale = [p.name for p in fs if p.name not in current]
+    if stale:
+        print(f"Left out {len(stale)} composite(s) the last build did not confirm: {stale}")
+    fs = [p for p in fs if p.name in current]
+if not fs:
+    raise SystemExit(f"0 FOVs in {args.cache_dir}: no sheet written")
 W = args.tile_w
 H = W // 2
 rows = (len(fs) + args.cols - 1) // args.cols

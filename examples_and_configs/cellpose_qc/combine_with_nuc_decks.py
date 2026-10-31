@@ -24,7 +24,7 @@ from pptx.util import Inches
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_cellpose_qc_deck import (  # noqa: E402
     SLIDE_W, SLIDE_H, BLACK, WHITE,
-    add_textbox, set_slide_background, build_slide,
+    add_textbox, set_slide_background, build_slide, current_composites,
 )
 
 
@@ -36,6 +36,16 @@ def _fov_sort_key(p: Path, suffix: str = "_with_nuc") -> Tuple[int, str]:
     if m:
         return (int(m.group(1)), stem)
     return (10**9, stem)
+
+
+def _composites(cache_dir: Path, pattern: str, suffix: str, current: Optional[set],
+                stale: List[str]) -> List[Path]:
+    """The cache's composites matching pattern in FOV order, those the last build confirmed
+    (all of them when current is None); the rest are added to stale."""
+    found = [p for p in sorted(cache_dir.glob(pattern), key=lambda x: _fov_sort_key(x, suffix))
+             if suffix or "_with_nuc" not in p.stem]
+    stale.extend(p.name for p in found if current is not None and p.name not in current)
+    return [p for p in found if current is None or p.name in current]
 
 
 def _section_label_from_cache_name(cache_name: str) -> str:
@@ -82,17 +92,16 @@ def build_combined(
         else:
             # Plain mode: only files that are NOT _with_nuc.
             jpg_pat, png_pat = "*.jpg", "*.png"
-        nuc_files = [
-            p for p in sorted(cd.glob(jpg_pat),
-                              key=lambda x: _fov_sort_key(x, suffix))
-            if suffix or "_with_nuc" not in p.stem
-        ]
-        if not nuc_files:
-            nuc_files = [
-                p for p in sorted(cd.glob(png_pat),
-                                  key=lambda x: _fov_sort_key(x, suffix))
-                if suffix or "_with_nuc" not in p.stem
-            ]
+        current = current_composites(cd)
+        if current is None:
+            print(f"[{cd.name}] no list of current composites: showing all of them; "
+                  "rebuild the condition to check them", flush=True)
+        stale: List[str] = []
+        nuc_files = (_composites(cd, jpg_pat, suffix, current, stale)
+                     or _composites(cd, png_pat, suffix, current, stale))
+        if stale:
+            print(f"[{cd.name}] left out {len(stale)} composite(s) the last build did not "
+                  f"confirm: {stale}", flush=True)
         if not nuc_files:
             print(f"[{cd.name}] SKIP (no matching composites in cache)", flush=True)
             continue

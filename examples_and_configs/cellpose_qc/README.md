@@ -23,6 +23,20 @@ conda run -n PPT_editing python examples_and_configs/cellpose_qc/build_cellpose_
 The script never writes inside `raw_dir` / `mask_dir`. Composite PNGs go
 to `cache_dir`; the deck goes to `output_pptx`.
 
+A composite is redrawn when its raw image or mask has a different file
+time than when it was drawn, older or newer, and every FOV is redrawn when
+`raw_dir`, `mask_dir` or a display setting in the config changes (the last
+complete pass's settings and file times are kept in
+`cache_dir/cache_settings.json`). A cache with no such file, or one written
+before file times were recorded, is redrawn once. An existing deck is backed
+up before it is replaced.
+
+Each pass also writes `cache_dir/current_composites.json`, the composites it
+drew or confirmed. `combine_with_nuc_decks.py` and `contact_sheet.py` show only
+those and print what they left out, so a FOV that lost its mask or left
+`fov_ids` does not come back with its old composite. A cache from before this
+list shows everything, with a warning.
+
 ## Adding a new dataset
 
 Copy a YAML in `configs/` and edit:

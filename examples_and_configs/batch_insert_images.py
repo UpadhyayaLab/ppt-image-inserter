@@ -135,6 +135,13 @@ def validate_config(config, config_path):
 
     validate_slide_index(config['template_slide'], 'template_slide')
 
+    # remove_template_slide deletes the template from the file being built. In place that file
+    # is the deck the next run starts from, so template_slide would then point at a built slide
+    # and every new slide would silently inherit its title (bug hunt 2026-10-31).
+    if config.get('remove_template_slide') and not config.get('output_path'):
+        print("[ERROR] remove_template_slide needs output_path, so the template file is kept")
+        sys.exit(1)
+
     # Validate images is a list
     if not isinstance(config['images'], list):
         print(f"[ERROR] 'images' must be a list")
@@ -196,6 +203,9 @@ def main(config_path):
     label_side = config.get('label_side', 'right')
     # Crop each image's white margin so plots fill their box (default off)
     trim_whitespace = bool(config.get('trim_whitespace', False))
+    # Delete the template slide(s) once the slides are built (default off): a template's
+    # placeholder picture otherwise stays in the deck as a slide of its own
+    remove_template_slide = bool(config.get('remove_template_slide', False))
     manual_position = get_manual_position(config)
 
     # Get preserve_slides, default to [0, template_slide] if not specified
@@ -348,13 +358,13 @@ def main(config_path):
     # Collect slides to delete (all except preserved)
     slides_to_delete = [idx for idx in range(total_slides) if idx not in preserve_slides]
 
-    if slides_to_delete:
-        # ONE backup of the deck as it was, then all deletions in one save. (A delete_slide
-        # per slide backed up each partly deleted state into 'latest'.) In output_path mode
-        # ppt_file is a fresh copy of the unchanged template and the output it replaced was
-        # backed up above, so backing up here would only overwrite that backup.
-        delete_slides(ppt_file, slides_to_delete, backup_base=backup_dir,
-                      backup=not output_path)
+    # ONE backup of the deck as it was, then all deletions in one save. (A delete_slide
+    # per slide backed up each partly deleted state into 'latest'.) In output_path mode
+    # ppt_file is a fresh copy of the unchanged template and the output it replaced was
+    # backed up above, so backing up here would only overwrite that backup. Called even with
+    # nothing to delete: it also drops the template's orphan slide parts.
+    delete_slides(ppt_file, slides_to_delete, backup_base=backup_dir,
+                  backup=not output_path)
 
     # Step 2: Create new slides from images
     remaining_images = images
@@ -520,6 +530,12 @@ def main(config_path):
             except Exception as e:
                 print(f"[ERROR] Failed on {os.path.basename(image_path)}: {e}")
                 error_count += 1
+
+    # Step 3: Drop the template slide(s), only when every slide was built
+    if remove_template_slide and error_count == 0:
+        template_slides = sorted(template_slide_remap[idx] for idx in template_slide_indices)
+        delete_slides(ppt_file, template_slides, backup_base=backup_dir, backup=False)
+        print(f"Removed template slide(s): {template_slides}")
 
     # Summary
     print(f"\nComplete: {success_count}/{len(remaining_images)} slides created")

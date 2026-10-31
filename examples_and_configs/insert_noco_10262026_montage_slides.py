@@ -204,11 +204,17 @@ ELEV_TEST_OUT = "Noco_Jurkats_hull_elev_test_10262026.pptx"
 XZ_PPU = SCALEBAR_PX / SCALEBAR_UM
 XZ_ZSTEP_UM = 0.3
 XZ_BELOW_PLANES = 2           # tiles end this many z planes below the actin bottom slice
+XZ_BOTTOM_WARN_PLANES = 10    # warn when a cell's bottom slice is this far from its well's median
 # Black figure margin under the image in every physical-scale PNG
 # (set_figure_for_physical_scale.m: margin_px 20 at ppum 20 = 1 μm; 20 rows measured).
 # Ignoring it put the cut ~3.3 planes lower than XZ_BELOW_PLANES (bug hunt 2026-10-28).
 XZ_FIG_MARGIN_UM = 1.0
 XZ_ID_BOX = (40, 30)          # (w, h) px of the burned-in cell id, bottom right
+# Black rows above the image in every physical-scale XZ PNG (set_figure_for_physical_scale.m:
+# title_px + margin_px = 110 figure px, 114.6 rows at -r100; a cell reaching the stack top starts
+# at row 116). save_xz_mip_physical.m burns the id here since TCell 2fdce20 (2026-10-31); left
+# in, it would set the top of the crop on any re-render (bug hunt 2026-10-31).
+XZ_TOP_GUTTER_PX = 115
 # FF 2026-10-27: for XZ MIPs every cell is not needed; one montage type, one
 # slide (the first 12 cells per condition).
 XZ_PACKED = [
@@ -1020,12 +1026,14 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
     sink: {"prs": Presentation, "tags": []} appends the slides to that deck
     (one tag per slide) instead of saving out_path (--combined).
     pages: one {condition label: [(tile label, tile image), ...]} per slide.
-    The four conditions sit 2 x 2 (CONDITIONS order); each block holds
+    The four conditions sit 2 x 2 (CONDITIONS order; of three, the third sits under
+    the second, so a treatment is beside its CD3 DMSO control); each block holds
     PACK_SHELVES rows of PACK_PER_SHELF cells, tiles packed edge to edge
     (shelf packing, in the order given) and bottom-aligned on each shelf's
     baseline. One PPI for every tile on every slide, so cells compare at
     physical scale across conditions; one 5 μm bar per slide (ppu = tile px/μm).
-    page_channels: one channel legend per slide (default: channels on every slide)."""
+    page_channels: one channel legend per slide (default: channels on every slide).
+    colorbar: True for the hull colorbar, or a function(slide) that draws its own in that column."""
     if not pages:
         return 0
     gap = 0.06
@@ -1071,7 +1079,8 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
                           title + (f" {k + 1}/{len(pages)}" if len(pages) > 1 else ""),
                           page_channels[k] if page_channels else channels)
         for b, (_, label) in enumerate(CONDITIONS):
-            left, top = MARGIN + (b % 2) * (block_w + 0.20), GRID_TOP + (b // 2) * (block_h + 0.12)
+            col = 1 if len(CONDITIONS) == 3 and b == 2 else b % 2
+            left, top = MARGIN + col * (block_w + 0.20), GRID_TOP + (b // 2) * (block_h + 0.12)
             # headings: one {label: text} for every slide, or one per slide.
             hd = headings[k] if isinstance(headings, list) else headings
             add_textbox(slide, hd.get(label, label), left, top, block_w, LABEL_H,
@@ -1149,7 +1158,7 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
                 run.font.size = Pt(STRIP_FOOT_FONT_PT)
                 run.font.color.rgb = color
         if colorbar:
-            add_colorbar(slide)
+            (colorbar if callable(colorbar) else add_colorbar)(slide)
     if sink is not None:
         return len(pages)
     if out_path.exists():
@@ -1282,34 +1291,57 @@ def percell_files(cells_dir: Path) -> dict:
     return {cid: p for cid, (t, p) in newest.items()}
 
 
-def xz_tile(path: Path, bottom_slice: float, box_path: Path = None):
+def blank_xz_ids(a) -> None:
+    """Black out a burned-in cell id in place, in either spot the renders have used."""
+    h, w = a.shape[:2]
+    a[h - XZ_ID_BOX[1]:, w - XZ_ID_BOX[0]:] = 0
+    a[:XZ_TOP_GUTTER_PX] = 0
+
+
+def xz_tile(path: Path, bottom_slice: float, box_path: Path = None, min_blob: int = 0, min_peak: int = 0):
     """One XZ MIP cut down to the cell. The image spans the whole stack, z = 1
     at the bottom row (save_xz_mip_physical.m); the cut is at the cell's actin
     bottom slice (the coverslip, converted as original_slice_to_resized.m
     does: (slice - 0.5) * zstep above the stack bottom), so every tile's
     bottom edge is its coverslip. Top and sides are cropped to content; the
-    tiny cell id burned in at the bottom right is ignored and blacked out.
+    tiny burned-in cell id is ignored and blacked out (blank_xz_ids).
     box_path: an image of the same cell and geometry to find the content box
     in (fixed-contrast MT is too dim to crop on; its per-cell-contrast twin
-    is used instead)."""
+    is used instead). min_blob > 0: ignore specks under this many px when
+    finding the box, so they do not push the cell off-center; a centrin spot
+    away from the nucleus is larger and still counts (10/29 decks). min_peak
+    > 0: also ignore a dim blob that never reaches this level, whatever its
+    size, unless it is the largest one."""
     import numpy as np
     with Image.open(_winlong(path)) as im:
         a = np.asarray(im.convert("RGB")).copy()
     h, w = a.shape[:2]
-    a[h - XZ_ID_BOX[1]:, w - XZ_ID_BOX[0]:] = 0
+    blank_xz_ids(a)
     b = a
     if box_path is not None:
         with Image.open(_winlong(box_path)) as im:
             b = np.asarray(im.convert("RGB")).copy()
         if b.shape != a.shape:
             b = a
-        b[h - XZ_ID_BOX[1]:, w - XZ_ID_BOX[0]:] = 0
+        blank_xz_ids(b)
     # Cut XZ_BELOW_PLANES below the actin bottom slice (FF 2026-10-27: a
     # little margin under the coverslip, not aggressive). The stack bottom sits
     # XZ_FIG_MARGIN_UM above the PNG's bottom row.
     y_cut = min(h, h - int(round((XZ_FIG_MARGIN_UM + (bottom_slice - XZ_BELOW_PLANES - 0.5)
                                   * XZ_ZSTEP_UM) * XZ_PPU)))
-    ys, xs = np.nonzero(b[:y_cut].max(axis=-1) > 15)
+    mask = b[:y_cut].max(axis=-1) > 15
+    if min_blob:
+        from scipy import ndimage
+        lab, _ = ndimage.label(mask)
+        sizes = np.bincount(lab.ravel())
+        sizes[0] = 0
+        keep = sizes >= min_blob
+        if min_peak:
+            ids = np.arange(len(sizes))
+            peaks = ndimage.maximum(b[:y_cut].max(axis=-1), lab, index=ids)
+            keep &= (peaks >= min_peak) | (ids == sizes.argmax())
+        mask = keep[lab]
+    ys, xs = np.nonzero(mask)
     if len(xs) == 0:
         return None
     pad = 4
@@ -1328,10 +1360,15 @@ def kept_ids(folder: str) -> set:
                 if COMPILE_WELLS[r["condition_name"]] == folder}
 
 
-def xz_tiles(combo: str, sources: dict, kept_only: bool = False) -> dict:
+def xz_tiles(combo: str, sources: dict, kept_only: bool = False,
+             results_sources: dict = None, min_blob: int = 0, min_peak: dict = None) -> dict:
     """{condition label: [(cell id, tile), ...]} for one XZ family, in cell-id
     order. sources maps well folder -> run folder (prog dir); a well missing
-    from it gets no tiles (its block stays blank)."""
+    from it gets no tiles (its block stays blank). results_sources: well ->
+    run folder holding its results.mat, when the PNGs sit in a copy without
+    one (10/29 backups); default: the PNG folder. min_peak: {(well, cell id):
+    level}, xz_tile's min_peak for named cells only (as a general rule it
+    clips the dim tops of real cells)."""
     import numpy as np
     import scipy.io as sio
     tiles = {}
@@ -1340,11 +1377,20 @@ def xz_tiles(combo: str, sources: dict, kept_only: bool = False) -> dict:
         prog = sources.get(folder)
         if prog is None:
             continue
-        m = sio.loadmat(_winlong(EXP_ROOT / prog / folder / RESULTS_MAT), squeeze_me=True,
+        res_prog = (results_sources or {}).get(folder, prog)
+        m = sio.loadmat(_winlong(EXP_ROOT / res_prog / folder / RESULTS_MAT), squeeze_me=True,
                         variable_names=["cell_id", "actin_bottom_slice_num"])
         bottoms = dict(zip(np.asarray(m["cell_id"]).ravel().astype(int).tolist(),
                            np.asarray(m["actin_bottom_slice_num"], float).ravel().tolist()))
         keep = kept_ids(folder) if kept_only else None
+        # A bottom slice far from the well's points at a wrong actin plane; the tile is
+        # cut there anyway, so say so (10/29 CilioD PLL cell 7: 36, well median 6, bug hunt).
+        shown = [v for c, v in bottoms.items() if (keep is None or c in keep) and not np.isnan(v)]
+        well_median = float(np.median(shown)) if shown else float("nan")
+        for cid, v in bottoms.items():
+            if (keep is None or cid in keep) and abs(v - well_median) > XZ_BOTTOM_WARN_PLANES:
+                print(f"WARNING: {label} ({folder}) cell {cid}: actin bottom slice {v:g}, "
+                      f"well median {well_median:g}; its side view is cut at that slice")
         phys = EXP_ROOT / prog / folder / "physical_scale_images"
         files = percell_files(phys / combo / "cells")
         # Fixed-contrast families crop on their per-cell-contrast twin (same
@@ -1356,7 +1402,7 @@ def xz_tiles(combo: str, sources: dict, kept_only: bool = False) -> dict:
         for cid in sorted(files):
             if (keep is not None and cid not in keep) or cid not in bottoms or np.isnan(bottoms[cid]):
                 continue
-            t = xz_tile(files[cid], bottoms[cid], twins.get(cid))
+            t = xz_tile(files[cid], bottoms[cid], twins.get(cid), min_blob, (min_peak or {}).get((folder, cid), 0))
             if t is not None:
                 # A 5 μm bar under every tile (FF 2026-10-27); same strip on
                 # every tile, so the coverslip baselines stay aligned.
@@ -1461,24 +1507,33 @@ def build_combined_deck(out_path: Path) -> int:
     return n
 
 
-def xy_tile(path: Path, box_path: Path = None):
+def xy_tile(path: Path, box_path: Path = None, id_box: tuple = XZ_ID_BOX, blob_level: int = 0):
     """A top-view tile: the burned-in cell id blanked, cropped to the content
-    of box_path (same geometry; per-cell contrast) or of the image itself."""
+    of box_path (same geometry; per-cell contrast) or of the image itself.
+    id_box: (w, h) px blanked at the bottom right (the 10/29 H3K27me3 tiles
+    burn the id outside the default box). blob_level > 0: crop to the largest
+    connected blob above this level, so faint specks far from the nucleus do
+    not stretch the box and push the nucleus off-center (10/29, 14 tiles)."""
     import numpy as np
     with Image.open(_winlong(path)) as im:
         a = np.asarray(im.convert("RGB")).copy()
     h, w = a.shape[:2]
-    a[h - XZ_ID_BOX[1]:, w - XZ_ID_BOX[0]:] = 0
+    a[h - id_box[1]:, w - id_box[0]:] = 0
     b = a
     if box_path is not None:
         with Image.open(_winlong(box_path)) as im:
             b = np.asarray(im.convert("RGB")).copy()
         if b.shape != a.shape:
             b = a
-        b[h - XZ_ID_BOX[1]:, w - XZ_ID_BOX[0]:] = 0
+        b[h - id_box[1]:, w - id_box[0]:] = 0
     ys, xs = np.nonzero(b.max(axis=-1) > 15)
     if len(xs) == 0:
         return Image.fromarray(a)
+    if blob_level:
+        from scipy import ndimage
+        lab, n = ndimage.label(b.max(axis=-1) > blob_level)
+        if n:
+            ys, xs = np.nonzero(lab == 1 + int(np.bincount(lab.ravel())[1:].argmax()))
     pad = 4
     return Image.fromarray(a[max(0, ys.min() - pad):min(h, ys.max() + 1 + pad),
                              max(0, xs.min() - pad):min(w, xs.max() + 1 + pad)])
