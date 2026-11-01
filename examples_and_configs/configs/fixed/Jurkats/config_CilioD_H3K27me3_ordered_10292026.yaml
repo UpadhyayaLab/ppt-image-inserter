@@ -1,0 +1,214 @@
+# Batch Image Replacement Configuration
+# Ciliobrevin 10/29/2026 fixed Jurkats, same plots, order and titles as config_Noco_H3K27me3_ordered_10292026.yaml
+# (FF 2026-11-01). The H3K27me3 plots alone, in a logical order: per-cell
+# metrics first, profiles after. One experiment; DNA is shown beside H3K27me3 as its control.
+# Per-cell metrics at a point: the 2 points (Region Nadir, Centrosome Projection), each at the 3 region
+# sizes (10, 25, 50% region) in succession. S2 = Region Nadir, S1 = Centrosome Projection, f010/f025/f050 = size;
+# S3 (whole-nucleus deepest point) stays off, as on the seed-depth report (FF 2026-10-31).
+#
+# Build:  python examples_and_configs/batch_insert_images.py <this file>
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Effects of Noco, Fixed Cells_MT_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/CilioD/H3K27me3_20261029/Effects of CilioD, H3K27me3 plots, 10292026.pptx"
+
+template_slide: 1
+backup_dir: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/CilioD/H3K27me3_20261029/backups"
+preserve_slides: [0, 1]
+title_slide_text: "Effects of CilioD on H3K27me3, Oct 29, 2026"
+
+auto_position: false
+position: {left: 0.3, top: 1.17, width: 12.73, height: 6.15}
+trim_whitespace: true
+title_fit: true
+
+label_side: left
+add_label: false
+remove_template_slide: true
+
+# Image paths below are relative to the experiment folder.
+base_dir: "L:/FF/Nucleus_centrosome/ciliobrevin_fixed/10292026_jurkats_ciliobrevin_h3k27me3640LP45_p549LP45_egfpcentrin2488LP45_h405LP40_"
+
+images:
+  # --- The 2 points and 3 region sizes on one nucleus (build_h3k27me3_10292026_region_sheets.py); Noco cells, no Cilio tiles rendered ---
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10292026_jurkats_noco_h3k27me3640LP45_p549LP45_egfpcentrin2488LP45_h405LP40_/tests/region_sheets_20261101/cell_10_regions.png"
+    title: "The regions measured, Noco CD3 DMSO cell 10"
+    subtitle: "Cyan = away. Bars = 5 μm."
+  - path: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10292026_jurkats_noco_h3k27me3640LP45_p549LP45_egfpcentrin2488LP45_h405LP40_/tests/region_sheets_20261101/cell_34_regions.png"
+    title: "The regions measured, Noco CD3 DMSO cell 34"
+    subtitle: "Cyan = away. Bars = 5 μm."
+
+  # --- Per-cell metrics: overall level and depth ---
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/08_H3K27me3_MFI_per_experiment_grid.png
+    title: "H3K27me3 MFI"
+  - path: "tests/seed_depth_20261101/seed_depth/violins/chull_max_D_by_cent_violin_Oct_29,_2026.png"
+    title: "Invag. Depth in Cent.-Prox. Reg."
+
+  # --- Per-cell metrics at a point: Region Nadir, 10, 25, 50% region ---
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S2_f010_rel_CHANPANEL_violin_Oct_29,_2026.png"
+    title: "H3K27me3 and DNA around the Region Nadir, 10% region"
+    subtitle: "1 = the cell's surface average"
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S2_f025_rel_CHANPANEL_violin_Oct_29,_2026.png"
+    title: "H3K27me3 and DNA around the Region Nadir, 25% region"
+    subtitle: "1 = the cell's surface average"
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S2_f050_rel_CHANPANEL_violin_Oct_29,_2026.png"
+    title: "H3K27me3 and DNA around the Region Nadir, 50% region"
+    subtitle: "1 = the cell's surface average"
+  # --- Per-cell metrics at a point: Centrosome Projection, 10, 25, 50% region ---
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S1_f010_rel_CHANPANEL_violin_Oct_29,_2026.png"
+    title: "H3K27me3 and DNA around the Centrosome Projection, 10% region"
+    subtitle: "1 = the cell's surface average"
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S1_f025_rel_CHANPANEL_violin_Oct_29,_2026.png"
+    title: "H3K27me3 and DNA around the Centrosome Projection, 25% region"
+    subtitle: "1 = the cell's surface average"
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S1_f050_rel_CHANPANEL_violin_Oct_29,_2026.png"
+    title: "H3K27me3 and DNA around the Centrosome Projection, 50% region"
+    subtitle: "1 = the cell's surface average"
+  # --- Per-cell metrics over a region ---
+  - path: results_compilation_20261101/grid_panels/H3K27me3_deepest_region_by_cent_periph_ratio_025um_per_experiment_grid.png
+    title: "H3K27me3 at deepest invagination near centrosome"
+    subtitle: "Deepest region restricted to the Cent.-Prox. Reg."
+  - path: results_compilation_20261101/grid_panels/nuc_deepest_region_by_cent_periph_ratio_025um_per_experiment_grid.png
+    title: "DNA at deepest invagination near centrosome"
+    subtitle: "Deepest region restricted to the Cent.-Prox. Reg."
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/08_H3K27me3_deepest_region_periph_ratio_025um_per_experiment_grid.png
+    title: "H3K27me3 at deepest invagination, whole nucleus"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/08_H3K27me3_deepest_region_periph_ratio_025um_per_experiment_grid_DNA.png
+    title: "DNA at deepest invagination, whole nucleus"
+  - images:
+      - results_compilation_20261101/H3K27me3_loc_wrto_invag/05c5_H3K27me3_near_cent_level.png
+      - results_compilation_20261101/DNA_loc_wrto_invag/05c5_DNA_near_cent_level.png
+    positions: &pair_box
+      - {left: 0.3, top: 1.4, width: 6.25, height: 5.95}
+      - {left: 6.78, top: 1.4, width: 6.25, height: 5.95}
+    title: "H3K27me3 and DNA: near centrosome / whole surface"
+  - images:
+      - results_compilation_20261101/H3K27me3_loc_wrto_invag/05c6_H3K27me3_prox_over_distal_ratio.png
+      - results_compilation_20261101/DNA_loc_wrto_invag/05c6_DNA_prox_over_distal_ratio.png
+    positions: *pair_box
+    title: "H3K27me3 and DNA: near / away from centrosome"
+
+  # --- Per-cell metrics vs Invag. Depth: the same 2 points and 3 sizes ---
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/S2_f010_invag_CHANPANEL_scatter.png
+    title: "H3K27me3 and DNA around the Region Nadir, 10% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/S2_f025_invag_CHANPANEL_scatter.png
+    title: "H3K27me3 and DNA around the Region Nadir, 25% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/S2_f050_invag_CHANPANEL_scatter.png
+    title: "H3K27me3 and DNA around the Region Nadir, 50% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/S1_f010_invag_CHANPANEL_scatter.png
+    title: "H3K27me3 and DNA around the Centrosome Projection, 10% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/S1_f025_invag_CHANPANEL_scatter.png
+    title: "H3K27me3 and DNA around the Centrosome Projection, 25% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/S1_f050_invag_CHANPANEL_scatter.png
+    title: "H3K27me3 and DNA around the Centrosome Projection, 50% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+
+  # --- Per-cell enrichment and correlation with surface geometry ---
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/03a_H3K27me3_enrichment_hulldist_gt0.5um.png
+    title: "H3K27me3 and DNA enrichment, hull distance > 0.5 μm"
+    subtitle: "Inner 0.25 μm · Partial cells left out"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/03b_H3K27me3_enrichment_hulldist_gt1.0um.png
+    title: "H3K27me3 and DNA enrichment, hull distance > 1.0 μm"
+    subtitle: "Inner 0.25 μm · Partial cells left out"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/03c_H3K27me3_enrichment_minCurvature_lt0.png
+    title: "H3K27me3 and DNA enrichment, min curv < 0"
+    subtitle: "Inner 0.25 μm · Partial cells left out"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/03d_H3K27me3_enrichment_minCurvature_ltm0.25.png
+    title: "H3K27me3 and DNA enrichment, min curv < −0.25"
+    subtitle: "Inner 0.25 μm · Partial cells left out"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/03e_H3K27me3_enrichment_meanCurvature.png
+    title: "H3K27me3 and DNA enrichment, mean curv < 0"
+    subtitle: "Inner 0.25 μm · Partial cells left out"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/04a_H3K27me3_correlation_hulldist.png
+    title: "H3K27me3 and DNA vs hull distance: per-cell correlation"
+    subtitle: "Inner 0.25 μm · Partial cells left out"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/04b_H3K27me3_correlation_minCurvature.png
+    title: "H3K27me3 and DNA vs min curvature: per-cell correlation"
+    subtitle: "Inner 0.25 μm · Partial cells left out"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/04c_H3K27me3_correlation_meanCurvature.png
+    title: "H3K27me3 and DNA vs mean curvature: per-cell correlation"
+    subtitle: "Inner 0.25 μm · Partial cells left out"
+
+  # --- Profiles: distance from the 2 points ---
+  - path: "tests/seed_depth_20261101/geom_density/profiles/cent_deepest/H3K27me3_x_DNA_geomdens_centdeepdist_CHANPANEL_line_Oct_29,_2026.png"
+    title: "H3K27me3 and DNA vs distance from the Region Nadir"
+    subtitle: "Means ± SEM per bin; no test on this plot"
+  - path: "tests/seed_depth_20261101/geom_density/profiles/centrosome/H3K27me3_x_DNA_geomdens_centdist_CHANPANEL_line_Oct_29,_2026.png"
+    title: "H3K27me3 and DNA vs distance from the Centrosome Projection"
+    subtitle: "Means ± SEM per bin; no test on this plot"
+
+  # --- Profiles: surface geometry ---
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/02_chan_hulldist_H3K27me3.tiff
+    title: "H3K27me3 and DNA density vs hull distance"
+    subtitle: "Partial cells left out"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/02_chan_mincurv_H3K27me3.tiff
+    title: "H3K27me3 and DNA density vs min curvature"
+    subtitle: "Partial cells left out"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/02_chan_meancurv_H3K27me3.tiff
+    title: "H3K27me3 and DNA density vs mean curvature"
+    subtitle: "Partial cells left out"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/06_chan_normalangle_H3K27me3.tiff
+    title: "H3K27me3 and DNA density vs surface orientation"
+
+  # --- Profiles: near vs away from the centrosome, H3K27me3 then DNA ---
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/05c1_H3K27me3_prox_vs_distal_hulldist.png
+    title: "H3K27me3 vs hull distance, near vs away from centrosome"
+    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+  - path: results_compilation_20261101/DNA_loc_wrto_invag/05c1_DNA_prox_vs_distal_hulldist.png
+    title: "DNA vs hull distance, near vs away from centrosome"
+    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/05c2_H3K27me3_prox_vs_distal_minCurvature.png
+    title: "H3K27me3 vs min curvature, near vs away from centrosome"
+    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+  - path: results_compilation_20261101/DNA_loc_wrto_invag/05c2_DNA_prox_vs_distal_minCurvature.png
+    title: "DNA vs min curvature, near vs away from centrosome"
+    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+  - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/05c3_H3K27me3_prox_vs_distal_meanCurvature.png
+    title: "H3K27me3 vs mean curvature, near vs away from centrosome"
+    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+  - path: results_compilation_20261101/DNA_loc_wrto_invag/05c3_DNA_prox_vs_distal_meanCurvature.png
+    title: "DNA vs mean curvature, near vs away from centrosome"
+    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+
+  # --- H3K27me3 / DNA branch (FF 2026-11-01): the per-cell metrics again, same order and wording ---
+  - path: "tests/seed_depth_20261101/seed_depth/violins/MFI_ratio_violin_Oct_29,_2026.png"
+    title: "H3K27me3 / DNA MFI"
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S2_f010_ratio_violin_Oct_29,_2026.png"
+    title: "H3K27me3 / DNA around the Region Nadir, 10% region"
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S2_f025_ratio_violin_Oct_29,_2026.png"
+    title: "H3K27me3 / DNA around the Region Nadir, 25% region"
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S2_f050_ratio_violin_Oct_29,_2026.png"
+    title: "H3K27me3 / DNA around the Region Nadir, 50% region"
+
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S1_f010_ratio_violin_Oct_29,_2026.png"
+    title: "H3K27me3 / DNA around the Centrosome Projection, 10% region"
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S1_f025_ratio_violin_Oct_29,_2026.png"
+    title: "H3K27me3 / DNA around the Centrosome Projection, 25% region"
+  - path: "tests/seed_depth_20261101/seed_depth/violins/S1_f050_ratio_violin_Oct_29,_2026.png"
+    title: "H3K27me3 / DNA around the Centrosome Projection, 50% region"
+
+  - path: results_compilation_20261101/grid_panels/H3K27me3_over_DNA_deepest_region_by_cent_periph_ratio_025um_per_experiment_grid.png
+    title: "H3K27me3 / DNA at deepest invagination near centrosome"
+    subtitle: "Deepest region restricted to the Cent.-Prox. Reg."
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/seed_depth__corr__S2_f010_invag_ratio.png
+    title: "H3K27me3 / DNA around the Region Nadir, 10% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/seed_depth__corr__S2_f025_invag_ratio.png
+    title: "H3K27me3 / DNA around the Region Nadir, 25% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/seed_depth__corr__S2_f050_invag_ratio.png
+    title: "H3K27me3 / DNA around the Region Nadir, 50% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/seed_depth__corr__S1_f010_invag_ratio.png
+    title: "H3K27me3 / DNA around the Centrosome Projection, 10% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/seed_depth__corr__S1_f025_invag_ratio.png
+    title: "H3K27me3 / DNA around the Centrosome Projection, 25% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"
+  - path: tests/seed_depth_20261101/seed_depth/scatter/seed_depth/per_cell_correlations/seed_depth__corr__S1_f050_invag_ratio.png
+    title: "H3K27me3 / DNA around the Centrosome Projection, 50% region, vs Invag. Depth"
+    subtitle: "Across cells; Spearman, unadjusted"

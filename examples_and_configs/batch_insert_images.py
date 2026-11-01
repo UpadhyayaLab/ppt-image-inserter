@@ -184,6 +184,18 @@ def validate_config(config, config_path):
             sys.exit(1)
 
 
+def set_title_slide_text(ppt_file, text):
+    """Replace the first slide's title, keeping its formatting (config: title_slide_text)."""
+    prs = Presentation(ppt_file)
+    paragraph = prs.slides[0].shapes.title.text_frame.paragraphs[0]
+    paragraph.runs[0].text = text
+    for extra in list(paragraph._p):
+        if extra is not paragraph.runs[0]._r and extra.tag.rsplit('}', 1)[-1] in ('r', 'br', 'fld'):
+            paragraph._p.remove(extra)
+    prs.save(ppt_file)
+    print(f"Title slide: {text}")
+
+
 def main(config_path):
     """Process images according to config file."""
 
@@ -203,6 +215,7 @@ def main(config_path):
     label_side = config.get('label_side', 'right')
     # Crop each image's white margin so plots fill their box (default off)
     trim_whitespace = bool(config.get('trim_whitespace', False))
+    title_fit = bool(config.get('title_fit', False))
     # Delete the template slide(s) once the slides are built (default off): a template's
     # placeholder picture otherwise stays in the deck as a slide of its own
     remove_template_slide = bool(config.get('remove_template_slide', False))
@@ -416,6 +429,7 @@ def main(config_path):
                     base_dir=base_dir,
                     label_side=label_side,   # was dropped for plain-list entries only
                     trim_whitespace=trim_whitespace,
+                    title_fit=title_fit,
                 )
                 success_count += 1
                 print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}): {[os.path.basename(p) for p in image_paths]}")
@@ -461,6 +475,7 @@ def main(config_path):
                         subtitle=image_spec.get('subtitle'),
                         label_side=label_side,
                         trim_whitespace=trim_whitespace,
+                        title_fit=title_fit,
                     )
                     success_count += 1
                     print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}, template {original_slide_template}): {[os.path.basename(p) for p in image_paths]}")
@@ -495,6 +510,7 @@ def main(config_path):
                         subtitle=image_spec.get('subtitle'),
                         label_side=label_side,
                         trim_whitespace=trim_whitespace,
+                        title_fit=title_fit,
                     )
                     success_count += 1
                     print(f"  Created slide: {os.path.basename(image_path)}")
@@ -524,6 +540,7 @@ def main(config_path):
                     base_dir=base_dir,
                     label_side=label_side,
                     trim_whitespace=trim_whitespace,
+                    title_fit=title_fit,
                 )
                 success_count += 1
                 print(f"  Created slide: {os.path.basename(image_path)}")
@@ -532,6 +549,10 @@ def main(config_path):
                 error_count += 1
 
     # Step 3: Drop the template slide(s), only when every slide was built
+    title_slide_text = config.get('title_slide_text')
+    if title_slide_text and error_count == 0:
+        set_title_slide_text(ppt_file, title_slide_text)
+
     if remove_template_slide and error_count == 0:
         template_slides = sorted(template_slide_remap[idx] for idx in template_slide_indices)
         delete_slides(ppt_file, template_slides, backup_base=backup_dir, backup=False)

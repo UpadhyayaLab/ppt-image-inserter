@@ -181,6 +181,7 @@ COMPILE_TRACING = EXP_ROOT / "results_compilation_20261028" / "cell_tracing.csv"
 COMPILE_WELLS = {"PLL_DMSO": "A4_PLL_DMSO_", "CD3_DMSO": "A1_DMSO_aCD3_",
                  "CD3_Noco5uM": "B1_5uM_aCD3_", "CD3_Noco10uM": "B2_10uM_aCD3_"}
 PACK_SHELVES = 3              # packed decks: rows of cells per condition block
+MAX_TILE_PPI = 400            # packed tiles are stored no finer than this: 5300 px across a slide (FF 2026-11-01)
 PACK_PER_SHELF = 4            # cells per row: 12 per condition per slide
 HULL_PER_SHELF = 5            # hull slides: 15 cells per condition, 3 slides (FF 2026-10-28)
 HULL_LABEL_FONT_PT = 18
@@ -929,15 +930,15 @@ def content_crop(im, pad: int = 4):
                     min(im.width, xs.max() + 1 + pad), min(im.height, ys.max() + 1 + pad)))
 
 
-def with_scalebar(im, ppu: float, um: float = 5.0):
-    """The tile with a strip added below it carrying a white `um` μm bar at
-    the left (FF 2026-10-27: a scalebar in every mesh panel). Every tile gets
-    the same strip, so bottom alignment is unchanged."""
+def with_scalebar(im, ppu: float, um: float = 5.0, thick: int = 14):
+    """The tile with a strip added below it carrying a white `um` μm bar, `thick`
+    px tall, at the left (FF 2026-10-27: a scalebar in every mesh panel). Every
+    tile gets the same strip, so bottom alignment is unchanged."""
     from PIL import ImageDraw
     bar = int(round(um * ppu))
-    out = Image.new("RGB", (max(im.width, bar + 8), im.height + 26), (0, 0, 0))
+    out = Image.new("RGB", (max(im.width, bar + 8), im.height + 18 + thick), (0, 0, 0))
     out.paste(im, (0, 0))
-    ImageDraw.Draw(out).rectangle([4, im.height + 12, 4 + bar, im.height + 19], fill=(255, 255, 255))
+    ImageDraw.Draw(out).rectangle([4, im.height + 12, 4 + bar, im.height + 11 + thick], fill=(255, 255, 255))
     return out
 
 
@@ -1021,7 +1022,8 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
                       ppu: float, footer: str, channels=None, colorbar: bool = False,
                       slide_bar: bool = True, side_notes: list = None,
                       page_channels: list = None, sink: dict = None,
-                      per_shelf: int = PACK_PER_SHELF) -> int:
+                      per_shelf: int = PACK_PER_SHELF, label_pt: float = TILE_LABEL_PT,
+                      right_pt: float = TILE_LABEL_PT) -> int:
     """Packed montage deck (FF 2026-10-27: 12 cells per condition, large).
     sink: {"prs": Presentation, "tags": []} appends the slides to that deck
     (one tag per slide) instead of saving out_path (--combined).
@@ -1083,8 +1085,10 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
             left, top = MARGIN + col * (block_w + 0.20), GRID_TOP + (b // 2) * (block_h + 0.12)
             # headings: one {label: text} for every slide, or one per slide.
             hd = headings[k] if isinstance(headings, list) else headings
-            add_textbox(slide, hd.get(label, label), left, top, block_w, LABEL_H,
-                        font_pt=HULL_LABEL_FONT_PT, color=WHITE, bold=True)
+            # An empty block keeps its heading only when the heading says why it is empty.
+            if page.get(label) or hd.get(label, label) != label:
+                add_textbox(slide, hd.get(label, label), left, top, block_w, LABEL_H,
+                            font_pt=HULL_LABEL_FONT_PT, color=WHITE, bold=True)
             sh = shelves(page.get(label, []))
             heights = [max(im.height for _, im in s) / ppi for s in sh]
             y = top + LABEL_H + (shelf_area_h - sum(heights) - gap * (len(sh) - 1)) / 2
@@ -1097,22 +1101,26 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
             if note and sh:
                 x0 = left + max(0.0, (block_w - grid_w - SIDE_NOTE_W) / 2)
                 box = add_textbox(slide, note, x0 + grid_w + 0.15, top + LABEL_H,
-                                  SIDE_NOTE_W, shelf_area_h, font_pt=TILE_LABEL_PT,
+                                  SIDE_NOTE_W, shelf_area_h, font_pt=label_pt,
                                   color=WHITE, bold=True)
                 box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
                 for para in box.text_frame.paragraphs:   # add_textbox styles line 1 only
                     para.alignment = PP_ALIGN.LEFT
                     for run in para.runs:
-                        run.font.size, run.font.bold = Pt(TILE_LABEL_PT), True
+                        run.font.size, run.font.bold = Pt(label_pt), True
                         run.font.color.rgb = WHITE
             for s, sh_h in zip(sh, heights):
                 for j, (text, im) in enumerate(s):
                     x = x0 + sum(cw[:j]) + gap * j
                     buf = io.BytesIO()
-                    im.save(buf, format="PNG")
+                    stored = im
+                    if ppi > MAX_TILE_PPI:
+                        stored = im.resize((max(1, round(im.width * MAX_TILE_PPI / ppi)),
+                                            max(1, round(im.height * MAX_TILE_PPI / ppi))), Image.LANCZOS)
+                    stored.save(buf, format="PNG", compress_level=3)
                     buf.seek(0)
                     slide.shapes.add_picture(buf, Inches(x), Inches(y + sh_h - im.height / ppi),
-                                             width=Inches(im.width / ppi))
+                                             width=Inches(im.width / ppi), height=Inches(im.height / ppi))
                     # text: "label", or (left label, right label) both within the tile,
                     # or (left, right, note) with the note beside the tile, in its column.
                     left_t, right_t, note_t = ((tuple(text) + ("", ""))[:3]
@@ -1127,11 +1135,11 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
                     tw = max(im.width / ppi, 0.6)
                     if left_t:
                         add_textbox(slide, left_t, x - 0.04, y - 0.04, tw + 0.08, TILE_LABEL_H,
-                                    font_pt=TILE_LABEL_PT, color=WHITE,
+                                    font_pt=label_pt, color=WHITE,
                                     bold=True).text_frame.paragraphs[0].alignment = PP_ALIGN.LEFT
                     if right_t:
                         add_textbox(slide, right_t, x - 0.04, y - 0.04, tw + 0.08, TILE_LABEL_H,
-                                    font_pt=TILE_LABEL_PT, color=YELLOW,
+                                    font_pt=right_pt, color=YELLOW,
                                     bold=True).text_frame.paragraphs[0].alignment = PP_ALIGN.RIGHT
                 y += sh_h + gap
         # One 5 μm scalebar for the slide unless the tiles carry their own,
@@ -1169,7 +1177,8 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
     return len(pages)
 
 
-def build_hull_deck(out_path: Path, sink: dict = None) -> int:
+def build_hull_deck(out_path: Path, sink: dict = None, label_pt: float = TILE_LABEL_PT,
+                    bar_thick: int = 14) -> int:
     """Hull Surf. Dist. tiles only, packed: EVERY rendered cell (FF
     2026-10-27: "for the mesh based things I need to see every cell"), each
     condition ordered by HULL_METRIC, deepest first, 12 per condition per
@@ -1196,7 +1205,7 @@ def build_hull_deck(out_path: Path, sink: dict = None) -> int:
             if order == "depth":
                 kept = rank_pick(kept, depth[f], len(kept))
             vals[lab] = [depth[f].get(cid, float("nan")) for cid, *_ in kept]
-            tiles[lab] = [(f"{v:.1f}", with_scalebar(im, HULL_PPU))
+            tiles[lab] = [(f"{v:.1f}", with_scalebar(im, HULL_PPU, thick=bar_thick))
                           for v, (_, _, im, _) in zip(vals[lab], kept)]
         n_pages = max(-(-len(t) // per_page) for t in tiles.values())
         pages += [{lab: t[k * per_page:(k + 1) * per_page] for lab, t in tiles.items()}
@@ -1216,7 +1225,7 @@ def build_hull_deck(out_path: Path, sink: dict = None) -> int:
             notes.append(nt)
     return build_packed_deck(out_path, "hull", titles, pages, names, HULL_PPU, HULL_FOOTER,
                              colorbar=True, slide_bar=False, side_notes=notes, sink=sink,
-                             per_shelf=HULL_PER_SHELF)
+                             per_shelf=HULL_PER_SHELF, label_pt=label_pt)
 
 
 def build_elev_test_deck(out_path: Path) -> int:

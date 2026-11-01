@@ -47,7 +47,7 @@ SET_NAME = {"noco": "Noco 10/29", "cilio": "CilioD 10/29"}
 PAIRS = {"noco": [(0, 1), (2, 3)], "cilio": [(0, 1), (2,)]}
 # Thick-line side views from the TCell session (FF: "the lines here are so thin"), first in the deck.
 QC_ROOT = "actin_planes_qc_20261031b"
-THICK = [("Actin XZ, Auto Contrast (per cell, 20 to 99.5 percentile)", "actin_planes_auto"),
+THICK = [("Actin XZ, Auto Contrast (per cell, 20 counts to 99.5th percentile)", "actin_planes_auto"),
          ("Actin XZ, Bright (per cell, 0 to max / 4)", "actin_planes_bright"),
          ("Actin XZ, Fixed Contrast (all cells, 15 to 100)", "actin_planes_fixed"),
          ("Actin XZ, Faint Signal (all cells, 10 to 35)", "actin_planes_faint")]

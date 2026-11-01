@@ -48,8 +48,9 @@ EXPS = {
                   ("CD3 DMSO", "G1A1_h3k27me3_aCD3_dmso_", PROG),
                   ("CD3 Noco 5 μM", "G1B1_h3k27me3_aCD3_5uM_", PROG),
                   ("CD3 Noco 10 μM", "G1B2_h3k27me3_aCD3_10uM_", PROG)],
-        # A template is needed for the preserved title slide: the Noco one says Nocodazole.
+        # A template is needed for the preserved title slide; its text is replaced, as in the results deck.
         "preserve": [0, 1],
+        "title": "Effects of Noco, H3K27me3, October 29, 2026",
     },
     "cilio": {
         "root": "L:/FF/Nucleus_centrosome/ciliobrevin_fixed/10292026_jurkats_ciliobrevin_h3k27me3640LP45_p549LP45_egfpcentrin2488LP45_h405LP40_",
@@ -123,6 +124,7 @@ def build(name):
         "template_slide": 1,
         "backup_dir": f"{exp['out_dir']}/backups",
         "preserve_slides": exp["preserve"],
+        "title_slide_text": exp.get("title"),
         "auto_position": False,
         "position": {"left": 0.3, "top": 1.17, "width": 12.73, "height": 6.15},
         "trim_whitespace": False,

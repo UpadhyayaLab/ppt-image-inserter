@@ -32,7 +32,7 @@ OUT = {"noco": f"{OUT_ROOT}/Noco/H3K27me3_20261029/Noco, Jurkats, H3K27me3, 2026
        "cilio": f"{OUT_ROOT}/CilioD/H3K27me3_20261029/CilioD, Jurkats, H3K27me3, 20261029.pptx"}
 MONTAGES = {"noco": f"{OUT_ROOT}/Noco/H3K27me3_20261029/Noco, Jurkats, H3K27me3, montages, 20261029.pptx",
             "cilio": f"{OUT_ROOT}/CilioD/H3K27me3_20261029/CilioD, Jurkats, H3K27me3, montages, 20261029.pptx"}
-TITLE_SLIDES = {"noco": 1, "cilio": 0}   # slides kept ahead of the montages; CilioD has no title slide yet
+TITLE_SLIDES = 1                         # slides kept ahead of the montages: both results decks have one
 ROWS_MARK = "mesh views"                 # per-cell mesh slides, left out
 
 
@@ -92,7 +92,7 @@ def build(name: str, with_results: bool) -> int:
     els = list(lst)
     for el in els:
         lst.remove(el)
-    k = TITLE_SLIDES[name] if with_results else 0
+    k = TITLE_SLIDES if with_results else 0
     for el in els[:k] + els[n_results:] + els[k:n_results]:
         lst.append(el)
     if out.exists():

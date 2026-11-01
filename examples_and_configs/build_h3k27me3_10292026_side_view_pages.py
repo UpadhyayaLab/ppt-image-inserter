@@ -4,11 +4,12 @@ Review pages for the 10/29/2026 H3K27me3 side-view decks. Slides are embedded in
 as JPEGs, and a page must stay under 16 MB, so each set splits into two pages (PAGES). Each
 page has condition tabs, cell-id buttons and Partial cells marked.
 
-Reads the slide PNGs that export_slides wrote to <EXP>/deck_png_20261031/side_views_all/
-and checks each one's cell against the deck's slide title before it goes on a page.
+Reads the slide PNGs that export_slides wrote to <EXP>/deck_png_20261101/side_views_all/
+and checks each one's cell against the deck's slide title, and that it is newer than the deck,
+before it goes on a page.
 
 Usage (base miniforge python):
-    python examples_and_configs/build_h3k27me3_10292026_side_view_pages.py <output folder>
+    python examples_and_configs/build_h3k27me3_10292026_side_view_pages.py <output folder> [noco|cilio]
 Writes <output folder>/<page name>.html, ready for the Artifact tool.
 """
 
@@ -23,9 +24,9 @@ from pptx import Presentation
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_h3k27me3_10292026_compare_decks import EXPS, configure, m  # noqa: E402
-from build_h3k27me3_10292026_side_view_deck import OUT, SIDE_SUB, partial_cells, side_cells  # noqa: E402
+from build_h3k27me3_10292026_side_view_deck import OUT, partial_cells, side_cells  # noqa: E402
 
-PNG_SUB = "deck_png_20261031/side_views_all"
+PNG_SUB = "deck_png_20261101/side_views_all"
 JPEG_W = 1500          # FF reads fit-to-width at about this size
 JPEG_QUALITY = 80      # keeps the largest page under 16 MB
 WORKERS = 8
@@ -74,7 +75,7 @@ figure img { display: block; width: 100%; max-width: 100%; height: auto; aspect-
 </style>
 <div class="top"><div class="bar">
   <h1>__TITLE__</h1>
-  <p class="note">__COUNT__ One slide per cell, in cell-id order. Partial cells are marked in red. PRELIMINARY: no figure review of this deck yet.__MORE__</p>
+  <p class="note">__COUNT__ One slide per cell, in cell-id order. Partial cells are marked in red.__MORE__</p>
   <div class="row" id="tabs"></div>
   <div class="row ids" id="ids"></div>
 </div></div>
@@ -151,19 +152,23 @@ def conditions(name: str) -> list:
     configure(exp)
     root = Path(exp["root"])
     partial = partial_cells()
+    built = Path(OUT[name]).stat().st_mtime
     titles = [next(sh.text_frame.text for sh in s.shapes if sh.has_text_frame and sh.text_frame.text.strip())
               for s in Presentation(OUT[name]).slides]
     data, i = [], 0
     for well, label, _, _ in exp["wells"]:
         cells = []
-        for cell in side_cells(root / SIDE_SUB, well):
+        for cell in side_cells(name, well):
             i += 1
             cid = cell["cell_id"]
             flag = (well, cid) in partial
             want = f"{label}, cell {cid}{', Partial' if flag else ''}"
             if titles[i - 1] != want:
                 raise SystemExit(f"slide {i} reads {titles[i - 1]!r}, expected {want!r}")
-            cells.append({"id": int(cid), "partial": flag, "png": root / PNG_SUB / f"slide_{i:02d}.png"})
+            png = root / PNG_SUB / f"slide_{i:02d}.png"
+            if not png.is_file() or png.stat().st_mtime < built:
+                raise SystemExit(f"{png} is missing or older than the deck: export the slides again")
+            cells.append({"id": int(cid), "partial": flag, "png": png})
         data.append({"label": label, "cells": cells})
     if i != len(titles):
         raise SystemExit(f"{i} cells for {len(titles)} slides")
@@ -192,5 +197,6 @@ def build(page_name: str, name: str, picks: tuple, title: str, link: tuple, sets
 if __name__ == "__main__":
     out_root = Path(sys.argv[1])
     out_root.mkdir(parents=True, exist_ok=True)
-    sets = {n: conditions(n) for n in EXPS}
-    sys.exit(max(build(p, n, c, t, ln, sets, out_root) for p, n, c, t, ln in PAGES))
+    names = sys.argv[2:] or list(EXPS)
+    sets = {n: conditions(n) for n in names}
+    sys.exit(max(build(p, n, c, t, ln, sets, out_root) for p, n, c, t, ln in PAGES if n in names))

@@ -1,0 +1,73 @@
+# Batch Image Replacement Configuration
+# Noco 10/26/2026 (MT) and 10/29/2026 (H3K27me3) fixed Jurkats side by side: the 20 shared
+# metrics, one panel per experiment, never pooled. Order: centrosome, nucleus, actin.
+# Panels: dev/analyses/noco_two_experiments/run_noco_two_experiment_panels.m (TCell session),
+# n per condition in n_per_condition.csv beside grid_panels. Slide titles as in the two results decks.
+#
+# Build:  python examples_and_configs/batch_insert_images.py <this file>
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Effects of Noco, Fixed Cells_MT_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Effects of Noco, two experiments, 10262026 and 10292026.pptx"
+
+template_slide: 1
+backup_dir: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/backups"
+preserve_slides: [0, 1]
+title_slide_text: "Effects of Noco, October 26 and October 29, 2026"
+
+auto_position: false
+position: {left: 0.3, top: 1.17, width: 12.73, height: 6.15}
+trim_whitespace: true
+
+label_side: left
+add_label: false
+remove_template_slide: true
+
+base_dir: "L:/FF/Nucleus_centrosome/nocodazole_fixed/10292026_jurkats_noco_h3k27me3640LP45_p549LP45_egfpcentrin2488LP45_h405LP40_/results_two_noco_experiments_20261101/grid_panels"
+
+images:
+  # --- Centrosome ---
+  - path: centrosome_center_z_rel_bottom_actin_plane_per_experiment_grid.png
+    title: "Centrosome-synapse distance"
+  - path: nuc_cent_closest_dist_per_experiment_grid.png
+    title: "Nucleus-centrosome closest distance"
+  - path: nuc_cent_closest_dist_unfloored_per_experiment_grid.png
+    title: "Nucleus-centrosome closest distance, signed"
+    subtitle: "Below 0 = centrosome inside the nucleus mask"
+  - path: chull_max_D_by_cent_per_experiment_grid.png
+    title: "Invagination depth near centrosome"
+  - path: chull_mean_D_cent_global_ratio_per_experiment_grid.png
+    title: "Centrosomal Invagination Index (global)"
+  - path: avg_normal_angle_by_cent_per_experiment_grid.png
+    title: "Region Orientation (near centrosome)"
+
+  # --- Nucleus ---
+  - path: chull_max_D_per_experiment_grid.png
+    title: "Invagination depth over the full nucleus"
+  - path: deepest_invag_volume_per_experiment_grid.png
+    title: "Deepest invagination volume"
+  - path: deepest_invag_fraction_chull_volume_per_experiment_grid.png
+    title: "Deepest invag: frac of convex hull volume"
+  - path: deepest_region_periph_ratio_025um_per_experiment_grid.png
+    title: "DNA levels near deepest invagination"
+  - path: nuc_aspect_ratio_per_experiment_grid.png
+    title: "Nuclear aspect ratio"
+  - path: nuc_solidity_per_experiment_grid.png
+    title: "Nuclear solidity"
+  - path: nuc_volume_mesh_per_experiment_grid.png
+    title: "Nuclear volume"
+  - path: nuc_SA_mesh_per_experiment_grid.png
+    title: "Nuclear surface area"
+  - path: nuc_height_per_experiment_grid.png
+    title: "Nuclear height"
+
+  # --- Actin ---
+  - path: actin_MIP_area_per_experiment_grid.png
+    title: "Actin MIP Area"
+  - path: actin_deform_ratio_per_experiment_grid.png
+    title: "Cell aspect ratio"
+  - path: actin_bottom_mask_area_per_experiment_grid.png
+    title: "Synapse Area"
+  - path: actin_bottom_MFI_per_experiment_grid.png
+    title: "Actin MFI at synapse"
+  - path: actin_bottom_inner_outer_ratio_per_experiment_grid.png
+    title: "Actin inner/outer synapse ratio"

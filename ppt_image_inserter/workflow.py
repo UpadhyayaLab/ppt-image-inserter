@@ -45,6 +45,7 @@ TITLE_WIDTH = 11.0
 TITLE_HEIGHT = 1.5
 TITLE_FONT_SIZE_PT = 32
 SUBTITLE_FONT_SIZE_PT = 18
+TITLE_LINE_CHARS = 52    # characters that fit on one line of the title box at TITLE_FONT_SIZE_PT
 
 
 def _get_cnvpr(shape):
@@ -109,10 +110,11 @@ def _remove_generated_labels(slide: Slide) -> int:
     return labels_removed
 
 
-def _add_title(slide: Slide, text: str, subtitle: str = None) -> None:
+def _add_title(slide: Slide, text: str, subtitle: str = None, fit: bool = False) -> None:
     """Add a centered bold title textbox at the top of a slide; an optional
     subtitle goes in the same box as a smaller second paragraph, so it sits
-    under the title however many lines the title wraps to."""
+    under the title however many lines the title wraps to. fit shrinks a long
+    title so it stays on one line."""
     try:
         txBox = slide.shapes.add_textbox(
             Inches(TITLE_LEFT), Inches(TITLE_TOP),
@@ -122,7 +124,10 @@ def _add_title(slide: Slide, text: str, subtitle: str = None) -> None:
         tf.word_wrap = True
         tf.text = text
         para = tf.paragraphs[0]
-        para.font.size = Pt(TITLE_FONT_SIZE_PT)
+        size = TITLE_FONT_SIZE_PT
+        if fit and len(text) > TITLE_LINE_CHARS:
+            size = int(TITLE_FONT_SIZE_PT * TITLE_LINE_CHARS / len(text))
+        para.font.size = Pt(size)
         para.font.bold = True
         para.alignment = PP_ALIGN.CENTER
         if subtitle:
@@ -208,7 +213,7 @@ def _add_text_label(
 
 def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, position=None,
                              store_metadata=True, add_label=True, base_dir=None, title=None,
-                             label_side='right', trim_whitespace=False, subtitle=None):
+                             label_side='right', trim_whitespace=False, subtitle=None, title_fit=False):
     """
     Copy a slide and replace its image with a new one (single-image version).
 
@@ -227,6 +232,7 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         trim_whitespace (bool): If True, crops the image's white margin so the
                                 content fills the box. Default: False
         subtitle (str, optional): A smaller line under the title (needs title)
+        title_fit (bool): Shrink a long title so it stays on one line
 
     Returns:
         int: Index of the newly created slide
@@ -261,6 +267,7 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         label_side=label_side,
         trim_whitespace=trim_whitespace,
         subtitle=subtitle,
+        title_fit=title_fit,
     )
 
 
@@ -280,7 +287,7 @@ def _content_crop(img, pad_frac=0.01):
 
 def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, positions=None,
                                store_metadata=True, add_label=False, base_dir=None, title=None,
-                               label_side='right', trim_whitespace=False, subtitle=None):
+                               label_side='right', trim_whitespace=False, subtitle=None, title_fit=False):
     """
     Copy a slide and replace its images with new ones (supports multiple images per slide).
 
@@ -304,6 +311,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
         trim_whitespace (bool): If True, crops each image's white margin so the content
                                 fills its box. Default: False
         subtitle (str, optional): A smaller line under the title (needs title)
+        title_fit (bool): Shrink a long title so it stays on one line
 
     Returns:
         int: Index of the newly created slide
@@ -432,7 +440,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
 
     # Add title if provided
     if title:
-        _add_title(new_slide, title, subtitle)
+        _add_title(new_slide, title, subtitle, fit=title_fit)
 
     # Save the presentation
     prs.save(ppt_path)

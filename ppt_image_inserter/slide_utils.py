@@ -6,12 +6,37 @@ from pptx import Presentation
 from pptx.slide import Slide
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.opc.constants import RELATIONSHIP_TYPE as RT
+from pptx.parts.image import Image, ImagePart
 import copy
 import os
 from typing import Optional
 from .backup import backup_presentation
 
 _R_NS = '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}'
+
+
+def fast_image_lookup(prs: Presentation) -> None:
+    """
+    Make add_picture fast on decks with many pictures.
+
+    For every picture added, python-pptx walks all the deck's parts looking for an
+    identical one, so a deck of 1,500 pictures spends minutes there. This replaces
+    that walk with a table for this Presentation object. Call it once after opening.
+
+    Args:
+        prs (Presentation): The Presentation object
+    """
+    package = prs.part.package
+    table = {part.sha1: part for part in package._image_parts if hasattr(part, 'sha1')}
+
+    def get_or_add_image_part(image_file):
+        image = Image.from_file(image_file)
+        part = table.get(image.sha1)
+        if part is None:
+            part = table[image.sha1] = ImagePart.new(package, image)
+        return part
+
+    package.get_or_add_image_part = get_or_add_image_part
 
 
 def duplicate_slide(prs: Presentation, slide_index: int) -> Slide:
