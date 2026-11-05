@@ -49,6 +49,9 @@ ORDERED = CONFIGS / "config_Noco_H3K27me3_ordered_10292026.yaml"
 
 N_SHARED_MONTAGE = 20       # montage deck slides before the H3K27me3 ones
 N_THROUGH_HULL = 18         # montage deck slides through "Hull Surf. Dist., Oct 29 3/3"
+# FF 2026-11-01: the slices print each cell's Region Nadir 25% value, so they follow that plot.
+SLICE_TITLE = "H3K27me3, slice through Cent.-Prox. Reg."
+N_THROUGH_NADIR_25 = 3      # H3K_PLOTS through "H3K27me3 and DNA around the Region Nadir, 25% region"
 AUTHOR_OLD = "Based on experiment performed by Matthew Connell: October 26, 2026"
 AUTHOR_NEW = "Based on experiments performed by Matthew Connell: October 26, 2026 and October 29, 2026"
 HULL_FOOT_OLD = VIEWS[0][3]
@@ -78,7 +81,8 @@ RESULTS = [(19, None, None),
            (30, ("Invagination depth over the full nucleus",), None),
            (31, ("Invagination ratio (concave + saddle faces), Oct 26",
                  "Invagination ratio (concave + saddle faces), Oct 29"), (None, OCT29)),
-           (32, ("Concave surface fraction, Oct 26", "Concave surface fraction, Oct 29"), (None, OCT29))]
+           (32, ("Concave Ratio, Oct 26", "Concave Ratio, Oct 29"), (None, OCT29))]
+DISTANCE_TITLE = "Nucleus-centrosome closest distance"     # FF 2026-11-01: not in the shared deck, added after it
 # FF's two representative cells, in place of the left-out mesh pages.
 REGION_SLIDES = ("The regions measured, CD3 DMSO cell 10", "The regions measured, CD3 DMSO cell 34")
 SIZES = ("10", "25", "50")
@@ -115,7 +119,7 @@ def sources(config: dict) -> dict:
     out = {}
     for entry in config["images"]:
         paths = [entry["path"]] if "path" in entry else entry.get("images", [])
-        out.setdefault(entry.get("title"), [f"{config['base_dir']}/{p}" for p in paths])
+        out.setdefault(entry.get("title"), [p if Path(p).is_absolute() else f"{config['base_dir']}/{p}" for p in paths])
     return out
 
 
@@ -236,6 +240,13 @@ def rework_overview(slide) -> None:
         setattr(body, key, Inches(inches))
 
 
+def drop_sections(prs) -> None:
+    """The source deck's section list names slides this deck drops and misses the new ones."""
+    for sections in prs.part._element.xpath(".//*[local-name()='sectionLst']"):
+        ext = sections.getparent()
+        ext.getparent().remove(ext)
+
+
 def drop_paragraph(slide, text: str) -> int:
     """Remove the paragraphs that read exactly text; returns how many went."""
     hits = [para for shape in slide.shapes if shape.has_text_frame for para in shape.text_frame.paragraphs
@@ -259,6 +270,7 @@ def build() -> int:
     h3k_src, h3k_sub = sources(ordered), subtitles(ordered)
     h3k_src[None] = [f"{ordered['base_dir']}/{MFI_PANEL}"]
     missing = [t for _, titles, _ in RESULTS for t in titles or () if not src.get(t)]
+    missing += [t for t in (DISTANCE_TITLE,) if not src.get(t)]
     missing += [t for t in REGION_SLIDES if not h3k_src.get(t)]
     missing += [t for _, titles in H3K_PLOTS for t in titles or () if not h3k_src.get(t)]
     if missing:
@@ -290,6 +302,7 @@ def build() -> int:
         if titles:
             fill_results(slide, number, titles, dates, src)
     assert sum(drop_paragraph(r[2], "Artifacts excluded") for r in results) == 1   # FF: mention it nowhere
+    assert swap_text(results[-1][2], "Concave surface fraction", "Concave Ratio") == 1      # FF 2026-11-01
 
     source = list(Presentation(str(MONTAGES)).slides)
     n_before_regions = next(k for k, s in enumerate(source) if has_title(s, MESH_LEFT_OUT))
@@ -310,6 +323,7 @@ def build() -> int:
         assert swap_text(prs.slides[len(prs.slides) - 1], PAIR_FOOT, PAIR_FOOT_NEW) == 1
     pairs = list(lst)[start + len(added):]
 
+    distance = plot_slide(prs, DISTANCE_TITLE, None, src[DISTANCE_TITLE])
     regions = [plot_slide(prs, t, h3k_sub[t], h3k_src[t]) for t in REGION_SLIDES]
     h3k = [plot_slide(prs, f"{title}, Oct 29", h3k_sub.get((titles or (None,))[0]),
                       [p for t in titles or (None,) for p in h3k_src[t]]) for title, titles in H3K_PLOTS]
@@ -320,13 +334,17 @@ def build() -> int:
         lst.remove(el)
     for el in list(lst):
         lst.remove(el)
+    slices = [el for s, el in zip(source, added) if has_title(s, SLICE_TITLE)]
+    assert len(slices) == 2, "slice slides not found"
     order = (own[:2] + added[:N_THROUGH_HULL] + pairs + added[N_THROUGH_HULL:N_SHARED_MONTAGE]
-             + [r[1] for r in results] + added[N_SHARED_MONTAGE:n_before_regions] + regions
-             + added[n_before_regions:] + h3k)
+             + [r[1] for r in results] + [distance]
+             + [el for el in added[N_SHARED_MONTAGE:n_before_regions] if el not in slices] + regions
+             + added[n_before_regions:] + h3k[:N_THROUGH_NADIR_25] + slices + h3k[N_THROUGH_NADIR_25:])
     for el in order:
         lst.append(el)
     if OUT.exists():
         backup_presentation(str(OUT))
+    drop_sections(prs)
     prs.save(str(OUT))
     print(f"{len(prs.slides)} slides: 2 opening, {N_SHARED_MONTAGE} montages, {len(pairs)} mesh pairs, "
           f"{len(results)} results, {len(added) - N_SHARED_MONTAGE} H3K27me3 montages, {len(regions)} region, {len(h3k)} H3K27me3 plots, "

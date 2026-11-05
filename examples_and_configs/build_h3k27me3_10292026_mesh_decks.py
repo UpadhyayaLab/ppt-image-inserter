@@ -63,7 +63,7 @@ VIEWS = [("hull", "Hull Surf. Dist.", HULL_BAR,
           "Number = Invag. Depth in Cent.-Prox. Reg. (μm). Nucleus rotated to show it. "
           "Dot = centrosome. Bars = 5 μm."),
          ("h3k27me3", "Relative H3K27me3 density", H3K_BAR,
-          "Inner 0.25 μm density per face / the cell's area-weighted mean. "
+          "Density within 0.25 μm of the nuclear surface, per face / the cell's area-weighted mean. "
           "Dot = centrosome. Bars = 5 μm."),
          ("cent_proximal", "Cent.-Prox. Reg.", None,
           "Yellow = Cent.-Prox. Reg., cyan = away. "

@@ -1023,7 +1023,8 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
                       slide_bar: bool = True, side_notes: list = None,
                       page_channels: list = None, sink: dict = None,
                       per_shelf: int = PACK_PER_SHELF, label_pt: float = TILE_LABEL_PT,
-                      right_pt: float = TILE_LABEL_PT) -> int:
+                      right_pt: float = TILE_LABEL_PT, col_gap: float = 0.06,
+                      one_row: bool = False) -> int:
     """Packed montage deck (FF 2026-10-27: 12 cells per condition, large).
     sink: {"prs": Presentation, "tags": []} appends the slides to that deck
     (one tag per slide) instead of saving out_path (--combined).
@@ -1035,14 +1036,18 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
     baseline. One PPI for every tile on every slide, so cells compare at
     physical scale across conditions; one 5 μm bar per slide (ppu = tile px/μm).
     page_channels: one channel legend per slide (default: channels on every slide).
-    colorbar: True for the hull colorbar, or a function(slide) that draws its own in that column."""
+    colorbar: True for the hull colorbar, or a function(slide) that draws its own in that column.
+    one_row: every condition block side by side, full height (MRTF-A gels, FF 2026-11-04)."""
     if not pages:
         return 0
     gap = 0.06
     right = (CBAR_W + 0.10) if colorbar else 0.0
     area_w = SLIDE_W - 2 * MARGIN - right
-    block_w = (area_w - 0.20) / 2
-    block_h = (SLIDE_H - GRID_TOP - HULL_FOOT_H - 0.12) / 2
+    n_cols = len(CONDITIONS) if one_row else 2
+    block_w = (area_w - 0.20 * (n_cols - 1)) / n_cols
+    block_h = SLIDE_H - GRID_TOP - HULL_FOOT_H - 0.12
+    if not one_row:
+        block_h /= 2
     shelf_area_h = block_h - LABEL_H
 
     def shelves(tiles):
@@ -1063,7 +1068,7 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
                 continue
             cw = col_widths(sh)
             note_w = SIDE_NOTE_W if side_notes and side_notes[k].get(label) else 0.0
-            widest = sum(cw) / (block_w - note_w - gap * (len(cw) - 1))
+            widest = sum(cw) / (block_w - note_w - col_gap * (len(cw) - 1))
             stack = sum(max(im.height for _, im in s) for s in sh)
             ppi = max(ppi, widest, stack / (shelf_area_h - gap * (len(sh) - 1)))
     print(f"\n[{tag}] {len(pages)} slides, PPI {ppi:.1f} (5 μm = {5 * ppu / ppi * 2.54:.2f} cm)")
@@ -1081,8 +1086,11 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
                           title + (f" {k + 1}/{len(pages)}" if len(pages) > 1 else ""),
                           page_channels[k] if page_channels else channels)
         for b, (_, label) in enumerate(CONDITIONS):
-            col = 1 if len(CONDITIONS) == 3 and b == 2 else b % 2
-            left, top = MARGIN + col * (block_w + 0.20), GRID_TOP + (b // 2) * (block_h + 0.12)
+            if one_row:
+                col, row = b, 0
+            else:
+                col, row = (1 if len(CONDITIONS) == 3 and b == 2 else b % 2), b // 2
+            left, top = MARGIN + col * (block_w + 0.20), GRID_TOP + row * (block_h + 0.12)
             # headings: one {label: text} for every slide, or one per slide.
             hd = headings[k] if isinstance(headings, list) else headings
             # An empty block keeps its heading only when the heading says why it is empty.
@@ -1093,7 +1101,7 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
             heights = [max(im.height for _, im in s) / ppi for s in sh]
             y = top + LABEL_H + (shelf_area_h - sum(heights) - gap * (len(sh) - 1)) / 2
             cw = [w / ppi for w in col_widths(sh)] if sh else []
-            grid_w = sum(cw) + gap * (len(cw) - 1)
+            grid_w = sum(cw) + col_gap * (len(cw) - 1)
             x0 = left + (block_w - grid_w) / 2
             # side_notes: one {label: text} per slide, set beside the montage
             # (the grid moves left to make room).
@@ -1111,7 +1119,7 @@ def build_packed_deck(out_path: Path, tag: str, title: str, pages: list, heading
                         run.font.color.rgb = WHITE
             for s, sh_h in zip(sh, heights):
                 for j, (text, im) in enumerate(s):
-                    x = x0 + sum(cw[:j]) + gap * j
+                    x = x0 + sum(cw[:j]) + col_gap * j
                     buf = io.BytesIO()
                     stored = im
                     if ppi > MAX_TILE_PPI:

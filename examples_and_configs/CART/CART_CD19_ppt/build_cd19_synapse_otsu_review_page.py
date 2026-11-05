@@ -25,10 +25,10 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(r'Y:\User_data\Kiet')
-SMOKE = ROOT / '20261001_coculture_10_30_60' / 'tests' / 'synapse_otsu_smoke_20261031'
+SMOKE = ROOT / '20261001_coculture_10_30_60' / 'volscope' / 'tests' / 'synapse_otsu_smoke_20261031'
 EXP = {'Oct1': 'Oct 1, 2026', 'Mar10': 'Mar 10, 2026'}
 TAGS = {'min': 'smallest', 'median': 'median', 'max': 'largest'}
-DECK = (r'Y:\User_data\Kiet\20261001_coculture_10_30_60\tests\synapse_otsu_smoke_20261031'
+DECK = (r'Y:\User_data\Kiet\20261001_coculture_10_30_60\volscope\tests\synapse_otsu_smoke_20261031'
         r'\review\synapse_otsu_review.pptx')
 
 

@@ -398,7 +398,7 @@ def window_slides(args, rows):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--root', required=True, type=Path,
-                    help='<experiment>/cd19_figures/engagement_<date>, one folder per condition')
+                    help='<experiment>/volscope/cd19_figures/engagement_<date>, one folder per condition')
     ap.add_argument('--candidates', type=Path, default=None,
                     help='candidates.csv (default <root>/candidates.csv)')
     ap.add_argument('--exp', required=True, help='experiment label, e.g. "Oct 1, 2026"')

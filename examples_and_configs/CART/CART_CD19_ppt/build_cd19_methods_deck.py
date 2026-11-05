@@ -13,7 +13,7 @@ surface, and the detected synapse); what is measured (the synapse stage's QC ren
 internalized CD19 objects).
 
 Inputs (all exports of the pipeline, drawn, never re-measured):
-  tiles    volscope dev/contact_check_sheet.py --split   -> <exp>/cd19_figures/methods_<date>/
+  tiles    volscope dev/contact_check_sheet.py --split   -> <exp>/volscope/cd19_figures/methods_<date>/
   seg      volscope_mask_qc(..., only={cond/label}, compare=true) -> <exp>/tests/methods_deck/
   mesh     <V>/meshes/<label>_mesh.mat (V μm (y,x,z), F, face_sig_sig_0_05um_skin)
   synapse  <V>/cd19_synapse/faces/<label>_synapse.mat (synapse_faces), qc/<label>_synapse.png
@@ -60,15 +60,15 @@ from mesh_widget import (RAMP, SIG_LIM, UNMEASURED, _face_enrichment,  # noqa: E
 EXP = Path(r'Y:\User_data\Kiet\20261001_coculture_10_30_60')
 COND, LABEL, EXP_LABEL = 'FMC_60min', 'C2-cell72', 'Oct 1, 2026'
 V = EXP / COND / 'converted' / 'cells' / 'channels' / 'volscope'
-TILES = EXP / 'cd19_figures' / 'methods_20261028'
-SEG = EXP / 'tests' / 'methods_deck' / COND / 'parts'
-MIP_ROOT = EXP / 'tests' / 'methods_deck' / 'mip_contrast'    # volscope_mask_qc(..., MIP_PCT)
+TILES = EXP / 'volscope' / 'cd19_figures' / 'methods_20261028'
+SEG = EXP / 'volscope' / 'tests' / 'methods_deck' / COND / 'parts'
+MIP_ROOT = EXP / 'volscope' / 'tests' / 'methods_deck' / 'mip_contrast'    # volscope_mask_qc(..., MIP_PCT)
 MIP_PCTS = (70,)               # FF 2026-10-29: the 80th slide dropped, "we do not need 3 slides"
 # label-free renders (no cell number in any image; TCell dev/runs/run_methods_deck_nolabels.m)
-NOLAB = EXP / 'tests' / 'methods_deck' / 'nolabel'
+NOLAB = EXP / 'volscope' / 'tests' / 'methods_deck' / 'nolabel'
 REL_TOP = 2 ** SIG_LIM         # relative density scale top, 4x (the widget's top end)
 MIP_TITLE_FRAC = 0.17          # volscope_mask_qc panels: the title + legend band, top 17%
-QC_PAGE_DIR =EXP / 'cd19_mask_qc_widest_20261027' / 'widest' / COND / 'montages_car_mask_cell'
+QC_PAGE_DIR = EXP / 'volscope' / 'cd19_mask_qc_widest_20261027' / 'widest' / COND / 'montages_car_mask_cell'
 DECK_DIR = Path(r'K:\FF\PPT\PPT_autogeneration\CART\CD19')
 RGB = {'CAR': RGBColor(0x40, 0xE0, 0xFF), 'CD19': RGBColor(0xFF, 0x4F, 0xD8),
        'Hoechst': RGBColor(0xE6, 0xC2, 0x00)}             # Hoechst darker than the tile yellow, readable on white
@@ -263,7 +263,7 @@ def main():
     bpd.OUT = DECK_DIR / f'CART_coculture_fixed_methods_{today}.pptx'
     if (bpd.OUT.parent / f'~${bpd.OUT.name}').exists():
         raise SystemExit(f'{bpd.OUT.name} is open in PowerPoint -- close it first')
-    row = next(r for r in csv.DictReader(open(EXP / 'comparison' / 'data' / COND / 'cells.csv',
+    row = next(r for r in csv.DictReader(open(EXP / 'volscope' / 'comparison' / 'data' / COND / 'cells.csv',
                                               newline='')) if r['cell'] == LABEL)
     # no cell number on any slide (FF 2026-10-28: "do not mention cell number anywhere")
     who = COND.replace('_', ' ').replace('min', ' min')    # no date (FF 2026-10-28)

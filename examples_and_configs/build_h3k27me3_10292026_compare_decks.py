@@ -105,6 +105,7 @@ SAMPLE_FOOT = ("DNA, H3K27me3, merge. White = cell id. Yellow = H3K27me3 around 
                "(arrowhead), 25% region; 1 = cell's surface average. Bars = 5 μm.")
 SIDE_PER_SLIDE = 6        # FF 2026-11-01: slice samples, 12 cells per condition over the two slides
 SIDE_PER_SHELF = 2
+SIDE_COL_GAP = 0.22       # inches, so a value does not read as the next cell's id
 SIDE_METRIC = "H3K27me3_S2_f025_rel"      # FF 2026-11-01: printed by each slice, to compare with the eye
 SEED_DEPTH_CSV = "tests/seed_depth_20261101/seed_depth/seed_depth_percell_Oct_29,_2026.csv"
 SIDE_VALUE_GAP = 440      # px of black right of the merge tile, for the value: over the tile it hit the arrowhead
@@ -275,14 +276,15 @@ def side_view_samples() -> dict:
 
 def add_sample_slides(out: Path, tag: str, title: str, tiles: dict, ppu: float, footer: str, sink: dict = None,
                       label_pt: float = m.TILE_LABEL_PT, per_slide: int = SAMPLE_PER_SLIDE,
-                      per_shelf: int = 1) -> int:
+                      per_shelf: int = 1, col_gap: float = 0.06) -> int:
     """A sampling of the cells as DNA, H3K27me3, merge strips: SAMPLE_SLIDES slides."""
     pages = [{lab: t[k * per_slide:(k + 1) * per_slide] for lab, t in tiles.items()}
              for k in range(SAMPLE_SLIDES)]
     titles = [f"{title} {k + 1}/{SAMPLE_SLIDES}" for k in range(SAMPLE_SLIDES)]
     return m.build_packed_deck(out, tag, titles, pages, not_rendered(tag, tiles, sink if sink is not None else {}),
                                ppu, footer, channels=[("H3K27me3", RED), ("DNA", CYAN)], slide_bar=False,
-                               sink=sink, per_shelf=per_shelf, label_pt=label_pt, right_pt=label_pt)
+                               sink=sink, per_shelf=per_shelf, label_pt=label_pt, right_pt=label_pt,
+                               col_gap=col_gap)
 
 
 def xz_samples(tiles: dict) -> dict:
@@ -336,7 +338,7 @@ def add_slides(name: str, sink: dict, one_page: bool = False) -> int:
                                  channels=channels, slide_bar=False, sink=sink)
     if one_page:
         return n + add_sample_slides(out, "h3k_side", SIDE_TITLE, side_view_samples(), SIDE_VIEW_PPU,
-                                     SAMPLE_FOOT, sink, SIDE_LABEL_PT, SIDE_PER_SLIDE, SIDE_PER_SHELF)
+                                     SAMPLE_FOOT, sink, SIDE_LABEL_PT, SIDE_PER_SLIDE, SIDE_PER_SHELF, SIDE_COL_GAP)
     tiles = side_view_tiles()
     for lab, t in tiles.items():
         print(f"  {name} Cent.-Prox. Reg. slice {lab}: {len(t)} cells")

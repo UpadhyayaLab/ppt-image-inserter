@@ -31,7 +31,7 @@ from build_cd19_methods_deck import bpd
 ROOT = Path(r'Y:\User_data\Kiet')
 EXPS = {'Oct1': (ROOT / '20261001_coculture_10_30_60', 'Oct 1, 2026'),
         'Mar10': (ROOT / '03102026_coculture_hek_CD19gfp_Hoescht_CAR_HA_APC', 'Mar 10, 2026')}
-SMOKE = ROOT / '20261001_coculture_10_30_60' / 'tests' / 'synapse_otsu_smoke_20261031'
+SMOKE = ROOT / '20261001_coculture_10_30_60' / 'volscope' / 'tests' / 'synapse_otsu_smoke_20261031'
 TAGS = {'min': 'smallest', 'median': 'median', 'max': 'largest'}
 
 

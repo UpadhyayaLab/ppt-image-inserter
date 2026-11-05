@@ -131,7 +131,7 @@ images:
     subtitle: "Partial cells left out"
   - path: H3K27me3_loc_wrto_invag/04a_H3K27me3_correlation_hulldist.png
     title: "Per-cell correlation vs hull distance"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: H3K27me3_loc_wrto_invag/02_chan_mincurv_H3K27me3.tiff
     title: "Density vs min curvature"
     subtitle: "Partial cells left out"
@@ -160,43 +160,43 @@ images:
     subtitle: "Partial cells left out"
   - path: H3K27me3_loc_wrto_invag/03a_H3K27me3_enrichment_hulldist_gt0.5um.png
     title: "Enrichment in deep invaginations (hull distance > 0.5 μm)"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: H3K27me3_loc_wrto_invag/03b_H3K27me3_enrichment_hulldist_gt1.0um.png
     title: "Enrichment in deep invaginations (hull distance > 1.0 μm)"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: H3K27me3_loc_wrto_invag/03c_H3K27me3_enrichment_minCurvature_lt0.png
     title: "Enrichment on concave surface (min curv < 0)"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: H3K27me3_loc_wrto_invag/03d_H3K27me3_enrichment_minCurvature_ltm0.25.png
     title: "Enrichment on strongly concave surface (min curv < −0.25)"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: H3K27me3_loc_wrto_invag/03e_H3K27me3_enrichment_meanCurvature.png
     title: "Enrichment on concave surface (mean curv < 0)"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: H3K27me3_loc_wrto_invag/04b_H3K27me3_correlation_minCurvature.png
     title: "Per-cell correlation vs min curvature"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: H3K27me3_loc_wrto_invag/04c_H3K27me3_correlation_meanCurvature.png
     title: "Per-cell correlation vs mean curvature"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: H3K27me3_loc_wrto_invag/05c1_H3K27me3_prox_vs_distal_hulldist.png
     title: "Hull distance near vs away from centrosome"
-    subtitle: "H3K27me3 · Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "H3K27me3 · Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - path: DNA_loc_wrto_invag/05c1_DNA_prox_vs_distal_hulldist.png
     title: "Hull distance near vs away from centrosome"
-    subtitle: "DNA · Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "DNA · Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - path: H3K27me3_loc_wrto_invag/05c2_H3K27me3_prox_vs_distal_minCurvature.png
     title: "Min curvature near vs away from centrosome"
-    subtitle: "H3K27me3 · Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "H3K27me3 · Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - path: DNA_loc_wrto_invag/05c2_DNA_prox_vs_distal_minCurvature.png
     title: "Min curvature near vs away from centrosome"
-    subtitle: "DNA · Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "DNA · Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - path: H3K27me3_loc_wrto_invag/05c3_H3K27me3_prox_vs_distal_meanCurvature.png
     title: "Mean curvature near vs away from centrosome"
-    subtitle: "H3K27me3 · Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "H3K27me3 · Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - path: DNA_loc_wrto_invag/05c3_DNA_prox_vs_distal_meanCurvature.png
     title: "Mean curvature near vs away from centrosome"
-    subtitle: "DNA · Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "DNA · Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - images:
       - H3K27me3_loc_wrto_invag/05c5_H3K27me3_near_cent_level.png
       - DNA_loc_wrto_invag/05c5_DNA_near_cent_level.png
@@ -211,7 +211,7 @@ images:
     title: "Near / away from centrosome"
   - path: H3K27me3_loc_wrto_invag/05c0_H3K27me3_vs_centrosome_distance_PAIRED.png
     title: "Signal vs surface distance from centrosome"
-    subtitle: "Inner 0.25 μm"
+    subtitle: "Within 0.25 μm of the nuclear surface"
   - path: H3K27me3_loc_wrto_invag/06_chan_normalangle_H3K27me3.tiff
     title: "Density vs surface orientation"
 

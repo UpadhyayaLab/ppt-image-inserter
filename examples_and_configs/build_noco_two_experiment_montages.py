@@ -63,18 +63,18 @@ def add_1026(sink: dict) -> None:
     m.build_hull_deck(None, sink, label_pt=mesh.MESH_LABEL_PT, bar_thick=mesh.TILE_BAR_THICK)
 
 
-def add_1029(sink: dict) -> None:
+def add_1029(sink: dict, name: str = "noco") -> None:
     global date_now
     date_now = OCT29
     start = len(sink["tags"])
-    c.add_slides("noco", sink, one_page=True)
-    m.COMPARE_SOURCES = {w: c.PROG for w, _, _, _ in c.EXPS["noco"]["wells"]}
+    c.add_slides(name, sink, one_page=True)
+    m.COMPARE_SOURCES = {w: c.PROG for w, _, _, _ in c.EXPS[name]["wells"]}
     m.build_synapse_deck(0, sink)
-    depth = mesh.cent_depths("noco")
+    depth = mesh.cent_depths(name)
     m.STRIP_FOOT_FONT_PT = 15
     with ThreadPoolExecutor(mesh.WORKERS) as pool:
-        mesh.overview("noco", sink, depth, pool)
-        mesh.pairs("noco", sink, depth, pool)
+        mesh.overview(name, sink, depth, pool)
+        mesh.pairs(name, sink, depth, pool)
     sink["tags"][start:] = [(OCT29, t) for t in sink["tags"][start:]]
 
 

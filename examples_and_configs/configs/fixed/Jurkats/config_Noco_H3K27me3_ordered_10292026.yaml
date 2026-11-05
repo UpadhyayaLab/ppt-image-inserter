@@ -109,28 +109,28 @@ images:
   # --- Per-cell enrichment and correlation with surface geometry ---
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/03a_H3K27me3_enrichment_hulldist_gt0.5um.png
     title: "H3K27me3 and DNA enrichment, hull distance > 0.5 μm"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/03b_H3K27me3_enrichment_hulldist_gt1.0um.png
     title: "H3K27me3 and DNA enrichment, hull distance > 1.0 μm"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/03c_H3K27me3_enrichment_minCurvature_lt0.png
     title: "H3K27me3 and DNA enrichment, min curv < 0"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/03d_H3K27me3_enrichment_minCurvature_ltm0.25.png
     title: "H3K27me3 and DNA enrichment, min curv < −0.25"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/03e_H3K27me3_enrichment_meanCurvature.png
     title: "H3K27me3 and DNA enrichment, mean curv < 0"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/04a_H3K27me3_correlation_hulldist.png
     title: "H3K27me3 and DNA vs hull distance: per-cell correlation"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/04b_H3K27me3_correlation_minCurvature.png
     title: "H3K27me3 and DNA vs min curvature: per-cell correlation"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/04c_H3K27me3_correlation_meanCurvature.png
     title: "H3K27me3 and DNA vs mean curvature: per-cell correlation"
-    subtitle: "Inner 0.25 μm · Partial cells left out"
+    subtitle: "Within 0.25 μm of the nuclear surface · Partial cells left out"
 
   # --- Profiles: distance from the 2 points ---
   - path: "tests/seed_depth_20261101/geom_density/profiles/cent_deepest/H3K27me3_x_DNA_geomdens_centdeepdist_CHANPANEL_line_Oct_29,_2026.png"
@@ -156,39 +156,45 @@ images:
   # --- Profiles: near vs away from the centrosome, H3K27me3 then DNA ---
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/05c1_H3K27me3_prox_vs_distal_hulldist.png
     title: "H3K27me3 vs hull distance, near vs away from centrosome"
-    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - path: results_compilation_20261101/DNA_loc_wrto_invag/05c1_DNA_prox_vs_distal_hulldist.png
     title: "DNA vs hull distance, near vs away from centrosome"
-    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/05c2_H3K27me3_prox_vs_distal_minCurvature.png
     title: "H3K27me3 vs min curvature, near vs away from centrosome"
-    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - path: results_compilation_20261101/DNA_loc_wrto_invag/05c2_DNA_prox_vs_distal_minCurvature.png
     title: "DNA vs min curvature, near vs away from centrosome"
-    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - path: results_compilation_20261101/H3K27me3_loc_wrto_invag/05c3_H3K27me3_prox_vs_distal_meanCurvature.png
     title: "H3K27me3 vs mean curvature, near vs away from centrosome"
-    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
   - path: results_compilation_20261101/DNA_loc_wrto_invag/05c3_DNA_prox_vs_distal_meanCurvature.png
     title: "DNA vs mean curvature, near vs away from centrosome"
-    subtitle: "Inner 0.25 μm · Proximal = near centrosome"
+    subtitle: "Within 0.25 μm of the nuclear surface · Proximal = near centrosome"
 
   # --- H3K27me3 / DNA branch (FF 2026-11-01): the per-cell metrics again, same order and wording ---
   - path: "tests/seed_depth_20261101/seed_depth/violins/MFI_ratio_violin_Oct_29,_2026.png"
     title: "H3K27me3 / DNA MFI"
   - path: "tests/seed_depth_20261101/seed_depth/violins/S2_f010_ratio_violin_Oct_29,_2026.png"
     title: "H3K27me3 / DNA around the Region Nadir, 10% region"
+    subtitle: "*Mean in region / mean over the surface, for each channel, within 0.25 μm of the nuclear surface; then H3K27me3 / DNA. 1 = the cell's surface average.*"
   - path: "tests/seed_depth_20261101/seed_depth/violins/S2_f025_ratio_violin_Oct_29,_2026.png"
     title: "H3K27me3 / DNA around the Region Nadir, 25% region"
+    subtitle: "*Mean in region / mean over the surface, for each channel, within 0.25 μm of the nuclear surface; then H3K27me3 / DNA. 1 = the cell's surface average.*"
   - path: "tests/seed_depth_20261101/seed_depth/violins/S2_f050_ratio_violin_Oct_29,_2026.png"
     title: "H3K27me3 / DNA around the Region Nadir, 50% region"
+    subtitle: "*Mean in region / mean over the surface, for each channel, within 0.25 μm of the nuclear surface; then H3K27me3 / DNA. 1 = the cell's surface average.*"
 
   - path: "tests/seed_depth_20261101/seed_depth/violins/S1_f010_ratio_violin_Oct_29,_2026.png"
     title: "H3K27me3 / DNA around the Centrosome Projection, 10% region"
+    subtitle: "*Mean in region / mean over the surface, for each channel, within 0.25 μm of the nuclear surface; then H3K27me3 / DNA. 1 = the cell's surface average.*"
   - path: "tests/seed_depth_20261101/seed_depth/violins/S1_f025_ratio_violin_Oct_29,_2026.png"
     title: "H3K27me3 / DNA around the Centrosome Projection, 25% region"
+    subtitle: "*Mean in region / mean over the surface, for each channel, within 0.25 μm of the nuclear surface; then H3K27me3 / DNA. 1 = the cell's surface average.*"
   - path: "tests/seed_depth_20261101/seed_depth/violins/S1_f050_ratio_violin_Oct_29,_2026.png"
     title: "H3K27me3 / DNA around the Centrosome Projection, 50% region"
+    subtitle: "*Mean in region / mean over the surface, for each channel, within 0.25 μm of the nuclear surface; then H3K27me3 / DNA. 1 = the cell's surface average.*"
 
   - path: results_compilation_20261101/grid_panels/H3K27me3_over_DNA_deepest_region_by_cent_periph_ratio_025um_per_experiment_grid.png
     title: "H3K27me3 / DNA at deepest invagination near centrosome"

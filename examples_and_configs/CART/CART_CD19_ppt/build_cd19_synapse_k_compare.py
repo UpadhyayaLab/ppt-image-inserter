@@ -21,7 +21,7 @@ from pathlib import Path
 import build_cd19_methods_deck as md
 from build_cd19_methods_deck import bpd
 
-SWEEP = md.EXP / 'tests' / 'synapse_k_sweep_20261031'
+SWEEP = md.EXP / 'volscope' / 'tests' / 'synapse_k_sweep_20261031'
 
 
 def main():

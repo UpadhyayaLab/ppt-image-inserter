@@ -113,8 +113,9 @@ def _remove_generated_labels(slide: Slide) -> int:
 def _add_title(slide: Slide, text: str, subtitle: str = None, fit: bool = False) -> None:
     """Add a centered bold title textbox at the top of a slide; an optional
     subtitle goes in the same box as a smaller second paragraph, so it sits
-    under the title however many lines the title wraps to. fit shrinks a long
-    title so it stays on one line."""
+    under the title however many lines the title wraps to; a subtitle written
+    *like this* is set in italics. fit shrinks a long title so it stays on one
+    line."""
     try:
         txBox = slide.shapes.add_textbox(
             Inches(TITLE_LEFT), Inches(TITLE_TOP),
@@ -132,9 +133,11 @@ def _add_title(slide: Slide, text: str, subtitle: str = None, fit: bool = False)
         para.alignment = PP_ALIGN.CENTER
         if subtitle:
             sub = tf.add_paragraph()
-            sub.text = subtitle
+            italic = len(subtitle) > 2 and subtitle.startswith("*") and subtitle.endswith("*")
+            sub.text = subtitle[1:-1] if italic else subtitle
             sub.font.size = Pt(SUBTITLE_FONT_SIZE_PT)
             sub.font.bold = False
+            sub.font.italic = italic
             sub.alignment = PP_ALIGN.CENTER
     except Exception as e:
         print(f"[WARNING] Could not add title: {e}")

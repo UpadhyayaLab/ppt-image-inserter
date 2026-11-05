@@ -18,7 +18,7 @@ Output: K:\FF\PPT\PPT_autogeneration\CART\CD19\CART_coculture_fixed_analysis_sum
 (FF 2026-10-27: "call it analysis_summary not replicates"; was CART_CD19_replicates_*)
 Run (PowerShell, base miniforge -- has python-pptx + pywin32):
   & 'C:\Users\Upadhyaya_Lab\miniforge3\python.exe' build_cd19_replicates_deck.py `
-      --replicates '\\10.225.56.176\ULab_data\User_data\Kiet\volscope_replicates_03102026_20261001' --export
+      --replicates '\\10.225.56.176\ULab_data\User_data\Kiet\volscope\volscope_replicates_03102026_20261001' --export
 """
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'CART_pMLC_ppt'))
 import build_pmlc_profiles_deck as bpd  # noqa: E402
 
 DECK_DIR = Path(r'K:\FF\PPT\PPT_autogeneration\CART\CD19')
-REPLICATES = Path(r'\\10.225.56.176\ULab_data\User_data\Kiet\volscope_replicates_03102026_20261001')
+REPLICATES = Path(r'\\10.225.56.176\ULab_data\User_data\Kiet\volscope\volscope_replicates_03102026_20261001')
 
 VERDICT_COLOR = {                           # summary-table fill per verdict
     'replicated': RGBColor(0xC6, 0xEF, 0xCE),

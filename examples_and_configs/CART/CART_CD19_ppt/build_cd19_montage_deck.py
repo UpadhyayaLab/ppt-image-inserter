@@ -18,7 +18,7 @@ merge), at three planes, then the puncta-ranked sheets:
                                        alone there")
 
 Sheets come from volscope dev/run_cd19_montage_families.m (dev/show_internalized_cells.m,
-layout 'montage'), under <experiment>/cd19_montages/<plane>/:
+layout 'montage'), under <experiment>/volscope/cd19_montages_<date>/<plane>/:
     <cond>/montages_<style>/montage_cells_<a>_<b>.png      (cell order, 25 a page)
     <cond>_montage_<style>_most<n>.png                      (puncta plane only)
     display_windows.csv
@@ -91,7 +91,7 @@ DECKS = {
 }
 # The QC deck (FF 2026-10-26: "just broadest slice with 25 per page", all usable cells) shows
 # EVERY page of the widest plane, CAT page k beside FMC page k; its sheets come from
-# volscope dev/run_cd19_mask_qc_widest.m under <experiment>/cd19_mask_qc_widest/.
+# volscope dev/run_cd19_mask_qc_widest.m under <experiment>/volscope/cd19_mask_qc_widest_<date>/.
 # How each view's plane (and cells) were chosen, one line under the sheets (FF 2026-10-28: "the
 # notes on how the planes were chosen should be added to montage ppts"); from
 # dev/show_internalized_cells.m pick_z and run_cd19_montage_families.m.
@@ -320,7 +320,7 @@ def check_exp_labels(dates, labels, roots) -> None:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('roots', nargs='+', help='<experiment>/cd19_montages, one per experiment')
+    ap.add_argument('roots', nargs='+', help='<experiment>/volscope/cd19_montages_<date>, one per experiment')
     ap.add_argument('--exp', required=True, nargs='+',
                     help='experiment labels in the order of the roots, e.g. "Mar 10, 2026"')
     ap.add_argument('--deck', default='montages', choices=sorted(DECKS))
