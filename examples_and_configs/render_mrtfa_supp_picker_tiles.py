@@ -28,6 +28,7 @@ import time
 from pathlib import Path
 
 import numpy as np
+from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_mrtfa_gels_deck as b  # noqa: E402
@@ -88,7 +89,7 @@ def nucleus_planes(exp: dict) -> dict:
 
 
 def render(exp: dict, cond: str, cid: int, tiles: Path, planes: dict, neighbors: bool = False,
-           only_moved: bool = False) -> tuple:
+           only_moved: bool = False, merge2: bool = False) -> tuple:
     """Write one cell's four bare tiles (and with neighbors, the DNA tile one plane below and above, same crop
     and contrast) at the MRTFA_nuc render's own plane; returns (plane 1-based, z_syn, match plane 1-based, match
     score, previous plane 1-based or None). With only_moved, tiles are written only when the plane differs from
@@ -118,19 +119,52 @@ def render(exp: dict, cond: str, cid: int, tiles: Path, planes: dict, neighbors:
     d.mkdir(parents=True, exist_ok=True)
     extra = [(z - 1, "DNA_zm1"), (z + 1, "DNA_zp1")] if neighbors else []
     extra = [(ze, n) for ze, n in extra if 0 <= ze < stacks["DNA"].shape[0]]
-    names = list(PANELS) + [n for _, n in extra]
+    names = list(PANELS) + [n for _, n in extra] + (["merge_MRTFA_DNA"] if merge2 else [])
     missing = any(not os.path.isfile(m._winlong(d / f"cell_{cid}_{n}.png")) for n in names)
     if not only_moved or prev != z or missing:
-        for name, im in zip(names, b.three_color(stacks, z, tuple(ze for ze, _ in extra))):
-            if name == "merge":
+        merges = (("MRTF-A", "DNA"),) if merge2 else ()
+        for name, im in zip(names, b.three_color(stacks, z, tuple(ze for ze, _ in extra), extra_merges=merges)):
+            if name.startswith("merge"):
                 im = m.with_scalebar(im, b.SHOW_UP / b.SHOW_PSIZE)
             im.save(m._winlong(d / f"cell_{cid}_{name}.png"))
     return z + 1, z_syn, zm + 1, score, None if prev is None else prev + 1
 
 
-def figure_tiles(exp: dict, cond: str, cid: int, plane: int, out_dir: Path) -> Path:
-    """FF's chosen cell at his plane (1-based raw, z = 1 the coverslip): the picker's four bare tiles, 5 μm bar on
-    the merge only, into out_dir, plus tile_info.csv (plane, px/μm, crop box, contrast). Returns the CSV path."""
+def zoom_tiles(info: dict, center: tuple, cid: int, plane: int, out_dir: Path, corner: str,
+               bar_um: float = 5.0) -> dict:
+    """Panel A's 2x zoom: a box half the A crop's width and height (same aspect), centered on (x, y) = (column,
+    row), 0-based raw pixels of the per-cell TIF, shifted to stay in the frame. MRTF-A (grayscale) and the
+    MRTF-A + DNA merge with the full tiles' contrast, upsampled 2 * SHOW_UP so a zoom pixel matches an A-tile
+    pixel, each with its own bar_um bar (FF 2026-11-05 for cell 85: "use 2 μm or something not 5"). Returns the box
+    and scale for tile_info.csv."""
+    (r0, r1), (c0, c1) = info["box"]
+    h, w = (r1 - r0) // 2, (c1 - c0) // 2
+    full_h, full_w = info["norm"]["DNA"].shape
+    x, y = center
+    zr0 = int(min(max(round(y - h / 2), 0), full_h - h))
+    zc0 = int(min(max(round(x - w / 2), 0), full_w - w))
+    win = (slice(zr0, zr0 + h), slice(zc0, zc0 + w))
+    norm = info["norm"]
+    merge = np.clip(sum(norm[name][..., None] * np.asarray(wt) for name, wt, _ in b.SHOW_RGB
+                        if name in ("MRTF-A", "DNA")), 0, 1)
+    up = 2 * b.SHOW_UP
+    for name, a in (("MRTFA", np.repeat(norm["MRTF-A"][..., None], 3, axis=-1)), ("merge_MRTFA_DNA", merge)):
+        im = Image.fromarray((a[win] * 255).astype(np.uint8))
+        im = im.resize((im.width * up, im.height * up), Image.LANCZOS)
+        m.with_scalebar(im, up / b.SHOW_PSIZE, um=bar_um, corner=corner).save(
+            m._winlong(out_dir / f"cell_{cid}_z{plane}_zoom_{name}.png"))
+    return {"zoom_center_x": x, "zoom_center_y": y, "zoom_row0": zr0, "zoom_row1": zr0 + h, "zoom_col0": zc0,
+            "zoom_col1": zc0 + w, "zoom_w_um": round(w * b.SHOW_PSIZE, 2), "zoom_h_um": round(h * b.SHOW_PSIZE, 2),
+            "zoom_px_per_um": round(up / b.SHOW_PSIZE, 3), "zoom_scalebar_um": bar_um}
+
+
+def figure_tiles(exp: dict, cond: str, cid: int, plane: int, out_dir: Path, corner: str = "strip",
+                 zoom: tuple = None, crop: tuple = None, lo_override: dict = None, zoom_bar_um: float = 5.0) -> Path:
+    """FF's chosen cell at his plane (1-based raw, z = 1 the coverslip): the picker's four bare tiles plus a
+    MRTF-A + DNA merge, 5 μm bar on the merges only (corner: m.with_scalebar's), into out_dir, plus tile_info.csv
+    (plane, px/μm, crop box, contrast). zoom = (x, y) adds panel A's 2x zoom (zoom_tiles). Files already in
+    out_dir are moved to out_dir/_prev/<run time> first. Returns the CSV path."""
+    import shutil
     import tifffile
     prog = exp["wells"][cond]
     stacks = {k: tifffile.imread(m._winlong(prog.parent / f"{c}-cell{cid}.tif"))
@@ -138,15 +172,23 @@ def figure_tiles(exp: dict, cond: str, cid: int, plane: int, out_dir: Path) -> P
     if not 1 <= plane <= stacks["DNA"].shape[0]:
         raise ValueError(f"plane {plane} outside the {stacks['DNA'].shape[0]}-plane stack of {cond} cell {cid}")
     out_dir.mkdir(parents=True, exist_ok=True)
+    old = [p for p in out_dir.iterdir() if p.is_file()]
+    if old:   # one _prev subfolder per run, so a second run never overwrites the first's previous files
+        prev = out_dir / "_prev" / time.strftime("%Y%m%d_%H%M%S")
+        prev.mkdir(parents=True, exist_ok=True)
+        for p in old:
+            shutil.move(m._winlong(p), m._winlong(prev / p.name))
     info = {}
     paths = []
     # FF 2026-11-05 "no need for actin for the figure": also a MRTF-A + DNA merge, same crop and contrast
     names = list(PANELS) + ["merge_MRTFA_DNA"]
-    for name, im in zip(names, b.three_color(stacks, plane - 1, info=info, extra_merges=(("MRTF-A", "DNA"),))):
+    for name, im in zip(names, b.three_color(stacks, plane - 1, info=info, extra_merges=(("MRTF-A", "DNA"),),
+                                             crop=crop, lo_override=lo_override)):
         if name.startswith("merge"):
-            im = m.with_scalebar(im, b.SHOW_UP / b.SHOW_PSIZE)
+            im = m.with_scalebar(im, b.SHOW_UP / b.SHOW_PSIZE, corner=corner)
         paths.append(out_dir / f"cell_{cid}_z{plane}_{name}.png")
         im.save(m._winlong(paths[-1]))
+    zinfo = zoom_tiles(info, zoom, cid, plane, out_dir, corner, zoom_bar_um) if zoom else {}
     (r0, r1), (c0, c1) = info["box"]
     row = {"experiment": exp["name"], "condition": cond, "cell_id": cid, "plane_z_raw_1based": plane,
            "z_syn": round(b.raw_to_syn(plane), 2), "px_per_um": round(b.SHOW_UP / b.SHOW_PSIZE, 3),
@@ -155,6 +197,9 @@ def figure_tiles(exp: dict, cond: str, cid: int, plane: int, out_dir: Path) -> P
            "tile_w_px": (c1 - c0) * b.SHOW_UP, "tile_h_px": (r1 - r0) * b.SHOW_UP}
     for ch, (lo, hi) in info["contrast"].items():
         row[f"{ch}_lo"], row[f"{ch}_hi"] = round(float(lo), 1), round(float(hi), 1)
+    row["scalebar_corner"] = corner
+    row["crop_source"] = "fixed (--crop)" if crop else "auto"
+    row.update(zinfo)
     # one row per merge recipe: the four picker tiles (merge with actin), then the MRTF-A + DNA merge
     rows = [dict(row, merge_channels="MRTF-A+DNA+Actin", files=";".join(p.name for p in paths[:4])),
             dict(row, merge_channels="MRTF-A+DNA", files=paths[4].name)]
@@ -176,8 +221,20 @@ def main() -> int:
                                               "instead of the median pick")
     ap.add_argument("--sub", default="tiles", help="tile folder under --out")
     ap.add_argument("--neighbors", action="store_true", help="also the DNA tile one plane below and above")
-    ap.add_argument("--figure", help="cond:id:plane (1-based raw) -> <out>/figure_cell<id>_z<plane>/, the chosen "
-                                     "figure cell's tiles and tile_info.csv")
+    ap.add_argument("--figure", nargs="*", help="cond:id:plane (1-based raw) ... -> <out>/figure_cell<id>_z<plane>/, "
+                                                "the chosen figure cells' tiles and tile_info.csv")
+    ap.add_argument("--bar-corner", default="strip", choices=("strip", "upper-right"),
+                    help="--figure merge scalebar: strip below the tile (default) or on the image, upper right")
+    ap.add_argument("--lo", nargs="*", help="CH=value ...: --figure display minimum override per channel "
+                                            "(MRTF-A, DNA, Actin), e.g. DNA=185; the maximum stays automatic")
+    ap.add_argument("--zoom-bar-um", type=float, default=5.0, help="scalebar length on the --zoom tiles (μm)")
+    ap.add_argument("--crop", help="row0,row1,col0,col1: with one --figure cell, a fixed crop box (0-based raw "
+                                   "pixels, end exclusive) instead of the automatic one")
+    ap.add_argument("--zoom", help="x,y: with one --figure cell, panel A's 2x zoom centered there (column, row; "
+                                   "0-based raw pixels of the per-cell TIF)")
+    ap.add_argument("--experiment", default=EXPERIMENT, help="config experiment name, e.g. 'Feb 22, 2024'")
+    ap.add_argument("--merge2", action="store_true", help="also a MRTF-A + DNA merge (no actin), same crop and "
+                                                          "contrast")
     ap.add_argument("--append", action="store_true", help="add the rows to an existing index.csv")
     ap.add_argument("--todo-only", action="store_true", help="with --list: only rows whose 'rendered' is False")
     ap.add_argument("--top-frac", type=float, default=TOP_FRAC, help="flag planes above this fraction of the "
@@ -187,12 +244,19 @@ def main() -> int:
     ap.add_argument("--out", type=Path, default=OUT)
     args = ap.parse_args()
     cfg = b.read_config(b.CONFIG)
-    exp = next(e for e in cfg["experiments"] if e["name"] == EXPERIMENT)
+    exp = next(e for e in cfg["experiments"] if e["name"] == args.experiment)
     labels = {c: dict(cfg["conditions"])[c] for c in exp["wells"]}
     if args.figure:
-        cond, cid, plane = args.figure.split(":")
-        out = figure_tiles(exp, cond, int(cid), int(plane), args.out / f"figure_cell{cid}_z{plane}")
-        print(f"figure tiles -> {out.parent}")
+        zoom = tuple(float(v) for v in args.zoom.split(",")) if args.zoom else None
+        crop = tuple(int(v) for v in args.crop.split(",")) if args.crop else None
+        lo_override = {k: float(v) for k, v in (s.split("=") for s in args.lo)} if args.lo else None
+        if (zoom or crop) and len(args.figure) != 1:
+            ap.error("--zoom and --crop take exactly one --figure cell")
+        for spec in args.figure:
+            cond, cid, plane = spec.split(":")
+            out = figure_tiles(exp, cond, int(cid), int(plane), args.out / f"figure_cell{cid}_z{plane}",
+                               args.bar_corner, zoom, crop, lo_override, args.zoom_bar_um)
+            print(f"figure tiles -> {out.parent}")
         return 0
     if args.cells:
         picks = [(c.split(":")[0], int(c.split(":")[1]), np.nan, np.nan, 0) for c in args.cells]
@@ -209,7 +273,8 @@ def main() -> int:
     for cond, cid, v, med, rank in picks:
         t0 = time.time()
         try:
-            z, z_syn, zm, score, prev = render(exp, cond, cid, tiles, planes, args.neighbors, args.only_moved)
+            z, z_syn, zm, score, prev = render(exp, cond, cid, tiles, planes, args.neighbors, args.only_moved,
+                                               args.merge2)
         except Exception as err:   # one bad cell does not stop the rest
             print(f"FAILED {cond} cell {cid}: {err}")
             failed += 1
@@ -230,7 +295,7 @@ def main() -> int:
                     "nuc_top_slice": hi, "plane_frac_of_nucleus": round(frac, 2), "flag": flag})
         rows.append(row)
     cache.write_text(json.dumps(planes, indent=1), encoding="utf-8")
-    if not args.cells:
+    if rows:
         index = tiles / "index.csv"
         if args.append and index.is_file():   # keep earlier rows; a re-rendered cell replaces its old row
             with open(index, encoding="utf-8", newline="") as fh:

@@ -297,22 +297,29 @@ def render_plane(dna: np.ndarray, tile: Path, estimate) -> tuple:
     return z, z_syn, zm, score
 
 
-def three_color(stacks: dict, z: int, extra_dna: tuple = (), info: dict = None, extra_merges: tuple = ()) -> list:
+def three_color(stacks: dict, z: int, extra_dna: tuple = (), info: dict = None, extra_merges: tuple = (),
+                crop: tuple = None, lo_override: dict = None, channel_rgb: list = None) -> list:
     """[MRTF-A, DNA, actin (grayscale), 3-color merge] of one plane, one crop and scale, then a grayscale DNA
     panel per plane in extra_dna (same crop and DNA contrast; planes outside the stack are skipped). Each channel
     is stretched from its median (the background: the cell fills well under half the crop) to its 99.8th
     percentile in that plane (per-cell contrast). A dict passed as info receives the crop box (raw pixel rows and
     columns, 0-based, end exclusive) and each channel's contrast limits. Each tuple of SHOW_RGB names in
-    extra_merges adds, last, a merge of only those channels (same crop, contrast and colors)."""
+    extra_merges adds, last, a merge of only those channels (same crop, contrast and colors). crop = (row0, row1,
+    col0, col1), raw pixels, 0-based, end exclusive, replaces the automatic crop (contrast is unchanged).
+    lo_override = {SHOW_RGB name: value} replaces that channel's display minimum (its maximum is unchanged).
+    channel_rgb replaces SHOW_RGB (same (name, RGB weight, legend color) rows; stacks keyed by those names, as
+    for another transcription factor in MRTF-A's slot: render_tf_picker_tiles.py)."""
+    spec = channel_rgb or SHOW_RGB
     norm, dna_lohi, lohi = [], None, {}
-    for name, _, _ in SHOW_RGB:
+    for name, _, _ in spec:
         plane = stacks[name.replace("MRTF-A", "MRTFA")][z].astype(float)
         lo, hi = np.percentile(plane, [50, 99.8])
+        lo = (lo_override or {}).get(name, lo)
         norm.append(np.clip((plane - lo) / max(hi - lo, 1e-9), 0, 1))
         lohi[name] = (lo, hi)
         if name == "DNA":
             dna_lohi = (lo, hi)
-    rgb = np.clip(sum(c[..., None] * np.asarray(w) for c, (_, w, _) in zip(norm, SHOW_RGB)), 0, 1)
+    rgb = np.clip(sum(c[..., None] * np.asarray(w) for c, (_, w, _) in zip(norm, spec)), 0, 1)
     # Crop to the cell: the largest blob of the smoothed merge (camera noise defeats a plain non-black crop).
     from scipy import ndimage
     lab, nlab = ndimage.label(ndimage.gaussian_filter(rgb.max(axis=-1), 3) > 0.12)
@@ -321,17 +328,20 @@ def three_color(stacks: dict, z: int, extra_dna: tuple = (), info: dict = None, 
         ys, xs = np.nonzero(lab == 1 + int(np.argmax(ndimage.sum(np.ones_like(lab), lab, range(1, nlab + 1)))))
         pad = 10
         box = (slice(max(0, ys.min() - pad), ys.max() + pad + 1), slice(max(0, xs.min() - pad), xs.max() + pad + 1))
+    if crop is not None:
+        box = (slice(crop[0], crop[1]), slice(crop[2], crop[3]))
     panels = [np.repeat(c[box][..., None], 3, axis=-1) for c in norm] + [rgb[box]]
     if info is not None:
         info["box"] = tuple((s.indices(n)[0], s.indices(n)[1]) for s, n in zip(box, rgb.shape[:2]))
         info["contrast"] = lohi
+        info["norm"] = {name: c for (name, _, _), c in zip(spec, norm)}   # full-frame, contrast applied
     lo, hi = dna_lohi
     for ze in extra_dna:
         if 0 <= ze < stacks["DNA"].shape[0]:
             c = np.clip((stacks["DNA"][ze].astype(float) - lo) / max(hi - lo, 1e-9), 0, 1)
             panels.append(np.repeat(c[box][..., None], 3, axis=-1))
     for keep in extra_merges:
-        sub = sum(c[..., None] * np.asarray(w) for c, (name, w, _) in zip(norm, SHOW_RGB) if name in keep)
+        sub = sum(c[..., None] * np.asarray(w) for c, (name, w, _) in zip(norm, spec) if name in keep)
         panels.append(np.clip(sub, 0, 1)[box])
     out = []
     for a in panels:

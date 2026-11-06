@@ -1,0 +1,36 @@
+deck_title: "Cellpose QC: G2A4_h2o_8min_bTub_ re-cropped 2026-11-05 (Jurkat Ctrl/DZNep bTub 02032026)"
+output_pptx: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Cellpose_qc/G2A4_recrop_20261105/dznep_02032026_G2A4_h2o_8min_bTub_.pptx"
+cache_dir:   "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Cellpose_qc/cache/dznep_02032026_G2A4_h2o_8min_bTub_"
+
+# G2A4's own ND2s re-converted 2026-11-05 (its earlier TIFs were G5A4's; handoff_btub_g2a4_recrop_20261105.md)
+raw_dir:    "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2A4_h2o_8min_bTub_"
+mask_dir:   "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/G2A4_h2o_8min_bTub_/cellpose_masks"
+
+raw_pattern:  "{fov}.tif"
+mask_pattern: "cellpose_mask_{fov}.tif"
+
+# C1 actin, C2 bTub, C3 Hoechst (0-based here; dataset config Jurkats_DZNep_bTub_timecourse_20260203_dataset.m)
+actin_channel:   0
+hoechst_channel: 2
+
+pixel_size_um: 0.065
+scalebar_um:   5
+
+actin_low_pct:    1.0
+actin_high_pct:   99.5
+
+hoechst_low_pct:  2.0
+hoechst_high_pct: 99.5
+hoechst_min_lo:   120
+hoechst_color:    [255, 0, 0]
+
+grid_rows: 3
+grid_cols: 3
+
+image_format: "jpg"
+jpeg_quality: 90
+
+concurrent_fovs: 3
+
+fov_ids: auto
+fov_id_filter: '^\d+$'

@@ -930,12 +930,18 @@ def content_crop(im, pad: int = 4):
                     min(im.width, xs.max() + 1 + pad), min(im.height, ys.max() + 1 + pad)))
 
 
-def with_scalebar(im, ppu: float, um: float = 5.0, thick: int = 14):
+def with_scalebar(im, ppu: float, um: float = 5.0, thick: int = 14, corner: str = "strip"):
     """The tile with a strip added below it carrying a white `um` μm bar, `thick`
     px tall, at the left (FF 2026-10-27: a scalebar in every mesh panel). Every
-    tile gets the same strip, so bottom alignment is unchanged."""
+    tile gets the same strip, so bottom alignment is unchanged. corner="upper-right"
+    instead draws the bar on the image, 12 px in from its top-right corner, size
+    unchanged (FF 2026-11-05: "scalebar in merge should be in upper right")."""
     from PIL import ImageDraw
     bar = int(round(um * ppu))
+    if corner == "upper-right":
+        out = im.convert("RGB")
+        ImageDraw.Draw(out).rectangle([out.width - 12 - bar, 12, out.width - 13, 11 + thick], fill=(255, 255, 255))
+        return out
     out = Image.new("RGB", (max(im.width, bar + 8), im.height + 18 + thick), (0, 0, 0))
     out.paste(im, (0, 0))
     ImageDraw.Draw(out).rectangle([4, im.height + 12, 4 + bar, im.height + 11 + thick], fill=(255, 255, 255))
