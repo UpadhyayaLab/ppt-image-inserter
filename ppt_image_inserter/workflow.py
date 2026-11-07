@@ -6,6 +6,7 @@ from pptx import Presentation
 from pptx.slide import Slide
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
+from pptx.enum.shapes import PP_PLACEHOLDER
 from PIL import Image as PILImage
 import os
 import sys
@@ -108,6 +109,17 @@ def _remove_generated_labels(slide: Slide) -> int:
             labels_removed += 1
 
     return labels_removed
+
+
+def _remove_title_placeholders(slide: Slide) -> int:
+    """Remove the slide's title placeholder(s) (title or centered title) copied from the
+    template, so a config title does not draw on top of the template's title text."""
+    removed = 0
+    for shape in list(slide.placeholders):
+        if shape.placeholder_format.type in (PP_PLACEHOLDER.TITLE, PP_PLACEHOLDER.CENTER_TITLE):
+            shape._element.getparent().remove(shape._element)
+            removed += 1
+    return removed
 
 
 def _add_title(slide: Slide, text: str, subtitle: str = None, fit: bool = False) -> None:
@@ -441,8 +453,10 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
         slide_h = prs.slide_height.inches
         _add_text_label(new_slide, new_image_paths, slide_w, slide_h, base_dir=base_dir, label_side=label_side)
 
-    # Add title if provided
+    # Add title if provided; it replaces the template's own title placeholder, which since
+    # template text is preserved (2026-05-25) otherwise showed under it (DZNep bTub deck 2026-11-06)
     if title:
+        _remove_title_placeholders(new_slide)
         _add_title(new_slide, title, subtitle, fit=title_fit)
 
     # Save the presentation

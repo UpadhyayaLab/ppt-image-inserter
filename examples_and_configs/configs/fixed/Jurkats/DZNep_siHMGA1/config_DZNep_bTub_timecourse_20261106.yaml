@@ -1,0 +1,194 @@
+# Batch Image Replacement Configuration
+# DZNep bTub timecourse, Jurkats, one experiment (Feb 3, 2026): H2O (Ctrl) vs DZNep at 4/8/15/30/60 min.
+# Compiled 2026-11-06 by the "bTub 1 hr" session. Figures have NOT been through figure-reviewer, and the
+# compile's legibility pass flagged text overlap/clipping in 497 figures.
+# Order: cell counts, then the curated MT_loc_wrto_invag set in file-number order with the DNA figure of the
+# same number beside it (Left: microtubules, Right: DNA). 06b (orientation ratios) exists for MT only.
+# 07 (nuclear shape) and 09a (cell counts) are byte-identical in the MT and DNA folders, so they appear once.
+# Subtitles are shortened from MT_loc_wrto_invag/README.txt.
+# grid_panels/: 9 metrics picked by the "bTub 1 hr" session, per-timepoint then timecourse slides. QC meshes left
+# out (the HTML report builder that copies them has not been run).
+#
+# Build:  python examples_and_configs/batch_insert_images.py <this file>
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Noco/Effects of Noco, Fixed Cells_MT_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/DZNep_siHMGA1/DZNep_bTub_timecourse_20261106.pptx"
+
+template_slide: 1
+backup_dir: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/DZNep_siHMGA1/backups"
+preserve_slides: [0, 1]
+title_slide_text: "DZNep βTub timecourse, Feb 3, 2026 (not yet reviewed)"
+
+auto_position: false
+position: {left: 0.3, top: 1.17, width: 12.73, height: 6.15}
+trim_whitespace: true
+title_fit: true
+
+label_side: left
+add_label: false
+remove_template_slide: true
+
+# Every image path below is relative to this folder.
+base_dir: "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_bTub_timecourse_20260203_20261106"
+
+images:
+  # --- Cell counts ---
+  - path: "MT_loc_wrto_invag/09a_cell_counts_filter_breakdown.tiff"
+    title: "Cells kept after each filter"
+    subtitle: "Final n, 4/8/15/30/60 min: Ctrl 74/66/74/63/68, DZNep 82/71/46/57/67. Figures not yet reviewed; 497 flagged for text overlap."
+
+  # --- 02: signal vs geometry, Mean ± SEM across cells ---
+  - images: ["MT_loc_wrto_invag/02a_MT_avg_hulldist.tiff", "DNA_loc_wrto_invag/02a_DNA_avg_hulldist.tiff"]
+    positions: &pair
+      - {left: 0.3, top: 1.95, width: 6.25, height: 5.45}
+      - {left: 6.78, top: 1.95, width: 6.25, height: 5.45}
+    title: "Signal vs distance to the convex-hull boundary"
+    subtitle: "Perinuclear shell. Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/02b_MT_avg_minCurvature.tiff", "DNA_loc_wrto_invag/02b_DNA_avg_minCurvature.tiff"]
+    positions: *pair
+    title: "Signal vs min curvature"
+    subtitle: "Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/02c_MT_avg_meanCurvature.tiff", "DNA_loc_wrto_invag/02c_DNA_avg_meanCurvature.tiff"]
+    positions: *pair
+    title: "Signal vs mean curvature"
+    subtitle: "Left: microtubules. Right: DNA."
+
+  # --- 03: per-cell enrichment (region / cell mean; > 1 = enriched) ---
+  - images: ["MT_loc_wrto_invag/03a_MT_enrichment_hulldist_gt0.5um.png", "DNA_loc_wrto_invag/03a_DNA_enrichment_hulldist_gt0.5um.png"]
+    positions: *pair
+    title: "Enrichment in invaginations deeper than 0.5 μm"
+    subtitle: "One dot per cell; > 1 = enriched. Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/03b_MT_enrichment_hulldist_gt1.0um.png", "DNA_loc_wrto_invag/03b_DNA_enrichment_hulldist_gt1.0um.png"]
+    positions: *pair
+    title: "Enrichment in invaginations deeper than 1.0 μm"
+    subtitle: "One dot per cell; > 1 = enriched. Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/03c_MT_enrichment_minCurvature_lt0.png", "DNA_loc_wrto_invag/03c_DNA_enrichment_minCurvature_lt0.png"]
+    positions: *pair
+    title: "Enrichment on concave surface (min curvature < 0)"
+    subtitle: "One dot per cell; > 1 = enriched. Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/03d_MT_enrichment_minCurvature_ltm0.25.png", "DNA_loc_wrto_invag/03d_DNA_enrichment_minCurvature_ltm0.25.png"]
+    positions: *pair
+    title: "Enrichment on strongly concave surface (min curvature < −0.25)"
+    subtitle: "One dot per cell; > 1 = enriched. Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/03e_MT_enrichment_meanCurvature.png", "DNA_loc_wrto_invag/03e_DNA_enrichment_meanCurvature.png"]
+    positions: *pair
+    title: "Enrichment on concave surface (mean curvature < 0)"
+    subtitle: "One dot per cell; > 1 = enriched. Left: microtubules. Right: DNA."
+
+  # --- 04: per-cell Pearson r ---
+  - images: ["MT_loc_wrto_invag/04a_MT_correlation_hulldist.png", "DNA_loc_wrto_invag/04a_DNA_correlation_hulldist.png"]
+    positions: *pair
+    title: "Per-cell correlation with distance to the hull boundary"
+    subtitle: "Area-weighted Pearson r, one dot per cell. Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/04b_MT_correlation_minCurvature.png", "DNA_loc_wrto_invag/04b_DNA_correlation_minCurvature.png"]
+    positions: *pair
+    title: "Per-cell correlation with min curvature"
+    subtitle: "Below 0 = enriched on concave surface. Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/04c_MT_correlation_meanCurvature.png", "DNA_loc_wrto_invag/04c_DNA_correlation_meanCurvature.png"]
+    positions: *pair
+    title: "Per-cell correlation with mean curvature"
+    subtitle: "Below 0 = enriched on concave surface. Left: microtubules. Right: DNA."
+
+  # --- 05c: relative to the centrosome ---
+  - images: ["MT_loc_wrto_invag/05c1_MT_prox_vs_distal_hulldist.png", "DNA_loc_wrto_invag/05c1_DNA_prox_vs_distal_hulldist.png"]
+    positions: *pair
+    title: "Near vs away from the centrosome: distance to hull boundary"
+    subtitle: "Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/05c2_MT_prox_vs_distal_minCurvature.png", "DNA_loc_wrto_invag/05c2_DNA_prox_vs_distal_minCurvature.png"]
+    positions: *pair
+    title: "Near vs away from the centrosome: min curvature"
+    subtitle: "Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/05c3_MT_prox_vs_distal_meanCurvature.png", "DNA_loc_wrto_invag/05c3_DNA_prox_vs_distal_meanCurvature.png"]
+    positions: *pair
+    title: "Near vs away from the centrosome: mean curvature"
+    subtitle: "Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/05c4_MT_vs_centrosome_distance.png", "DNA_loc_wrto_invag/05c4_DNA_vs_centrosome_distance.png"]
+    positions: *pair
+    title: "Signal vs distance from the centrosome along the nuclear surface"
+    subtitle: "1 = that nucleus's surface mean. Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/05c5_MT_near_cent_level.png", "DNA_loc_wrto_invag/05c5_DNA_near_cent_level.png"]
+    positions: *pair
+    title: "Signal near the centrosome / whole-surface mean"
+    subtitle: "One dot per cell; > 1 = enriched near the centrosome. Left: microtubules. Right: DNA."
+  - images: ["MT_loc_wrto_invag/05c6_MT_prox_over_distal_ratio.png", "DNA_loc_wrto_invag/05c6_DNA_prox_over_distal_ratio.png"]
+    positions: *pair
+    title: "Signal near / away from the centrosome"
+    subtitle: "One dot per cell. Left: microtubules. Right: DNA."
+
+  # --- 06: surface orientation (0° dorsal, 90° lateral, 180° ventral) ---
+  - images: ["MT_loc_wrto_invag/06a_MT_avg_normalangle.tiff", "DNA_loc_wrto_invag/06a_DNA_avg_normalangle.tiff"]
+    positions: *pair
+    title: "Signal vs surface orientation"
+    subtitle: "0° = dorsal, 90° = lateral, 180° = ventral. Left: microtubules. Right: DNA."
+  - path: "MT_loc_wrto_invag/06b01_MT_orientation_ratio_above_below_Timepoint_Comparisons.tiff"
+    title: "Microtubules: dorsal / ventral, Ctrl vs DZNep per timepoint"
+  - path: "MT_loc_wrto_invag/06b02_MT_orientation_ratio_above_below_Treatment_Timecourses.tiff"
+    title: "Microtubules: dorsal / ventral over time"
+  - path: "MT_loc_wrto_invag/06b03_MT_orientation_ratio_below_by_side_Timepoint_Comparisons.tiff"
+    title: "Microtubules: ventral / lateral, Ctrl vs DZNep per timepoint"
+  - path: "MT_loc_wrto_invag/06b04_MT_orientation_ratio_below_by_side_Treatment_Timecourses.tiff"
+    title: "Microtubules: ventral / lateral over time"
+  - path: "MT_loc_wrto_invag/06b05_MT_orientation_ratio_above_by_side_Timepoint_Comparisons.tiff"
+    title: "Microtubules: dorsal / lateral, Ctrl vs DZNep per timepoint"
+  - path: "MT_loc_wrto_invag/06b06_MT_orientation_ratio_above_by_side_Treatment_Timecourses.tiff"
+    title: "Microtubules: dorsal / lateral over time"
+
+  # --- 07: nuclear shape ---
+  - path: "MT_loc_wrto_invag/07a_nuc_aspect_ratio_Timepoint_Comparisons.tiff"
+    title: "Nuclear aspect ratio, Ctrl vs DZNep per timepoint"
+  - path: "MT_loc_wrto_invag/07a_nuc_aspect_ratio_Treatment_Timecourses.tiff"
+    title: "Nuclear aspect ratio over time"
+  - path: "MT_loc_wrto_invag/07b_nuc_height_Timepoint_Comparisons.tiff"
+    title: "Nuclear height, Ctrl vs DZNep per timepoint"
+  - path: "MT_loc_wrto_invag/07b_nuc_height_Treatment_Timecourses.tiff"
+    title: "Nuclear height over time"
+  - path: "MT_loc_wrto_invag/07c_nuc_solidity_Timepoint_Comparisons.tiff"
+    title: "Nuclear solidity, Ctrl vs DZNep per timepoint"
+  - path: "MT_loc_wrto_invag/07c_nuc_solidity_Treatment_Timecourses.tiff"
+    title: "Nuclear solidity over time"
+  - path: "MT_loc_wrto_invag/07d_chull_max_D_Timepoint_Comparisons.tiff"
+    title: "Max invagination depth, Ctrl vs DZNep per timepoint"
+  - path: "MT_loc_wrto_invag/07d_chull_max_D_Treatment_Timecourses.tiff"
+    title: "Max invagination depth over time"
+
+  # --- grid_panels: Ctrl vs DZNep per timepoint, then the timecourse within each arm ---
+  - path: "grid_panels/timepoint_comparisons/nuc_volume_mesh.png"
+    title: "Nuclear volume, Ctrl vs DZNep per timepoint"
+  - path: "grid_panels/treatment_timecourses/nuc_volume_mesh.png"
+    title: "Nuclear volume over time"
+  - path: "grid_panels/timepoint_comparisons/nuc_height.png"
+    title: "Nuclear height, Ctrl vs DZNep per timepoint"
+  - path: "grid_panels/treatment_timecourses/nuc_height.png"
+    title: "Nuclear height over time"
+  - path: "grid_panels/timepoint_comparisons/nuc_aspect_ratio.png"
+    title: "Nuclear aspect ratio, Ctrl vs DZNep per timepoint"
+  - path: "grid_panels/treatment_timecourses/nuc_aspect_ratio.png"
+    title: "Nuclear aspect ratio over time"
+  - path: "grid_panels/timepoint_comparisons/nuc_solidity.png"
+    title: "Nuclear solidity, Ctrl vs DZNep per timepoint"
+  - path: "grid_panels/treatment_timecourses/nuc_solidity.png"
+    title: "Nuclear solidity over time"
+  - path: "grid_panels/timepoint_comparisons/chull_max_D.png"
+    title: "Max invagination depth, Ctrl vs DZNep per timepoint"
+  - path: "grid_panels/treatment_timecourses/chull_max_D.png"
+    title: "Max invagination depth over time"
+  - path: "grid_panels/timepoint_comparisons/chull_max_D_by_cent.png"
+    title: "Invagination depth near the centrosome, Ctrl vs DZNep per timepoint"
+  - path: "grid_panels/treatment_timecourses/chull_max_D_by_cent.png"
+    title: "Invagination depth near the centrosome over time"
+  - path: "grid_panels/timepoint_comparisons/nuc_cent_closest_dist.png"
+    title: "Nucleus-centrosome closest distance, Ctrl vs DZNep per timepoint"
+  - path: "grid_panels/treatment_timecourses/nuc_cent_closest_dist.png"
+    title: "Nucleus-centrosome closest distance over time"
+  - path: "grid_panels/timepoint_comparisons/centrosome_from_MT_z_cell_bottom_distance.png"
+    title: "Centrosome height above the cell bottom, Ctrl vs DZNep per timepoint"
+  - path: "grid_panels/treatment_timecourses/centrosome_from_MT_z_cell_bottom_distance.png"
+    title: "Centrosome height above the cell bottom over time"
+  - path: "grid_panels/timepoint_comparisons/avg_normal_angle_adaptive_region_growth.png"
+    title: "Mean surface orientation, Ctrl vs DZNep per timepoint"
+  - path: "grid_panels/treatment_timecourses/avg_normal_angle_adaptive_region_growth.png"
+    title: "Mean surface orientation over time"
+
+  # --- Summary ---
+  - path: "grid_panels/top_differences_barplot.png"
+    title: "Largest Ctrl vs DZNep differences"
