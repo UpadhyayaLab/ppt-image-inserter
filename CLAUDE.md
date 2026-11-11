@@ -36,7 +36,7 @@ pip install -r requirements.txt
 ### Running the Batch Script
 
 ```bash
-python examples_and_configs/batch_insert_images.py examples_and_configs/configs/example_config.yaml
+python examples_and_configs/batch_insert_images.py examples_and_configs/configs/examples/example_config.yaml
 ```
 
 **CRITICAL**: The file must be closed in PowerPoint before running the script. The script needs exclusive file access to modify the presentation.

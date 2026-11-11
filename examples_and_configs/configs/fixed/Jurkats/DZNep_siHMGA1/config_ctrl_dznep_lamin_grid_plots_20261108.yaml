@@ -1,0 +1,196 @@
+# Config: Jurkats DZNep timecourse -- grid plots (lamin B only), compile of 2026-11-08
+# Same layout as config_ctrl_dznep_btub_grid_plots_20261106.yaml (one slide per metric: timecourse on top,
+# Ctrl vs DZNep per timepoint below). The 8 centrosome-based bTub slides are dropped: this arm has no
+# centrosome. Compile: Jurkats_DZNep_lmnB1_timecourse_20260203_compilation, one experiment, not pooled.
+# Caveat: H2O wells processed 2026-09-18, DZNep wells 2026-11-06/07 (either side of the 2026-10-18
+# z-mapping cut-over; actin-plane fields differ in code between the arms).
+
+presentation: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Ctrl_DZNep_upto1hr_bTub_compilation_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/Ctrl, DZNep, bTub, Lamin B, 20260203/Ctrl_DZNep_upto1hr_LaminB_compilation_20261108.pptx"
+template_slide: 0
+preserve_slides: [0]
+base_dir: ""
+auto_position: true
+remove_template_slide: true   # drop the template's example slide (stale March images)
+title_fit: true               # long titles (slides 4, 9, 10, 12) wrapped into the panel titles
+add_label: false
+
+images:
+
+  # ===========================================================================
+  # METRIC 1: nuc_aspect_ratio
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/treatment_timecourses/nuc_aspect_ratio.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/timepoint_comparisons/nuc_aspect_ratio.tiff"
+    title: "Nuclear aspect ratio (lamin B only)"
+
+  # ===========================================================================
+  # METRIC 2: actin_deform_ratio
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/treatment_timecourses/actin_deform_ratio.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/timepoint_comparisons/actin_deform_ratio.tiff"
+    title: "Actin deformation ratio (lamin B only)"
+
+  # ===========================================================================
+  # METRIC 4: avg_normal_angle_adaptive_region_growth
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/treatment_timecourses/avg_normal_angle_adaptive_region_growth.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/timepoint_comparisons/avg_normal_angle_adaptive_region_growth.tiff"
+    title: "Deepest Invag. Orientation (°) (lamin B only)"
+
+  # ===========================================================================
+  # METRIC 6: chull_max_D
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/treatment_timecourses/chull_max_D.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/timepoint_comparisons/chull_max_D.tiff"
+    title: "Invagination depth (lamin B only)"
+
+  # ===========================================================================
+  # METRIC 8: chull_mean_D
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/treatment_timecourses/chull_mean_D.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/timepoint_comparisons/chull_mean_D.tiff"
+    title: "Mean invagination depth (lamin B only)"
+
+  # ===========================================================================
+  # METRIC 12: deepest_invag_fraction_chull_volume
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/treatment_timecourses/deepest_invag_fraction_chull_volume.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/timepoint_comparisons/deepest_invag_fraction_chull_volume.tiff"
+    title: "Deepest invagination fraction of convex hull volume (lamin B only)"
+
+  # ===========================================================================
+  # METRIC 13: nuc_solidity
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/treatment_timecourses/nuc_solidity.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/timepoint_comparisons/nuc_solidity.tiff"
+    title: "Nuclear solidity (lamin B only)"
+
+  # ===========================================================================
+  # METRIC 14: nuc_SA_mesh
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/treatment_timecourses/nuc_SA_mesh.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/timepoint_comparisons/nuc_SA_mesh.tiff"
+    title: "Nuclear surface area (mesh) (lamin B only)"
+
+  # ===========================================================================
+  # METRIC 15: nuc_volume_mesh
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/treatment_timecourses/nuc_volume_mesh.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/timepoint_comparisons/nuc_volume_mesh.tiff"
+    title: "Nuclear volume (mesh) (lamin B only)"
+
+  # ===========================================================================
+  # METRIC 18: deepest_region_periph_ratio_025um
+  # ===========================================================================
+
+  - images:
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/treatment_timecourses/deepest_region_periph_ratio_025um.tiff"
+      - "J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/DZNep_lmnB1_timecourse_20260203_20261108/grid_panels/timepoint_comparisons/deepest_region_periph_ratio_025um.tiff"
+    title: "Deepest region to periphery ratio (0.25 μm) (lamin B only)"
+
+
+  # ===========================================================================
+  # LAMIN DEEPEST-INVAGINATION REPORT FIGURES (21), in report order. Source of truth:
+  # https://claude.ai/artifact/U2vgxcyRtqwkkw2EzTeEDH (figure review PASS). File list from the
+  # "bTub 1 hr" session, matched to the report's embedded images. Titles shortened from
+  # lamin_deepest_invag_report_20261108_text.txt; the report's claim sentence is the subtitle.
+  # Never use the stale deepest_global_* PNGs in that folder.
+  # ===========================================================================
+
+  # --- KEY PLOTS (report: lamin_deepest_invag_report_20261108) ---
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/chull_max_D_violin.png"]
+    positions: [{left: 0.3, top: 1.45, width: 12.73, height: 5.9}]
+    title: "Deepest invagination depth"
+    subtitle: "Significantly higher with DZNep at 30 min."
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/geom_density/profiles/pocket/lamin_x_DNA_geomdens_pocketdist_CHANPANEL_line.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Lamin B and DNA vs distance from the Deepest Invag."
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f010_rel_CHANPANEL_violin.png"]
+    positions: [{left: 0.3, top: 1.45, width: 12.73, height: 5.9}]
+    title: "Lamin B, 10% region around the Deepest Invag."
+    subtitle: "Does not differ significantly between Ctrl and DZNep at any timepoint (DZNep higher at 4 of 5)."
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f025_rel_CHANPANEL_violin.png"]
+    positions: [{left: 0.3, top: 1.45, width: 12.73, height: 5.9}]
+    title: "Lamin B, 25% region around the Deepest Invag."
+    subtitle: "Does not differ significantly between Ctrl and DZNep at any timepoint (DZNep higher at 4 of 5)."
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f050_rel_CHANPANEL_violin.png"]
+    positions: [{left: 0.3, top: 1.45, width: 12.73, height: 5.9}]
+    title: "Lamin B, 50% region around the Deepest Invag."
+    subtitle: "Does not differ significantly between Ctrl and DZNep at any timepoint (DZNep higher at 4 of 5)."
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/scatter/seed_depth/per_cell_correlations/S3_f010_invag_CHANPANEL_scatter.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Across cells: Lamin B in the 10% region vs Invag. Depth"
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f010_ratio_violin.png"]
+    positions: [{left: 0.3, top: 1.45, width: 12.73, height: 5.9}]
+    title: "Lamin B / DNA, 10% region"
+    subtitle: "Does not differ significantly between Ctrl and DZNep at any timepoint (DZNep higher at 3 of 5)."
+
+  # --- SECTION 4: ACROSS CELLS ---
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/scatter/seed_depth/per_cell_correlations/S3_f025_invag_CHANPANEL_scatter.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Across cells: Lamin B in the 25% region vs Invag. Depth"
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/scatter/seed_depth/per_cell_correlations/S3_f050_invag_CHANPANEL_scatter.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Across cells: Lamin B in the 50% region vs Invag. Depth"
+
+  # --- THE SAME REGIONS 0.5 μm INSIDE THE NUCLEAR SURFACE ---
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth_inperinuc05/seed_depth/violins/S3_f010_rel_CHANPANEL_violin.png"]
+    positions: [{left: 0.3, top: 1.45, width: 12.73, height: 5.9}]
+    title: "0.5 μm inside: Lamin B, 10% region"
+    subtitle: "Does not differ significantly between Ctrl and DZNep at any timepoint (DZNep higher at 4 of 5)."
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth_inperinuc05/seed_depth/violins/S3_f025_rel_CHANPANEL_violin.png"]
+    positions: [{left: 0.3, top: 1.45, width: 12.73, height: 5.9}]
+    title: "0.5 μm inside: Lamin B, 25% region"
+    subtitle: "Does not differ significantly between Ctrl and DZNep at any timepoint (DZNep higher at 5 of 5)."
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth_inperinuc05/seed_depth/violins/S3_f050_rel_CHANPANEL_violin.png"]
+    positions: [{left: 0.3, top: 1.45, width: 12.73, height: 5.9}]
+    title: "0.5 μm inside: Lamin B, 50% region"
+    subtitle: "Does not differ significantly between Ctrl and DZNep at any timepoint (DZNep higher at 4 of 5)."
+
+  # --- SUPPORTING FIGURES ---
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/geom_density/profiles/pocket/lamin_geomdens_pocketdist_HULLDIST_line.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Mean surface depth vs distance from the Deepest Invag."
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f025_ratio_violin.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Lamin B / DNA, 25% region"
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f050_ratio_violin.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Lamin B / DNA, 50% region"
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f010_depth_violin.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Mean Hull Surf. Dist., 10% region"
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f025_depth_violin.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Mean Hull Surf. Dist., 25% region"
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f050_depth_violin.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Mean Hull Surf. Dist., 50% region"
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f010_area_violin.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Area, 10% region"
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f025_area_violin.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Area, 25% region"
+  - images: ["J:/FF/Nucleus_Project_up_to_1hr/020302026_jurkats_dznep_lmnB1orbTub_561LP55_488LP45_405LP40_/results_compilation/tests/seed_depth_20261108/seed_depth/violins/S3_f050_area_violin.png"]
+    positions: [{left: 0.3, top: 1.17, width: 12.73, height: 6.18}]
+    title: "Area, 50% region"
