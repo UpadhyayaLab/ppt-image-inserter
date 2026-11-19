@@ -357,8 +357,11 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
         ...     positions=positions
         ... )
     """
-    # Validate input files
-    if not os.path.exists(ppt_path):
+    # ppt_path may be an already-open Presentation: then the slide is added to it and the caller
+    # saves once (opening and saving the whole deck per slide made a 112-slide build take 72 s,
+    # 64 s of it re-zipping, FF 2026-11-20 "it should not take so long to rebuild")
+    from_path = isinstance(ppt_path, (str, os.PathLike))
+    if from_path and not os.path.exists(ppt_path):
         raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
 
     for img_path in new_image_paths:
@@ -366,7 +369,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
             raise FileNotFoundError(f"Image file not found: {img_path}")
 
     # Load presentation
-    prs = Presentation(ppt_path)
+    prs = Presentation(ppt_path) if from_path else ppt_path
 
     # Auto-detect positions if not specified
     if positions is None:
@@ -459,8 +462,9 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
         _remove_title_placeholders(new_slide)
         _add_title(new_slide, title, subtitle, fit=title_fit)
 
-    # Save the presentation
-    prs.save(ppt_path)
+    # Save the presentation (an open Presentation passed in is saved by the caller)
+    if from_path:
+        prs.save(ppt_path)
 
     return new_slide_index
 

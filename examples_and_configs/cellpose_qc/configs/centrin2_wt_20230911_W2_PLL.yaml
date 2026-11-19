@@ -1,0 +1,35 @@
+deck_title: "Cellpose QC: W2_PLL (Jurkat E6-1 WT centrin-2 20230911)"
+output_pptx: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Centrin2_WT_20230911/Cellpose_qc/crops_20261112/centrin2_wt_20230911_W2_PLL.pptx"
+cache_dir:   "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Centrin2_WT_20230911/Cellpose_qc/cache/centrin2_wt_20230911_W2_PLL"
+
+raw_dir:    "Q:/FF/Nucleus_Data/3D_Nucleus_Centrosome/Fixed/20230911_Fixed_E6-1_WT_Centrin-2/W2_PLL_E6-1_WT_535Phalloidin_488Centrin-2_405Hoechst"
+mask_dir:   "Q:/FF/Nucleus_Data/3D_Nucleus_Centrosome/Fixed/20230911_Fixed_E6-1_WT_Centrin-2/W2_PLL_E6-1_WT_535Phalloidin_488Centrin-2_405Hoechst/cellpose_masks"
+
+raw_pattern:  "{fov}.tif"
+mask_pattern: "cellpose_mask_{fov}.tif"
+
+# C1 535 phalloidin, C2 488 centrin-2, C3 405 Hoechst (0-based here)
+actin_channel:   0
+hoechst_channel: 2
+
+pixel_size_um: 0.065
+scalebar_um:   5
+
+actin_low_pct:    1.0
+actin_high_pct:   99.5
+
+hoechst_low_pct:  2.0
+hoechst_high_pct: 99.5
+hoechst_min_lo:   120
+hoechst_color:    [255, 0, 0]
+
+grid_rows: 3
+grid_cols: 3
+
+image_format: "jpg"
+jpeg_quality: 90
+
+concurrent_fovs: 3
+
+fov_ids: auto
+fov_id_filter: '^\d+$'

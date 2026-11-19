@@ -128,10 +128,12 @@ def get_all_image_positions(
             {'left': 5.0, 'top': 1.0, 'width': 4.0, 'height': 3.0}
         ]
     """
-    if not os.path.exists(ppt_path):
-        raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
-
-    prs = Presentation(ppt_path)
+    if isinstance(ppt_path, (str, os.PathLike)):
+        if not os.path.exists(ppt_path):
+            raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
+        prs = Presentation(ppt_path)
+    else:   # an already-open Presentation (batch builds open the deck once)
+        prs = ppt_path
 
     if slide_index < 0 or slide_index >= len(prs.slides):
         raise IndexError(

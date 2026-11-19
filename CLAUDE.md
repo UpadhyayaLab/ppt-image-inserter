@@ -100,6 +100,10 @@ leave generated or reusable configs beside output `.pptx` files in
 `K:/FF/PPT/PPT_autogeneration/...`; those output folders should contain
 decks, backups, and other generated presentation artifacts only.
 
+**Output location rule** (FF 2026-11-18): every generated deck goes in its own
+new subfolder of `K:/FF/PPT/PPT_autogeneration/` (one folder per subject),
+never a data drive, a `tests` folder or a repo. Do not propose another location.
+
 ### YAML Configuration Structure
 
 Since you'll frequently help users create and modify configs, here's the structure:
@@ -254,7 +258,9 @@ OUTPUT_PATH = PPT_PATH.replace("_template.pptx", ".pptx")
 - A: Check that `auto_position: true` and template slide has one image where you want new images
 
 **Q: "Script is slow with 200 images"**
-- A: This is normal - PowerPoint files are complex XML. Consider batching or be patient.
+- A: It should not be. `batch_insert_images.py` opens the deck once, adds every slide and saves once (2026-11-20:
+  112 slides in 11 s; the old per-slide open+save took 72 s). New builders pass an open `Presentation` to
+  `copy_slide_replace_image(s)` (they accept a path or an open deck) and save once at the end, never per slide.
 
 **Q: "Can I modify text in slides?"**
 - A: No - outside scope of this tool. Use python-pptx directly for that.
