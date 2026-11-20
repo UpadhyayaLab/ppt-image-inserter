@@ -1,11 +1,11 @@
 # Fig 6 deck decision page. Published at https://claude.ai/artifact/7jNQXaAqQa3t7bCk8qpiUS (capabilities {db: {}}).
 # Steps (decision_page/README.md): apply_answers.py -> fig6_metrics/fig6_decision_previews.py -> build_decision_page.py.
-# Option wording: verbatim from the Histone mark data session's code-checked replies (2026-11-19); `source` per item is
-# for the record and not shown. An option with `replace` is previewed and applied automatically (whole lines only,
+# Option wording: verbatim from the Histone mark data session's code-checked replies (2026-11-19), except options with
+# `wording_source` (shown as "Source: ..."); `source` per item is for the record and not shown. An option with `replace` is previewed and applied automatically (whole lines only,
 # decision_page/text_map.py); an option with `request` needs work by its owner and shows the current slides.
 title: "Fig 6 Deck Decisions"
 heading: "Fig 6 deck: decisions"
-lead: "Open decisions first, resolved ones after them. Each option shows every slide it changes, built by the deck's own pipeline from the deck as it now is. Click your pick, or write a change and click Save change; each save is kept at once and can be changed any time. Click a resolved line to open it again. Every proposed string is copied from Histone mark data's code-checked replies."
+lead: "Open decisions first, resolved ones after them. Each option shows every slide it changes, built by the deck's own pipeline from the deck as it now is. Click your pick, or write a change and click Save change; each save is kept at once and can be changed any time. Click a resolved line to open it again. Every proposed string is copied from Histone mark data's code-checked replies, unless its option gives another source."
 all_heading: "Fig 6 deck: all slides"
 all_lead: "Every slide of the deck as it now is, with your answers so far applied. Edit any line in the box under a slide and click Save slide change. Click a slide to enlarge it. The line under each slide gives its title's line count at the deck's fixed 36 pt, measured in PowerPoint; red marks 3 or more lines or a title whose letters run into the figure."
 collection: decisions
@@ -120,6 +120,7 @@ items:
         text: "Relative level vs distance from the centrosome-proximal nadir"
         note: "Histone mark data: accurate."
         note_source: "Histone mark data, 2026-11-19"
+        wording_source: "worded by Histone mark data agent presentation; Histone mark data checked it"
         replace:
           - {old: "Relative level vs distance from the nadir of the centrosome-proximal region", new: "Relative level vs distance from the centrosome-proximal nadir", where: titles}
 
@@ -152,11 +153,11 @@ items:
     options:
       - choice: "use"
         button: "Use this"
-        text: "Level: mean in the 0.25 μm layer inside the nuclear surface ÷ the area-weighted mean over the whole surface"
+        text: "Level: mean in the 0.25 μm layer inside the nuclear surface, weighted by surface area, ÷ the same over the whole nuclear surface"
         note: "Value and reference are both area-weighted means over the surface, not plain layer means."
-        note_source: "Histone mark data, 2026-11-19"
+        note_source: "Histone mark data, 2026-11-19; full line confirmed by Histone mark data 2026-11-20"
         replace:
-          - {old: "Level: mean in the 0.25 μm layer inside the nuclear surface ÷ mean in that layer over the whole nucleus", new: "Level: mean in the 0.25 μm layer inside the nuclear surface ÷ the area-weighted mean over the whole surface", where: lines}
+          - {old: "Level: mean in the 0.25 μm layer inside the nuclear surface ÷ mean in that layer over the whole nucleus", new: "Level: mean in the 0.25 μm layer inside the nuclear surface, weighted by surface area, ÷ the same over the whole nuclear surface", where: lines}
 
   - code: "12c"
     title: "Slide 2: one term for the whole nucleus"
@@ -168,6 +169,7 @@ items:
         label: '"whole nucleus" everywhere'
         note: "Two words for one idea."
         note_source: "Histone mark data, 2026-11-19"
+        wording_source: "worded by Histone mark data agent presentation; Histone mark data advised one term (its example: \"whole-nucleus nadir\")"
         replace:
           - {old: "Relative level near nadir (full nucleus; no centrosome consideration)", new: "Relative level near nadir (whole nucleus; no centrosome consideration)", where: lines}
           - {old: "Relative level vs distance from nadir (full nucleus; no centrosome consideration), along the surface", new: "Relative level vs distance from nadir (whole nucleus; no centrosome consideration), along the surface", where: lines}
@@ -181,6 +183,7 @@ items:
         text: "Relative level vs distance from the centrosome-proximal nadir, along the surface"
         note: 'One name for the centrosome point (as in row 11–13), and "along the surface" as in row 38–58; the distances are the same kind.'
         note_source: "Histone mark data, 2026-11-19"
+        wording_source: "worded by Histone mark data agent presentation from Histone mark data's two notes on this row"
         replace:
           - {old: "Relative level vs distance from the nadir of the centrosome-proximal region", new: "Relative level vs distance from the centrosome-proximal nadir, along the surface", where: lines}
 

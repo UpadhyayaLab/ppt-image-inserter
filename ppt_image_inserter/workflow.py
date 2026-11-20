@@ -46,6 +46,8 @@ TITLE_WIDTH = 11.0
 TITLE_HEIGHT = 1.5
 TITLE_FONT_SIZE_PT = 32
 SUBTITLE_FONT_SIZE_PT = 18
+BOTTOM_FONT_SIZE_PT = 16  # bottom_text line under the figure
+BOTTOM_GAP = 0.05         # inches between the figure and the bottom_text line
 TITLE_LINE_CHARS = 52    # characters that fit on one line of the title box at TITLE_FONT_SIZE_PT
 
 
@@ -158,6 +160,31 @@ def _add_title(slide: Slide, text: str, subtitle: str = None, fit: bool = False,
         print(f"[WARNING] Could not add title: {e}")
 
 
+def _add_bottom_text(slide: Slide, text: str, pictures, slide_w: float, slide_h: float) -> None:
+    """Add one centered line (bottom_text, e.g. an experiment's dates) just under the lowest picture, so it
+    never overlaps the figure (FF 2026-11-20: "dates need not be in title. they can be near bottom"). When the
+    space under the figure is less than one line, pictures reaching into that space are scaled down (aspect kept,
+    top and horizontal center kept) until the line fits."""
+    emu = 914400
+    height = BOTTOM_FONT_SIZE_PT / 72 * 1.5
+    limit = (slide_h - height - BOTTOM_GAP) * emu        # pictures must end above this
+    for pic in pictures:
+        if pic.top + pic.height > limit:
+            scale = (limit - pic.top) / pic.height
+            cx = pic.left + pic.width / 2
+            pic.width, pic.height = int(pic.width * scale), int(pic.height * scale)
+            pic.left = int(cx - pic.width / 2)
+    top = max((p.top + p.height for p in pictures), default=0) / emu + BOTTOM_GAP
+    box = slide.shapes.add_textbox(Inches(TITLE_LEFT), Inches(top), Inches(slide_w - 2 * TITLE_LEFT), Inches(height))
+    box.name = "Bottom text"
+    tf = box.text_frame
+    tf.word_wrap = True
+    tf.text = text
+    para = tf.paragraphs[0]
+    para.font.size = Pt(BOTTOM_FONT_SIZE_PT)
+    para.alignment = PP_ALIGN.CENTER
+
+
 def _add_text_label(
     slide: Slide,
     image_paths,
@@ -232,7 +259,7 @@ def _add_text_label(
 def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, position=None,
                              store_metadata=True, add_label=True, base_dir=None, title=None,
                              label_side='right', trim_whitespace=False, subtitle=None, title_fit=False,
-                             title_size=None):
+                             title_size=None, bottom_text=None):
     """
     Copy a slide and replace its image with a new one (single-image version).
 
@@ -254,6 +281,7 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         title_fit (bool): Shrink a long title so it stays on one line
         title_size (int, optional): Fixed title font size in pt; the title wraps to as many lines as it needs
                                     (overrides title_fit). Default: TITLE_FONT_SIZE_PT
+        bottom_text (str, optional): One line centered just under the picture (e.g. the experiment's dates)
 
     Returns:
         int: Index of the newly created slide
@@ -290,6 +318,7 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         subtitle=subtitle,
         title_fit=title_fit,
         title_size=title_size,
+        bottom_text=bottom_text,
     )
 
 
@@ -310,7 +339,7 @@ def _content_crop(img, pad_frac=0.01):
 def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, positions=None,
                                store_metadata=True, add_label=False, base_dir=None, title=None,
                                label_side='right', trim_whitespace=False, subtitle=None, title_fit=False,
-                             title_size=None):
+                             title_size=None, bottom_text=None):
     """
     Copy a slide and replace its images with new ones (supports multiple images per slide).
 
@@ -337,6 +366,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
         title_fit (bool): Shrink a long title so it stays on one line
         title_size (int, optional): Fixed title font size in pt; the title wraps to as many lines as it needs
                                     (overrides title_fit). Default: TITLE_FONT_SIZE_PT
+        bottom_text (str, optional): One line centered just under the lowest picture (e.g. the experiment's dates)
 
     Returns:
         int: Index of the newly created slide
@@ -410,7 +440,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
     # deck after the error, which wrote a half-built template copy into it (bug hunt 2026-11-19)
     try:
         _fill_new_slide(prs, new_slide, new_image_paths, positions, store_metadata, add_label,
-                        base_dir, title, label_side, trim_whitespace, subtitle, title_fit, title_size)
+                        base_dir, title, label_side, trim_whitespace, subtitle, title_fit, title_size, bottom_text)
     except Exception:
         _remove_last_slide(prs)
         raise
@@ -432,7 +462,7 @@ def _remove_last_slide(prs) -> None:
 
 def _fill_new_slide(prs, new_slide, new_image_paths, positions, store_metadata, add_label,
                     base_dir, title, label_side, trim_whitespace, subtitle, title_fit,
-                    title_size=None) -> None:
+                    title_size=None, bottom_text=None) -> None:
     """Replace the duplicated slide's pictures with the new images, then add label and title."""
     # Remove all pictures from the new slide
     num_removed = remove_pictures_from_slide(new_slide)
@@ -499,6 +529,8 @@ def _fill_new_slide(prs, new_slide, new_image_paths, positions, store_metadata, 
     if title:
         _remove_title_placeholders(new_slide)
         _add_title(new_slide, title, subtitle, fit=title_fit, size=title_size)
+    if bottom_text:
+        _add_bottom_text(new_slide, bottom_text, pictures, prs.slide_width.inches, prs.slide_height.inches)
 
 
 def replace_image_on_existing_slide(ppt_path: str, slide_index: int, new_image_path: str,

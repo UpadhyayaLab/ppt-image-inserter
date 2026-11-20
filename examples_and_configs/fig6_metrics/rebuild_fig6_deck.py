@@ -35,7 +35,7 @@ from ppt_image_inserter.approved_text import deck_strings, load_approved, unappr
 
 FIGS = "Q:/FF/Nucleus_Data/3D_Nucleus/Fixed/fig6_metrics_page/figs_20261118"
 APPROVED = HERE / "approved_text.yaml"   # every string a slide may carry, with its source
-EXPECTED_S = {"tables": 15, "deck": 11, "check": 5, "export": 35, "page": 40}
+EXPECTED_S = {"tables": 15, "deck": 11, "check": 5, "export": 35, "measure": 30, "page": 40}
 STEPS = ["tables", "deck", "export", "page"]
 PAGE_W = 1400
 
@@ -116,6 +116,25 @@ def unapproved_text(cfg):
     return unapproved(slide_strings(cfg), load_approved(APPROVED))
 
 
+def measure_titles(cfg):
+    """Every title at the deck's fixed size, measured in PowerPoint; reports any title over 2 lines, running into the
+    figure, or a bottom line that wraps or overlaps (FF 2026-11-20: "titles sould never span 3 lines"). Reported,
+    never blocking."""
+    sys.path.insert(0, str(EXAMPLES))
+    from measure_title_lines import measure
+    bad = []
+    for m in measure(cfg["output_path"]):
+        if m["slide"] == 1:
+            continue
+        if m["lines"] > 2 or m["runs_into_figure"]:
+            bad.append(f"slide {m['slide']}: title {m['lines']} lines" + (", into the figure" if m["runs_into_figure"] else ""))
+        if m.get("bottom") and (m["bottom_lines"] > 1 or m["bottom_overlaps_figure"] or m["bottom_off_slide"]):
+            bad.append(f"slide {m['slide']}: bottom line {m['bottom_lines']} lines"
+                       + (", overlaps the figure" if m["bottom_overlaps_figure"] else "")
+                       + (", off the slide" if m["bottom_off_slide"] else ""))
+    print(f"titles: {len(bad)} problems" + (": " + "; ".join(bad) if bad else f" (all at most 2 lines at {cfg['title_size']} pt)"))
+
+
 def _embed(args):
     path, quantize = args
     im = Image.open(path).convert("RGB")
@@ -186,6 +205,7 @@ def main(cfg_path, out_html, start="tables"):
             old.unlink()                             # shorter deck would leave the old 3-digit files behind
         timed("export", run, [sys.executable, str(EXAMPLES / "export_deck_slides.py"), cfg["output_path"],
                               str(slides_dir)])
+        timed("measure", measure_titles, cfg)
     timed("page", page, cfg, slides_dir, out_html)
     print(f"total {time.perf_counter() - t0:.1f} s")
 

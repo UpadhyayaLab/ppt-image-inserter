@@ -59,6 +59,7 @@ pip install -r requirements.txt
 - **Config-driven** - YAML configuration for easy batch processing
 - **Template preservation** - Use `output_path` to create a new file, leaving the original untouched
 - **Approved slide text** - Set `approved_text: <file>` in the config and the build lists every slide line not in that file (reported, never blocking) (each line carries its source). `examples_and_configs/check_approved_text.py` checks a deck or seeds the file from a finished one. See CLAUDE.md, "Approved slide text".
+- **Per-slide title, subtitle and bottom line** - In the dict form of an entry, `title:` and `subtitle:` go at the top; `bottom_text: "..."` is one centered 16 pt line just under the lowest picture, which never overlaps the figure. The build warns when there is no room under the figure. Use it, for example, for an experiment's dates, which stay out of titles.
 - **Metadata tracking** - Displays image filenames on slides and stores paths in alt text
 - **Automatic backups** - Creates timestamped backups before modifications
 - **Image pre-validation** - Checks all images exist before making any changes

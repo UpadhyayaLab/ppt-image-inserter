@@ -75,7 +75,9 @@ def page_data(spec, applied, pd, png_dir):
             continue
         res = done.get(code)
         p = (pd["decisions"].get(code) or {})
-        if res:
+        if res and res.get("rule"):   # settled by a general rule of FF's, not by a line on a slide
+            applies = []
+        elif res:
             applies = carrying(res["text"])
         elif p:
             applies = list(p["applies"])
@@ -99,14 +101,18 @@ def page_data(spec, applied, pd, png_dir):
                 errors.append(f"item {code} option {ch}: note without note_source")
             nr = o.get("not_rendered") or (f"Not rendered: needs a re-render by {o['request']}." if o.get("request") else "")
             sl = [{"n": s["n"], "img": img(s["png"]), "fact": s["fact"]} for s in (p.get("options") or {}).get(ch, [])]
+            long3 = [s["n"] for s in sl if s["fact"] and s["fact"]["lines"] >= 3]
+            if long3 and not res:   # FF 2026-11-20: "titles sould never span 3 lines"
+                warnings.append(f"item {code} option {ch}: title takes 3+ lines on slide(s) {long3}")
             if not res and not sl and not nr:
                 errors.append(f"item {code} option {ch}: no preview (run the previews builder) and no request")
             opts.append({"choice": ch, "button": o.get("button", ch), "text": o.get("text"), "label": o.get("label"),
-                         "note": o.get("note", ""), "nr": nr, "slides": sl})
+                         "note": o.get("note", ""), "source": o.get("wording_source", ""), "nr": nr, "slides": sl})
         out.append({"code": code, "title": it["title"], "about": it.get("about"), "applies": applies,
                     "now": [{"n": n, "img": by_n[n]["img"], "fact": by_n[n]["fact"]} for n in applies],
+                    "table": p.get("table") if not res else None,
                     "options": opts, "resolved": ({k: res.get(k) for k in ("text", "how", "at", "note")} if res else None)})
-        if res and not applies:
+        if res and not applies and not res.get("rule"):
             errors.append(f"item {code}: resolved text is on no deck slide: {res['text']!r}")
     data = {"heading": spec.get("heading", spec["title"]), "lead": spec.get("lead", ""),
             "all_heading": spec.get("all_heading", "All slides"), "all_lead": spec.get("all_lead", ""),

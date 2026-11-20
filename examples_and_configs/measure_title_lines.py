@@ -9,7 +9,8 @@ is opened read-only and never saved); the lowest dark pixel row of the title is 
 row of the pictures. gap_in < 0 means the title's letters reach into the figure.
 
 Usage:  python measure_title_lines.py <deck.pptx> <out.json>
-Output: [{"slide": n, "title": "...", "lines": n, "gap_in": x | null, "runs_into_figure": bool}, ...]
+Output: [{"slide": n, "title": "...", "lines": n, "gap_in": x | null, "runs_into_figure": bool}, ...]; a slide with a
+bottom_text line (shape "Bottom text") also gets bottom, bottom_lines, bottom_overlaps_figure, bottom_off_slide
 (slides without a text shape are skipped). The deck must be closed in PowerPoint.
 """
 import json
@@ -78,8 +79,18 @@ def measure(deck):
                         s.Visible = vis[id(s)]
                 if rows["title"] and rows["figure"]:
                     gap = round((rows["figure"][0] - rows["title"][1] - 1) / px_in, 3)
-            out.append({"slide": n, "title": para.Text.strip(), "lines": lines, "gap_in": gap,
-                        "runs_into_figure": bool(gap is not None and gap < 0)})
+            rec = {"slide": n, "title": para.Text.strip(), "lines": lines, "gap_in": gap,
+                   "runs_into_figure": bool(gap is not None and gap < 0)}
+            bottom = [s for s in texts if s.Name == "Bottom text"]   # workflow._add_bottom_text
+            if bottom:
+                b = bottom[0]
+                rng, k = b.TextFrame.TextRange, 0
+                while k < 50 and rng.Lines(k + 1, 1).Length > 0:
+                    k += 1
+                rec.update(bottom=rng.Text.strip(), bottom_lines=k,
+                           bottom_overlaps_figure=any(p.Top + p.Height > b.Top + 0.5 for p in pics),
+                           bottom_off_slide=b.Top + b.Height > sh + 0.5)
+            out.append(rec)
     finally:
         pres.Close()
     return out

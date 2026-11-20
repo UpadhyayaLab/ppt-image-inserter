@@ -137,7 +137,7 @@ output_path: "output/new.pptx"       # Template preservation mode (see below)
 auto_position: true                   # Default: true (auto-detect from template image)
 trim_whitespace: false               # Default: false; true crops each image's white margin so it fills its box
 title_fit: false                     # Default: false; true shrinks a long slide title so it stays on one line
-title_size: 36                       # Fixed title font size (pt); titles wrap, overrides title_fit. Use 36 for every new deck
+title_size: 32                       # Fixed title font size (pt); titles wrap, overrides title_fit. Use 32 for every new deck
 remove_template_slide: false         # Default: false; true deletes the template slide(s) after the slides are built (needs output_path)
 approved_text: "approved_text.yaml"  # Every slide line should be in this file (path relative to the config); lines that are not are listed
 # Per entry (dict form): subtitle: "..." adds a smaller line under that slide's title
@@ -173,9 +173,9 @@ OUTPUT_PATH = PPT_PATH.replace("_template.pptx", ".pptx")
 ## Clean slide text: every deck, no exceptions
 
 (FF 2026-11-19: "you need clean formatting. period. no exceptions. no walls of text. no exceptions")
-- Slide text is short labels, never sentences. Titles use a fixed font size, 36 pt (`title_size: 36`), and may wrap;
+- Slide text is short labels, never sentences. Titles use a fixed font size, 32 pt (`title_size: 32`), and may wrap;
   never shrink a title to one line (FF 2026-11-19: "titles should not be 1 line, we need titles of a fixed font size:
-  like 36"; "we should not have super long titles"). No line limit per text box (FF 2026-11-19: "drop
+  like 36"; "we should not have super long titles"; then "make 32." and "change CLAUDE.md to 32"). No line limit per text box (FF 2026-11-19: "drop
   it everytwhere") and no character limit (FF 2026-11-19: "there should not be any character limit"). A contents or
   key row is one short phrase.
 - No middle dot (·), no formula notation in text ("Relative = ÷ ..."), no internal names (README, panel letters,

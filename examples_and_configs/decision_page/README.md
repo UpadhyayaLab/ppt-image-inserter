@@ -63,6 +63,7 @@ items:
         text: "..."              # exact string, quoted   (or label: "..." unquoted)
         note: "..."              # needs note_source
         note_source: "..."
+        wording_source: "..."    # shown as "Source: ..."; set it when the text is not copied from the data owner's reply
         replace: [{old: "...", new: "...", where: titles}]   # previewed and applied automatically
         request: "Histone mark data"                         # or: needs a re-render by this owner
         not_rendered: "..."                                  # optional wording for a request
@@ -93,8 +94,9 @@ items:
   approved-text check.
 - Test (`test_decision_page.py`, db replaced by a stand-in preloaded from the export): every item with a saved answer
   shows as Resolved; a pick, change and reload on the first open decision (it moves to Resolved with the change
-  text, and reopens); a slide edit saved, reloaded and removed; the page opens on All slides. Screenshots at 1400 and
-  400 px, one tall shot per decision (`review/item_<code>.png`) and per 3 deck slides (`review/all_<n>.png`).
+  text, and reopens); a slide edit saved, reloaded and removed; the page opens on All slides. Screenshots of the three
+  views at 1400 and 400 px, taken in parallel, and the page's whole text in `page_text.txt`.
 
-Look at the shots and have a reviewer who has not seen your reasoning check them before publishing.
+Before publishing, have a reviewer who has not seen your reasoning check the shots, `page_text.txt` and the slide PNGs
+beside `page_data.json` (deck_NN.png, opt_<code>_<choice>_NN.png) against the deck sources.
 Not `publish-figures/gallery.py`: it has no answer controls.

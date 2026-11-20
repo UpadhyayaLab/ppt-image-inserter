@@ -133,7 +133,7 @@ output_path: "output/new.pptx"       # Template preservation mode (see below)
 auto_position: true                   # Default: true (auto-detect from template image)
 trim_whitespace: false               # Default: false; true crops each image's white margin so it fills its box
 title_fit: false                     # Default: false; true shrinks a long slide title so it stays on one line
-title_size: 36                       # Fixed title font size (pt); titles wrap, overrides title_fit. Use 36 for every new deck
+title_size: 32                       # Fixed title font size (pt); titles wrap, overrides title_fit. Use 32 for every new deck
 remove_template_slide: false         # Default: false; true deletes the template slide(s) after the slides are built (needs output_path)
 # Per entry (dict form): subtitle: "..." adds a smaller line under that slide's title
 

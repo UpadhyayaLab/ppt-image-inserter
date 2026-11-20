@@ -3,8 +3,8 @@ from the db export (spec `db_export`), in headless Edge:
 1. resolution: every item with a saved answer (applied list, or a pick or change in the export) shows as Resolved;
 2. save test: on the first open decision, pick, change and reload (the item moves to Resolved with the change text),
    reopen; on deck slide 2, save a slide edit, reload, remove it; the page opens on All slides;
-3. screenshots at desktop (1400 px) and phone (400 px) width, one tall shot per open decision
-   (review/item_<code>.png) and one per 3 deck slides (review/all_<n>.png).
+3. screenshots of the three views at desktop (1400 px) and phone (400 px) width, taken in parallel, and the page's
+   whole text in page_text.txt (the slide images themselves are the PNGs beside page_data.json).
 Fails (non-zero exit) on any lost save or wrong state; prints the time per step.
 
 Usage: python test_decision_page.py <spec.yaml> <test dir>   (also run by build_decision_page.py --test-dir)
@@ -15,6 +15,7 @@ import re
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import yaml
@@ -54,6 +55,10 @@ STUB = r"""
       ' | card ' + (card(c).hidden ? 'hidden' : 'shown') + ' | in ' + item(c).parentNode.id + ' | line ' +
       (item(c).querySelector('.resline').hidden ? 'hidden' : item(c).querySelector('.resline').textContent.replace(/\s+/g, ' ').trim());
     const deck2 = () => q('.dslide[id="s-2"]');
+    if (ACT === 'text') {   // every heading, paragraph, decision and deck row, hidden or not
+      const blocks = [...document.querySelectorAll('h1,h2,h3,p,li,.item,.dslide,#count')].filter(x => x !== out &&
+        !(x.parentNode.closest && x.parentNode.closest('.item,.dslide')));
+      out.textContent = 'LOG\n' + blocks.map(x => x.textContent.replace(/\s+/g, ' ').trim()).join('\n') + '\nEND'; return; }
     if (ACT === 'resolution') { out.textContent = 'LOG\n' + errs() + '\nresolved: ' + document.body.dataset.resolved + '\nEND'; return; }
     if (ACT && ACT.view) { window.jumpTo(ACT.view); return; }
     if (ACT && ACT.cycle && !phase) {
@@ -121,7 +126,7 @@ def run(spec_path, test_dir):
     pre = {c: {f.stem: json.loads(f.read_text(encoding="utf-8")) for f in (exp / c).glob("*.json")}
            for c in (spec.get("collection", "decisions"), spec.get("slide_collection", "slides"))}
     test_dir = Path(test_dir)
-    (test_dir / "review").mkdir(parents=True, exist_ok=True)
+    test_dir.mkdir(parents=True, exist_ok=True)
 
     def page(name, act):
         p = test_dir / f"{name}.html"
@@ -157,23 +162,15 @@ def run(spec_path, test_dir):
         raise SystemExit(f"save test FAILED: no match for {bad}")
     print(f"save test: PASS ({time.perf_counter() - t:.0f} s)")
     t = time.perf_counter()
-    shots = []
+    (test_dir / "page_text.txt").write_text(logged(page("test_text", "text")), encoding="utf-8")
+    jobs = []
     for name, act in (("all", None), ("decisions", {"view": "view-dec"}), ("resolved", {"view": "res-h"})):
         p = page(f"test_{name}", act)
-        shots += [shoot(p, test_dir / f"test_{name}_desktop.png", 1400, 1000),
-                  shoot(p, test_dir / f"test_{name}_phone.png", 400, 860)]
-    for old in (test_dir / "review").glob("*"):
-        old.unlink()
-    for it in items:
-        safe = re.sub(r"[^\w-]", "x", it["code"])
-        shots.append(shoot(page(f"review/item_{safe}", {"view": "d-" + it["code"]}),
-                           test_dir / "review" / f"item_{safe}.png", 1400, 2600))
-    for k in range(0, len(data["deck"]), 3):
-        n = data["deck"][k]["n"]
-        shots.append(shoot(page(f"review/all_{n:02d}", {"view": f"s-{n}"}), test_dir / "review" / f"all_{n:02d}.png",
-                           1400, 2600))
-    print(f"screenshots: {len(shots)} in {test_dir} ({time.perf_counter() - t:.0f} s); total {time.perf_counter() - t0:.0f} s")
-
+        jobs += [(p, test_dir / f"test_{name}_desktop.png", 1400, 1000), (p, test_dir / f"test_{name}_phone.png", 400, 860)]
+    with ThreadPoolExecutor(min(len(jobs), 6)) as ex:
+        shots = list(ex.map(lambda a: shoot(*a), jobs))
+    print(f"screenshots: {len(shots)} and page_text.txt in {test_dir} ({time.perf_counter() - t:.0f} s); "
+          f"total {time.perf_counter() - t0:.0f} s")
 
 if __name__ == "__main__":
     run(sys.argv[1], sys.argv[2])

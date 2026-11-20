@@ -7,6 +7,7 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1b19;--fg:#ecebe6;--muted:#a3a29c;--card:#252422;--line:#3a3935;--accent:#7fb0f5;--accent-fg:#10161f;--ok:#7fd39b;--okbg:#1d3326;--okline:#4fbf77;--chg:#f0c172;--chgbg:#3a2d15;--chgline:#d9a03a;--err:#f2867e;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#1b1b19;--fg:#ecebe6;--muted:#a3a29c;--card:#252422;--line:#3a3935;--accent:#7fb0f5;--accent-fg:#10161f;--ok:#7fd39b;--okbg:#1d3326;--okline:#4fbf77;--chg:#f0c172;--chgbg:#3a2d15;--chgline:#d9a03a;--err:#f2867e;color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
@@ -122,7 +123,7 @@ function card(it) {
   if (!it.options) return `<div class="info" data-item="${E(it.code)}"><h2>${E(it.title)}</h2>${about(it.about)}</div>`;
   const opts = it.options.map(o => `<div class="opt"><button type="button" class="ans" data-dec="${E(it.code)}" data-choice="${E(o.choice)}" aria-pressed="false">
       <b>${E(o.button)}</b>${o.text != null ? `<span class="t"><q>${E(o.text)}</q></span>` : o.label ? `<span class="t">${E(o.label)}</span>` : ''}
-      ${o.note ? `<span class="n">${E(o.note)}</span>` : ''}</button>
+      ${o.note ? `<span class="n">${E(o.note)}</span>` : ''}${o.source ? `<span class="n">Source: ${E(o.source)}</span>` : ''}</button>
       ${o.text != null ? `<button type="button" class="small edit" data-dec="${E(it.code)}" data-text="${E(o.text)}">Edit this text</button>` : ''}</div>`).join('');
   const cols = (it.now.length ? `<div class="col" data-choice="keep"><div class="colhead">Now</div>
       ${it.now.map(s => fig(s.img, 'Slide ' + s.n + ' now', s.fact)).join('')}</div>` : '') +
