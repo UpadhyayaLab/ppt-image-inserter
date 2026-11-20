@@ -48,6 +48,14 @@ images:
     title: "Relative level near nadir, mean ± SEM: H3K27ac"
   - path: K:/FF/PPT/PPT_autogeneration/Fig6_metrics_across_experiments/table_png/table_6_rnap2.png
     title: "Relative level near nadir, mean ± SEM: RNAP II"
+  # Near-centrosome violins (paper Fig 6Ccent), inserted before the whole-nucleus ones; titles from FF's decision
+  # page answers (11a pick, 2026-11-19)
+  - path: Ccent_cilio_jun_0.png
+    title: "Relative level near the centrosome-proximal nadir: Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, N2 Jun 13, 2026)"
+  - path: Ccent_cilio_oct_0.png
+    title: "Relative level near the centrosome-proximal nadir: Jurkat H3K27me3, ciliobrevin (Oct 29, 2026)"
+  - path: Ccent_noco_oct_0.png
+    title: "Relative level near the centrosome-proximal nadir: Jurkat H3K27me3, nocodazole (Oct 29, 2026)"
   - path: C_j_k27me3_0.png
     title: "Relative level near nadir: Jurkat H3K27me3 (N1 Aug 3, N2 Sep 11, 2023)"
   - path: C_cilio_jun_0.png
@@ -90,6 +98,14 @@ images:
     title: "Relative level near nadir: Naive CTL H3K27ac (Jul 29, 2024)"
   - path: C_rnp_naive_0.png
     title: "Relative level near nadir: Naive CTL RNAP II (Nov 17, 2025)"
+  # Near-centrosome distance profiles (paper Fig 6Dcent), inserted before the whole-nucleus ones; titles from FF's decision
+  # page answers (pick 2A, 2026-11-19)
+  - path: Dcent_cilio_jun_0.png
+    title: "Relative level vs distance from the nadir of the centrosome-proximal region: Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, N2 Jun 13, 2026)"
+  - path: Dcent_cilio_oct_0.png
+    title: "Relative level vs distance from the nadir of the centrosome-proximal region: Jurkat H3K27me3, ciliobrevin (Oct 29, 2026)"
+  - path: Dcent_noco_oct_0.png
+    title: "Relative level vs distance from the nadir of the centrosome-proximal region: Jurkat H3K27me3, nocodazole (Oct 29, 2026)"
   - path: D_j_k27me3_0.png
     title: "Relative level vs distance from nadir: Jurkat H3K27me3 (N1 Aug 3, N2 Sep 11, 2023)"
   - path: D_cilio_jun_0.png

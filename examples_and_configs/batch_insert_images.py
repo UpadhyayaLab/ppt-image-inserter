@@ -596,14 +596,14 @@ def main(config_path):
         delete_slides(ppt_file, template_slides, backup_base=backup_dir, backup=False)
         print(f"Removed template slide(s): {template_slides}")
 
-    # Clean slide text, every deck (FF 2026-11-19: "no walls of text. no exceptions"): a problem fails the build
+    # Clean slide text, every deck (FF 2026-11-19: "no walls of text. no exceptions"). Text checks are reported and
+    # never fail the build (FF 2026-11-19: "if I tell you to build it - you build it. period")
     text_problems = lint_presentation(Presentation(ppt_file))
     for problem in text_problems:
         print(f"[TEXT] {problem}")
-    error_count += len(text_problems)
 
     # Approved wording only (FF 2026-11-19: "we need to prevent these mistakes...period"): with `approved_text:`
-    # set, every slide line must be in that file, and a line that is not fails the build
+    # set, every slide line not in that file is listed (reported, not a build failure)
     approved_file = config.get('approved_text')
     if approved_file:
         approved_path = Path(approved_file)
@@ -613,7 +613,6 @@ def main(config_path):
         for problem in text_problems:
             print(f"[TEXT] {problem}")
         print(f"Approved-text check ({approved_path.name}): {len(text_problems)} line(s) not approved")
-        error_count += len(text_problems)
     else:
         print("[NOTE] no approved_text in the config: slide wording not checked against approved text")
 

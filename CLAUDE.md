@@ -139,7 +139,7 @@ trim_whitespace: false               # Default: false; true crops each image's w
 title_fit: false                     # Default: false; true shrinks a long slide title so it stays on one line
 title_size: 36                       # Fixed title font size (pt); titles wrap, overrides title_fit. Use 36 for every new deck
 remove_template_slide: false         # Default: false; true deletes the template slide(s) after the slides are built (needs output_path)
-approved_text: "approved_text.yaml"  # Every slide line must be in this file (path relative to the config); the build fails otherwise
+approved_text: "approved_text.yaml"  # Every slide line should be in this file (path relative to the config); lines that are not are listed
 # Per entry (dict form): subtitle: "..." adds a smaller line under that slide's title
 
 # Manual position override (only used if auto_position is false)
@@ -180,21 +180,25 @@ OUTPUT_PATH = PPT_PATH.replace("_template.pptx", ".pptx")
   key row is one short phrase.
 - No middle dot (·), no formula notation in text ("Relative = ÷ ..."), no internal names (README, panel letters,
   file or compile names, voxels).
-- `ppt_image_inserter.lint_presentation(prs)` checks this. `batch_insert_images.py` runs it on every build and fails
-  the build on any problem. Every other builder must call it before reporting a deck as done. Text drawn into images
+- `ppt_image_inserter.lint_presentation(prs)` checks this. `batch_insert_images.py` runs it on every build and lists
+  every problem. Every other builder must call it and report its problems to FF with the deck. Text drawn into images
   (rendered tables, keys) is checked by that builder against the same limits.
 - Before building a slide that carries text you wrote (a title page, contents, a key), show FF the exact text in chat
   first.
 
 ## Approved slide text: the drill for every new deck
 
+**Text checks report, they never stop a build** (FF 2026-11-19: "if I tell you to build it - you build it. period").
+Every builder saves the deck under its normal name and lists the clean-text problems and unapproved lines; tell FF
+how many there are when you hand over the deck.
+
 (FF 2026-11-19: "we need to prevent these mistakes...period", after agent-written wording reached slides unchecked,
 again and again.) A slide carries only text that someone with the authority approved. An agent never puts its own
 wording on a slide.
 - Each deck's config sets `approved_text: <file>`. The file lists every line a slide may show (`exact`, or titles as
   `title_prefixes` + `title_labels`), each with its `source`: FF's approval (date and his words), a code-checked
-  definitions entry from the data owner, or "settled before <date>, not re-checked". `batch_insert_images.py` fails
-  the build on any slide line not in the file, and on any entry without a source. Other builders call
+  definitions entry from the data owner, or "settled before <date>, not re-checked". `batch_insert_images.py` lists
+  every slide line not in the file. Other builders call
   `unapproved(deck_strings(prs), load_approved(path))` (ppt_image_inserter.approved_text) before reporting done, and
   check text they draw into images the same way (e.g. fig6_metrics/rebuild_fig6_deck.py).
 - New wording: show FF the exact text with its source. It goes in the file only after his OK. A quantity's wording

@@ -79,20 +79,29 @@ def seed_approved(strings: Iterable[Tuple[str, str]], path, source: str) -> int:
     added. For text already settled on a finished deck, so it is not re-verified."""
     if not source.strip():
         raise ValueError("a source is required")
+    return add_approved(path, [("exact", text, source) for _, text in strings])
+
+
+def add_approved(path, rows) -> int:
+    """Add the (key, text, source) rows the file lacks (key: exact | title_prefixes | title_labels); keep existing
+    entries and the header comments. Returns the count added."""
     path = Path(path)
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else {}
-    data = data or {}
-    ok = {k: {r["text"] for r in data.get(k) or []} for k in KEYS}
-    added = []
-    for _, text in strings:
-        if not is_approved(text, ok) and text not in added:
-            added.append(text)
-    data.setdefault("exact", []).extend({"text": t, "source": source} for t in added)
+    data = (yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else {}) or {}
+    have = {k: {r["text"] for r in data.get(k) or []} for k in KEYS}
+    added = 0
+    for key, text, source in rows:
+        if key not in KEYS or not str(source).strip():
+            raise ValueError(f"bad row {(key, text, source)!r}: key must be one of {KEYS} and source is required")
+        if text in have[key] or (key == "exact" and is_approved(text, have)):
+            continue
+        data.setdefault(key, []).append({"text": text, "source": source})
+        have[key].add(text)
+        added += 1
     body = yaml.safe_dump({k: data[k] for k in KEYS if data.get(k)}, allow_unicode=True, sort_keys=False, width=200)
     old = path.read_text(encoding="utf-8") if path.exists() else ""
     head = "".join(ln + "\n" for ln in old.splitlines() if ln.startswith("#")) or HEADER
     path.write_text(head + body, encoding="utf-8")
-    return len(added)
+    return added
 
 
 def _main(argv):

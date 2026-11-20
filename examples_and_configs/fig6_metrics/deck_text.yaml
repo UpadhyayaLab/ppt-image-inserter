@@ -1,0 +1,43 @@
+# Every line of text drawn into the Fig 6 deck's rendered images (contents slide, table slides), in one place, so an
+# answer on the decision page is a plain line replacement here (decision_page/text_map.py). Slide titles and
+# subtitles live in the deck config. Every line must also be in approved_text.yaml (the deck check fails otherwise).
+# Read by render_fig6_table_slides.py; changed by decision_page/apply_answers.py.
+
+contents:
+  # One row per group of slides, in deck order. The slide range is computed from the deck config: the slides whose
+  # title starts with `titles` (FF 2026-11-19: "keep labels concise, period"; "do not mention voxels").
+  rows:
+    - text: "Nadir: surface point farthest from the hull boundary"
+      titles: "The regions measured"
+    - text: "Summary tables"
+      titles: "Relative level near nadir, mean ± SEM"
+    - text: "Relative level near the centrosome-proximal nadir"
+      titles: "Relative level near the centrosome-proximal nadir"
+    - text: "Relative level near nadir (full nucleus; no centrosome consideration)"
+      titles: "Relative level near nadir"
+    - text: "Relative level vs distance from the nadir of the centrosome-proximal region"
+      titles: "Relative level vs distance from the nadir of the centrosome-proximal region"
+    - text: "Relative level vs distance from nadir (full nucleus; no centrosome consideration), along the surface"
+      titles: "Relative level vs distance from nadir"
+    - text: "Relative level vs depth below convex hull, ÷ its 0–0.25 μm bin"
+      titles: "Relative level vs depth below convex hull"
+  # Rows and notes from FF's saved slide 2 text on the decision page (db slides/contents_base, 2026-11-20T00:24Z).
+  notes:
+    - "Level: mean in the 0.25 μm layer inside the nuclear surface ÷ mean in that layer over the whole nucleus"
+    - "Near nadir (whole nucleus): surface connected to the nadir and deeper than half its depth, within 25% of the mean surface distance from it"
+    - "Near the centrosome-proximal nadir: surface within 25% of the mean surface distance from it"
+
+table:
+  # Column headers (fig6_definitions.yaml terms, approved by FF 2026-11-19)
+  group_whole: "Whole nucleus"
+  group_cent: "Near centrosome"
+  group_level: "Relative level near nadir"
+  # Key lines (fig6_definitions.yaml: relative_level_near_nadir_C, near_centrosome_value, table_statistics)
+  key_main: "Mean in the 0.25 μm layer near the nadir ÷ the same layer, whole nucleus (1 = no enrichment); mean ± SEM over cells"
+  key_below: "below 1"
+  key_above: "above 1"
+  key_stats: "* <0.05, ** <0.01, *** <0.001 vs 1 (signed-rank, BH-adjusted); gray = n.s."
+  key_na: "n/a = too few cells to test"
+  # FF's decision 6 change (2026-11-20T00:06Z) with "; no test; blank = not analyzed" kept until he says otherwise
+  # (Histone mark data agent presentation, 2026-11-19)
+  key_cent: "Near centrosome: region around the deepest point of the centrosome-proximal patch; no test; blank = not analyzed"

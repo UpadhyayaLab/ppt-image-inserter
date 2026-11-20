@@ -1,0 +1,280 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Decision page (decision_page/README.md). Everything below is drawn from the JSON in #data by the script. */
+:root{--bg:#f6f6f3;--fg:#1d1d1b;--muted:#62625d;--card:#fff;--line:#d9d8d0;--accent:#1f5fbf;--accent-fg:#fff;
+--ok:#1b7a3d;--okbg:#e6f4ea;--okline:#2e9e55;--chg:#9a5a00;--chgbg:#fdf1dc;--chgline:#d9921f;--err:#b3261e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1b19;--fg:#ecebe6;--muted:#a3a29c;--card:#252422;--line:#3a3935;--accent:#7fb0f5;--accent-fg:#10161f;--ok:#7fd39b;--okbg:#1d3326;--okline:#4fbf77;--chg:#f0c172;--chgbg:#3a2d15;--chgline:#d9a03a;--err:#f2867e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1b1b19;--fg:#ecebe6;--muted:#a3a29c;--card:#252422;--line:#3a3935;--accent:#7fb0f5;--accent-fg:#10161f;--ok:#7fd39b;--okbg:#1d3326;--okline:#4fbf77;--chg:#f0c172;--chgbg:#3a2d15;--chgline:#d9a03a;--err:#f2867e;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.topin{max-width:1200px;margin:0 auto;padding-block:8px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.tab{font:700 15px inherit;font-family:inherit;padding:6px 16px;border-radius:8px;border:2px solid var(--accent);background:var(--card);color:var(--accent);cursor:pointer}
+.tab.on{background:var(--accent);color:var(--accent-fg)}
+.count{font-weight:700;font-variant-numeric:tabular-nums}
+.status{font-size:13px;color:var(--muted)}.status.ok{color:var(--ok)}.status.err{color:var(--err)}
+main{max-width:1200px;margin:0 auto;padding-block:18px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:22px;margin:0 0 6px;text-wrap:balance}
+.lead{color:var(--muted);margin:0 0 20px;max-width:80ch}
+h2.res{font-size:20px;margin:36px 0 12px;padding-top:14px;border-top:2px solid var(--line)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px;margin:0 0 18px;scroll-margin-top:80px}
+.card.pick{border-color:var(--okline)}.card.change{border-color:var(--chgline)}
+.chead{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;justify-content:space-between}
+.chead h2{font-size:18px;margin:0;flex:1 1 300px;min-width:0;text-wrap:balance}
+.code{color:var(--muted);font-weight:700;margin-right:6px}
+.state{font-size:14px;font-weight:700;padding:3px 12px;border-radius:999px;background:var(--line);color:var(--muted);white-space:nowrap}
+.card.pick .state{background:var(--okbg);color:var(--ok)}.card.change .state{background:var(--chgbg);color:var(--chg)}
+.applies{font-size:13.5px;font-weight:600;margin:6px 0}
+.applies a,.resline a{color:var(--accent)}
+.about{margin:6px 0 10px;max-width:90ch}.about li{margin:2px 0}
+.answers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:10px;margin-top:10px}
+.opt{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ans{flex:1;display:flex;flex-direction:column;gap:6px;text-align:left;font:inherit;color:var(--fg);background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:12px 14px;cursor:pointer}
+.ans:hover{background:var(--okbg)}
+.ans b{font-size:17px;color:var(--accent)}
+.ans .t{font-size:14px;line-height:1.4}.ans .n{font-size:12.5px;color:var(--muted)}
+.ans.on{background:var(--okline);border-color:var(--okline);color:#fff}.ans.on b,.ans.on .n{color:#fff}
+.ans.on b::before{content:"✓ "}
+.answers.has .ans:not(.on){opacity:.5}
+.small{align-self:flex-start;font:600 13px system-ui,-apple-system,"Segoe UI",sans-serif;padding:4px 12px;border-radius:8px;border:1px solid var(--chgline);background:var(--card);color:var(--chg);cursor:pointer}
+.small:hover{background:var(--chgbg)}
+.big{font:600 14px system-ui,-apple-system,"Segoe UI",sans-serif;padding:6px 16px;border-radius:8px;border:2px solid var(--chgline);background:var(--card);color:var(--chg);cursor:pointer}
+.big:hover{background:var(--chgbg)}
+button:focus-visible,a:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+q{quotes:"\201C" "\201D"}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr));gap:14px;margin-top:12px;align-items:start}
+.col{border:1px solid var(--line);border-radius:10px;padding:10px;min-width:0}.col.on{border:2px solid var(--okline);padding:9px}
+.colhead{font-weight:700;margin-bottom:4px}
+.nr{font-weight:600;color:var(--chg);margin:4px 0}
+figure{margin:6px 0 10px}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff;cursor:zoom-in}
+figcaption{font-size:12.5px;color:var(--muted);margin-top:3px}
+.fact{font-size:13px;font-weight:600;color:var(--ok);margin:2px 0 0}.fact.warn{color:var(--err)}
+.chg{display:grid;gap:6px;margin-top:12px}.chg label{font-size:13px;font-weight:600}
+.scope{font-size:13px;margin:0}
+textarea{width:100%;font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;resize:vertical}
+.resline{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;margin:0 0 12px;padding:10px 12px;border:2px solid var(--okline);background:var(--okbg);border-radius:10px;scroll-margin-top:80px}
+.resbtn{font:inherit;text-align:left;background:none;border:0;padding:0;color:var(--fg);cursor:pointer;flex:1 1 320px;min-width:0}
+.resbtn .rt{font-weight:700;color:var(--ok)}.resbtn .rh{font-size:13px;color:var(--muted)}.resbtn .rx{font-size:13px;font-weight:600;color:var(--accent);text-decoration:underline;white-space:nowrap}
+.resnote{flex-basis:100%;font-size:13px;font-weight:600;color:var(--chg);margin:0}
+.deck{display:grid;gap:22px}
+.dslide{margin:0;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;scroll-margin-top:80px;max-width:1100px}
+.dslide.changed{border:2px solid var(--chgline);padding:11px}
+.dslide.changed img{border:3px solid var(--chgline)}
+.dslide h3{font-size:17px;margin:0 0 6px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+.slstate{font-size:13px;font-weight:700;color:var(--chg)}
+.dslide textarea{background:var(--card);white-space:pre-wrap;overflow:hidden;resize:none;margin-top:8px}
+.dslide.changed textarea{border-color:var(--chgline);background:var(--chgbg)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.unl{font-size:12.5px;color:var(--muted);margin:2px 0 0}
+.info{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin:0 0 18px}
+.info h2{font-size:16px;margin:0 0 4px}
+.lightbox{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+.lightbox img{max-width:100%;max-height:100%;background:#fff}
+@media (max-width:640px){.tab{font-size:14px;padding:5px 10px}.dslide{padding:8px}.card{padding:10px}}
+</style>
+<div class="top"><div class="topin">
+  <button type="button" class="tab" data-view="all"></button>
+  <button type="button" class="tab" data-view="dec"></button>
+  <span class="count" id="count"></span>
+  <span class="status" id="status" role="status" aria-live="polite"></span>
+</div></div>
+<main>
+  <div id="view-all" data-viewname="all"><h1 id="all-h"></h1><p class="lead" id="all-lead"></p><div class="deck" id="deck"></div></div>
+  <div id="view-dec" data-viewname="dec" hidden><h1 id="dec-h"></h1><p class="lead" id="dec-lead"></p>
+    <div id="open"></div><h2 class="res" id="res-h" hidden>Resolved</h2><div id="resolved"></div></div>
+</main>
+<div class="lightbox" id="lightbox" hidden><img alt=""></div>
+<script type="application/json" id="data">__DATA__</script>
+__TEST__
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const E = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const dec = {}, sl = {}, reopened = new Set(), writing = {};
+let db = null, dbFailed = false;
+const ITEMS = D.items.filter(it => it.options), BYCODE = Object.fromEntries(D.items.map(it => [it.code, it]));
+const range = ns => { const out = []; let a = null, b = null;
+  for (const n of [...ns].sort((x, y) => x - y)) { if (b !== null && n === b + 1) { b = n; continue; } if (a !== null) out.push(a === b ? a : a + '–' + b); a = b = n; }
+  if (a !== null) out.push(a === b ? a : a + '–' + b); return out.join(', '); };
+const slideLinks = ns => ns.map(n => `<a href="#s-${n}">Slide ${n}</a>`).join(' ');
+const fig = (img, cap, fact) => `<figure><img data-img="${img}" alt="${E(cap)}">` + (cap ? `<figcaption>${E(cap)}</figcaption>` : '') +
+  (fact ? `<p class="fact${fact.warn ? ' warn' : ''}">${E(fact.text)}</p>` : '') + '</figure>';
+const DECK = Object.fromEntries(D.deck.map(s => [s.n, s]));
+
+// ---- All slides view: every deck slide, its text open in a box to edit and save
+$('#all-h').textContent = D.all_heading; $('#all-lead').textContent = D.all_lead;
+$('#deck').innerHTML = D.deck.map(s => `<figure class="dslide" id="s-${s.n}" data-slide="${E(s.id)}">
+  <h3>Slide ${s.n}<span class="slstate"></span></h3>${fig(s.img, '', s.fact).replace(/^<figure>|<\/figure>$/g, '')}
+  ${s.unlisted ? `<p class="unl">${E(s.unlisted)}</p>` : ''}
+  <textarea aria-label="Text of slide ${s.n}" rows="2"></textarea><p class="scope">${E(D.scope)}</p>
+  <div class="btns"><button type="button" class="big slsave">Save slide change</button>
+  <button type="button" class="small slreset">Back to the slide's text</button>
+  <button type="button" class="small slclear" hidden>Remove saved change</button></div></figure>`).join('');
+
+// ---- Decisions view: one card per decision (open first, resolved after), info items as plain notes
+$('#dec-h').textContent = D.heading; $('#dec-lead').textContent = D.lead;
+const about = a => !a ? '' : Array.isArray(a) ? `<ul class="about">${a.map(x => `<li>${E(x)}</li>`).join('')}</ul>` : `<p class="about">${E(a)}</p>`;
+function card(it) {
+  if (!it.options) return `<div class="info" data-item="${E(it.code)}"><h2>${E(it.title)}</h2>${about(it.about)}</div>`;
+  const opts = it.options.map(o => `<div class="opt"><button type="button" class="ans" data-dec="${E(it.code)}" data-choice="${E(o.choice)}" aria-pressed="false">
+      <b>${E(o.button)}</b>${o.text != null ? `<span class="t"><q>${E(o.text)}</q></span>` : o.label ? `<span class="t">${E(o.label)}</span>` : ''}
+      ${o.note ? `<span class="n">${E(o.note)}</span>` : ''}</button>
+      ${o.text != null ? `<button type="button" class="small edit" data-dec="${E(it.code)}" data-text="${E(o.text)}">Edit this text</button>` : ''}</div>`).join('');
+  const cols = (it.now.length ? `<div class="col" data-choice="keep"><div class="colhead">Now</div>
+      ${it.now.map(s => fig(s.img, 'Slide ' + s.n + ' now', s.fact)).join('')}</div>` : '') +
+    it.options.filter(o => o.slides.length || o.nr).map(o => `<div class="col" data-choice="${E(o.choice)}">
+      <div class="colhead">${E(o.button)}</div>${o.nr ? `<p class="nr">${E(o.nr)}</p>` : ''}
+      ${o.slides.map(s => fig(s.img, 'Slide ' + s.n + ' with ' + o.button, s.fact)).join('')}</div>`).join('');
+  return `<div class="item" data-item="${E(it.code)}"><div class="resline" hidden><button type="button" class="resbtn" data-res="${E(it.code)}">
+      <span class="rt">Resolved:</span> <q class="rf"></q> <span class="rh"></span> <span class="rx"></span></button>
+      ${it.applies.length ? `<span>${slideLinks(it.applies)}</span>` : ''}${it.resolved && it.resolved.note ? `<p class="resnote">${E(it.resolved.note)}</p>` : ''}</div>
+    <div class="card" id="d-${E(it.code)}"><div class="chead"><h2><span class="code">${E(it.code)}</span>${E(it.title)}</h2><span class="state"></span></div>
+    ${it.applies.length ? `<p class="applies">Applies to slides ${range(it.applies)}: ${slideLinks(it.applies)}</p>` : ''}${about(it.about)}
+    <div class="answers" role="group">${opts}</div>${cols ? `<div class="cols">${cols}</div>` : ''}
+    <div class="chg"><label for="note-${E(it.code)}">Change: write what it should say</label><textarea id="note-${E(it.code)}" data-note="${E(it.code)}" rows="2"></textarea>
+    <p class="scope">${E(D.scope)}</p><button type="button" class="big savechg" data-dec="${E(it.code)}" style="justify-self:start">Save change</button></div></div></div>`;
+}
+D.items.forEach((it, k) => { it.order = k; });
+$('#open').innerHTML = D.items.map(card).join('');
+$$('img[data-img]').forEach(im => { im.src = D.images[im.dataset.img]; });
+$$('.tab').forEach(t => { t.textContent = t.dataset.view === 'all' ? `All slides (${D.deck.length})` : `Decisions (${ITEMS.length})`; });
+
+// ---- state -> page
+const stOf = d => (d && (d.status || (d.choice ? 'pick' : ''))) || '';
+const optOf = (it, ch) => it.options.find(o => o.choice === ch);
+function resolution(it) {   // the latest of: an answer applied to the deck (spec), a pick or a change saved on the page
+  const c = [], d = dec[it.code] || {}, st = stOf(d);
+  if (it.resolved) c.push([it.resolved.at || '', it.resolved.text, it.resolved.how]);
+  if (st === 'pick' && optOf(it, d.choice)) { const o = optOf(it, d.choice); c.push([d.updatedAt || '', o.text != null ? o.text : (o.label || o.button), 'your pick']); }
+  if (st === 'change') c.push([d.updatedAt || '', d.note || '', 'your change']);
+  return c.length ? c.reduce((a, b) => (b[0] >= a[0] ? b : a)) : null;
+}
+const slChanged = id => !!(sl[id] && sl[id].status === 'change');
+const before = s => s.lines.join('\n');
+const fit = t => { if (!t.offsetParent) return; t.style.height = 'auto'; t.style.height = (t.scrollHeight + 4) + 'px'; };
+function render() {
+  const resolved = [];
+  ITEMS.forEach(it => {
+    const r = resolution(it), d = dec[it.code] || {}, st = stOf(d), w = document.querySelector(`.item[data-item="${CSS.escape(it.code)}"]`);
+    const c = w.querySelector('.card'), line = w.querySelector('.resline');
+    if (r) resolved.push(it.code);
+    line.hidden = !r;
+    c.hidden = !!r && !reopened.has(it.code);
+    if (r) { line.querySelector('.rf').textContent = r[1]; line.querySelector('.rh').textContent = '(' + r[2] + ')';
+      line.querySelector('.rx').textContent = reopened.has(it.code) ? 'Close' : 'Open'; }
+    const on = st === 'pick' ? d.choice : null;
+    w.querySelectorAll('.ans').forEach(b => { b.classList.toggle('on', b.dataset.choice === on); b.setAttribute('aria-pressed', b.dataset.choice === on); });
+    w.querySelectorAll('.col').forEach(x => x.classList.toggle('on', x.dataset.choice === on));
+    w.querySelector('.answers').classList.toggle('has', !!on);
+    const green = st === 'pick' || (!st && r), amber = st === 'change' && r && r[2] === 'your change';
+    c.classList.toggle('pick', !!green && !amber); c.classList.toggle('change', !!amber);
+    const picked = st === 'pick' && optOf(it, d.choice);   // a pick saved on an earlier page may name an option no longer listed
+    c.querySelector('.state').textContent = amber ? 'Change saved' : picked ? 'Your pick: ' + picked.button : r ? 'Resolved' : 'Not answered';
+    const t = w.querySelector('textarea[data-note]'); if (document.activeElement !== t && !t.dataset.dirty) t.value = d.note || '';
+    if (!reopened.has(it.code)) {   // a just-answered or reopened item stays where it is until closed or reloaded
+      const box = r ? $('#resolved') : $('#open');
+      if (w.parentNode !== box) box.insertBefore(w, [...box.children].find(x => BYCODE[x.dataset.item].order > it.order) || null);
+    }
+  });
+  $('#res-h').hidden = !$('#resolved').children.length;
+  document.body.dataset.resolved = resolved.join(' ');
+  D.deck.forEach(s => {
+    const f = document.querySelector(`.dslide[data-slide="${CSS.escape(s.id)}"]`), ch = slChanged(s.id), t = f.querySelector('textarea');
+    f.classList.toggle('changed', ch); f.querySelector('.slstate').textContent = ch ? 'Change saved' : '';
+    f.querySelector('.slclear').hidden = !ch;
+    if (document.activeElement !== t && !t.dataset.dirty) { t.value = ch ? sl[s.id].text : before(s); fit(t); }
+  });
+  const nch = D.deck.filter(s => slChanged(s.id)).length;
+  $('#count').textContent = `${ITEMS.length - resolved.length} open, ${resolved.length} resolved` + (nch ? `; ${nch} slide${nch > 1 ? 's' : ''} changed` : '');
+}
+function setStatus(m, k) { const s = $('#status'); s.textContent = m; s.className = 'status' + (k ? ' ' + k : ''); }
+async function save(coll, id, data) {   // one write at a time per document; a click during a write is sent after it
+  if (!db) { if (dbFailed) setStatus('Not saved: saving is unavailable in this view. Open the page on claude.ai while signed in.', 'err'); return; }
+  const key = coll + '/' + id;
+  if (writing[key]) { writing[key].again = true; return; }
+  writing[key] = { again: false }; setStatus('Saving...');
+  let failed = null;
+  do { writing[key].again = false;
+    try { await db.collection(coll).doc(id).set(data()); } catch (e) { failed = e; }
+  } while (writing[key].again && !failed);
+  delete writing[key];
+  if (failed) setStatus('Not saved (' + (failed.code || 'error') + '). Click again to retry.', 'err');
+  else if (!Object.keys(writing).length) setStatus('Saved', 'ok');
+}
+const now = () => new Date().toISOString();
+const writeDec = code => save(D.coll, code, () => { const d = dec[code] || {}; const o = d.choice && optOf(BYCODE[code], d.choice);
+  return { decision: code, status: stOf(d), choice: d.choice || '', text: o && o.text != null ? o.text : '', note: d.note || '', updatedAt: d.updatedAt }; });
+const writeSlide = id => save(D.slcoll, id, () => { const s = sl[id] || {}, x = D.deck.find(y => y.id === id);
+  return { slide: id, status: s.status || '', before: before(x), text: s.text || '', updatedAt: s.updatedAt }; });
+function show(v) {
+  $$('[data-viewname]').forEach(x => { x.hidden = x.dataset.viewname !== v; });
+  $$('.tab').forEach(t => { t.classList.toggle('on', t.dataset.view === v); t.setAttribute('aria-selected', t.dataset.view === v); });
+  $$('.dslide textarea').forEach(fit);
+}
+function jumpTo(id) {
+  let el = document.getElementById(id); if (!el) return false;
+  const v = el.closest('[data-viewname]'); if (v) show(v.dataset.viewname);
+  if (el.offsetParent === null && el.closest('.item')) el = el.closest('.item').querySelector('.resline');
+  el.scrollIntoView({ block: 'start' }); return true;
+}
+window.jumpTo = jumpTo;
+document.addEventListener('input', e => { if (e.target.matches('textarea')) { e.target.dataset.dirty = '1'; if (e.target.closest('.dslide')) fit(e.target); } });
+document.addEventListener('click', e => {
+  const T = e.target;
+  const im = T.closest('figure img');
+  if (im) { $('#lightbox img').src = im.src; $('#lightbox').hidden = false; return; }
+  if (T.closest('#lightbox')) { $('#lightbox').hidden = true; return; }
+  const tab = T.closest('.tab'); if (tab) { show(tab.dataset.view); window.scrollTo(0, 0); return; }
+  const a = T.closest('a[href^="#"]'); if (a) { e.preventDefault(); jumpTo(a.getAttribute('href').slice(1)); return; }
+  const rb = T.closest('.resbtn');
+  if (rb) { const c = rb.dataset.res; reopened.has(c) ? reopened.delete(c) : reopened.add(c); render(); rb.closest('.item').scrollIntoView({ block: 'start' }); return; }
+  const f = T.closest('.dslide');
+  if (f) {
+    const id = f.dataset.slide, s = D.deck.find(x => x.id === id), t = f.querySelector('textarea');
+    if (T.closest('.slsave')) {
+      if (t.value.trim() === before(s).trim()) {
+        if (slChanged(id)) { sl[id] = { status: 'cleared', text: '', updatedAt: now() }; delete t.dataset.dirty; render(); writeSlide(id); }
+        else setStatus('Nothing changed yet: edit the text first, then click Save slide change.', 'err');
+        return;
+      }
+      sl[id] = { status: 'change', text: t.value, updatedAt: now() }; delete t.dataset.dirty; render(); writeSlide(id); return;
+    }
+    if (T.closest('.slreset')) { t.value = before(s); t.dataset.dirty = '1'; fit(t); setStatus("Slide text restored in the box; click Save slide change to keep it.", 'ok'); return; }
+    if (T.closest('.slclear')) { sl[id] = { status: 'cleared', text: '', updatedAt: now() }; delete t.dataset.dirty; render(); writeSlide(id); return; }
+    return;
+  }
+  const ed = T.closest('.edit');
+  if (ed) { const t = document.getElementById('note-' + ed.dataset.dec); t.value = ed.dataset.text; t.dataset.dirty = '1'; t.focus();
+    setStatus('Text copied into the change box: edit it, then click Save change.', 'ok'); return; }
+  const sv = T.closest('.savechg');
+  if (sv) { const c = sv.dataset.dec, t = document.getElementById('note-' + c);
+    if (!t.value.trim()) { setStatus('Write the change in the box first.', 'err'); t.focus(); return; }
+    dec[c] = Object.assign({}, dec[c], { status: 'change', note: t.value, updatedAt: now() }); delete t.dataset.dirty;
+    reopened.add(c); render(); writeDec(c); return; }
+  const b = T.closest('.ans');
+  if (b) { const c = b.dataset.dec, t = document.getElementById('note-' + c);
+    dec[c] = Object.assign({}, dec[c], { status: 'pick', choice: b.dataset.choice, note: t.value, updatedAt: now() }); delete t.dataset.dirty;
+    reopened.add(c); render(); writeDec(c); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#lightbox').hidden = true; });
+render();
+if (!(location.hash.length > 1 && jumpTo(location.hash.slice(1)))) show('all');
+setStatus('Loading saved answers...');
+(async () => {
+  try { db = window.claude && window.claude.use ? await window.claude.use('db') : null; } catch (e) { db = null; }
+  if (!db) { dbFailed = true; setStatus('Saving is unavailable in this view. Open the page on claude.ai while signed in.', 'err'); return; }
+  let loaded = false;
+  const timer = setTimeout(() => { if (!loaded) setStatus('Saved answers cannot be reached yet; clicks are kept on this page and saved when the connection returns.', 'err'); }, 10000);
+  const fail = err => { clearTimeout(timer); setStatus('Saved answers could not be loaded (' + err.code + '). Reload the page.', 'err'); };
+  db.collection(D.coll).onSnapshot(snap => {
+    snap.docs.forEach(x => { if (!writing[D.coll + '/' + x.id]) dec[x.id] = x.data(); });
+    render();
+    if (!loaded && !snap.metadata.fromCache) { loaded = true; clearTimeout(timer); if (!Object.keys(writing).length) setStatus('Ready: each click saves', 'ok'); }
+  }, fail);
+  db.collection(D.slcoll).onSnapshot(snap => { snap.docs.forEach(x => { if (!writing[D.slcoll + '/' + x.id]) sl[x.id] = x.data(); }); render(); }, fail);
+})();
+</script>

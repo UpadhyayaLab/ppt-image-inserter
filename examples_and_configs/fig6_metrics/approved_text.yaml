@@ -73,6 +73,22 @@ exact:
   source: in the deck FF reviewed 2026-11-19
 - text: RNAP II
   source: in the deck FF reviewed 2026-11-19
+- text: Relative level near the centrosome-proximal nadir
+  source: FF 2026-11-20 decision page, his saved slide 2 text (db slides/contents_base, 00:24Z)
+- text: Relative level near nadir (full nucleus; no centrosome consideration)
+  source: FF 2026-11-20 decision page, his saved slide 2 text (db slides/contents_base, 00:24Z)
+- text: Relative level vs distance from the nadir of the centrosome-proximal region
+  source: FF 2026-11-20 decision page, his saved slide 2 text (db slides/contents_base, 00:24Z)
+- text: Relative level vs distance from nadir (full nucleus; no centrosome consideration), along the surface
+  source: FF 2026-11-20 decision page, his saved slide 2 text (db slides/contents_base, 00:24Z)
+- text: 'Level: mean in the 0.25 μm layer inside the nuclear surface ÷ mean in that layer over the whole nucleus'
+  source: FF 2026-11-20 decision page, his saved slide 2 text (db slides/contents_base, 00:24Z)
+- text: 'Near nadir (whole nucleus): surface connected to the nadir and deeper than half its depth, within 25% of the mean surface distance from it'
+  source: FF 2026-11-20 decision page, his saved slide 2 text (db slides/contents_base, 00:24Z)
+- text: 'Near the centrosome-proximal nadir: surface within 25% of the mean surface distance from it'
+  source: FF 2026-11-20 decision page, his saved slide 2 text (db slides/contents_base, 00:24Z)
+- text: 'Near centrosome: region around the deepest point of the centrosome-proximal patch; no test; blank = not analyzed'
+  source: FF 2026-11-20 decision page 6, his change (00:06Z); '; no test; blank = not analyzed' kept per Histone mark data agent presentation 2026-11-19
 title_prefixes:
 - text: Relative level near nadir, mean ± SEM
   source: in the deck FF reviewed 2026-11-19
@@ -82,6 +98,10 @@ title_prefixes:
   source: in the deck FF reviewed 2026-11-19
 - text: Relative level vs depth below convex hull
   source: in the deck FF reviewed 2026-11-19
+- text: Relative level near the centrosome-proximal nadir
+  source: FF 2026-11-19 decision page 11a, his wording and pick (relayed by Histone mark data agent presentation)
+- text: Relative level vs distance from the nadir of the centrosome-proximal region
+  source: FF 2026-11-19 decision page 2, pick 2A
 title_labels:
 - text: H3K27me3, Jurkat (1 of 2)
   source: in the deck FF reviewed 2026-11-19

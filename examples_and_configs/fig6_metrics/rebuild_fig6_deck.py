@@ -83,16 +83,13 @@ def check(cfg):
     if any(re.match(r"[A-F]: ", e["title"]) for e in ims):
         bad.append("a title starts with a panel letter")
     # No character limits on contents rows or notes (FF 2026-11-19: "there should not be any character limit")
-    title_at = {n: ims[n - 2]["title"] for n in range(2, len(ims) + 2)}
-    covered = []
-    for key, _, pattern in tables.CONTENTS:
-        lo, hi = (int(x) for x in key.split("–"))
-        covered += range(lo, hi + 1)
-        if [n for n, t in title_at.items() if re.match(pattern, t)] != list(range(lo, hi + 1)):
-            bad.append(f"contents range {key} ({pattern})")
-    if sorted(covered) != list(range(3, len(slides) + 1)):
-        bad.append("contents ranges do not cover slides 3 to the end exactly once")
-    bad += unapproved_text(cfg)
+    try:   # contents ranges are computed from the titles; this fails unless each row is one unbroken block
+        tables.contents_rows([e["title"] for e in ims])
+    except SystemExit as e:
+        bad.append(str(e))
+    # unapproved wording is reported, never blocking (FF 2026-11-19: "if I tell you to build it - you build it. period")
+    for t in unapproved_text(cfg):
+        print(f"[TEXT] {t}")
     print(f"check: {len(slides)} slides, {len(bad)} problems" + (": " + "; ".join(bad) if bad else ""))
     if bad:
         raise SystemExit("deck check failed")
@@ -178,7 +175,7 @@ def main(cfg_path, out_html, start="tables"):
     todo = STEPS[STEPS.index(start):]
     t0 = time.perf_counter()
     if "tables" in todo:
-        timed("tables", tables.main, FIGS, str(deck_dir / "table_png"))
+        timed("tables", tables.main, FIGS, str(deck_dir / "table_png"), cfg_path)
     if "deck" in todo:
         log = timed("deck", run, [sys.executable, str(EXAMPLES / "batch_insert_images.py"), cfg_path])
         (deck_dir / "build.log").write_text(log, encoding="utf-8")

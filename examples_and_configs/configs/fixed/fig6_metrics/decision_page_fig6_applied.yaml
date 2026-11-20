@@ -1,0 +1,46 @@
+# Fig 6 decision page: answers already applied to the deck sources (deck config, fig6_metrics/deck_text.yaml).
+# The page lists these as Resolved and the previews skip them. Written by decision_page/apply_answers.py --write;
+# the first 7 entries were applied by hand on 2026-11-19 from the db export (decisions 1, 2, 3a, 6, 11a; slides
+# contents_base), when the deck sources were rebuilt around one text map.
+- code: '1'
+  title: Contents row for the near-centrosome violins
+  text: Relative level near the centrosome-proximal nadir
+  how: settled by your slide 2 text
+  at: '2026-11-20T00:24:37.000Z'
+- code: '2'
+  title: Contents row for the near-centrosome distance profiles
+  text: Relative level vs distance from the nadir of the centrosome-proximal region
+  how: settled by your slide 2 text
+  at: '2026-11-20T00:24:37.000Z'
+- code: 3a
+  title: Contents note, Level
+  text: 'Level: mean in the 0.25 μm layer inside the nuclear surface ÷ mean in that layer over the whole nucleus'
+  how: settled by your slide 2 text
+  at: '2026-11-20T00:24:37.000Z'
+- code: 3b
+  title: Contents note, near nadir (whole nucleus)
+  text: 'Near nadir (whole nucleus): surface connected to the nadir and deeper than half its depth, within 25% of the mean surface distance from it'
+  how: settled by your slide 2 text
+  at: '2026-11-20T00:24:37.000Z'
+- code: 3c
+  title: Contents note, near the centrosome-proximal nadir
+  text: 'Near the centrosome-proximal nadir: surface within 25% of the mean surface distance from it'
+  how: settled by your slide 2 text
+  at: '2026-11-20T00:24:37.000Z'
+- code: '6'
+  title: Table key, near-centrosome columns
+  text: 'Near centrosome: region around the deepest point of the centrosome-proximal patch; no test; blank = not analyzed'
+  how: your change
+  note: "Kept '; no test; blank = not analyzed' after your text; tell me if it should go."
+  at: '2026-11-20T00:06:29.258Z'
+- code: 11a
+  title: Near-centrosome violin titles
+  text: Relative level near the centrosome-proximal nadir
+  how: your pick
+  at: '2026-11-20T01:00:00.000Z'
+- slide: contents_base
+  how: your slide edit (slide 2 rows and notes, now in fig6_metrics/deck_text.yaml)
+  at: '2026-11-20T00:24:37.000Z'
+- slide: cent_violin_1A_noco_oct
+  how: 'your note on font size, ruled by your later instruction: fixed 36 pt for all titles'
+  at: '2026-11-20T00:05:13.346Z'

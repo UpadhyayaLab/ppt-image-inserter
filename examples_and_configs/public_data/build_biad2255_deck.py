@@ -17,8 +17,9 @@ Usage (base miniforge: python-pptx + pywin32 for the PNG export):
     python examples_and_configs/public_data/build_biad2255_deck.py <config.yaml>
     ... --list      dry run: print every slide, check images and text, build nothing
     ... --export    also export slide PNGs (PowerPoint COM) to the config's export_dir
-    ... --review    save even with slide text not yet approved, as <output>_TEXT_NOT_APPROVED.pptx
-                    (the clean-text check still blocks)
+    ... --review    accepted for old commands; does nothing now
+Text checks (clean text, approved text) are printed and never stop the build: FF 2026-11-19 "if I tell you to build
+it - you build it. period". The deck is always saved under the config's output name.
 """
 
 import os
@@ -441,16 +442,12 @@ def main():
         sys.exit(1)
     if "--list" in sys.argv:
         return
-    review = "--review" in sys.argv
     out = Path(cfg["output"])
-    if review:   # FF 2026-11-19 "rebuild deck with new changes" while text approval is still under way
-        out = out.with_name(out.stem + "_TEXT_NOT_APPROVED.pptx")
     if (out.parent / ("~$" + out.name)).exists():
         sys.exit(f"[locked] {out.name} is open in PowerPoint; close it first")
     prs, titles = build(cfg)
-    # Clean slide text and approved slide text (repo CLAUDE.md): the deck is not saved if either fails.
-    # --review: the clean-text check still blocks; unapproved lines are listed and the deck is saved under
-    # a name that says so, for FF to look at during approval. It is never the finished deck.
+    # Clean slide text and approved slide text (repo CLAUDE.md): reported, never blocking (FF 2026-11-19: "if I tell
+    # you to build it - you build it. period").
     from ppt_image_inserter.text_lint import lint_presentation
     from ppt_image_inserter.approved_text import deck_strings, load_approved, unapproved
     lint = lint_presentation(prs)
@@ -460,10 +457,8 @@ def main():
         unappr = ["config has no approved_text file"]
     for p in lint + unappr:
         print("[TEXT]", p)
-    if lint or (unappr and not review):
-        sys.exit(f"{len(lint) + len(unappr)} slide text problem(s); deck not saved")
-    if unappr:
-        print(f"[REVIEW] {len(unappr)} slide line(s) not yet approved; saved as {out.name}")
+    if lint or unappr:
+        print(f"[TEXT] {len(lint)} clean-text problem(s), {len(unappr)} line(s) not in the approved-text file (deck saved)")
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists():
         M.backup_presentation(str(out), backup_base=str(out.parent / "backups"))

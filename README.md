@@ -58,7 +58,7 @@ pip install -r requirements.txt
 - **Multi-image per slide** - Side-by-side comparisons using list syntax (e.g., `[control.png, treated.png]`)
 - **Config-driven** - YAML configuration for easy batch processing
 - **Template preservation** - Use `output_path` to create a new file, leaving the original untouched
-- **Approved slide text** - Set `approved_text: <file>` in the config and the build fails on any slide line not listed in that file (each line carries its source). `examples_and_configs/check_approved_text.py` checks a deck or seeds the file from a finished one. See CLAUDE.md, "Approved slide text".
+- **Approved slide text** - Set `approved_text: <file>` in the config and the build lists every slide line not in that file (reported, never blocking) (each line carries its source). `examples_and_configs/check_approved_text.py` checks a deck or seeds the file from a finished one. See CLAUDE.md, "Approved slide text".
 - **Metadata tracking** - Displays image filenames on slides and stores paths in alt text
 - **Automatic backups** - Creates timestamped backups before modifications
 - **Image pre-validation** - Checks all images exist before making any changes

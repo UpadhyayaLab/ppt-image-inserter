@@ -50,3 +50,13 @@ exact:
   source: 'FF 2026-11-19 chat: "ok" to the matching titles'
 - text: Inner 0.5 μm layer
   source: 'FF 2026-11-19 chat: "ok" to the matching titles'
+- text: '• "Key pro-inflammatory cytokines are IFN-γ and TNF, which license T cells to kill their target cells"'
+  source: 'FF 2026-11-19 chat: "include all the above quote except" the overproduction one; verbatim from the paper (main_text_europepmc.txt)'
+- text: '• "The key effector cytokines IFN-γ and TNF are produced early after T cell activation, yet with distinct kinetics"'
+  source: 'FF 2026-11-19 chat: "include all the above quote except" the overproduction one; verbatim from the paper (main_text_europepmc.txt)'
+- text: '• "Dual cytokine producers are more potent effector T cells than single cytokine producers in response to infection and cancer"'
+  source: 'FF 2026-11-19 chat: "include all the above quote except" the overproduction one; verbatim from the paper (main_text_europepmc.txt)'
+- text: '• "TNF contributes to early cytotoxic activity and facilitates immune cell recruitment, whereas IFNG plays a central role in sustaining antiviral and antitumor immunity at later stages of T cell activation"'
+  source: 'FF 2026-11-19 chat: "include all the above quote except" the overproduction one; verbatim from the paper (main_text_europepmc.txt)'
+- text: '• "their physiological function, which is indeed manyfold for both IFN-γ and TNF"'
+  source: 'FF 2026-11-19 chat: "include all the above quote except" the overproduction one; verbatim from the paper (main_text_europepmc.txt)'

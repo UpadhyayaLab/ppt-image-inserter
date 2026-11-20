@@ -10,8 +10,11 @@ mark data session); only experiments in that CSV have it, so only slides holding
 Values come from the Histone mark data session's table builder (collect(), cell()) in TCell-3D-Morphodynamics,
 imported unchanged: the C level (deepest invagination region / whole-surface average), mean +- SEM over cells.
 
-Usage:  python render_fig6_table_slides.py <figs_dir> <out_dir>
-Writes <out_dir>/table_<n>_<slug>.html and .png (headless Edge screenshot) and prints rows per slide.
+Every line of text drawn into these images comes from deck_text.yaml (TEXT; pass another dict to render a variant).
+
+Usage:  python render_fig6_table_slides.py <figs_dir> <out_dir> [<deck config.yaml>]
+Writes <out_dir>/table_<n>_<slug>.html and .png (headless Edge screenshot), contents.png (slide ranges computed from
+the deck config's titles) and prints rows per slide.
 """
 import csv
 import html
@@ -19,12 +22,16 @@ import subprocess
 import sys
 from pathlib import Path
 
+import yaml
+
 BUILDER = Path("C:/Users/Upadhyaya_Lab/Code/TCell-3D-Morphodynamics/dev/reporting/fig6_metrics_page")
 sys.path.insert(0, str(BUILDER))
 from build_fig6_summary_table import TITLE, MARK, cell, collect  # noqa: E402
 from build_fig6_metrics_page import KINDS  # noqa: E402
 
 EDGE = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
+TEXT = yaml.safe_load(open(Path(__file__).with_name("deck_text.yaml"), encoding="utf-8"))
+DECK_CFG = Path(__file__).resolve().parents[1] / "configs/fixed/fig6_metrics/config_fig6_metrics_by_metric_20261118.yaml"
 MU = "\u03bc"   # Greek mu (repo rule), the builder writes the micro sign
 SHOW = {"RNAPII": "RNAP II"}
 ORDER = [k for _, keys in KINDS for k in keys]
@@ -53,17 +60,6 @@ sup{font-size:14px;line-height:0;margin-left:1px;color:#1d1d1f} .se{font-size:15
 .key{display:flex;flex-wrap:wrap;gap:4px 14px;color:#4a4a4f;font-size:15px;margin:4px 0 0;width:0;min-width:100%}
 .sw{display:inline-block;width:22px;height:12px;vertical-align:-1px;margin-right:5px;border-radius:2px}
 """
-
-# Wording from the verified definitions (TCell-3D-Morphodynamics dev/reporting/fig6_metrics_page/fig6_definitions.yaml:
-# relative_level_near_nadir_C, near_centrosome_value, table_statistics), approved by FF 2026-11-19.
-KEY = ('<div class="key"><span>Mean in the 0.25 μm layer near the nadir ÷ the same layer, whole nucleus '
-       "(1 = no enrichment); mean ± SEM over cells</span>"
-       '<span><span class="sw" style="background:rgba(37,99,235,.55)"></span>below 1&nbsp;&nbsp;'
-       '<span class="sw" style="background:rgba(220,38,38,.55)"></span>above 1</span>'
-       "<span>* &lt;0.05, ** &lt;0.01, *** &lt;0.001 vs 1 (signed-rank, BH-adjusted); gray = n.s.{na}</span></div>")
-CENT_KEY = ('<div class="key"><span>Near centrosome: disk around the deepest point of the centrosome-proximal patch; '
-            "no test; blank = not analyzed</span></div>")
-
 
 def first(td):
     return td.replace('<td class="', '<td class="first ', 1)
@@ -94,16 +90,17 @@ def load_cent(figs):
     return out
 
 
-def table_html(keys, data, mk, cent):
+def table_html(keys, data, mk, cent, text):
+    t = {k: html.escape(v) for k, v in text["table"].items()}
     with_cent = any(k in cent for k in keys)
     if with_cent:
         h = ['<table><thead><tr><th class="l" rowspan="2">Experiment</th><th class="l" rowspan="2">Arm</th>'
-             '<th class="grp" colspan="3">Whole nucleus</th><th class="grp" colspan="3">Near centrosome</th></tr>'
+             f'<th class="grp" colspan="3">{t["group_whole"]}</th><th class="grp" colspan="3">{t["group_cent"]}</th></tr>'
              f'<tr><th class="first">n</th><th>{mk}</th><th>DNA</th><th class="first">n</th><th>{mk}</th><th>DNA</th></tr>'
              '</thead><tbody>']
     else:
         h = ['<table><thead><tr><th class="l" rowspan="2">Experiment</th><th class="l" rowspan="2">Arm</th>'
-             '<th rowspan="2">n</th><th class="grp" colspan="2">Relative level near nadir</th></tr>'
+             f'<th rowspan="2">n</th><th class="grp" colspan="2">{t["group_level"]}</th></tr>'
              f'<tr><th class="first">{mk}</th><th>DNA</th></tr></thead><tbody>']
     n_rows = n_cent = 0
     for key in keys:
@@ -129,16 +126,34 @@ def table_html(keys, data, mk, cent):
     return "".join(h) + "</tbody></table>", n_rows, n_cent
 
 
-def slide_html(title, keys, data, cent):
+def key_lines(keys, data, cent, text=None):
+    """The key lines a table slide shows, in order (deck_text.yaml table.key_*)."""
+    t = (text or TEXT)["table"]
+    na = any(a.get("C_mark_p") == "NA" or a.get("C_dna_p") == "NA" for k in keys for a in data.get(k, {}).values())
+    return ([t["key_main"], t["key_below"], t["key_above"], t["key_stats"]] + ([t["key_na"]] if na else [])
+            + ([t["key_cent"]] if any(k in cent for k in keys) else []))
+
+
+def header_lines(keys, cent, text=None):
+    t = (text or TEXT)["table"]
+    return [t["group_whole"], t["group_cent"]] if any(k in cent for k in keys) else [t["group_level"]]
+
+
+def slide_html(title, keys, data, cent, text=None):
+    text = text or TEXT
+    t = {k: html.escape(v) for k, v in text["table"].items()}
+    na = len(key_lines(keys, data, cent, text)) > 4 + any(k in cent for k in keys)
     mk = SHOW.get(MARK[keys[0]], MARK[keys[0]])
     groups = [keys] if any(k in cent for k in keys) else halves(keys, data)
-    parts = [table_html(ks, data, mk, cent) for ks in groups]
+    parts = [table_html(ks, data, mk, cent, text) for ks in groups]
+    key = (f'<div class="key"><span>{t["key_main"]}</span>'
+           f'<span><span class="sw" style="background:rgba(37,99,235,.55)"></span>{t["key_below"]}&nbsp;&nbsp;'
+           f'<span class="sw" style="background:rgba(220,38,38,.55)"></span>{t["key_above"]}</span>'
+           f'<span>{t["key_stats"]}{"; " + t["key_na"] if na else ""}</span></div>')
+    cent_key = f'<div class="key"><span>{t["key_cent"]}</span></div>' if any(k in cent for k in keys) else ""
     h = (f'<meta charset="utf-8"><title>{html.escape(title)}</title><style>{CSS}</style><div class="box">'
          '<div style="display:flex;gap:28px;align-items:flex-start">' + "".join(p[0] for p in parts) + "</div>"
-         + KEY.replace("{na}", "; n/a = too few cells to test" if any(
-             a.get("C_mark_p") == "NA" or a.get("C_dna_p") == "NA" for k in keys for a in data.get(k, {}).values()) else "")
-         + (CENT_KEY if any(k in cent for k in keys) else "")
-         + "</div>")
+         + key + cent_key + "</div>")
     return h.replace("µ", MU), sum(p[1] for p in parts), sum(p[2] for p in parts)
 
 
@@ -155,44 +170,59 @@ def pages(data, cent):
     return out
 
 
-# Contents slide (FF 2026-11-19: title page "needs more info", "break into 2 slides"; "keep labels concise, period.
-# no need to mention C, D, E, F"; "do not mention voxels"). Slide numbers count the title slide (1) and this slide
-# (2). Nadir facts from the Histone mark data session 2026-11-19 (compute_nuclear_concavity.m:150 whole
-# nucleus; slides 3-4 = the centrosome-proximal seed). (slides, text, title regex): the deck check confirms exactly those slides' titles match the regex.
-CONTENTS = [   # one short phrase per row (FF 2026-11-19: "clean up slide 2!!!! this is slop"); no character limit (FF 2026-11-19)
-    ("3–4", "Nadir: surface point farthest from the hull boundary", "The regions measured"),
-    ("5–10", "Summary tables", "Relative level near nadir, mean ± SEM"),
-    ("11–31", "Relative level near nadir", "Relative level near nadir: "),
-    ("32–52", "Relative level vs distance from nadir, along the surface", "Relative level vs distance from nadir"),
-    ("53–73", "Relative level vs depth below convex hull, ÷ its 0–0.25 μm bin", "Relative level vs depth below convex hull"),
-]
-# Definition lines, verbatim as approved by FF 2026-11-19 (fig6_definitions.yaml: shell_and_face_density,
-# relative_level_near_nadir_C, region_near_nadir_C). Check: <= 100 characters each.
-CONTENTS_NOTES = [
-    "Level: mean in the 0.25 μm layer inside the nuclear surface ÷ that layer over the whole nucleus",
-    "Near nadir: deeper than half the nadir's depth, within 25% of the mean surface distance from it",
-]
+def title_group(title):
+    """The part of a title before ": " (its prefix), or the whole title."""
+    return title.split(": ", 1)[0]
 
 
-def render_contents(out):
-    rows = "".join(f'<tr><td class="k">{html.escape(s)}</td><td>{html.escape(t)}</td></tr>' for s, t, _ in CONTENTS)
-    rows += "".join(f'<tr><td></td><td class="note">{html.escape(n)}</td></tr>' for n in CONTENTS_NOTES)
+def contents_rows(titles, text=None):
+    """[(range, row text)] for the contents slide: each row covers the slides (numbered from 1, title slide first)
+    whose title prefix (before ": ") is the row's `titles` (a title without ": " only has to start with it); fails unless every row covers one unbroken block and the rows cover
+    slides 3 to the end exactly once (FF 2026-11-19: title page "needs more info", "break into 2 slides").
+    titles: the deck's slide titles from slide 2 on."""
+    rows, covered = [], []
+    for r in (text or TEXT)["contents"]["rows"]:
+        p = r["titles"]
+        hit = [n for n, t in enumerate(titles, 2) if title_group(t) == p or (": " not in t and t.startswith(p))]
+        if not hit or hit != list(range(hit[0], hit[-1] + 1)):
+            raise SystemExit(f"contents row {r['text']!r}: titles starting {p!r} are slides {hit}, not one block")
+        covered += hit
+        rows.append((f"{hit[0]}–{hit[-1]}" if len(hit) > 1 else str(hit[0]), r["text"]))
+    if sorted(covered) != list(range(3, len(titles) + 2)):
+        raise SystemExit(f"contents rows cover slides {sorted(covered)}, not 3 to {len(titles) + 1} exactly once")
+    return rows
+
+
+def contents_lines(titles, text=None):
+    """The contents slide's lines as the slide shows them: rows "a–b  text", then the notes."""
+    return ([f"{a}  {t}" for a, t in contents_rows(titles, text)] + list((text or TEXT)["contents"]["notes"]))
+
+
+def render_contents(out, titles, text=None):
+    rows = "".join(f'<tr><td class="k">{html.escape(s)}</td><td>{html.escape(t)}</td></tr>'
+                   for s, t in contents_rows(titles, text))
+    rows += "".join(f'<tr><td></td><td class="note">{html.escape(n)}</td></tr>' for n in (text or TEXT)["contents"]["notes"])
     page = (f'<meta charset="utf-8"><title>Contents</title><style>body{{background:#fff;color:#1d1d1f;'
             f'font:30px/1.5 "Segoe UI",system-ui,sans-serif;margin:0;padding:8px}}table{{border-collapse:collapse;'
             f'width:auto}}td{{padding:5px 10px;vertical-align:top}}td.k{{font-weight:600;white-space:nowrap}}'
             f'td.note{{color:#6e6e73;padding-top:14px}}</style><table>{rows}</table>')
-    hp, pp = out / "contents.html", out / "contents.png"
+    hp, pp = Path(out) / "contents.html", Path(out) / "contents.png"
     hp.write_text(page, encoding="utf-8")
     subprocess.run([EDGE, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--force-device-scale-factor=2",
                     "--window-size=1100,600", f"--screenshot={pp}", hp.resolve().as_uri()],
                    check=True, capture_output=True, timeout=120)
+    from PIL import Image   # the window is fixed (1100 x 600 at 2x): text touching the bottom edge is cut off
+    im = Image.open(pp).convert("L")
+    if min(im.crop((0, im.height - 6, im.width, im.height)).getdata()) < 200:
+        raise SystemExit(f"{pp}: contents text reaches the bottom edge (cut off)")
     print(pp.name, "| contents slide")
 
 
-def main(figs, out_dir):
+def main(figs, out_dir, cfg_path=DECK_CFG):
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    render_contents(out)
+    cfg = yaml.safe_load(open(cfg_path, encoding="utf-8"))
+    render_contents(out, [e["title"] for e in cfg["images"]])
     for old in list(out.glob("table_*.html")) + list(out.glob("table_*.png")):   # this script's own outputs
         old.unlink()
     data, _ = collect(figs)
@@ -219,4 +249,4 @@ def main(figs, out_dir):
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:3])
+    main(*sys.argv[1:4])

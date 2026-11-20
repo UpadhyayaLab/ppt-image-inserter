@@ -59,96 +59,137 @@ slides:
   # Titles are this deck's. Not approved by FF.
   # FF 2026-11-19: slide "CD8 T cells make IFN-γ and TNF after activation" removed ("just remove this slide.
   # it is very confusing to me")
+  # FF 2026-11-19: "combine slies 4-9 into 2 or 3 slides. no need to stick to 2 bullets". The old slides 4-9
+  # (sources and FF's notes) are kept as comments below; bullets reused from them, titles and the joins PROPOSED.
+  # FF 2026-11-19: "slide 4 ust is not good ... need to discuss their function in cd8 t cells specifically";
+  # "I would be most comfortable with you just quoting them"; "include all the above quote except" the
+  # overproduction one. Verbatim from main_text_europepmc.txt (PMC12624010): Introduction, Results ("produced
+  # early", "Dual cytokine producers"), Discussion ("TNF contributes", "manyfold"). Citations inside the quotes dropped.
   - kind: text
-    review_id: s04   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+    review_id: s04   # merges approval-page s04 + s05
     draft: true
-    title: "IFN-γ (gene: IFNG)"
-      # fact-check 2026-11-19: "mainly" unsupported; UniProt P01579 "produced by immune cells such
-      # as T-cells and NK cells"
+    title: "IFN-γ and TNF"   # PROPOSED
     bullets:
-      - "Cytokine made by activated T cells and NK cells, among others"
-      - "Activates macrophages and raises antigen presentation (MHC)"
+      - "\"Key pro-inflammatory cytokines are IFN-γ and TNF, which license T cells to kill their target cells\""
+      - "\"The key effector cytokines IFN-γ and TNF are produced early after T cell activation, yet with distinct kinetics\""
+      - "\"Dual cytokine producers are more potent effector T cells than single cytokine producers in response to infection and cancer\""
+      - "\"TNF contributes to early cytotoxic activity and facilitates immune cell recruitment, whereas IFNG plays a central role in sustaining antiviral and antitumor immunity at later stages of T cell activation\""
+      - "\"their physiological function, which is indeed manyfold for both IFN-γ and TNF\""
+    caption: "Quotes from Lattanzio et al., EMBO J 2025 (Introduction, Results, Discussion)"   # PROPOSED
 
   - kind: text
-    review_id: s05   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
-    draft: true
-    title: "TNF (gene: TNF)"
-      # fact-check 2026-11-19: "drives" / "target cells" overstated; UniProt P01375 (ADAM17
-      # cleavage; "inflammation ... or trigger programmed cell death (apoptosis and necroptosis)")
-    bullets:
-      - "Pro-inflammatory cytokine made by T cells and macrophages, among others"
-      - "Can trigger cell death"
-
-  - kind: text
-    review_id: s06   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+    review_id: s06   # merges approval-page s06 + s07
     draft: true
     title: "The dataset: Lattanzio et al., EMBO J 2025"
-      # FF 2026-11-19: "what do 37 and 45 probes mean? ... that is opaque". Paper Methods: 37 and 45
-      # Stellaris probes for IFNG and TNF, one set per mRNA, targeting the coding sequence
     bullets:
       - "Effector CD8 T cells from 3 healthy donors, restimulated 0 to 6 h"
       - "IFNG and TNF mRNA by smFISH, with DAPI"
-    caption: "Lattanzio et al., EMBO J 2025, DOI 10.1038/s44318-025-00592-0"
-
-  # FF 2026-11-19: "explain in more detail how cells are activated. this is super key. explain how
-  # smFish works. explain timepoints more. overall this can become multiple slides".
-  # Every bullet below is from the paper's Methods / Results (quotes in the session that built it,
-  # read from Europe PMC PMC12624010 + Appendix). Draft, not approved by FF.
-  - kind: text
-    review_id: s07   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
-    draft: true
-    title: "Effector CD8 T cells: activated once, then rested 7 days"
-      # Methods: "CD8 + T cells were enriched ... with a purity of >85%."
-      # Methods: "T cells were activated for 72 h with 1 μg/mL plate-bound α-CD3 (HIT3a) and 1 μg/mL
-      # soluble α-CD28"
-      # Methods: "cultured ... for 7 days ... supplemented with 100 IU/mL recombinant human (rh) IL2"
-    bullets:
       - "First activation: 72 h, plate-bound anti-CD3 + soluble anti-CD28"
       - "Then 7 days in culture with IL-2: effector T cells (Teff)"
-    caption: "Lattanzio et al., EMBO J 2025, Methods"
+    caption: "Lattanzio et al., EMBO J 2025, DOI 10.1038/s44318-025-00592-0"   # old s06 caption; ", Methods" dropped (reviewer: not every bullet is from Methods)
 
   - kind: text
-    review_id: s08   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+    review_id: s08   # merges approval-page s08 + s10
     draft: true
-    title: "Restimulation: soluble anti-CD3 + anti-CD28, then fixed"
-      # Methods: "stimulated with 1 μg/ml soluble α-CD3 ... and 1 μg/mL soluble α-CD28 in culture media"
-      # Methods: "incubated for 20 min at 37 °C to enhance T cell attachment"; "coated with Alcian blue";
-      # "fixed with 4% paraformaldehyde"
-      # not in the paper (e5 2026-11-19): our inference from soluble antibodies, no target cells
-      # FF 2026-11-19: "remove the bullet" (our immune-synapse inference)
+    title: "Restimulation and time points"   # PROPOSED
     bullets:
-      - "0 h: not restimulated; 1 to 6 h: 1 μg/mL each"
+      - "0 h: not restimulated; 1 to 6 h: soluble anti-CD3 + anti-CD28, 1 μg/mL each"
       - "Then 20 min at 37 °C on Alcian blue-coated coverslips, fixed in 4 % PFA"
-    caption: "Lattanzio et al., EMBO J 2025, Methods; the paper does not say whether cells were kept in suspension"
-  # FF 2026-11-19, approval page s09: smFISH slide removed ("overall redo this slide. it is awful. or maybe
-  # just remove"). Its sources, kept for the record:
-  # reviewer 2026-11-19: "each ... is one spot" conflicted with transcription-site spots (≥ 1.5×)
-  # Methods: "autofluorescent granule structures ... in the FITC and Cy3 channels, CALfluorRed 610 and
-  # Quasar 670 were used as conjugates for IFNG and TNF probes, respectively"
-  # Appendix p. 16 (via "Open data for manuscript", 2026-11-19): autofluorescent dots in FITC, Cy3 AND Cy5;
-  # "We therefore selected Cal-Fluo 610 (Cy3.5 channel) and Quasar-670 (Cy5 channel) as fluorophores conjugated
-  # to IFNG and TNF smFISH probes, respectively", with Cy3.5 and Cy5 filters chosen "to reduce the background".
-  # This is the documented channel -> gene mapping: Cy3.5 = IFNG, Cy5 = TNF.
-
-  - kind: text
-    review_id: s10   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
-    draft: true
-    title: "Time points: resting (0 h) to 6 h restimulated"
-      # Results: "Resting Teff cells (t = 0 h) lacked active transcription sites (TsX) for IFNG"; "the vast
-      # majority of IFNG mRNA and TNF mRNAs were present in the nucleus"
-      # Results: "At 1 h of activation ... 2% Teff cells expressed nascent IFNG RNA"; "1 h ... shifted
-      # the distribution of mature IFNG mRNA towards the cytoplasm"
-      # Results: "At 3 h of activation, active TsX peaked with 8%"
-      # Results: IFN-γ "peaked at 2 h ... remained stable thereafter"; TNF "peaked at 2–3 h ... rapidly declined"
-      # FF 2026-11-19: "we are looking at transcripts right? no translation at all? we shouldn't muddy the
-      # issue": protein-peak bullet removed
-    bullets:
-      # FF 2026-11-19, approval page s10: "if this is directly stated in paper quote it". Both quotes are in
-      # main_text_europepmc.txt (Results): "Resting Teff cells ( t = 0 h) lacked active transcription sites (TsX)
-      # for IFNG"; "In resting Teff cells, the vast majority of IFNG mRNA and TNF mRNAs were present in the nucleus"
       - "0 h, IFNG: \"lacked active transcription sites\""
       - "0 h: \"vast majority of IFNG mRNA and TNF mRNAs were present in the nucleus\""
-    caption: "Lattanzio et al., EMBO J 2025, Results"
+    caption: "Lattanzio et al., EMBO J 2025, Methods and Results; the paper does not say whether cells were kept in suspension"   # PROPOSED join
+
+  # (old) - kind: text
+  # (old)   review_id: s04   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+  # (old)   draft: true
+  # (old)   title: "IFN-γ (gene: IFNG)"
+  # (old)     # fact-check 2026-11-19: "mainly" unsupported; UniProt P01579 "produced by immune cells such
+  # (old)     # as T-cells and NK cells"
+  # (old)   bullets:
+  # (old)     - "Cytokine made by activated T cells and NK cells, among others"
+  # (old)     - "Activates macrophages and raises antigen presentation (MHC)"
+
+  # (old) - kind: text
+  # (old)   review_id: s05   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+  # (old)   draft: true
+  # (old)   title: "TNF (gene: TNF)"
+  # (old)     # fact-check 2026-11-19: "drives" / "target cells" overstated; UniProt P01375 (ADAM17
+  # (old)     # cleavage; "inflammation ... or trigger programmed cell death (apoptosis and necroptosis)")
+  # (old)   bullets:
+  # (old)     - "Pro-inflammatory cytokine made by T cells and macrophages, among others"
+  # (old)     - "Can trigger cell death"
+
+  # (old) - kind: text
+  # (old)   review_id: s06   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+  # (old)   draft: true
+  # (old)   title: "The dataset: Lattanzio et al., EMBO J 2025"
+  # (old)     # FF 2026-11-19: "what do 37 and 45 probes mean? ... that is opaque". Paper Methods: 37 and 45
+  # (old)     # Stellaris probes for IFNG and TNF, one set per mRNA, targeting the coding sequence
+  # (old)   bullets:
+  # (old)     - "Effector CD8 T cells from 3 healthy donors, restimulated 0 to 6 h"
+  # (old)     - "IFNG and TNF mRNA by smFISH, with DAPI"
+  # (old)   caption: "Lattanzio et al., EMBO J 2025, DOI 10.1038/s44318-025-00592-0"
+
+  # (old) # FF 2026-11-19: "explain in more detail how cells are activated. this is super key. explain how
+  # (old) # smFish works. explain timepoints more. overall this can become multiple slides".
+  # (old) # Every bullet below is from the paper's Methods / Results (quotes in the session that built it,
+  # (old) # read from Europe PMC PMC12624010 + Appendix). Draft, not approved by FF.
+  # (old) - kind: text
+  # (old)   review_id: s07   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+  # (old)   draft: true
+  # (old)   title: "Effector CD8 T cells: activated once, then rested 7 days"
+  # (old)     # Methods: "CD8 + T cells were enriched ... with a purity of >85%."
+  # (old)     # Methods: "T cells were activated for 72 h with 1 μg/mL plate-bound α-CD3 (HIT3a) and 1 μg/mL
+  # (old)     # soluble α-CD28"
+  # (old)     # Methods: "cultured ... for 7 days ... supplemented with 100 IU/mL recombinant human (rh) IL2"
+  # (old)   bullets:
+  # (old)     - "First activation: 72 h, plate-bound anti-CD3 + soluble anti-CD28"
+  # (old)     - "Then 7 days in culture with IL-2: effector T cells (Teff)"
+  # (old)   caption: "Lattanzio et al., EMBO J 2025, Methods"
+
+  # (old) - kind: text
+  # (old)   review_id: s08   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+  # (old)   draft: true
+  # (old)   title: "Restimulation: soluble anti-CD3 + anti-CD28, then fixed"
+  # (old)     # Methods: "stimulated with 1 μg/ml soluble α-CD3 ... and 1 μg/mL soluble α-CD28 in culture media"
+  # (old)     # Methods: "incubated for 20 min at 37 °C to enhance T cell attachment"; "coated with Alcian blue";
+  # (old)     # "fixed with 4% paraformaldehyde"
+  # (old)     # not in the paper (e5 2026-11-19): our inference from soluble antibodies, no target cells
+  # (old)     # FF 2026-11-19: "remove the bullet" (our immune-synapse inference)
+  # (old)   bullets:
+  # (old)     - "0 h: not restimulated; 1 to 6 h: 1 μg/mL each"
+  # (old)     - "Then 20 min at 37 °C on Alcian blue-coated coverslips, fixed in 4 % PFA"
+  # (old)   caption: "Lattanzio et al., EMBO J 2025, Methods; the paper does not say whether cells were kept in suspension"
+  # (old) # FF 2026-11-19, approval page s09: smFISH slide removed ("overall redo this slide. it is awful. or maybe
+  # (old) # just remove"). Its sources, kept for the record:
+  # (old) # reviewer 2026-11-19: "each ... is one spot" conflicted with transcription-site spots (≥ 1.5×)
+  # (old) # Methods: "autofluorescent granule structures ... in the FITC and Cy3 channels, CALfluorRed 610 and
+  # (old) # Quasar 670 were used as conjugates for IFNG and TNF probes, respectively"
+  # (old) # Appendix p. 16 (via "Open data for manuscript", 2026-11-19): autofluorescent dots in FITC, Cy3 AND Cy5;
+  # (old) # "We therefore selected Cal-Fluo 610 (Cy3.5 channel) and Quasar-670 (Cy5 channel) as fluorophores conjugated
+  # (old) # to IFNG and TNF smFISH probes, respectively", with Cy3.5 and Cy5 filters chosen "to reduce the background".
+  # (old) # This is the documented channel -> gene mapping: Cy3.5 = IFNG, Cy5 = TNF.
+
+  # (old) - kind: text
+  # (old)   review_id: s10   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+  # (old)   draft: true
+  # (old)   title: "Time points: resting (0 h) to 6 h restimulated"
+  # (old)     # Results: "Resting Teff cells (t = 0 h) lacked active transcription sites (TsX) for IFNG"; "the vast
+  # (old)     # majority of IFNG mRNA and TNF mRNAs were present in the nucleus"
+  # (old)     # Results: "At 1 h of activation ... 2% Teff cells expressed nascent IFNG RNA"; "1 h ... shifted
+  # (old)     # the distribution of mature IFNG mRNA towards the cytoplasm"
+  # (old)     # Results: "At 3 h of activation, active TsX peaked with 8%"
+  # (old)     # Results: IFN-γ "peaked at 2 h ... remained stable thereafter"; TNF "peaked at 2–3 h ... rapidly declined"
+  # (old)     # FF 2026-11-19: "we are looking at transcripts right? no translation at all? we shouldn't muddy the
+  # (old)     # issue": protein-peak bullet removed
+  # (old)   bullets:
+  # (old)     # FF 2026-11-19, approval page s10: "if this is directly stated in paper quote it". Both quotes are in
+  # (old)     # main_text_europepmc.txt (Results): "Resting Teff cells ( t = 0 h) lacked active transcription sites (TsX)
+  # (old)     # for IFNG"; "In resting Teff cells, the vast majority of IFNG mRNA and TNF mRNAs were present in the nucleus"
+  # (old)     - "0 h, IFNG: \"lacked active transcription sites\""
+  # (old)     - "0 h: \"vast majority of IFNG mRNA and TNF mRNAs were present in the nucleus\""
+  # (old)   caption: "Lattanzio et al., EMBO J 2025, Results"
+
 
   # key paper panels: four candidates, FF prunes (FF 2026-11-18 "yes as suggested")
   # FF 2026-11-19: "all stay besides 1C" (1C removed), so no longer candidates
@@ -217,8 +258,10 @@ slides:
       # (1,025 labels, 732 eligible; invag.csv in tests/through_focus_732)
       # rendering session 2026-11-19: 701 on the watershed outline used now (through_focus_732_ws/inplane/filter_summary.txt); 711 was the old label-slice outline
     bullets:
-      - "Paper Fig 3 experiment, untreated cells, 0 h and 2 h: montages and spot detection"
-      - "Paper Fig 1 time course, 0 to 6 h: montages and all level measurements"
+      # PROPOSED (agent wording, FF 2026-11-19 "put fig 3 results and images first"): both sets now have montages and
+      # level measurements, so the "montages and ..." endings would be wrong
+      - "Paper Fig 3 experiment, untreated cells, 0 h and 2 h"
+      - "Paper Fig 1 time course, 0 to 6 h"
 
   - kind: image
     review_id: s17   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
@@ -263,6 +306,41 @@ slides:
     view: "Raw DAPI, maximum intensity projections"   # FF 2026-11-19 approval page s24, his words
     # FF 2026-11-19: no scale-bar length in the caption, the bars are labeled
 
+  # FF 2026-11-19: "put fig 3 results and images first because i trust those more! I can actually see enrichment there"
+  # FF's spec (relayed by tcell-3d-morphodynamics-e4, 2026-11-19): "we need to show all 3 channels.
+  # see how we did things for october 29 2026 noco ppt with h3k27me3 ... we can have multiple slides
+  # of montages! things need to be big. we can show the two conditions on the same slide ... 6 [cells
+  # per condition per slide]. 2 slides to start." Montages: TCell create_montages, physical_scale_mode,
+  # ranked by 2D invagination depth (montage_cells.csv beside each), after FF's 8 Exclude marks.
+  # FF 2026-11-19 (relayed by e4): "0 hr should be on left, 2 hr on right", "cell numbers totally
+  # useless just drop", "also drop depth"; the doubled cell f06 c73 dropped. Tiles: 2 across x 3 down.
+  - kind: montages
+    review_id: s28   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+    draft: true
+    side_by_side: true
+    # FF 2026-11-19 approval page s28 "you need to enforce consistency"; chat "23: (a)"
+    title: "Fig 3 experiment, untreated, 0 h and 2 h: 10 deepest"
+    rows:
+      - {label: "0 h", image: "09a_section4_10_per_slide/0h/montages/montage_cells_1_10.png"}
+      - {label: "2 h", image: "09a_section4_10_per_slide/2h/montages/montage_cells_1_10.png"}
+    # rendering session 2026-11-19 (06b, figure-reviewer PASS): IFNG/TNF one shared display width per channel
+    # for all 36 tiles (IFNG 621, TNF 714 raw counts), each tile starting at its cell's background (25th pct
+    # inside the nucleus); DAPI per tile. Hides absolute brightness: do not read abundance 0 h vs 2 h.
+    view: "DAPI one plane; IFNG and TNF maximum intensity projections over 5 planes"
+    caption: "IFNG and TNF shown from each cell's background, same span for all; bars 5 μm"
+
+  - kind: montages
+    review_id: s29   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
+    draft: true
+    side_by_side: true
+    # FF 2026-11-19 chat: "ok" to the proposed montage titles
+    title: "Fig 3 experiment, untreated, 0 h and 2 h: 11th to 20th deepest"
+    rows:
+      - {label: "0 h", image: "09a_section4_10_per_slide/0h/montages/montage_cells_11_20.png"}
+      - {label: "2 h", image: "09a_section4_10_per_slide/2h/montages/montage_cells_11_20.png"}
+    view: "DAPI one plane; IFNG and TNF maximum intensity projections over 5 planes"
+    caption: "IFNG and TNF shown from each cell's background, same span for all; bars 5 μm"
+
   # Example cells per time point (FF: time course = "table + violins + example cells"). Rendered by the rendering
   # session (09b, 10 per slide, FF 2026-11-19 "actually include 10 per slide"; touching-pair look flagged by the
   # reviewer, kept per FF's "we can discuss, just leave for now"): the 10 deepest 2D invaginations per time point among filtered cells
@@ -306,39 +384,6 @@ slides:
     view: "DAPI one plane; IFNG and TNF maximum intensity projections over 5 planes"
     caption: "IFNG and TNF shown from each cell's background, same span for all; bars 5 μm"
 
-  # FF's spec (relayed by tcell-3d-morphodynamics-e4, 2026-11-19): "we need to show all 3 channels.
-  # see how we did things for october 29 2026 noco ppt with h3k27me3 ... we can have multiple slides
-  # of montages! things need to be big. we can show the two conditions on the same slide ... 6 [cells
-  # per condition per slide]. 2 slides to start." Montages: TCell create_montages, physical_scale_mode,
-  # ranked by 2D invagination depth (montage_cells.csv beside each), after FF's 8 Exclude marks.
-  # FF 2026-11-19 (relayed by e4): "0 hr should be on left, 2 hr on right", "cell numbers totally
-  # useless just drop", "also drop depth"; the doubled cell f06 c73 dropped. Tiles: 2 across x 3 down.
-  - kind: montages
-    review_id: s28   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
-    draft: true
-    side_by_side: true
-    # FF 2026-11-19 approval page s28 "you need to enforce consistency"; chat "23: (a)"
-    title: "Fig 3 experiment, untreated, 0 h and 2 h: 10 deepest"
-    rows:
-      - {label: "0 h", image: "09a_section4_10_per_slide/0h/montages/montage_cells_1_10.png"}
-      - {label: "2 h", image: "09a_section4_10_per_slide/2h/montages/montage_cells_1_10.png"}
-    # rendering session 2026-11-19 (06b, figure-reviewer PASS): IFNG/TNF one shared display width per channel
-    # for all 36 tiles (IFNG 621, TNF 714 raw counts), each tile starting at its cell's background (25th pct
-    # inside the nucleus); DAPI per tile. Hides absolute brightness: do not read abundance 0 h vs 2 h.
-    view: "DAPI one plane; IFNG and TNF maximum intensity projections over 5 planes"
-    caption: "IFNG and TNF shown from each cell's background, same span for all; bars 5 μm"
-
-  - kind: montages
-    review_id: s29   # slide number on the approval page (Xak8Bv7AMc4zN2ZeW8NWAr)
-    draft: true
-    side_by_side: true
-    # FF 2026-11-19 chat: "ok" to the proposed montage titles
-    title: "Fig 3 experiment, untreated, 0 h and 2 h: 11th to 20th deepest"
-    rows:
-      - {label: "0 h", image: "09a_section4_10_per_slide/0h/montages/montage_cells_11_20.png"}
-      - {label: "2 h", image: "09a_section4_10_per_slide/2h/montages/montage_cells_11_20.png"}
-    view: "DAPI one plane; IFNG and TNF maximum intensity projections over 5 planes"
-    caption: "IFNG and TNF shown from each cell's background, same span for all; bars 5 μm"
   # FF 2026-11-19: "I want all montages before any spot detection"
 
   # FF 2026-11-19: "where are raw data???? they need to go way before spot detection": spot
@@ -405,6 +450,85 @@ slides:
       - "Designed to be analogous to 3D metric: only using 2D because 3D segmentation from the widefield stack has proven infeasible."
     caption: "Background subtracted (25th percentile of a 1 μm ring outside the nucleus); 1 = the ring average"
 
+  # Fig 3 experiment levels first: FF 2026-11-19 "put fig 3 results and images first because i trust those more! I can
+  # actually see enrichment there". Rendering session's 10_fig3_levels (same measure as the time course; untreated,
+  # 0 h and 2 h); tables by render_biad2255_level_table.py --times "0 h,2 h". DAPI not saturated here: no caveat.
+  - kind: plots
+    review_id: s32f3
+    draft: true
+    title: "Relative level near deepest invagination (in cytoplasm)"
+    view: "Fig 3 experiment, untreated"   # PROPOSED (agent wording)
+    images: ["10_fig3_levels/level_table.png"]
+    caption: "Cells with invagination depth ≥ 0.2 μm"
+  - kind: plots
+    review_id: s33f3
+    draft: true
+    title: "Relative level near deepest invagination (in cytoplasm)"
+    view: "Fig 3 experiment, untreated"   # PROPOSED (agent wording)
+    images: ["10_fig3_levels/perinuc05_sub/IFNG.png", "10_fig3_levels/perinuc05_sub/TNF.png"]
+    caption: "Median and quartiles; dotted line at 1"
+  - kind: plots
+    review_id: s35f3_025
+    draft: true
+    title: "Relative level near deepest invagination (in nucleus)"
+    view: "Fig 3 experiment, untreated: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["10_fig3_levels/level_table_inperinuc025_subcrop.png"]
+    caption: "Cells with invagination depth ≥ 0.2 μm"
+  - kind: plots
+    review_id: s36f3_025
+    draft: true
+    title: "Relative level near deepest invagination (in nucleus)"
+    view: "Fig 3 experiment, untreated: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["10_fig3_levels/inperinuc025_subcrop/IFNG.png", "10_fig3_levels/inperinuc025_subcrop/TNF.png"]
+    caption: "Median and quartiles; dotted line at 1"
+  - kind: plots
+    review_id: s37f3_025
+    draft: true
+    title: "Relative level near deepest invagination (in nucleus)"
+    view: "Fig 3 experiment, untreated: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["10_fig3_levels/inperinuc025_subcrop/DAPI.png"]
+    caption: "Median and quartiles; dotted line at 1"
+  - kind: plots
+    review_id: s35f3_05_
+    draft: true
+    title: "Relative level near deepest invagination (in nucleus)"
+    view: "Fig 3 experiment, untreated: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["10_fig3_levels/level_table_inperinuc05_subcrop.png"]
+    caption: "Cells with invagination depth ≥ 0.2 μm"
+  - kind: plots
+    review_id: s36f3_05_
+    draft: true
+    title: "Relative level near deepest invagination (in nucleus)"
+    view: "Fig 3 experiment, untreated: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["10_fig3_levels/inperinuc05_subcrop/IFNG.png", "10_fig3_levels/inperinuc05_subcrop/TNF.png"]
+    caption: "Median and quartiles; dotted line at 1"
+  - kind: plots
+    review_id: s37f3_05_
+    draft: true
+    title: "Relative level near deepest invagination (in nucleus)"
+    view: "Fig 3 experiment, untreated: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["10_fig3_levels/inperinuc05_subcrop/DAPI.png"]
+    caption: "Median and quartiles; dotted line at 1"
+  # MFIs near the nadir: FF 2026-11-19 "we should also report MFIs within the regions of consideration: compare over
+  # time"; "both before and after bg subtraction" (raw versions stay in 11_mfi); deck pick FF 2026-11-19: background-
+  # subtracted IFNG and TNF near the nadir, outer ring and inner 0.25 μm, 2 slides per experiment, "fig 3 results
+  # shold come before fig 1 ones". Rendering session: render_timecourse_mfi.m (run_mfi_sub_clip_20261119.m, 55.6 s;
+  # clipped at 0 per pixel, invag_signal_2d.m:194; axes from 0).
+  - kind: plots
+    review_id: smfi_f3_ring
+    draft: true
+    title: "MFI near deepest invagination (in cytoplasm)"   # PROPOSED (agent wording; FF's term "MFIs"; "Mean intensity ..." wrapped to 2 lines)
+    view: "Fig 3 experiment, untreated"   # PROPOSED (agent wording)
+    images: ["11_mfi/fig3/ring_near_sub/IFNG.png", "11_mfi/fig3/ring_near_sub/TNF.png"]
+    caption: "Median and quartiles; rank-sum test, 2 h vs 0 h"   # PROPOSED; tests: mfi_tests.csv (rank-sum vs 0 h, BH over the time points)
+  - kind: plots
+    review_id: smfi_f3_in025
+    draft: true
+    title: "MFI near deepest invagination (in nucleus)"   # PROPOSED (agent wording; FF's term "MFIs"; "Mean intensity ..." wrapped to 2 lines)
+    view: "Fig 3 experiment, untreated: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["11_mfi/fig3/in025_near_sub/IFNG.png", "11_mfi/fig3/in025_near_sub/TNF.png"]
+    caption: "Median and quartiles; rank-sum test, 2 h vs 0 h"   # PROPOSED; tests: mfi_tests.csv (rank-sum vs 0 h, BH over the time points)
+
   # FF 2026-11-19: "reuse table format of Histone mark data agent presentation": the table is an image rendered by
   # public_data/render_biad2255_level_table.py (Fig 6 table code, imported) from the rendering session's CSV
   # (mean, SEM, signed-rank vs 1, BH over the six time points; render_timecourse_level_table.m)
@@ -413,6 +537,7 @@ slides:
     draft: true
     # FF 2026-11-19 approval page s32, his words
     title: "Relative level near deepest invagination (in cytoplasm)"
+    view: "Fig 1 time course"   # PROPOSED (agent wording): both experiments are now shown
     images: ["07_timecourse_violins/level_table.png"]
     # e5/e4 2026-11-19: raw DAPI saturated at plane k: 0 h 180 of 180 cells >= 10 % of nucleus pixels
     # at >= 65,000 (median 0.87), 1 h 72 of 80 (median 0.49), none at 2-6 h. FF 2026-11-19: "keep saturation note"
@@ -426,6 +551,7 @@ slides:
     draft: true
     # FF 2026-11-19 chat: "ok" to the matching titles
     title: "Relative level near deepest invagination (in cytoplasm)"
+    view: "Fig 1 time course"   # PROPOSED (agent wording): both experiments are now shown
     images: ["07_timecourse_violins/IFNG.png", "07_timecourse_violins/TNF.png"]
     caption: "Median and quartiles; dotted line at 1"
 
@@ -445,7 +571,7 @@ slides:
     draft: true
     # FF 2026-11-19 chat: "ok" to the matching titles
     title: "Relative level near deepest invagination (in nucleus)"
-    view: "Inner 0.25 μm layer"
+    view: "Fig 1 time course: inner 0.25 μm layer"   # PROPOSED (agent wording); was "Inner 0.25 μm layer"
     images: ["07_timecourse_violins/level_table_inperinuc025_subcrop.png"]
     caption: "Cells with invagination depth ≥ 0.2 μm; DAPI saturated in most cells at 0 h and 1 h, outlines may be off"
   - kind: plots
@@ -453,7 +579,7 @@ slides:
     draft: true
     # FF 2026-11-19 chat: "ok" to the matching titles
     title: "Relative level near deepest invagination (in nucleus)"
-    view: "Inner 0.25 μm layer"
+    view: "Fig 1 time course: inner 0.25 μm layer"   # PROPOSED (agent wording); was "Inner 0.25 μm layer"
     images: ["07_timecourse_violins/inperinuc025_subcrop/IFNG.png", "07_timecourse_violins/inperinuc025_subcrop/TNF.png"]
     caption: "Median and quartiles; dotted line at 1"
   - kind: plots
@@ -461,7 +587,7 @@ slides:
     draft: true
     # FF 2026-11-19 chat: "ok" to the matching titles
     title: "Relative level near deepest invagination (in nucleus)"
-    view: "Inner 0.25 μm layer"
+    view: "Fig 1 time course: inner 0.25 μm layer"   # PROPOSED (agent wording); was "Inner 0.25 μm layer"
     images: ["07_timecourse_violins/inperinuc025_subcrop/DAPI.png"]
     caption: "Median and quartiles; dotted line at 1; DAPI saturated in most cells at 0 h and 1 h, outlines may be off"
   - kind: plots
@@ -469,7 +595,7 @@ slides:
     draft: true
     # FF 2026-11-19 chat: "ok" to the matching titles
     title: "Relative level near deepest invagination (in nucleus)"
-    view: "Inner 0.5 μm layer"
+    view: "Fig 1 time course: inner 0.5 μm layer"   # PROPOSED (agent wording); was "Inner 0.5 μm layer"
     images: ["07_timecourse_violins/level_table_inperinuc05_subcrop.png"]
     caption: "Cells with invagination depth ≥ 0.2 μm; DAPI saturated in most cells at 0 h and 1 h, outlines may be off"
   - kind: plots
@@ -477,7 +603,7 @@ slides:
     draft: true
     # FF 2026-11-19 chat: "ok" to the matching titles
     title: "Relative level near deepest invagination (in nucleus)"
-    view: "Inner 0.5 μm layer"
+    view: "Fig 1 time course: inner 0.5 μm layer"   # PROPOSED (agent wording); was "Inner 0.5 μm layer"
     images: ["07_timecourse_violins/inperinuc05_subcrop/IFNG.png", "07_timecourse_violins/inperinuc05_subcrop/TNF.png"]
     caption: "Median and quartiles; dotted line at 1"
   - kind: plots
@@ -485,6 +611,26 @@ slides:
     draft: true
     # FF 2026-11-19 chat: "ok" to the matching titles
     title: "Relative level near deepest invagination (in nucleus)"
-    view: "Inner 0.5 μm layer"
+    view: "Fig 1 time course: inner 0.5 μm layer"   # PROPOSED (agent wording); was "Inner 0.5 μm layer"
     images: ["07_timecourse_violins/inperinuc05_subcrop/DAPI.png"]
     caption: "Median and quartiles; dotted line at 1; DAPI saturated in most cells at 0 h and 1 h, outlines may be off"
+
+  # MFIs near the nadir: FF 2026-11-19 "we should also report MFIs within the regions of consideration: compare over
+  # time"; "both before and after bg subtraction" (raw versions stay in 11_mfi); deck pick FF 2026-11-19: background-
+  # subtracted IFNG and TNF near the nadir, outer ring and inner 0.25 μm, 2 slides per experiment, "fig 3 results
+  # shold come before fig 1 ones". Rendering session: render_timecourse_mfi.m (run_mfi_sub_clip_20261119.m, 55.6 s;
+  # clipped at 0 per pixel, invag_signal_2d.m:194; axes from 0).
+  - kind: plots
+    review_id: smfi_f1_ring
+    draft: true
+    title: "MFI near deepest invagination (in cytoplasm)"   # PROPOSED (agent wording; FF's term "MFIs"; "Mean intensity ..." wrapped to 2 lines)
+    view: "Fig 1 time course"   # PROPOSED (agent wording)
+    images: ["11_mfi/timecourse/ring_near_sub/IFNG.png", "11_mfi/timecourse/ring_near_sub/TNF.png"]
+    caption: "Median and quartiles; rank-sum test vs 0 h, BH-adjusted"   # PROPOSED; tests: mfi_tests.csv (rank-sum vs 0 h, BH over the time points)
+  - kind: plots
+    review_id: smfi_f1_in025
+    draft: true
+    title: "MFI near deepest invagination (in nucleus)"   # PROPOSED (agent wording; FF's term "MFIs"; "Mean intensity ..." wrapped to 2 lines)
+    view: "Fig 1 time course: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["11_mfi/timecourse/in025_near_sub/IFNG.png", "11_mfi/timecourse/in025_near_sub/TNF.png"]
+    caption: "Median and quartiles; rank-sum test vs 0 h, BH-adjusted"   # PROPOSED; tests: mfi_tests.csv (rank-sum vs 0 h, BH over the time points)

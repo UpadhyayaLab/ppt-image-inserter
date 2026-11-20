@@ -8,9 +8,10 @@ render_timecourse_level_table.m): per time point and channel, n_cells, mean, sem
 points of one channel, as Fig 6 adjusts over the arms of one panel).
 
 Usage:  python render_biad2255_level_table.py <level_mean_sem_signrank.csv> <out.png> [approved_text.yaml]
-            [--channels IFNG,TNF,DAPI] [--ref "the layer average"]
+            [--channels IFNG,TNF,DAPI] [--ref "the layer average"] [--times "0 h,2 h"]
 Defaults: the outside ring (IFNG, TNF; "1 = the ring average"). Inner layers (FF 2026-11-19: inner 0.25 and 0.5 μm
 "as for figure 6 of paper", DAPI shown beside the mRNAs as Fig 6 shows DNA beside the mark) pass --channels and --ref.
+The paper Fig 3 experiment (untreated, 0 h and 2 h; FF 2026-11-19 "put fig 3 results and images first") passes --times.
 Prints any text drawn into the image that the approved-text file lacks (repo CLAUDE.md: builders check text they
 draw into images).
 """
@@ -104,13 +105,15 @@ def main(csv_path, out_png, approved=None):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    for flag in ("--channels", "--ref"):
+    for flag in ("--channels", "--ref", "--times"):
         if flag in args:
             i = args.index(flag)
             val = args[i + 1]
             del args[i:i + 2]
             if flag == "--channels":
                 CHANNELS = val.split(",")
+            elif flag == "--times":
+                TIMES = val.split(",")
             else:
                 REF = val
     if len(args) not in (2, 3):
