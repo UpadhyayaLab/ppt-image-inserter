@@ -8,7 +8,8 @@ Style = the guide deck K:/FF/PPT/PPT_autogeneration/MCF7_channel_misalignment/
 Channel_Misalignment_GroupMeeting.pptx: its own slide functions (title, divider, text, image) are
 imported from insert_channel_misalignment_slides.py, not redrawn. Images are placed as they are.
 
-Slide kinds in the config: title, divider, text, image (optional crop), pair (wide images stacked,
+Slide kinds in the config: title, divider, text, image (optional crop; a tall image gets its title on top),
+plots (1-2 plots side by side, title on top), pair (wide images stacked,
 labels at the left), montages, table (header + rows), placeholder. A slide with draft: true
 gets a red tag (config draft_tag) at the bottom left.
 
@@ -16,6 +17,8 @@ Usage (base miniforge: python-pptx + pywin32 for the PNG export):
     python examples_and_configs/public_data/build_biad2255_deck.py <config.yaml>
     ... --list      dry run: print every slide, check images and text, build nothing
     ... --export    also export slide PNGs (PowerPoint COM) to the config's export_dir
+    ... --review    save even with slide text not yet approved, as <output>_TEXT_NOT_APPROVED.pptx
+                    (the clean-text check still blocks)
 """
 
 import os
@@ -33,6 +36,70 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import insert_channel_misalignment_slides as CM
 
 M = CM.M
+_cm_add_footer = CM.add_footer
+
+
+def _add_footer_if_text(slide, text, *args, **kwargs):
+    """An empty caption draws no footer (M.add_textbox fails on empty text). FF 2026-11-19: no scale-bar
+    length in a caption when the bar is labeled, which can leave a slide with no caption."""
+    if not text:
+        return
+    left = kwargs.get("left", args[0] if args else CM.MARGIN)
+    width = kwargs.get("width", args[1] if len(args) > 1 else CM.IMG_W)
+    # 18 pt (CM.FOOT_PT below) in the guide's 0.30 in box ran into the slide's bottom edge: 0.40 in box, 0.04 in up
+    M.add_textbox(slide, text, left, CM.H - 0.44, width, 0.40, font_pt=CM.FOOT_PT, color=CM.GREY,
+                  align=PP_ALIGN.RIGHT)
+
+
+CM.add_footer = _add_footer_if_text   # CM.image_slide / pair_slide look add_footer up in CM at call time
+# Captions readable at 1500 px (figures skill: >= 14 px; the guide deck's 13 pt came to 10-12 px, reviewer
+# 2026-11-19). CM.add_footer reads FOOT_PT at call time.
+CM.FOOT_PT = 18
+BULLET_MIN_PT = 24
+CAPTION_BOLD_FONT = "C:/Windows/Fonts/calibrib.ttf"
+
+
+def text_width_in(text, pt, bold=False):
+    from PIL import ImageFont
+    font = ImageFont.truetype(CAPTION_BOLD_FONT if bold else CAPTION_FONT, 1000)
+    return font.getlength(text) / 1000 * pt / 72
+
+
+def bullet_pt(bullets):
+    """Largest size <= the guide deck's bullet size at which every bullet stays on one line (FF 2026-11-19: no
+    walls of text; reviewer 2026-11-19: 2-bullet boxes wrapped to 3-4 lines). None if even BULLET_MIN_PT wraps."""
+    room = CM.IMG_W - 0.8 - 0.3        # text_slide's box, less its insets and the hanging bullet
+    for pt in range(CM.BULLET_PT, BULLET_MIN_PT - 1, -1):
+        if all(text_width_in("\u2022 " + b.strip(), pt) <= room for b in bullets):
+            return pt
+    return None
+
+
+def text_slide(prs, title, bullets, caption, pt):
+    saved, CM.BULLET_PT = CM.BULLET_PT, pt
+    try:
+        return CM.text_slide(prs, title, bullets, caption)
+    finally:
+        CM.BULLET_PT = saved
+
+
+DIVIDER_W = CM.W - 1.2               # = CM.divider_slide's box
+
+
+def divider_pt(title):
+    """CM.divider_slide's 54 pt bold, smaller if needed so the title takes at most 2 lines (reviewer
+    2026-11-19: FF's section 3 heading wrapped to 3 lines)."""
+    pt = 54
+    while pt > 32 and text_width_in(title, pt, bold=True) > 1.8 * (DIVIDER_W - 0.2):
+        pt -= 2
+    return pt
+
+
+def divider_slide(prs, title):
+    s = M._new_slide(prs, bg=M.DIVIDER_BG)
+    M.add_textbox(s, title, 0.6, 1.2, DIVIDER_W, 2.9, font_pt=divider_pt(title), color=CM.BLACK, bold=True)
+    s.shapes[-1].text_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
+    return s
 RED = RGBColor(0xC0, 0x00, 0x00)
 TAG_W = 2.6
 MICRO_SIGN = "\u00b5"          # never in slide text: Greek mu U+03BC only
@@ -65,6 +132,41 @@ def placeholder_slide(prs, title, body):
     return s
 
 
+def plots_slide(prs, title, imgs, caption):
+    """Title on top (FF 2026-11-19: "the slides should have titles themselves"), 1-2 images side by side,
+    each centered in its half of the slide at full image height, caption at the bottom right."""
+    s = M._new_slide(prs)
+    CM.add_title(s, title)
+    gap = 0.3
+    col_w = (CM.IMG_W - gap * (len(imgs) - 1)) / len(imgs)
+    for i, img in enumerate(imgs):
+        M.add_image_in_box(s, str(img), CM.MARGIN + i * (col_w + gap), CM.IMG_TOP, col_w, CM.IMG_H)
+    CM.add_footer(s, caption)
+    return s
+
+
+def contents_slide(prs, title, rows):
+    """Outline as one text box per row (repo CLAUDE.md: a contents row is one short phrase; a text box holds at most
+    2 lines). One font size for all rows, the largest (<= 32 pt) that keeps the longest row on one line."""
+    s = M._new_slide(prs)
+    CM.add_title(s, title, pt=40)
+    x, w = CM.MARGIN + 0.4, CM.IMG_W - 0.8
+    pt = 32
+    while pt > 18 and max(caption_width_in(r, pt) for r in rows) > w - 0.3:
+        pt -= 1
+    row_h = min(1.0, (CM.IMG_H - 0.3) / len(rows))
+    for i, r in enumerate(rows):
+        M.add_textbox(s, r, x, CM.IMG_TOP + 0.2 + i * row_h, w, row_h, font_pt=pt, color=CM.BLACK,
+                      align=PP_ALIGN.LEFT)
+    return s
+
+
+def is_tall(img):
+    from PIL import Image
+    with Image.open(img) as im:
+        return im.width / im.height < CM.SIDE_ASPECT
+
+
 TABLE_PT = 20
 
 
@@ -86,13 +188,32 @@ def table_slide(prs, title, header, rows, caption):
             p.alignment = PP_ALIGN.CENTER
             for run in p.runs:
                 run.font.size, run.font.bold = Pt(TABLE_PT), r == 0
-    if caption:
-        M.add_textbox(s, caption, CM.MARGIN, CM.H - CM.FOOT_H, CM.IMG_W, CM.FOOT_H, font_pt=CM.FOOT_PT,
-                      color=CM.GREY, align=PP_ALIGN.RIGHT)
+    CM.add_footer(s, caption)    # same caption box as every other slide (reviewer 2026-11-19: it touched the edge)
     return s
 
 
-def montage_rows_slide(prs, title, rows, footer, side_by_side=False):
+VIEW_PT, VIEW_H = 24, 0.45   # the "view" line: which plane / projection is shown, large, under the title
+# (FF 2026-11-19 on slide 19: MIP or single slice "needs to be indicated!"; in the caption it is "too small
+# and easily missed")
+
+
+def add_view_line(s, title, view, dark=False):
+    """Put the view line (plane / projection) right under the slide title, at VIEW_PT. On white slides the
+    title box gives up its bottom VIEW_H; on black montage slides the caller leaves VIEW_H below the title."""
+    if dark:
+        import insert_noco_10262026_montage_slides as N
+        box = N.add_textbox(s, view, N.MARGIN, N.GRID_TOP, N.SLIDE_W - 2 * N.MARGIN, VIEW_H,
+                            font_pt=VIEW_PT, color=N.WHITE)
+    else:
+        tbox = next(sh for sh in s.shapes if sh.has_text_frame and sh.text_frame.text == title)
+        tbox.height = Inches(CM.TITLE_H - VIEW_H)
+        box = M.add_textbox(s, view, CM.MARGIN, CM.TITLE_TOP + CM.TITLE_H - VIEW_H, CM.IMG_W, VIEW_H,
+                            font_pt=VIEW_PT, color=CM.BLACK)
+    box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    box.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+
+
+def montage_rows_slide(prs, title, rows, footer, side_by_side=False, view=None):
     """Pre-composed montages, one labeled row per condition, in the Oct 2026 Noco / H3K27me3 montage
     look (insert_noco_10262026_montage_slides: black slide, white title, white condition labels,
     gray footer). Every montage is placed at ONE px per inch, so cells compare at physical scale
@@ -100,6 +221,9 @@ def montage_rows_slide(prs, title, rows, footer, side_by_side=False):
     import insert_noco_10262026_montage_slides as N
     from PIL import Image
     s = N.new_slide(prs, title, None)
+    grid_top = N.GRID_TOP + (VIEW_H if view else 0)
+    if view:
+        add_view_line(s, title, view, dark=True)
     sizes = []
     for _, p in rows:
         with Image.open(p) as im:
@@ -109,9 +233,9 @@ def montage_rows_slide(prs, title, rows, footer, side_by_side=False):
         # centered above it, every montage at ONE px per inch
         lab_h, gap = 0.45, 0.25
         col_w = (N.SLIDE_W - 2 * N.MARGIN - gap * (len(rows) - 1)) / len(rows)
-        img_h = N.SLIDE_H - N.GRID_TOP - lab_h - N.HULL_FOOT_H
+        img_h = N.SLIDE_H - grid_top - lab_h - N.HULL_FOOT_H
         ppi = max(max(w / col_w, h / img_h) for w, h in sizes)
-        top = N.GRID_TOP + (img_h - max(h for _, h in sizes) / ppi) / 2   # block centered between title and footer
+        top = grid_top + (img_h - max(h for _, h in sizes) / ppi) / 2   # block centered between title and footer
         for i, ((label, p), (w, h)) in enumerate(zip(rows, sizes)):
             left = N.MARGIN + i * (col_w + gap)
             box = N.add_textbox(s, label, left, top, col_w, lab_h, font_pt=N.HULL_LABEL_FONT_PT,
@@ -124,11 +248,11 @@ def montage_rows_slide(prs, title, rows, footer, side_by_side=False):
         rows = []                 # labels and pictures placed; only the footer below
     lab_w, gap = 1.1, 0.12        # label set on two lines ("2 h" / "control"); FF: "things need to be big"
     area_w = N.SLIDE_W - 2 * N.MARGIN - lab_w
-    row_h = (N.SLIDE_H - N.GRID_TOP - N.HULL_FOOT_H - gap * (max(len(rows), 1) - 1)) / max(len(rows), 1)
+    row_h = (N.SLIDE_H - grid_top - N.HULL_FOOT_H - gap * (max(len(rows), 1) - 1)) / max(len(rows), 1)
     if rows:
         ppi = max(max(w / area_w, h / row_h) for w, h in sizes)
     for i, ((label, p), (w, h)) in enumerate(zip(rows, sizes)):
-        top = N.GRID_TOP + i * (row_h + gap)
+        top = grid_top + i * (row_h + gap)
         # "2 h control" -> "2 h" / "control": one break per space after the first word group, set as a
         # line break so the narrow column never clips a word
         head, _, rest = label.partition(" h ")
@@ -155,9 +279,11 @@ def montage_rows_slide(prs, title, rows, footer, side_by_side=False):
 
 
 def slide_text(sp):
-    parts = [sp.get("title", ""), sp.get("subtitle", ""), sp.get("caption", ""), sp.get("body", "")]
+    parts = [sp.get("title", ""), sp.get("subtitle", ""), sp.get("view", ""), sp.get("caption", ""), sp.get("body", "")]
     if sp.get("kind") == "table":
         return parts + [str(v) for r in [sp["header"]] + sp["rows"] for v in r]
+    if sp.get("kind") == "contents":
+        return parts + list(sp["rows"])
     return (parts + list(sp.get("bullets", [])) + list(sp.get("labels", []))
             + [r["label"] for r in sp.get("rows", [])])
 
@@ -182,7 +308,8 @@ def check(cfg):
     base = Path(cfg["base_dir"])
     probs = []
     for i, sp in enumerate(cfg["slides"], 1):
-        if sp["kind"] not in ("title", "divider", "text", "image", "pair", "montages", "placeholder", "table"):
+        if sp["kind"] not in ("title", "divider", "text", "image", "pair", "montages", "placeholder", "table", "plots",
+                              "contents"):
             probs.append("slide {}: unknown kind {}".format(i, sp["kind"]))
         if sp["kind"] == "table":
             bad = [r for r in sp["rows"] if len(r) != len(sp["header"])]
@@ -190,7 +317,7 @@ def check(cfg):
                 probs.append(f"slide {i}: {len(bad)} table row(s) without {len(sp['header'])} cells")
             if len(sp["rows"]) + 1 > int((CM.IMG_H - 0.3) / 0.55):
                 probs.append(f"slide {i}: {len(sp['rows'])} table rows do not fit")
-        rels = ([sp["image"]] if sp["kind"] == "image" else [] if sp["kind"] == "table"
+        rels = ([sp["image"]] if sp["kind"] == "image" else [] if sp["kind"] in ("table", "contents")
                 else sp.get("images", []) + [r["image"] for r in sp.get("rows", [])])
         for rel in rels:
             if not (base / rel).is_file():
@@ -202,11 +329,18 @@ def check(cfg):
                 probs.append(f"slide {i}: micro sign U+00B5 in '{t}'")
             if re.search(r"\bdecon", t, re.IGNORECASE):
                 probs.append(f"slide {i}: deconvolution mentioned in '{t}'")
-        # right-aligned caption must end before the draft tag's box starts (+0.1 in for text margins)
-        room = CM.IMG_W - TAG_W - 0.1
+        if sp["kind"] == "text" and bullet_pt(sp["bullets"]) is None:   # reported, not blocking: FF sees it
+            print(f"[WRAP] slide {i}: a bullet wraps to a second line even at {BULLET_MIN_PT} pt")
+        if sp["kind"] == "divider" and (sp.get("subtitle") or
+                                        text_width_in(sp["title"], divider_pt(sp["title"]), True) > 1.8 * (DIVIDER_W - 0.2)):
+            probs.append(f"slide {i}: divider title over 2 lines, or a subtitle (not drawn)")
+        # right-aligned caption must fit the image width, and end before the draft tag's box starts
+        # when a tag is drawn (+0.1 in for text margins)
+        tagged = sp.get("draft") and cfg.get("draft_tag")
+        room = CM.IMG_W - (TAG_W if tagged else 0) - 0.1
         cw = caption_width_in(sp.get("caption", ""), MONTAGE_FOOT_PT if sp["kind"] == "montages" else None)
-        if sp.get("draft") and cw > room:
-            probs.append(f"slide {i}: caption {cw:.2f} in wide, room beside the DRAFT tag {room:.2f} in")
+        if cw > room:
+            probs.append(f"slide {i}: caption {cw:.2f} in wide, room {room:.2f} in")
     return probs
 
 
@@ -216,20 +350,33 @@ def build(cfg):
     prs = Presentation()
     prs.slide_width, prs.slide_height = Inches(CM.W), Inches(CM.H)
     titles = []
+    # one bullet size for every text slide: the largest at which all bullets that can fit on one line do
+    deck_bullet_pt = min([p for p in (bullet_pt(sp["bullets"]) for sp in cfg["slides"] if sp["kind"] == "text")
+                          if p] or [CM.BULLET_PT])
+    print(f"bullet size {deck_bullet_pt} pt (guide deck {CM.BULLET_PT} pt)")
     for sp in cfg["slides"]:
         k = sp["kind"]
         if k == "title":
             s = CM.title_slide(prs, sp["title"], sp.get("subtitle", ""))
         elif k == "divider":
-            s = CM.divider_slide(prs, sp["title"], sp.get("subtitle", ""))
+            s = divider_slide(prs, sp["title"])
         elif k == "text":
-            s = CM.text_slide(prs, sp["title"], sp["bullets"], sp.get("caption", ""))
+            s = text_slide(prs, sp["title"], sp["bullets"], sp.get("caption", ""), deck_bullet_pt)
+        elif k == "contents":
+            s = contents_slide(prs, sp["title"], sp["rows"])
         elif k == "image":
-            s = CM.image_slide(prs, sp["title"], str(image_path(cfg, sp, sp["image"], crop_dir)), sp.get("caption", ""))
+            img = str(image_path(cfg, sp, sp["image"], crop_dir))
+            if is_tall(img):   # the guide deck puts the title beside a tall image; FF wants it on top
+                s = plots_slide(prs, sp["title"], [img], sp.get("caption", ""))
+            else:
+                s = CM.image_slide(prs, sp["title"], img, sp.get("caption", ""))
+        elif k == "plots":   # 1-2 plots side by side, title on top
+            s = plots_slide(prs, sp["title"], [Path(cfg["base_dir"]) / r for r in sp["images"]],
+                            sp.get("caption", ""))
         elif k == "montages":   # one row per condition, one physical scale (Oct 2026 montage look)
             s = montage_rows_slide(prs, sp["title"], [(r["label"], Path(cfg["base_dir"]) / r["image"])
                                                       for r in sp["rows"]], sp.get("caption", ""),
-                                   side_by_side=sp.get("side_by_side", False))
+                                   side_by_side=sp.get("side_by_side", False), view=sp.get("view"))
         elif k == "table":
             s = table_slide(prs, sp["title"], sp["header"], sp["rows"], sp.get("caption", ""))
         elif k == "pair":   # wide images stacked, label at the left (guide deck's pair_slide)
@@ -237,8 +384,10 @@ def build(cfg):
                               sp["labels"], sp.get("caption", ""))
         else:
             s = placeholder_slide(prs, sp["title"], sp["body"])
-        if sp.get("draft"):
+        if sp.get("draft") and cfg.get("draft_tag"):     # empty draft_tag = no tag drawn
             add_draft_tag(s, cfg["draft_tag"])
+        if sp.get("view") and k != "montages":
+            add_view_line(s, sp["title"], sp["view"])
         titles.append(sp["title"])
     return prs, titles
 
@@ -292,10 +441,29 @@ def main():
         sys.exit(1)
     if "--list" in sys.argv:
         return
+    review = "--review" in sys.argv
     out = Path(cfg["output"])
+    if review:   # FF 2026-11-19 "rebuild deck with new changes" while text approval is still under way
+        out = out.with_name(out.stem + "_TEXT_NOT_APPROVED.pptx")
     if (out.parent / ("~$" + out.name)).exists():
         sys.exit(f"[locked] {out.name} is open in PowerPoint; close it first")
     prs, titles = build(cfg)
+    # Clean slide text and approved slide text (repo CLAUDE.md): the deck is not saved if either fails.
+    # --review: the clean-text check still blocks; unapproved lines are listed and the deck is saved under
+    # a name that says so, for FF to look at during approval. It is never the finished deck.
+    from ppt_image_inserter.text_lint import lint_presentation
+    from ppt_image_inserter.approved_text import deck_strings, load_approved, unapproved
+    lint = lint_presentation(prs)
+    if cfg.get("approved_text"):
+        unappr = unapproved(deck_strings(prs), load_approved(Path(args[0]).parent / cfg["approved_text"]))
+    else:
+        unappr = ["config has no approved_text file"]
+    for p in lint + unappr:
+        print("[TEXT]", p)
+    if lint or (unappr and not review):
+        sys.exit(f"{len(lint) + len(unappr)} slide text problem(s); deck not saved")
+    if unappr:
+        print(f"[REVIEW] {len(unappr)} slide line(s) not yet approved; saved as {out.name}")
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists():
         M.backup_presentation(str(out), backup_base=str(out.parent / "backups"))

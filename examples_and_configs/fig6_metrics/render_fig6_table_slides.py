@@ -54,14 +54,15 @@ sup{font-size:14px;line-height:0;margin-left:1px;color:#1d1d1f} .se{font-size:15
 .sw{display:inline-block;width:22px;height:12px;vertical-align:-1px;margin-right:5px;border-radius:2px}
 """
 
-KEY = ('<div class="key"><span>Level near the nadir of the deepest invagination ÷ the cell&#39;s whole-surface average '
+# Wording from the verified definitions (TCell-3D-Morphodynamics dev/reporting/fig6_metrics_page/fig6_definitions.yaml:
+# relative_level_near_nadir_C, near_centrosome_value, table_statistics), approved by FF 2026-11-19.
+KEY = ('<div class="key"><span>Mean in the 0.25 μm layer near the nadir ÷ the same layer, whole nucleus '
        "(1 = no enrichment); mean ± SEM over cells</span>"
        '<span><span class="sw" style="background:rgba(37,99,235,.55)"></span>below 1&nbsp;&nbsp;'
        '<span class="sw" style="background:rgba(220,38,38,.55)"></span>above 1</span>'
        "<span>* &lt;0.05, ** &lt;0.01, *** &lt;0.001 vs 1 (signed-rank, BH-adjusted); gray = n.s.{na}</span></div>")
-CENT_KEY = ('<div class="key"><span>Near centrosome: nadir inside the centrosome-proximal region (Fig. 6C); '
+CENT_KEY = ('<div class="key"><span>Near centrosome: disk around the deepest point of the centrosome-proximal patch; '
             "no test; blank = not analyzed</span></div>")
-NO_C = ('<div class="key"><span>– = not measured in this compile</span></div>')
 
 
 def first(td):
@@ -97,7 +98,7 @@ def table_html(keys, data, mk, cent):
     with_cent = any(k in cent for k in keys)
     if with_cent:
         h = ['<table><thead><tr><th class="l" rowspan="2">Experiment</th><th class="l" rowspan="2">Arm</th>'
-             '<th class="grp" colspan="3">Whole nucleus</th><th class="grp" colspan="3">Near centrosome (Fig. 6C)</th></tr>'
+             '<th class="grp" colspan="3">Whole nucleus</th><th class="grp" colspan="3">Near centrosome</th></tr>'
              f'<tr><th class="first">n</th><th>{mk}</th><th>DNA</th><th class="first">n</th><th>{mk}</th><th>DNA</th></tr>'
              '</thead><tbody>']
     else:
@@ -137,7 +138,7 @@ def slide_html(title, keys, data, cent):
          + KEY.replace("{na}", "; n/a = too few cells to test" if any(
              a.get("C_mark_p") == "NA" or a.get("C_dna_p") == "NA" for k in keys for a in data.get(k, {}).values()) else "")
          + (CENT_KEY if any(k in cent for k in keys) else "")
-         + (NO_C if any(k in ("j_k9me3", "j_k27ac") for k in keys) else "") + "</div>")
+         + "</div>")
     return h.replace("µ", MU), sum(p[1] for p in parts), sum(p[2] for p in parts)
 
 
@@ -154,26 +155,32 @@ def pages(data, cent):
     return out
 
 
-# Contents slide (FF 2026-11-20: title page "needs more info", "break into 2 slides"). Slide numbers count the title
-# slide (1) and this slide (2); the deck check compares these ranges with the config's C/D/E/F entries.
-CONTENTS = [
-    ("3–8", "Summary tables: relative level near the nadir, mean ± SEM (H3K27me3 in Jurkat cells, 2 slides; "
-            "H3K27me3 in CTLs; H3K9me3; H3K27ac; RNAP II)"),
-    ("9–113", "One slide per experiment, grouped by Figure 6 panel:"),
-    ("C, 9–27", "Level in the deepest invagination region, mark and DNA"),
-    ("D, 28–48", f"Profile along the nuclear surface from the deepest point, 0–10 {MU}m"),
-    ("E, 49–92", f"Deepest region, 0.25 {MU}m shell"),
-    ("F, 93–113", "Profile vs distance to the convex hull surface"),
+# Contents slide (FF 2026-11-19: title page "needs more info", "break into 2 slides"; "keep labels concise, period.
+# no need to mention C, D, E, F"; "do not mention voxels"). Slide numbers count the title slide (1) and this slide
+# (2). Nadir facts from the Histone mark data session 2026-11-19 (compute_nuclear_concavity.m:150 whole
+# nucleus; slides 3-4 = the centrosome-proximal seed). (slides, text, title regex): the deck check confirms exactly those slides' titles match the regex.
+CONTENTS = [   # one short phrase per row (FF 2026-11-19: "clean up slide 2!!!! this is slop"); no character limit (FF 2026-11-19)
+    ("3–4", "Nadir: surface point farthest from the hull boundary", "The regions measured"),
+    ("5–10", "Summary tables", "Relative level near nadir, mean ± SEM"),
+    ("11–31", "Relative level near nadir", "Relative level near nadir: "),
+    ("32–52", "Relative level vs distance from nadir, along the surface", "Relative level vs distance from nadir"),
+    ("53–73", "Relative level vs depth below convex hull, ÷ its 0–0.25 μm bin", "Relative level vs depth below convex hull"),
+]
+# Definition lines, verbatim as approved by FF 2026-11-19 (fig6_definitions.yaml: shell_and_face_density,
+# relative_level_near_nadir_C, region_near_nadir_C). Check: <= 100 characters each.
+CONTENTS_NOTES = [
+    "Level: mean in the 0.25 μm layer inside the nuclear surface ÷ that layer over the whole nucleus",
+    "Near nadir: deeper than half the nadir's depth, within 25% of the mean surface distance from it",
 ]
 
 
 def render_contents(out):
-    rows = "".join(f'<tr class="{"sub" if s[0] in "CDEF" else ""}"><td class="k">{html.escape(s)}</td>'
-                   f'<td>{html.escape(t)}</td></tr>' for s, t in CONTENTS)
+    rows = "".join(f'<tr><td class="k">{html.escape(s)}</td><td>{html.escape(t)}</td></tr>' for s, t, _ in CONTENTS)
+    rows += "".join(f'<tr><td></td><td class="note">{html.escape(n)}</td></tr>' for n in CONTENTS_NOTES)
     page = (f'<meta charset="utf-8"><title>Contents</title><style>body{{background:#fff;color:#1d1d1f;'
-            f'font:22px/1.35 "Segoe UI",system-ui,sans-serif;margin:0;padding:8px}}table{{border-collapse:collapse;'
-            f'width:1000px}}td{{padding:5px 10px;vertical-align:top}}td.k{{font-weight:600;white-space:nowrap}}'
-            f'tr.sub td.k{{padding-left:40px}}</style><table>{rows}</table>')
+            f'font:30px/1.5 "Segoe UI",system-ui,sans-serif;margin:0;padding:8px}}table{{border-collapse:collapse;'
+            f'width:auto}}td{{padding:5px 10px;vertical-align:top}}td.k{{font-weight:600;white-space:nowrap}}'
+            f'td.note{{color:#6e6e73;padding-top:14px}}</style><table>{rows}</table>')
     hp, pp = out / "contents.html", out / "contents.png"
     hp.write_text(page, encoding="utf-8")
     subprocess.run([EDGE, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--force-device-scale-factor=2",

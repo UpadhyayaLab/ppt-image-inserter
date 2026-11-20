@@ -1,0 +1,52 @@
+# Approved slide text for the BIAD2255 smFISH deck (ppt_image_inserter.approved_text). build_biad2255_deck.py
+# does not save the deck while any slide line is missing here. Add a line ONLY with its source: FF's approval
+# (date and his words), from the approval page https://claude.ai/artifact/Xak8Bv7AMc4zN2ZeW8NWAr (db collection
+# biad2255_text, one document per slide). Never wording an agent wrote itself.
+exact:
+- text: Outline
+  source: 'FF 2026-11-19, approval page slide 2: changed only rows 3 and 4'
+- text: 1. Background and paper summary
+  source: 'FF 2026-11-19, approval page s02: change "The study" to "Background and paper summary"; numbering as his rows 3 and 4'
+- text: 2. Imaging
+  source: 'FF 2026-11-19, approval page s02: "The images" to "Imaging"; numbering as his rows 3 and 4'
+- text: 3. Images of IFN-γ and TNF around cells with the deepest invaginations (in 2D)
+  source: 'FF 2026-11-19, approval page slide 2, his words'
+- text: 4. Profiling IFN-γ and TNF levels near invaginations
+  source: 'FF 2026-11-19, approval page slide 2, his words'
+- text: IFNG and TNF mRNA in human CD8 T cells (using data from Lattanzio 2025)
+  source: 'FF 2026-11-19, approval page s01: "change to (using data from Lattanzio 2025)"'
+- text: '• Invagination depth ≥ 0.2 μm (arbitrary)'
+  source: 'FF 2026-11-19, approval page s23, his words'
+- text: Raw DAPI, maximum intensity projections
+  source: 'FF 2026-11-19, approval page s24, his words'
+- text: DAPI one plane; IFNG and TNF maximum intensity projections over 5 planes
+  source: 'FF 2026-11-19, approval page s25: "[I]FNG and TNF maximum intensity projections over 5 planes" (typo FNG fixed; DAPI part kept)'
+  open: DAPI part not in his note
+- text: 1 h
+  source: 'FF 2026-11-19, approval page s25: "remove 1 h (one cell excluded by eye)"'
+- text: "Two experiments from the paper's deposit"
+  source: 'FF 2026-11-19 chat: "OK to Proposed rewrite of slide 15"'
+- text: '• Paper Fig 3 experiment, untreated cells, 0 h and 2 h: montages and spot detection'
+  source: 'FF 2026-11-19 chat: "OK to Proposed rewrite of slide 15"'
+- text: '• Paper Fig 1 time course, 0 to 6 h: montages and all level measurements'
+  source: 'FF 2026-11-19 chat: "OK to Proposed rewrite of slide 15"'
+- text: "Fig 1 time course, 0 h and 1 h: 10 deepest"
+  source: 'FF 2026-11-19 chat: "ok" to the proposed montage titles'
+- text: "Fig 1 time course, 2 h and 3 h: 10 deepest"
+  source: 'FF 2026-11-19 chat: "ok" to the proposed montage titles'
+- text: "Fig 1 time course, 4 h and 6 h: 10 deepest"
+  source: 'FF 2026-11-19 chat: "ok" to the proposed montage titles'
+- text: "Fig 3 experiment, untreated, 0 h and 2 h: 10 deepest"
+  source: 'FF 2026-11-19 approval page s28 ("enforce consistency") and chat "23: (a)"'
+- text: "Fig 3 experiment, untreated, 0 h and 2 h: 11th to 20th deepest"
+  source: 'FF 2026-11-19 chat: "ok" to the proposed montage titles'
+- text: '• Designed to be analogous to 3D metric: only using 2D because 3D segmentation from the widefield stack has proven infeasible.'
+  source: 'FF 2026-11-19, approval page s31: "Third bullet: ...", his words'
+- text: Relative level near deepest invagination (in cytoplasm)
+  source: 'FF 2026-11-19, approval page s32, his words'
+- text: Relative level near deepest invagination (in nucleus)
+  source: 'FF 2026-11-19 chat: "ok" to the matching titles'
+- text: Inner 0.25 μm layer
+  source: 'FF 2026-11-19 chat: "ok" to the matching titles'
+- text: Inner 0.5 μm layer
+  source: 'FF 2026-11-19 chat: "ok" to the matching titles'

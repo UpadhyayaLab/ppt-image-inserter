@@ -1,0 +1,143 @@
+# Every piece of text a Fig 6 deck slide may carry. rebuild_fig6_deck.py check() fails the build on any slide
+# string not listed here (FF 2026-11-19: "we need to prevent these mistakes...period").
+# Checked: title slide lines, slide titles (= title_prefix + ": " + title_label), subtitles, contents rows and
+# notes, table headers and keys. Not checked: numbers, arm names in table rows (condition names from the data), text
+# drawn inside the figure PNGs (owned by the Histone mark data session).
+# Add or change a line ONLY with its source: FF's approval (date and his words) or a fig6_definitions.yaml term
+# (code-checked by the data session). Never wording an agent wrote itself.
+# "open": FF may still change this string (decision page item N).
+exact:
+- text: 'Histone marks and RNAP II at nuclear invaginations in T cells: results across experiments'
+  source: FF 2026-11-19, his wording
+- text: Experiments performed by Matthew Connell and Aashli Pathni
+  source: 'FF 2026-11-19: ''experiments performed by Matthew Connell and Aashli Pathni'''
+- text: Nov 20, 2026
+  source: 'FF 2026-11-19: ''change date to nov 20'', italic per FF; confirmed 2026-11-19: ''Nov 20 because I said that - period'''
+- text: Contents
+  source: in the deck FF reviewed 2026-11-19
+- text: The regions measured, CD3 DMSO cell 10
+  source: in the deck FF reviewed 2026-11-19
+  open: decision page item 4
+- text: Cyan = away. Bars = 5 μm.
+  source: in the deck FF reviewed 2026-11-19
+- text: The regions measured, CD3 DMSO cell 34
+  source: in the deck FF reviewed 2026-11-19
+  open: decision page item 4
+- text: 'Nadir: surface point farthest from the hull boundary'
+  source: FF 2026-11-19, his words
+- text: Summary tables
+  source: approved by FF 2026-11-19 (contents text)
+- text: Relative level near nadir
+  source: approved by FF 2026-11-19 (contents text)
+- text: Relative level vs distance from nadir, along the surface
+  source: approved by FF 2026-11-19 (contents text)
+- text: Relative level vs depth below convex hull, ÷ its 0–0.25 μm bin
+  source: approved by FF 2026-11-19 (contents text)
+- text: 'Level: mean in the 0.25 μm layer inside the nuclear surface ÷ that layer over the whole nucleus'
+  source: approved by FF 2026-11-19 (render_fig6_table_slides.py comment)
+  open: decision page item 3
+- text: 'Near nadir: deeper than half the nadir''s depth, within 25% of the mean surface distance from it'
+  source: approved by FF 2026-11-19 (render_fig6_table_slides.py comment)
+  open: decision page item 3
+- text: Experiment
+  source: in the deck FF reviewed 2026-11-19
+- text: Arm
+  source: in the deck FF reviewed 2026-11-19
+- text: Whole nucleus
+  source: in the deck FF reviewed 2026-11-19
+- text: Near centrosome
+  source: in the deck FF reviewed 2026-11-19
+- text: n
+  source: in the deck FF reviewed 2026-11-19
+- text: H3K27me3
+  source: in the deck FF reviewed 2026-11-19
+- text: DNA
+  source: in the deck FF reviewed 2026-11-19
+- text: Mean in the 0.25 μm layer near the nadir ÷ the same layer, whole nucleus (1 = no enrichment); mean ± SEM over cells
+  source: approved by FF 2026-11-19 (render_fig6_table_slides.py comment)
+  open: decision page item 7
+- text: below 1
+  source: in the deck FF reviewed 2026-11-19
+- text: above 1
+  source: in the deck FF reviewed 2026-11-19
+- text: '* <0.05, ** <0.01, *** <0.001 vs 1 (signed-rank, BH-adjusted); gray = n.s.'
+  source: approved by FF 2026-11-19 (render_fig6_table_slides.py comment)
+- text: 'Near centrosome: disk around the deepest point of the centrosome-proximal patch; no test; blank = not analyzed'
+  source: approved by FF 2026-11-19 (render_fig6_table_slides.py comment)
+  open: decision page item 6
+- text: '* <0.05, ** <0.01, *** <0.001 vs 1 (signed-rank, BH-adjusted); gray = n.s.; n/a = too few cells to test'
+  source: approved by FF 2026-11-19 (render_fig6_table_slides.py comment)
+- text: H3K9me3
+  source: in the deck FF reviewed 2026-11-19
+- text: H3K27ac
+  source: in the deck FF reviewed 2026-11-19
+- text: RNAP II
+  source: in the deck FF reviewed 2026-11-19
+title_prefixes:
+- text: Relative level near nadir, mean ± SEM
+  source: in the deck FF reviewed 2026-11-19
+- text: Relative level near nadir
+  source: in the deck FF reviewed 2026-11-19
+- text: Relative level vs distance from nadir
+  source: in the deck FF reviewed 2026-11-19
+- text: Relative level vs depth below convex hull
+  source: in the deck FF reviewed 2026-11-19
+title_labels:
+- text: H3K27me3, Jurkat (1 of 2)
+  source: in the deck FF reviewed 2026-11-19
+- text: H3K27me3, Jurkat (2 of 2)
+  source: in the deck FF reviewed 2026-11-19
+- text: H3K27me3, CTL (3SI and naive)
+  source: in the deck FF reviewed 2026-11-19
+- text: H3K9me3
+  source: in the deck FF reviewed 2026-11-19
+- text: H3K27ac
+  source: in the deck FF reviewed 2026-11-19
+- text: RNAP II
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat H3K27me3 (N1 Aug 3, N2 Sep 11, 2023)
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, N2 Jun 13, 2026)
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat H3K27me3, ciliobrevin (Oct 29, 2026)
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat H3K27me3, nocodazole (Oct 29, 2026)
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat H3K27me3, H2O vs DZNep (Feb 23, 2023)
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat H3K27me3, siCtrl vs siHMGA1 (Jan 6, 2023)
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat H3K27me3, siCtrl vs siSUN1 / siSUN2 (Sep 2023)
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat H3K9me3 (Jun 17, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat H3K27ac (Jun 17, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat RNAP II (Nov 17, 2025)
+  source: in the deck FF reviewed 2026-11-19
+- text: 3SI CTL H3K27me3 (Mar 21, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: 3SI CTL H3K9me3 (Apr 24, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: 3SI CTL H3K27ac (May 31, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: 3SI CTL RNAP II (Nov 17, 2025)
+  source: in the deck FF reviewed 2026-11-19
+- text: Naive CTL H3K27me3 (Feb 19, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: Naive CTL H3K27me3 (Mar 18, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: Naive CTL H3K9me3 (Apr 22, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: Naive CTL H3K9me3 (Dec 11, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: Naive CTL H3K27ac (Jul 8, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: Naive CTL H3K27ac (Jul 29, 2024)
+  source: in the deck FF reviewed 2026-11-19
+- text: Naive CTL RNAP II (Nov 17, 2025)
+  source: in the deck FF reviewed 2026-11-19
+- text: Jurkat H3K27me3 (N1 Aug 3, 2023; N2 Sep 11, 2023)
+  source: in the deck FF reviewed 2026-11-19 (table form of the date)
+- text: Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, 2026; N2 Jun 13, 2026)
+  source: in the deck FF reviewed 2026-11-19 (table form of the date)

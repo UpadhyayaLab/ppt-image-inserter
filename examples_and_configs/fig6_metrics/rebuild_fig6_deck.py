@@ -1,9 +1,9 @@
-"""One command for the whole Fig 6 metrics deck rebuild, timed per step (FF 2026-11-20: "it should not take so long
+"""One command for the whole Fig 6 metrics deck rebuild, timed per step (FF 2026-11-19: "it should not take so long
 to rebuild! ... improve the infra").
 
 Steps: table + contents images -> deck (batch_insert_images.py) -> deterministic deck check -> slide PNGs (PowerPoint
 COM, read-only) -> self-contained review page (slide PNGs as base64). Each step prints its time and a warning when it
-runs far over its measured cost (2026-11-20 on this PC, 113 slides: tables 15 s, deck 11 s, export 35 s).
+runs far over its measured cost (2026-11-19 on this PC, 113 slides: tables 15 s, deck 11 s, export 35 s).
 
 Usage:  python rebuild_fig6_deck.py <config.yaml> <page.html> [--from STEP]
         STEP = tables | deck | export | page   (skip the steps before it; the check always runs)
@@ -15,6 +15,7 @@ import base64
 import html
 import io
 import os
+import re
 import subprocess
 import sys
 import time
@@ -28,9 +29,12 @@ from pptx import Presentation
 HERE = Path(__file__).resolve().parent
 EXAMPLES = HERE.parent
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(EXAMPLES.parent))
 import render_fig6_table_slides as tables  # noqa: E402
+from ppt_image_inserter.approved_text import deck_strings, load_approved, unapproved  # noqa: E402
 
 FIGS = "Q:/FF/Nucleus_Data/3D_Nucleus/Fixed/fig6_metrics_page/figs_20261118"
+APPROVED = HERE / "approved_text.yaml"   # every string a slide may carry, with its source
 EXPECTED_S = {"tables": 15, "deck": 11, "check": 5, "export": 35, "page": 40}
 STEPS = ["tables", "deck", "export", "page"]
 PAGE_W = 1400
@@ -55,10 +59,10 @@ def run(cmd):
 
 def check(cfg):
     """Per slide: one picture, its config title in the slide text, alt text ending in the image's file name; title
-    slide text as configured; no middle dot (FF 2026-11-20 "do not use · anywere"); contents slide ranges match."""
+    slide text as configured; no forbidden words (below); contents slide ranges match."""
     prs = Presentation(cfg["output_path"])
     slides, ims, bad = list(prs.slides), cfg["images"], []
-    if prs.slides[0].shapes.title.text_frame.text.replace("\v", "\n") != cfg["title_slide_text"]:
+    if prs.slides[0].shapes.title.text_frame.text.replace("\v", "\n") != re.sub(r"^\*(.+)\*$", r"\1", cfg["title_slide_text"], flags=re.M):
         bad.append("title slide text differs from title_slide_text")
     if len(slides) != len(ims) + 1:
         bad.append(f"{len(slides)} slides for {len(ims)} images + title")
@@ -68,24 +72,51 @@ def check(cfg):
         descr = pics[0]._element.nvPicPr.cNvPr.get("descr", "") if pics else ""
         if not (len(pics) == 1 and e["title"] in text and descr.endswith(os.path.basename(e["path"]))):
             bad.append(f"slide {n}")
-    dots = sum(sh.text_frame.text.count("\u00b7") for s in slides for sh in s.shapes if sh.has_text_frame)
-    if dots:
-        bad.append(f"{dots} middle dots in slide text")
+    # Never on a slide (FF 2026-11-19): "do not use \u00b7 anywere", "do not mention voxels", "do not use README in
+    # slides...ever", "no need to mention C, D, E, F". Checked in slide text and in the rendered table/contents HTML.
+    texts = [sh.text_frame.text for s in slides for sh in s.shapes if sh.has_text_frame]
+    texts += [p.read_text(encoding="utf-8") for p in (Path(cfg["output_path"]).parent / "table_png").glob("*.html")]
+    for word in ("\u00b7", "readme", "voxel", "fig. 6c", "fig 6c"):
+        hits = sum(t.lower().count(word) for t in texts)
+        if hits:
+            bad.append(f"{hits} x '{word}' in slide text")
+    if any(re.match(r"[A-F]: ", e["title"]) for e in ims):
+        bad.append("a title starts with a panel letter")
+    # No character limits on contents rows or notes (FF 2026-11-19: "there should not be any character limit")
     title_at = {n: ims[n - 2]["title"] for n in range(2, len(ims) + 2)}
-    for key, _ in tables.CONTENTS:
-        lo, hi = (int(x) for x in key.split(", ")[-1].split("–"))
-        if key[0] in "CDEF":
-            mine = [n for n, t in title_at.items() if t.startswith(key[0] + ":")]
-            ok = mine == list(range(lo, hi + 1))
-        elif lo == 3:
-            ok = [n for n, t in title_at.items() if t.startswith("Relative level")] == list(range(lo, hi + 1))
-        else:
-            ok = hi == len(slides)
-        if not ok:
-            bad.append(f"contents range {key}")
+    covered = []
+    for key, _, pattern in tables.CONTENTS:
+        lo, hi = (int(x) for x in key.split("–"))
+        covered += range(lo, hi + 1)
+        if [n for n, t in title_at.items() if re.match(pattern, t)] != list(range(lo, hi + 1)):
+            bad.append(f"contents range {key} ({pattern})")
+    if sorted(covered) != list(range(3, len(slides) + 1)):
+        bad.append("contents ranges do not cover slides 3 to the end exactly once")
+    bad += unapproved_text(cfg)
     print(f"check: {len(slides)} slides, {len(bad)} problems" + (": " + "; ".join(bad) if bad else ""))
     if bad:
         raise SystemExit("deck check failed")
+
+
+def slide_strings(cfg):
+    """(where, text) for every piece of text on a slide: each line of slide text in the deck, plus the text drawn in
+    the rendered table / contents images. Skipped: numbers, and arm names in table rows (td class "l", condition
+    names from the data)."""
+    out = deck_strings(Presentation(cfg["output_path"]))
+    for p in sorted((Path(cfg["output_path"]).parent / "table_png").glob("*.html")):
+        t = re.sub(r"<style.*?</style>|<title>.*?</title>", "", p.read_text(encoding="utf-8"), flags=re.S)
+        for m in re.finditer(r"<(/?)(\w+)([^>]*)>([^<]*)", t):
+            s = html.unescape(m.group(4)).replace("\xa0", " ").strip()
+            arm = m.group(2) == "td" and not m.group(1) and 'class="l"' in m.group(3)
+            if s and not arm and not re.fullmatch(r"[\d.±\s*–]+|n/a", s):
+                out.append((p.stem, s))
+    return out
+
+
+def unapproved_text(cfg):
+    """Every slide string must be in approved_text.yaml (FF 2026-11-19: "we need to prevent these mistakes...period"),
+    via the shared ppt_image_inserter.approved_text check."""
+    return unapproved(slide_strings(cfg), load_approved(APPROVED))
 
 
 def _embed(args):
@@ -102,7 +133,7 @@ def _embed(args):
 
 def page(cfg, png_dir, out_html):
     """Self-contained page: every slide PNG as base64; table and contents slides unquantized, figures 256 colors."""
-    pngs = sorted(Path(png_dir).glob("slide_*.png"))
+    pngs = sorted(Path(png_dir).glob("slide_*.png"), key=lambda p: int(p.stem.split("_")[1]))
     caps = ["Title slide"] + [e["title"] for e in cfg["images"]]
     if len(pngs) != len(caps):
         raise SystemExit(f"{len(pngs)} slide PNGs for {len(caps)} slides")
@@ -152,10 +183,13 @@ def main(cfg_path, out_html, start="tables"):
         log = timed("deck", run, [sys.executable, str(EXAMPLES / "batch_insert_images.py"), cfg_path])
         (deck_dir / "build.log").write_text(log, encoding="utf-8")
     timed("check", check, cfg)
+    slides_dir = Path(cfg.get("slides_png_dir", deck_dir / "slides_png"))   # one folder per deck
     if "export" in todo:
+        for old in slides_dir.glob("slide_*.png"):   # the exporter's numbering width follows the slide count, so a
+            old.unlink()                             # shorter deck would leave the old 3-digit files behind
         timed("export", run, [sys.executable, str(EXAMPLES / "export_deck_slides.py"), cfg["output_path"],
-                              str(deck_dir / "slides_png")])
-    timed("page", page, cfg, deck_dir / "slides_png", out_html)
+                              str(slides_dir)])
+    timed("page", page, cfg, slides_dir, out_html)
     print(f"total {time.perf_counter() - t0:.1f} s")
 
 

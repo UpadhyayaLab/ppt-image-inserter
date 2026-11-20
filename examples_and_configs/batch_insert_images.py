@@ -20,6 +20,7 @@ import os
 import yaml
 from pptx import Presentation
 from pptx.oxml.ns import qn
+from pathlib import Path
 
 
 def safe_exists(path):
@@ -31,7 +32,7 @@ def safe_exists(path):
 # Add parent directory to path to import ppt_image_inserter
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ppt_image_inserter import delete_slides, copy_slide_replace_image, copy_slide_replace_images, backup_presentation, get_all_image_positions, add_label_to_existing_slide, safe_path
+from ppt_image_inserter import lint_presentation, load_approved, deck_strings, unapproved, delete_slides, copy_slide_replace_image, copy_slide_replace_images, backup_presentation, get_all_image_positions, add_label_to_existing_slide, safe_path
 
 
 def validate_slide_index(slide_index, field_name):
@@ -189,7 +190,9 @@ def validate_config(config, config_path):
 def set_title_slide_text(ppt_file, text):
     """Replace the first slide's title, keeping its formatting (config: title_slide_text).
 
-    A newline in text becomes a line break inside the title, in the first run's formatting.
+    A newline in text becomes a line break inside the title, in the first run's formatting. A line written as
+    *text* is set as a secondary line: italic, not bold, 24 pt (FF 2026-11-19: "italics, smaller font for
+    experiments performed by").
     """
     prs = Presentation(ppt_file)
     paragraph = prs.slides[0].shapes.title.text_frame.paragraphs[0]
@@ -201,11 +204,17 @@ def set_title_slide_text(ppt_file, text):
             paragraph._p.remove(extra)
     anchor = run
     for line in more:
+        secondary = len(line) > 2 and line.startswith('*') and line.endswith('*')
         br = paragraph._p.makeelement(qn('a:br'), {})
         if run.rPr is not None:
             br.append(copy.deepcopy(run.rPr))
         new_run = copy.deepcopy(run)
-        new_run.t.text = line
+        new_run.t.text = line[1:-1] if secondary else line
+        if secondary:
+            rpr = new_run.get_or_add_rPr()
+            rpr.set('b', '0')
+            rpr.set('i', '1')
+            rpr.set('sz', '2400')
         anchor.addnext(br)
         br.addnext(new_run)
         anchor = new_run
@@ -233,6 +242,9 @@ def main(config_path):
     # Crop each image's white margin so plots fill their box (default off)
     trim_whitespace = bool(config.get('trim_whitespace', False))
     title_fit = bool(config.get('title_fit', False))
+    # Fixed title font size in pt; titles wrap to more lines (FF 2026-11-19: "titles should not be 1 line")
+    title_size = config.get('title_size')
+    title_size = int(title_size) if title_size else None
     # Delete the template slide(s) once the slides are built (default off): a template's
     # placeholder picture otherwise stays in the deck as a slide of its own
     remove_template_slide = bool(config.get('remove_template_slide', False))
@@ -450,6 +462,7 @@ def main(config_path):
                     label_side=label_side,   # was dropped for plain-list entries only
                     trim_whitespace=trim_whitespace,
                     title_fit=title_fit,
+                    title_size=title_size,
                 )
                 success_count += 1
                 print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}): {[os.path.basename(p) for p in image_paths]}")
@@ -496,6 +509,7 @@ def main(config_path):
                         label_side=label_side,
                         trim_whitespace=trim_whitespace,
                         title_fit=title_fit,
+                        title_size=title_size,
                     )
                     success_count += 1
                     print(f"  Created slide with {len(image_paths)} images (slide {new_idx + 1}, template {original_slide_template}): {[os.path.basename(p) for p in image_paths]}")
@@ -531,6 +545,7 @@ def main(config_path):
                         label_side=label_side,
                         trim_whitespace=trim_whitespace,
                         title_fit=title_fit,
+                        title_size=title_size,
                     )
                     success_count += 1
                     print(f"  Created slide: {os.path.basename(image_path)}")
@@ -561,6 +576,7 @@ def main(config_path):
                     label_side=label_side,
                     trim_whitespace=trim_whitespace,
                     title_fit=title_fit,
+                    title_size=title_size,
                 )
                 success_count += 1
                 print(f"  Created slide: {os.path.basename(image_path)}")
@@ -579,6 +595,27 @@ def main(config_path):
         template_slides = sorted(template_slide_remap[idx] for idx in template_slide_indices)
         delete_slides(ppt_file, template_slides, backup_base=backup_dir, backup=False)
         print(f"Removed template slide(s): {template_slides}")
+
+    # Clean slide text, every deck (FF 2026-11-19: "no walls of text. no exceptions"): a problem fails the build
+    text_problems = lint_presentation(Presentation(ppt_file))
+    for problem in text_problems:
+        print(f"[TEXT] {problem}")
+    error_count += len(text_problems)
+
+    # Approved wording only (FF 2026-11-19: "we need to prevent these mistakes...period"): with `approved_text:`
+    # set, every slide line must be in that file, and a line that is not fails the build
+    approved_file = config.get('approved_text')
+    if approved_file:
+        approved_path = Path(approved_file)
+        if not approved_path.is_absolute():
+            approved_path = Path(config_path).resolve().parent / approved_path
+        text_problems = unapproved(deck_strings(Presentation(ppt_file)), load_approved(approved_path))
+        for problem in text_problems:
+            print(f"[TEXT] {problem}")
+        print(f"Approved-text check ({approved_path.name}): {len(text_problems)} line(s) not approved")
+        error_count += len(text_problems)
+    else:
+        print("[NOTE] no approved_text in the config: slide wording not checked against approved text")
 
     # Summary
     print(f"\nComplete: {success_count}/{len(remaining_images)} slides created")

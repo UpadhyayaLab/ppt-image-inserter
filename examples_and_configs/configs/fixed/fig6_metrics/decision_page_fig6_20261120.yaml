@@ -1,0 +1,342 @@
+# Fig 6 deck decision page, built by examples_and_configs/decision_page/build_decision_page.py
+# Published at https://claude.ai/artifact/7jNQXaAqQa3t7bCk8qpiUS (capabilities {db: {}}; answers in collection "decisions").
+# Item and option wording: verbatim from the Histone mark data session's code-checked reply (2026-11-19), as on the
+# first version of the page. Slides: examples_and_configs/fig6_metrics/render_decision_previews.py.
+title: "Fig 6 Deck Decisions"
+heading: "Fig 6 deck: decisions"
+lead: "Each option shows its full slide, built by the deck's own pipeline. Click your pick for each decision, or write a change and click Save change. Under every slide here, Change this slide opens its text to edit and save. Each save is kept at once, and you can change it any time. Click any slide to enlarge it. Every slide shows its title at the deck's fixed 36 pt; the line under each slide says how many lines that title takes, measured in PowerPoint, and red marks a title whose letters run into the figure. Slide numbers assume the new near-centrosome slides at 11–13 and 35–37. Every slide shows your saved answers so far; items they settle show one line each. Every proposed string is copied from Histone mark data's code-checked replies. Nothing goes on a slide until you pick; the build refuses any slide text not on your approved list."
+collection: decisions
+png_dir: "K:/FF/PPT/PPT_autogeneration/Fig6_metrics_across_experiments/decision_previews/named"
+png_width: 1280
+slide_text: slide_text.json          # per-slide text for the change boxes, written by render_decision_previews.py
+slide_facts: slide_facts.json        # measured title lines per slide (measure_title_lines.py), shown under each slide
+# Latest saved state is the base for every slide (FF 2026-11-19: "then why is this showing old slide????"). Export the
+# db right before each build: ArtifactData list, collections slides and decisions, out_dir = saved_state.dir.
+saved_state:
+  dir: "K:/FF/PPT/PPT_autogeneration/Fig6_metrics_across_experiments/decision_previews/db_export"
+  rebuilt:                              # slide id with a saved change -> slide rendered from it
+    contents_base: deck_02.png          # FF's saved slide 2 text, rendered by the deck's own renderer
+    cent_violin_1A_noco_oct: deck_13.png   # deck slide 13: title with FF's 11a pick at the fixed 36 pt (his font note ruled by that)
+# One plain line shown with a slide's saved change (Histone mark data agent presentation's ruling, 2026-11-19)
+saved_change_notes:
+  cent_violin_1A_noco_oct: "Font: fixed 36 pt for all titles (your later instruction)"
+# The default view: every deck slide in order (render_decision_previews.py --from full writes the index and PNGs).
+all_slides:
+  index: deck_slides.json
+  png_width: 1100
+  heading: "Fig 6 deck: all slides"
+  lead: "Every slide of the deck in deck order, with your answers so far: slide 2 shows the Contents text you saved, slides 11–13 are the new near-centrosome violins titled with your 11a pick, and slides 35–37 are the new near-centrosome profiles titled with your pick 2A. Every other slide has the deck's current image and title. Each slide's text is open below it: edit any line and click Save slide change. Click a slide to enlarge it. The line under each slide gives its title's line count at the deck's fixed 36 pt, measured in PowerPoint; red marks a title of 3 or more lines or one whose letters run into the figure. The other decisions are one click away, under Decisions at the top."
+  captions:
+    contents_base: "Contents, with the change you saved"
+    deck_11: "New: near-centrosome violins, title with your 11a pick"
+    deck_12: "New: near-centrosome violins, title with your 11a pick"
+    cent_violin_1A_noco_oct: "New: near-centrosome violins, title with your 11a pick"
+    deck_35: "New: near-centrosome profiles, title with your pick 2A"
+    deck_36: "New: near-centrosome profiles, title with your pick 2A"
+    deck_37: "New: near-centrosome profiles, title with your pick 2A"
+
+items:
+  - number: "1"
+    title: "Contents row for the near-centrosome violins (slides 11–13)"
+    source: "geom_density_seed_disk_metrics.m:45-62; FF's saved slide 2 text (db slides/contents_base v3)"
+    blocks:
+      - settled:
+          text: "Settled by your slide 2 text: “11–13 Relative level near the centrosome-proximal nadir”"
+          slides: [{id: contents_base, png: deck_02.png, caption: "Slide 2 with the text you saved"}]
+
+  - number: "2"
+    title: "Contents row for the near-centrosome distance profiles (slides 35–37)"
+    source: "generate_geom_density_centrosome_profiles.m:636-645; FF's saved slide 2 text (db slides/contents_base v3)"
+    blocks:
+      - settled:
+          text: "Settled by your slide 2 text: “35–37 Relative level vs distance from the nadir of the centrosome-proximal region”"
+          slides: [{id: contents_base, png: deck_02.png, caption: "Slide 2 with the text you saved"}]
+
+  - number: "3"
+    title: "Contents notes"
+    source: "inperinuc_shell_face_density.m:42-43; FF's saved slide 2 text (db slides/contents_base v3)"
+    blocks:
+      - settled:
+          lines:
+            - "3a. Settled by your slide 2 text: “Level: mean in the 0.25 μm layer inside the nuclear surface ÷ mean in that layer over the whole nucleus”"
+            - "3b. Settled by your slide 2 text: “Near nadir (whole nucleus): surface connected to the nadir and deeper than half its depth, within 25% of the mean surface distance from it”"
+            - "3c. Settled by your slide 2 text: “Near the centrosome-proximal nadir: surface within 25% of the mean surface distance from it”"
+          slides: [{id: contents_base, png: deck_02.png, caption: "Slide 2 with the text you saved"}]
+
+  - number: "4"
+    title: "Slides 3–4: what they show and their title"
+    source: "geom_density_seed_disk_metrics.m:24-27 (the 50% magenta disk is the centrosome-proximal region)"
+    blocks:
+      - p: "They show disks at 10 / 25 / 50% of the mean surface distance around two points: the nadir of the centrosome-proximal region (purple, top) and the centrosome projection (magenta, bottom). The 25% purple disk is the near-centrosome violins' region. The whole-nucleus region and the whole-nucleus nadir do not appear. The subtitle \"Cyan = away. Bars = 5 μm.\" is accurate."
+      - now: {text: "The regions measured, CD3 DMSO cell 10", where: "slide 3 title (slide 4: cell 34)"}
+      - slides:
+          - {id: deck_03, png: deck_03.png, caption: "Slide 3 now"}
+          - {id: deck_04, png: deck_04.png, caption: "Slide 4 now"}
+      - decision:
+          code: "4"
+          options:
+            - choice: "4A"
+              text: "Regions around the nadir of the centrosome-proximal region and the centrosome projection, CD3 DMSO cell 10"
+              note: "Retitle only (slide 4: cell 34)."
+              slides:
+                - {id: regions_4A_cell10, caption: "Slide 3 with 4A"}
+                - {id: regions_4A_cell34, caption: "Slide 4 with 4A"}
+            - choice: "4B"
+              label: "Retitle as 4A, and add a picture of the whole-nucleus region (needs a render by Histone mark data; its title would come later)"
+              not_rendered: "The added whole-nucleus picture is not rendered: needs a render by Histone mark data. The slides below are the retitled ones, as in 4A."
+              slides:
+                - {id: regions_4A_cell10, caption: "Slide 3 retitled as 4A, without the added picture"}
+                - {id: regions_4A_cell34, caption: "Slide 4 retitled as 4A, without the added picture"}
+
+  - number: "5"
+    title: "Axis labels inside the figures"
+    source: "generate_geom_density_seed_depth_study.m:240-244 (local_around_label)"
+    blocks:
+      - h3: '5a. Violin y label "Rel. Level near Nadir"'
+      - p: 'In this deck "near Nadir" means the half-depth region; this value is a disk.'
+      - decision:
+          code: "5a"
+          options:
+            - choice: "5a-A"
+              text: "Rel. Level near Nadir"
+              note: "Keep (current)"
+              slides: [{id: cent_violin_1A_noco_oct, png: deck_13.png, caption: "Near-centrosome violin slide now (slide 13, title with your 11a pick)"}]
+            - choice: "5a-B"
+              text: "Rel. Level around Region Nadir"
+              note: "The seed study's own label; pairs with 1A"
+              not_rendered: "Not rendered: needs a re-render by Histone mark data. The slide below is the current one."
+              slides: [{id: cent_violin_1A_noco_oct, png: deck_13.png, caption: "Current slide, not the new label"}]
+      - h3: '5b. Profile y label "Relative Density" (whole-nucleus and near-centrosome profiles, and depth profiles)'
+      - p: "Accurate, but it names no reference and differs from the slides' \"Relative level\". Changing it means relabeling those figures; the data session gave no exact text."
+      - decision:
+          code: "5b"
+          options:
+            - choice: "5b-A"
+              label: 'Keep "Relative Density"'
+              slides:
+                - {id: deck_37, png: deck_37.png, caption: "Near-centrosome profile slide now (slide 37, title with your pick 2A)"}
+                - {id: deck_41, png: deck_41.png, caption: "Whole-nucleus profile slide now (slide 41)"}
+            - choice: "5b-B"
+              label: "Relabel to match the slides (data session proposes exact text first)"
+              not_rendered: "Not rendered: needs a re-render by Histone mark data. The slides below are the current ones."
+              slides:
+                - {id: deck_37, png: deck_37.png, caption: "Current slide, not relabeled"}
+                - {id: deck_41, png: deck_41.png, caption: "Current slide, not relabeled"}
+      - note: '5c. Profile x label "Geodesic Dist. from Region Nadir": accurate for both profile types; no decision needed.'
+
+  - number: "6"
+    title: "Table key, near-centrosome columns"
+    source: "as item 1; blank rows: fig6_C_cent_mean_sem.m reads only the 3 experiments with a centrosome channel"
+    blocks:
+      - decision:
+          code: "6"
+          current:
+            text: "Near centrosome: disk around the deepest point of the centrosome-proximal patch; no test; blank = not analyzed"
+            where: "table key line"
+            slides: [{id: table_base, caption: "Table slide now (key at the bottom)"}]
+          options:
+            - choice: "use"
+              button: "Use this"
+              text: "Near centrosome: surface within 25% of the mean surface distance from the nadir of the centrosome-proximal region ÷ whole surface; no test; blank = centrosome not imaged"
+              note: "Data session's proposal."
+              slides: [{id: table_6, caption: "Table slide with 6"}]
+
+  - number: "7"
+    title: "Table key, main"
+    source: "as 3a"
+    blocks:
+      - decision:
+          code: "7"
+          current:
+            text: "Mean in the 0.25 μm layer near the nadir ÷ the same layer, whole nucleus (1 = no enrichment); mean ± SEM over cells"
+            where: "table key line"
+            slides: [{id: table_base, caption: "Table slide now (key at the bottom)"}]
+          options:
+            - choice: "use"
+              button: "Use this"
+              text: "Mean in the 0.25 μm layer near the nadir, weighted by surface area, ÷ the same over the whole nuclear surface (1 = no enrichment); mean ± SEM over cells"
+              note: "Exact (adds the weighting, as 3a)."
+              slides: [{id: table_7, caption: "Table slide with 7"}]
+
+  - number: "8"
+    title: "Separate image-based deck (the 44 slides moved out)"
+    source: "nuc_signal_by_invag.m:194-214, :321-340; subtract_bg = 0 at process_nucleus_channel.m:775"
+    blocks:
+      - slides: [{id: image_deck_now, caption: "A sample slide for that deck, made for this page, with its current title"}]
+      - decision:
+          code: "8a"
+          options:
+            - choice: "use"
+              button: "Use this"
+              text: "Relative <channel> intensity near the deepest invagination: ..."
+              note: 'Title pattern. "near", not "in": the numerator also takes the 0.25 μm layer inside the nuclear surface.'
+              slides: [{id: image_deck_8A, caption: "The same slide with 8a"}]
+            - choice: "change"
+              button: "Change it"
+              label: "Change it"
+              note: "No slide for this answer: write the new text in the change box below."
+      - decision:
+          code: "8b"
+          options:
+            - choice: "use"
+              button: "Use this"
+              text: "Mean intensity of nuclear voxels within 0.25 μm of the deepest invagination (surface voxels deeper than half the maximum depth below the convex hull, connected to the deepest one) ÷ mean intensity within 0.25 μm of the whole nuclear surface; voxels, no background subtraction"
+              note: 'Definition line for its title slide. It says "voxels" (you said not to mention voxels); it needs rewording by you or the data session.'
+              not_rendered: "Not rendered: the image-based deck is not built yet (no config or deck for it exists), so it has no title slide to show this line on."
+            - choice: "change"
+              button: "Change it"
+              label: "Change it"
+              note: "No slide for this answer: write the new text in the change box below."
+
+  - number: "9"
+    title: "New near-centrosome figures: reviewer's notes"
+    source: "figure-reviewer notes relayed by Histone mark data, 2026-11-19"
+    blocks:
+      - ul:
+          - "Y ticks: noco Oct 29 and cilio Jun profiles every 0.2; cilio Oct 29 profile and the deck's whole-nucleus nocodazole Oct 29 profile every 0.1 (the deck's other profiles vary)."
+          - 'The noco Oct 29 5μM legend entry reads "n=52, 51-52 per bin".'
+          - "Violin y ranges differ per experiment (each autoscaled, as the deck's violins are)."
+      - slides:
+          - {id: deck_35, png: deck_35.png, caption: "Near-centrosome profiles, DMSO vs ciliobrevin Jun 12, 13 (slide 35)"}
+          - {id: deck_36, png: deck_36.png, caption: "Near-centrosome profiles, ciliobrevin Oct 29 (slide 36)"}
+          - {id: deck_37, png: deck_37.png, caption: "Near-centrosome profiles, nocodazole Oct 29 (slide 37)"}
+          - {id: deck_41, png: deck_41.png, caption: "The deck's whole-nucleus profile, nocodazole Oct 29 (slide 41), for the tick spacing"}
+          - {id: deck_11, png: deck_11.png, caption: "Near-centrosome violins, DMSO vs ciliobrevin Jun 12, 13 (slide 11)"}
+          - {id: deck_12, png: deck_12.png, caption: "Near-centrosome violins, ciliobrevin Oct 29 (slide 12)"}
+          - {id: cent_violin_1A_noco_oct, png: deck_13.png, caption: "Near-centrosome violins, nocodazole Oct 29 (slide 13)"}
+      - decision:
+          code: "9"
+          options:
+            - choice: "9A"
+              label: "Keep as is"
+            - choice: "9B"
+              label: "Ask Histone mark data to match the ticks and legend to the deck's profiles"
+              not_rendered: "Not rendered: needs a re-render by Histone mark data. The slides below are the current ones."
+              slides:
+                - {id: deck_37, png: deck_37.png, caption: "Current slide, not re-rendered (slide 37)"}
+                - {id: deck_35, png: deck_35.png, caption: "Current slide, not re-rendered (slide 35)"}
+
+  - number: "11"
+    title: "Shorter titles: a third title line runs into the figure"
+    source: "Histone mark data's code-checked reply relayed 2026-11-19; line counts from measure_title_lines.py on the preview deck"
+    blocks:
+      - p: "Titles now use a fixed 36 pt font and wrap. A title of 3 lines runs into the figure. Below are the slides whose titles each option changes, at 36 pt, each with its measured line count. The Contents rows that match these titles are on slide 2 of All slides."
+      - h3: "11a. Near-centrosome violin titles (slides 11–13)"
+      - settled:
+          lines:
+            - "Settled by your pick: “Relative level near the centrosome-proximal nadir”"
+            - "Still 3 lines: the DMSO vs ciliobrevin slide (slide 11), with either date (both dates shown under 11c)."
+          slides:
+            - {id: deck_11, png: deck_11.png, caption: "Slide 11: DMSO vs ciliobrevin Jun 12, 13"}
+            - {id: deck_12, png: deck_12.png, caption: "Slide 12: ciliobrevin Oct 29"}
+            - {id: cent_violin_1A_noco_oct, png: deck_13.png, caption: "Slide 13: nocodazole Oct 29"}
+      - h3: "11b. Near-centrosome profile titles (slides 35–37)"
+      - p: "Still 3 lines with the 11b title: all 3 profile slides (for DMSO vs ciliobrevin, with either date)."
+      - decision:
+          code: "11b"
+          current:
+            text: "Relative level vs distance from the nadir of the centrosome-proximal region"
+            where: "current title start (your pick 2A)"
+            slides:
+              - {id: deck_35, png: deck_35.png, caption: "Slide 35: DMSO vs ciliobrevin Jun 12, 13 (current date)"}
+              - {id: deck_36, png: deck_36.png, caption: "Slide 36: ciliobrevin Oct 29"}
+              - {id: deck_37, png: deck_37.png, caption: "Slide 37: nocodazole Oct 29"}
+          options:
+            - choice: "use"
+              button: "Use this"
+              text: "Relative level vs distance from the centrosome-proximal nadir"
+              note: "Histone mark data: accurate."
+              slides:
+                - {id: cent_profile_11s_cilio_jun, caption: "Slide 35 with 11b: DMSO vs ciliobrevin Jun 12, 13 (current date)"}
+                - {id: cent_profile_11s_cilio_oct, caption: "Slide 36 with 11b: ciliobrevin Oct 29"}
+                - {id: cent_profile_11s_noco_oct, caption: "Slide 37 with 11b: nocodazole Oct 29"}
+      - h3: "11c. DMSO vs ciliobrevin date, on every slide of that experiment"
+      - p: "Still 3 lines with the 11c date: the near-centrosome violins, both near-centrosome profile versions, the whole-nucleus profile and the depth profile. The whole-nucleus violin takes 2 lines with either date."
+      - p: "Only the depth panels say N1 (Jun 12) and N2 (Jun 13). The whole-nucleus violin and profile labels and the near-centrosome labels say N1 and N2 without dates, so on those slides the title is the only place that ties N1 to Jun 12."
+      - decision:
+          code: "11c"
+          current:
+            text: "(N1 Jun 12, N2 Jun 13, 2026)"
+            where: "end of every title of that experiment"
+            slides:
+              - {id: deck_11, png: deck_11.png, caption: "Near-centrosome violins (slide 11)"}
+              - {id: deck_15, png: deck_15.png, caption: "Whole-nucleus violins (slide 15)"}
+              - {id: deck_35, png: deck_35.png, caption: "Near-centrosome profiles (slide 35)"}
+              - {id: cent_profile_11s_cilio_jun, caption: "Near-centrosome profiles with 11b (slide 35)"}
+              - {id: deck_39, png: deck_39.png, caption: "Whole-nucleus profiles (slide 39)"}
+              - {id: deck_60, png: deck_60.png, caption: "Depth profiles (slide 60)"}
+          options:
+            - choice: "use"
+              button: "Use this"
+              text: "(Jun 12 and 13, 2026)"
+              slides:
+                - {id: cent_violin_11s_cilio_jun_d2, caption: "Near-centrosome violins (slide 11)"}
+                - {id: violin_whole_cilio_jun_d2, caption: "Whole-nucleus violins (slide 15)"}
+                - {id: cent_profile_2A_cilio_jun_d2, caption: "Near-centrosome profiles (slide 35)"}
+                - {id: cent_profile_11s_cilio_jun_d2, caption: "Near-centrosome profiles with 11b (slide 35)"}
+                - {id: profile_whole_cilio_jun_d2, caption: "Whole-nucleus profiles (slide 39)"}
+                - {id: depth_whole_cilio_jun_d2, caption: "Depth profiles (slide 60)"}
+
+  - number: "12"
+    title: "Slide 2 accuracy fixes (Histone mark data's code check)"
+    source: "Histone mark data's code check of FF's saved slide 2 (db slides/contents_base v3), relayed 2026-11-19"
+    blocks:
+      - p: "Each option is shown on slide 2 built from the Contents text you saved, with only that one fix applied. Keep current keeps the text you saved."
+      - h3: '12a. "Nadir" line'
+      - decision:
+          code: "12a"
+          current:
+            text: "Nadir: surface point farthest from the hull boundary"
+            where: "your wording"
+            slides: [{id: contents_base, png: deck_02.png, caption: "Slide 2 with the text you saved"}]
+          options:
+            - choice: "use"
+              button: "Use this"
+              text: "Nadir: surface point farthest from the hull boundary (centrosome-proximal: within that region)"
+              note: "The centrosome-proximal nadir is the farthest point within that region only."
+              slides: [{id: contents_12a, caption: "Slide 2 with 12a"}]
+      - h3: '12b. "Level" line'
+      - decision:
+          code: "12b"
+          current:
+            text: "Level: mean in the 0.25 μm layer inside the nuclear surface ÷ mean in that layer over the whole nucleus"
+            where: "your wording"
+            slides: [{id: contents_base, png: deck_02.png, caption: "Slide 2 with the text you saved"}]
+          options:
+            - choice: "use"
+              button: "Use this"
+              text: "Level: mean in the 0.25 μm layer inside the nuclear surface ÷ the area-weighted mean over the whole surface"
+              note: "Value and reference are both area-weighted means over the surface, not plain layer means."
+              slides: [{id: contents_12b, caption: "Slide 2 with 12b"}]
+      - h3: "12c. One term for the whole nucleus"
+      - decision:
+          code: "12c"
+          current:
+            label: 'Rows "full nucleus"; note and table headers "whole nucleus"'
+            slides: [{id: contents_base, png: deck_02.png, caption: "Slide 2 with the text you saved"}]
+          options:
+            - choice: "use"
+              button: "Use this"
+              label: '"whole nucleus" everywhere'
+              note: "Two words for one idea."
+              slides: [{id: contents_12c, caption: "Slide 2 with 12c"}]
+      - h3: "12d. Row 35–37"
+      - decision:
+          code: "12d"
+          current:
+            text: "Relative level vs distance from the nadir of the centrosome-proximal region"
+            where: "your wording"
+            slides: [{id: contents_base, png: deck_02.png, caption: "Slide 2 with the text you saved"}]
+          options:
+            - choice: "use"
+              button: "Use this"
+              text: "Relative level vs distance from the centrosome-proximal nadir, along the surface"
+              note: "One name for the centrosome point (as in row 11–13), and \"along the surface\" as in row 38–58; the distances are the same kind."
+              slides: [{id: contents_12d, caption: "Slide 2 with 12d"}]
+
+  - number: "–"
+    title: "Seen while building the text check (no action proposed)"
+    blocks:
+      - ul:
+          - 'Table rows write two-date experiments as "(N1 Aug 3, 2023; N2 Sep 11, 2023)"; slide titles as "(N1 Aug 3, N2 Sep 11, 2023)".'
+          - 'One arm in the Naive CTL RNAP II table is labeled "1-16".'

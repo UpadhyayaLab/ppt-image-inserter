@@ -137,7 +137,9 @@ output_path: "output/new.pptx"       # Template preservation mode (see below)
 auto_position: true                   # Default: true (auto-detect from template image)
 trim_whitespace: false               # Default: false; true crops each image's white margin so it fills its box
 title_fit: false                     # Default: false; true shrinks a long slide title so it stays on one line
+title_size: 36                       # Fixed title font size (pt); titles wrap, overrides title_fit. Use 36 for every new deck
 remove_template_slide: false         # Default: false; true deletes the template slide(s) after the slides are built (needs output_path)
+approved_text: "approved_text.yaml"  # Every slide line must be in this file (path relative to the config); the build fails otherwise
 # Per entry (dict form): subtitle: "..." adds a smaller line under that slide's title
 
 # Manual position override (only used if auto_position is false)
@@ -167,6 +169,49 @@ This copies the template to `output_path` before processing, leaving the origina
 ```python
 OUTPUT_PATH = PPT_PATH.replace("_template.pptx", ".pptx")
 ```
+
+## Clean slide text: every deck, no exceptions
+
+(FF 2026-11-19: "you need clean formatting. period. no exceptions. no walls of text. no exceptions")
+- Slide text is short labels, never sentences. Titles use a fixed font size, 36 pt (`title_size: 36`), and may wrap;
+  never shrink a title to one line (FF 2026-11-19: "titles should not be 1 line, we need titles of a fixed font size:
+  like 36"; "we should not have super long titles"). No line limit per text box (FF 2026-11-19: "drop
+  it everytwhere") and no character limit (FF 2026-11-19: "there should not be any character limit"). A contents or
+  key row is one short phrase.
+- No middle dot (·), no formula notation in text ("Relative = ÷ ..."), no internal names (README, panel letters,
+  file or compile names, voxels).
+- `ppt_image_inserter.lint_presentation(prs)` checks this. `batch_insert_images.py` runs it on every build and fails
+  the build on any problem. Every other builder must call it before reporting a deck as done. Text drawn into images
+  (rendered tables, keys) is checked by that builder against the same limits.
+- Before building a slide that carries text you wrote (a title page, contents, a key), show FF the exact text in chat
+  first.
+
+## Approved slide text: the drill for every new deck
+
+(FF 2026-11-19: "we need to prevent these mistakes...period", after agent-written wording reached slides unchecked,
+again and again.) A slide carries only text that someone with the authority approved. An agent never puts its own
+wording on a slide.
+- Each deck's config sets `approved_text: <file>`. The file lists every line a slide may show (`exact`, or titles as
+  `title_prefixes` + `title_labels`), each with its `source`: FF's approval (date and his words), a code-checked
+  definitions entry from the data owner, or "settled before <date>, not re-checked". `batch_insert_images.py` fails
+  the build on any slide line not in the file, and on any entry without a source. Other builders call
+  `unapproved(deck_strings(prs), load_approved(path))` (ppt_image_inserter.approved_text) before reporting done, and
+  check text they draw into images the same way (e.g. fig6_metrics/rebuild_fig6_deck.py).
+- New wording: show FF the exact text with its source. It goes in the file only after his OK. A quantity's wording
+  comes from the data owner's code-checked definitions, never from the agent.
+- Text already settled on a finished deck is not re-verified: `python examples_and_configs/check_approved_text.py seed
+  <deck.pptx> <approved.yaml> "settled before <date>, not re-checked"` adds every current line with that source.
+  Only text added or changed afterwards goes through FF.
+- `check_approved_text.py check <deck.pptx> <approved.yaml>` checks a deck without rebuilding it.
+
+## Decision pages: full slides, one-click answers
+
+(FF 2026-11-19: "I need to see everything in context. you need to show full slide for each item! establish this
+workflow"; and "I should not be expected to go back there - and type like 10 things".) Any decision about slide
+content goes to FF as a page built by `examples_and_configs/decision_page/build_decision_page.py` (steps in its
+README). Each option is shown as its full slide, rendered by the deck's own pipeline, and answered by clicks saved in
+the page's db. Never text alone, never codes typed in chat. An option that needs a re-render the agent cannot make
+shows the current slide, marked "not rendered". figure-reviewer checks the slides before FF sees the page.
 
 ## Important Constraints
 
@@ -258,7 +303,7 @@ OUTPUT_PATH = PPT_PATH.replace("_template.pptx", ".pptx")
 - A: Check that `auto_position: true` and template slide has one image where you want new images
 
 **Q: "Script is slow with 200 images"**
-- A: It should not be. `batch_insert_images.py` opens the deck once, adds every slide and saves once (2026-11-20:
+- A: It should not be. `batch_insert_images.py` opens the deck once, adds every slide and saves once (2026-11-19:
   112 slides in 11 s; the old per-slide open+save took 72 s). New builders pass an open `Presentation` to
   `copy_slide_replace_image(s)` (they accept a path or an open deck) and save once at the end, never per slide.
 

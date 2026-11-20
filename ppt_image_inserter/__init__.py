@@ -9,6 +9,8 @@ numbers of analysis plots following a consistent template.
 __version__ = "1.0.0"
 
 # Import all public functions from submodules
+from .text_lint import lint_presentation
+from .approved_text import load_approved, deck_strings, unapproved, seed_approved
 from .core import (
     insert_image,
     insert_image_preserve_aspect,
@@ -79,6 +81,11 @@ from .compile_paths import (
 
 # Define public API
 __all__ = [
+    'lint_presentation',
+    'load_approved',
+    'deck_strings',
+    'unapproved',
+    'seed_approved',
     # Core functions
     'insert_image',
     'insert_image_preserve_aspect',

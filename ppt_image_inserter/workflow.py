@@ -122,12 +122,14 @@ def _remove_title_placeholders(slide: Slide) -> int:
     return removed
 
 
-def _add_title(slide: Slide, text: str, subtitle: str = None, fit: bool = False) -> None:
+def _add_title(slide: Slide, text: str, subtitle: str = None, fit: bool = False, size: int = None) -> None:
     """Add a centered bold title textbox at the top of a slide; an optional
     subtitle goes in the same box as a smaller second paragraph, so it sits
     under the title however many lines the title wraps to; a subtitle written
-    *like this* is set in italics. fit shrinks a long title so it stays on one
-    line."""
+    *like this* is set in italics. size fixes the title font (pt) and lets the
+    title wrap to more lines (FF 2026-11-19: "titles should not be 1 line, we need
+    titles of a fixed font size: like 36"); otherwise fit shrinks a long title so it
+    stays on one line."""
     try:
         txBox = slide.shapes.add_textbox(
             Inches(TITLE_LEFT), Inches(TITLE_TOP),
@@ -137,9 +139,10 @@ def _add_title(slide: Slide, text: str, subtitle: str = None, fit: bool = False)
         tf.word_wrap = True
         tf.text = text
         para = tf.paragraphs[0]
-        size = TITLE_FONT_SIZE_PT
-        if fit and len(text) > TITLE_LINE_CHARS:
-            size = int(TITLE_FONT_SIZE_PT * TITLE_LINE_CHARS / len(text))
+        if size is None:
+            size = TITLE_FONT_SIZE_PT
+            if fit and len(text) > TITLE_LINE_CHARS:
+                size = int(TITLE_FONT_SIZE_PT * TITLE_LINE_CHARS / len(text))
         para.font.size = Pt(size)
         para.font.bold = True
         para.alignment = PP_ALIGN.CENTER
@@ -228,7 +231,8 @@ def _add_text_label(
 
 def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, position=None,
                              store_metadata=True, add_label=True, base_dir=None, title=None,
-                             label_side='right', trim_whitespace=False, subtitle=None, title_fit=False):
+                             label_side='right', trim_whitespace=False, subtitle=None, title_fit=False,
+                             title_size=None):
     """
     Copy a slide and replace its image with a new one (single-image version).
 
@@ -248,6 +252,8 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
                                 content fills the box. Default: False
         subtitle (str, optional): A smaller line under the title (needs title)
         title_fit (bool): Shrink a long title so it stays on one line
+        title_size (int, optional): Fixed title font size in pt; the title wraps to as many lines as it needs
+                                    (overrides title_fit). Default: TITLE_FONT_SIZE_PT
 
     Returns:
         int: Index of the newly created slide
@@ -283,6 +289,7 @@ def copy_slide_replace_image(ppt_path, source_slide_index, new_image_path, posit
         trim_whitespace=trim_whitespace,
         subtitle=subtitle,
         title_fit=title_fit,
+        title_size=title_size,
     )
 
 
@@ -302,7 +309,8 @@ def _content_crop(img, pad_frac=0.01):
 
 def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, positions=None,
                                store_metadata=True, add_label=False, base_dir=None, title=None,
-                               label_side='right', trim_whitespace=False, subtitle=None, title_fit=False):
+                               label_side='right', trim_whitespace=False, subtitle=None, title_fit=False,
+                             title_size=None):
     """
     Copy a slide and replace its images with new ones (supports multiple images per slide).
 
@@ -327,6 +335,8 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
                                 fills its box. Default: False
         subtitle (str, optional): A smaller line under the title (needs title)
         title_fit (bool): Shrink a long title so it stays on one line
+        title_size (int, optional): Fixed title font size in pt; the title wraps to as many lines as it needs
+                                    (overrides title_fit). Default: TITLE_FONT_SIZE_PT
 
     Returns:
         int: Index of the newly created slide
@@ -359,7 +369,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
     """
     # ppt_path may be an already-open Presentation: then the slide is added to it and the caller
     # saves once (opening and saving the whole deck per slide made a 112-slide build take 72 s,
-    # 64 s of it re-zipping, FF 2026-11-20 "it should not take so long to rebuild")
+    # 64 s of it re-zipping, FF 2026-11-19 "it should not take so long to rebuild")
     from_path = isinstance(ppt_path, (str, os.PathLike))
     if from_path and not os.path.exists(ppt_path):
         raise FileNotFoundError(f"PowerPoint file not found: {ppt_path}")
@@ -396,6 +406,34 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
     # Get the new slide's index (it's added at the end)
     new_slide_index = len(prs.slides) - 1
 
+    # If filling the slide fails, take it out again: with an open Presentation the caller saves the
+    # deck after the error, which wrote a half-built template copy into it (bug hunt 2026-11-19)
+    try:
+        _fill_new_slide(prs, new_slide, new_image_paths, positions, store_metadata, add_label,
+                        base_dir, title, label_side, trim_whitespace, subtitle, title_fit, title_size)
+    except Exception:
+        _remove_last_slide(prs)
+        raise
+
+    # Save the presentation (an open Presentation passed in is saved by the caller)
+    if from_path:
+        prs.save(ppt_path)
+
+    return new_slide_index
+
+
+def _remove_last_slide(prs) -> None:
+    """Drop the slide just appended by duplicate_slide (its part is then unreferenced and not saved)."""
+    sld_ids = prs.slides._sldIdLst
+    rId = sld_ids[-1].rId
+    prs.part.drop_rel(rId)
+    sld_ids.remove(sld_ids[-1])
+
+
+def _fill_new_slide(prs, new_slide, new_image_paths, positions, store_metadata, add_label,
+                    base_dir, title, label_side, trim_whitespace, subtitle, title_fit,
+                    title_size=None) -> None:
+    """Replace the duplicated slide's pictures with the new images, then add label and title."""
     # Remove all pictures from the new slide
     num_removed = remove_pictures_from_slide(new_slide)
 
@@ -460,13 +498,7 @@ def copy_slide_replace_images(ppt_path, source_slide_index, new_image_paths, pos
     # template text is preserved (2026-05-25) otherwise showed under it (DZNep bTub deck 2026-11-06)
     if title:
         _remove_title_placeholders(new_slide)
-        _add_title(new_slide, title, subtitle, fit=title_fit)
-
-    # Save the presentation (an open Presentation passed in is saved by the caller)
-    if from_path:
-        prs.save(ppt_path)
-
-    return new_slide_index
+        _add_title(new_slide, title, subtitle, fit=title_fit, size=title_size)
 
 
 def replace_image_on_existing_slide(ppt_path: str, slide_index: int, new_image_path: str,
