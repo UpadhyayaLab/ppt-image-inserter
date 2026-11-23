@@ -10,7 +10,8 @@ row of the pictures. gap_in < 0 means the title's letters reach into the figure.
 
 Usage:  python measure_title_lines.py <deck.pptx> <out.json>
 Output: [{"slide": n, "title": "...", "lines": n, "gap_in": x | null, "runs_into_figure": bool}, ...]; a slide with a
-bottom_text line (shape "Bottom text") also gets bottom, bottom_lines, bottom_overlaps_figure, bottom_off_slide
+bottom_text line (shape "Bottom text") also gets bottom, bottom_lines, bottom_overlaps_figure (a figure pixel inside
+the box around the line's letters, from a third in-memory export), bottom_off_slide
 (slides without a text shape are skipped). The deck must be closed in PowerPoint.
 """
 import json
@@ -24,6 +25,7 @@ from PIL import Image
 PICTURE = 13      # msoPicture
 WIDTH_PX = 2000   # export width; px per inch = WIDTH_PX / slide width in inches
 DARK = 140        # gray level below which a pixel counts as ink
+FIG_INK = 245     # in the figure, any pixel darker than this counts (light colors such as cyan included)
 
 
 def ink_rows(png):
@@ -31,6 +33,14 @@ def ink_rows(png):
     im = Image.open(png).convert("L").point(lambda v: 255 if v < DARK else 0)
     box = im.getbbox()
     return (box[1], box[3] - 1) if box else None
+
+
+def touches(text_png, fig_png):
+    """True when a figure pixel lies inside the bounding box of the text's ink."""
+    box = Image.open(text_png).convert("L").point(lambda v: 255 if v < DARK else 0).getbbox()
+    if not box:
+        return False
+    return Image.open(fig_png).convert("L").crop(box).point(lambda v: 255 if v < FIG_INK else 0).getbbox() is not None
 
 
 def measure(deck):
@@ -64,11 +74,12 @@ def measure(deck):
             while lines < 50 and para.Lines(lines + 1, 1).Length > 0:
                 lines += 1
             gap = None
+            bottom = [s for s in texts if s.Name == "Bottom text"]   # workflow._add_bottom_text
             if pics:
                 vis = {id(s): s.Visible for s in shapes}
                 rows = {}
                 try:
-                    for name, keep in (("title", [box]), ("figure", pics)):
+                    for name, keep in (("title", [box]), ("figure", pics)) + ((("bottom", bottom),) if bottom else ()):
                         for s in shapes:
                             s.Visible = -1 if any(s is k for k in keep) else 0
                         png = os.path.join(tmp, f"s{n}_{name}.png")
@@ -81,15 +92,14 @@ def measure(deck):
                     gap = round((rows["figure"][0] - rows["title"][1] - 1) / px_in, 3)
             rec = {"slide": n, "title": para.Text.strip(), "lines": lines, "gap_in": gap,
                    "runs_into_figure": bool(gap is not None and gap < 0)}
-            bottom = [s for s in texts if s.Name == "Bottom text"]   # workflow._add_bottom_text
             if bottom:
-                b = bottom[0]
-                rng, k = b.TextFrame.TextRange, 0
+                rng, k = bottom[0].TextFrame.TextRange, 0
                 while k < 50 and rng.Lines(k + 1, 1).Length > 0:
                     k += 1
+                fig_png = os.path.join(tmp, f"s{n}_figure.png")
                 rec.update(bottom=rng.Text.strip(), bottom_lines=k,
-                           bottom_overlaps_figure=any(p.Top + p.Height > b.Top + 0.5 for p in pics),
-                           bottom_off_slide=b.Top + b.Height > sh + 0.5)
+                           bottom_overlaps_figure=bool(pics) and touches(os.path.join(tmp, f"s{n}_bottom.png"), fig_png),
+                           bottom_off_slide=rng.BoundTop + rng.BoundHeight > sh + 0.5)
             out.append(rec)
     finally:
         pres.Close()

@@ -9,8 +9,8 @@
   at: '2026-11-20T00:24:37.000Z'
 - code: '2'
   title: Contents row for the near-centrosome distance profiles
-  text: Relative level vs distance from the nadir of the centrosome-proximal region
-  how: settled by your slide 2 text
+  text: Relative level vs distance from the centrosome-proximal nadir, along the surface
+  how: superseded by your pick on 12d
   at: '2026-11-20T00:24:37.000Z'
 - code: 3a
   title: Contents note, Level
@@ -27,12 +27,6 @@
   text: 'Near the centrosome-proximal nadir: surface within 25% of the mean surface distance from it'
   how: settled by your slide 2 text
   at: '2026-11-20T00:24:37.000Z'
-- code: '6'
-  title: Table key, near-centrosome columns
-  text: 'Near centrosome: region around the deepest point of the centrosome-proximal patch; no test; blank = not analyzed'
-  how: your change
-  note: "Kept '; no test; blank = not analyzed' after your text; tell me if it should go."
-  at: '2026-11-20T00:06:29.258Z'
 - code: 11a
   title: Near-centrosome violin titles
   text: Relative level near the centrosome-proximal nadir
@@ -44,3 +38,70 @@
 - slide: cent_violin_1A_noco_oct
   how: 'your note on font size, ruled by your later instruction: fixed 36 pt for all titles'
   at: '2026-11-20T00:05:13.346Z'
+- code: 11c
+  title: DMSO vs ciliobrevin date, on every slide of that experiment
+  text: dates need not be in title. they can be near bottom
+  how: your rule, 2026-11-20, relayed by Histone mark data agent presentation; each dated slide carries its dates on the bottom-left line
+  rule: true
+  at: '2026-11-20T02:30:12.000Z'
+- code: 5a
+  title: Violin y label inside the near-centrosome figures
+  at: '2026-11-20T02:21:12.655Z'
+  text: Keep current
+  how: your pick
+- code: '9'
+  title: 'New near-centrosome figures: reviewer''s notes'
+  at: '2026-11-20T02:23:12.614Z'
+  text: Ask Histone mark data to match the ticks and legend to the deck's profiles
+  how: your pick (request)
+- code: '4'
+  title: 'Slides 3–4: what they show and their title'
+  text: Regions around the nadir of the centrosome-proximal region
+  how: 'your answer in chat: "remove comma", and "no" to a cell number after it'
+  at: '2026-11-20T02:40:00.000Z'
+- code: '6'
+  title: Table key, near-centrosome columns
+  text: 'Near centrosome: region around the deepest point of the centrosome-proximal patch'
+  how: your change; "no" in chat to keeping "; no test; blank = not analyzed" after it
+  at: '2026-11-20T02:40:00.000Z'
+- code: 5b
+  title: Profile y label inside the figures
+  at: '2026-11-20T02:27:57.800Z'
+  text: Keep current
+  how: your pick
+- code: '7'
+  title: Table key, main
+  at: '2026-11-20T02:27:39.468Z'
+  text: Mean in the 0.25 μm layer near the nadir ÷ the mean in the same layer over the full nucleus; mean ± SEM over cells
+  how: your change
+- code: 11b
+  title: Near-centrosome profile titles
+  at: '2026-11-20T02:23:42.601Z'
+  text: Relative level vs distance from the centrosome-proximal nadir
+  how: your pick
+- code: 12a
+  title: Slide 2 "Nadir" row
+  at: '2026-11-20T02:26:08.020Z'
+  text: 'Nadir: surface point farthest from the hull boundary (centrosome-proximal: within that region)'
+  how: your pick
+- code: 12b
+  title: Slide 2 "Level" note
+  at: '2026-11-20T02:26:25.647Z'
+  text: Keep current
+  how: your pick
+- code: 12c
+  title: 'Slide 2: one term for the whole nucleus'
+  at: '2026-11-20T02:26:36.239Z'
+  text: Keep current
+  how: your pick
+- code: 12d
+  title: Slide 2 row for the near-centrosome profiles
+  at: '2026-11-20T02:26:48.958Z'
+  text: Relative level vs distance from the centrosome-proximal nadir, along the surface
+  how: your pick
+- code: dates
+  title: Dates out of titles, onto a line at the bottom left
+  text: 'dates need not be in title. they can be near bottom; date line should be italics. 18 pt; bottom left, small margin'
+  how: your words, 2026-11-20, relayed by Histone mark data agent presentation; titles at 32 pt
+  rule: true
+  at: '2026-11-20T03:08:08.000Z'

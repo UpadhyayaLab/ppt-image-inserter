@@ -1,0 +1,69 @@
+# TGT CAT/FMC movie deck, all three days in one deck (FF 2026-11-22: "one deck total").
+# Built by examples_and_configs/tgt/build_cat_fmc_slides.py --config <this file>.
+# Text: every line is checked against approved_text (lines not in it are reported, never block the build).
+# Layout of title page and details slides copies the BIAD2255 cytokine deck (FF: "ppt agent should base these on
+# our recent cytokine ppt"): big bold title over a grey subtitle; details = title, one-line bullets, grey caption.
+# Facts were relayed by the session "TGT Sept EMCCD copy and first look" (verified there for 20260925_d5).
+
+# FF 2026-11-22: "do not name things like v3" (no version suffixes); on rebuilds: "overwrite" (back up the old deck to
+# backups/ first; the builder itself stops when the output exists, so the swap is done by hand after the build).
+output: "K:/FF/PPT/PPT_autogeneration/TGT/tgt_cat_fmc_all_days.pptx"
+approved_text: "cat_fmc_approved_text.yaml"
+
+title_page:
+  title: "CAT and FMC CAR T Cells on 12 pN TGT Surfaces"
+  # FF saw "IRM and TGT Movies, 20260925 d5 (Data from Kiet)"; dates widened for the three-day deck (not yet seen)
+  subtitle: "IRM and TGT Movies, 20260923 to 20260925 (Data from Kiet)"
+
+details:
+  # Slides 2-4: FF's own edits saved on the decision page 2026-11-22 (db docs slide_02..04), verbatim except the two
+  # typo fixes marked below; slide 3's brightness lines: FF's chat wording 2026-11-22, relayed by
+  # "TGT Sept EMCCD copy and first look" (replaces the old brightness bullet and caption).
+  - title: "Experiment and Imaging"
+    bullets:
+      - "12 pN TGT"
+      - "Andor EMCCD, 500 ms, EM gain 300, 0.16 μm pixels, 512 × 512"
+      - "Fields of view (FOVs): 86 on 20260923, 70 on 20260924 d4, 43 on 20260925 d5"
+  - title: "How movies will be displayed in this PPT"
+    bullets:
+      - "Cells segmented in IRM channel using Cellpose-SAM at 3 spatial scales. Objects < 500 px removed."
+      - "Left: IRM with outlines; right: TGT"   # FF typed "outlines right: TGT"; "; " restored from the earlier line
+      - "Only frames with IRM displayed: every 4th frame, up to 8 per movie, ~4 min apart; 2 frames/s"
+      - heading: "Brightness, fixed for each movie"
+      - "TGT: dimmest 1% of the first frame shown black"
+      - "TGT: brightest 0.1% of all frames in the movie shown white"
+      - "IRM: dimmest 0.1% black, brightest 0.1% white, all frames in the movie"
+      # FF 2026-11-23: "remove • Compare brightness within a movie, not between movies"
+  - title: "Segmenting the cells"
+    bullets:
+      - "Input: IRM frames only (every 4th frame of TGT)"
+      - "Model: Cellpose-SAM, pretrained, default settings"
+      - "Three passes: full, half and quarter image size"
+      - "The half- and quarter-size passes add only cells not already found (less than half overlap)"
+      - "Objects under 500 pixels in area (12.8 μm²) removed"   # FF 2026-11-22, chat via TGT Sept EMCCD copy and first look
+    # FF 2026-11-23: instead of the full reference bullet, "put in the bottom left corner Pachitariu et al., bioRxiv,
+    # 2025. in italics"
+    reference: "Pachitariu et al., bioRxiv, 2025."
+
+# Metric slides at the end of the deck, after the movies (FF 2026-11-23: "quant results should be moved to end").
+# Added under FF 2026-11-22 standing go: "the various agents need to add this stuff to the ppt period"; relayed by
+# "TGT Sept EMCCD copy and first look". Figures from "TGT per-cell measurement (implementer)",
+# figure review passed there. Titles: proposals of "TGT experiment 2026 analysis plan", NOT approved by FF yet.
+figures:
+  - title: "TGT Signal Under Cells Relative To Glass"
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/cell_over_glass/per_day_v1/per_day_cell_over_glass.png"
+  - title: "Cell Area With Signal Well Below Glass Median"   # FF 2026-11-23, relayed
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/dark_share/per_day_v1/per_day_dark_share.png"
+  - title: "Cell Area With Signal Well Above Glass Median"   # FF 2026-11-23, relayed
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/bright_share/per_day_v1/per_day_bright_share.png"
+  - title: "Variation Of TGT Signal Under Cells"
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/cv_under_cells/per_day_v1/per_day_cv.png"
+
+# In deck order. movies_root/movie/<day>/<day>_<CAT|FMC>_W<n>_pNN.mp4
+days:
+  - day: "20260923"
+    movies_root: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/first_look/cat_fmc_0923_d4"
+  - day: "20260924_d4"
+    movies_root: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/first_look/cat_fmc_0923_d4"
+  - day: "20260925_d5"
+    movies_root: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/first_look/cat_fmc_20260925_d5"

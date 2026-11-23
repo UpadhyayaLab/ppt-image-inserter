@@ -89,6 +89,52 @@ exact:
   source: FF 2026-11-20 decision page, his saved slide 2 text (db slides/contents_base, 00:24Z)
 - text: 'Near centrosome: region around the deepest point of the centrosome-proximal patch; no test; blank = not analyzed'
   source: FF 2026-11-20 decision page 6, his change (00:06Z); '; no test; blank = not analyzed' kept per Histone mark data agent presentation 2026-11-19
+- text: Regions around the nadir of the centrosome-proximal region
+  source: 'FF 2026-11-20 in chat, relayed by Histone mark data agent presentation: "remove comma"; cell number follows: "no"'
+- text: 'Near centrosome: region around the deepest point of the centrosome-proximal patch'
+  source: 'FF 2026-11-20 decision page 6 (his change) and in chat, relayed by Histone mark data agent presentation: keep the tail: "no"'
+- text: Mean in the 0.25 μm layer near the nadir ÷ the mean in the same layer over the full nucleus; mean ± SEM over cells
+  source: FF 2026-11-20 decision page 7 (his change)
+- text: 'Nadir: surface point farthest from the hull boundary (centrosome-proximal: within that region)'
+  source: FF 2026-11-20 decision page 12a (pick use)
+- text: Relative level vs distance from the centrosome-proximal nadir, along the surface
+  source: FF 2026-11-20 decision page 12d (pick use)
+- text: N1 Jun 12, N2 Jun 13, 2026
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Oct 29, 2026
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: N1 Aug 3, N2 Sep 11, 2023
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Feb 23, 2023
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jan 6, 2023
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Sep 2023
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jun 17, 2024
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Nov 17, 2025
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Mar 21, 2024
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Apr 24, 2024
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: May 31, 2024
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Feb 19, 2024
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Mar 18, 2024
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Apr 22, 2024
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Dec 11, 2024
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jul 8, 2024
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jul 29, 2024
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Relative level vs depth below convex hull
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "remove , ÷ its 0–0.25 μm bin"'
 title_prefixes:
 - text: Relative level near nadir, mean ± SEM
   source: in the deck FF reviewed 2026-11-19
@@ -102,6 +148,10 @@ title_prefixes:
   source: FF 2026-11-19 decision page 11a, his wording and pick (relayed by Histone mark data agent presentation)
 - text: Relative level vs distance from the nadir of the centrosome-proximal region
   source: FF 2026-11-19 decision page 2, pick 2A
+- text: Regions around the nadir of the centrosome-proximal region
+  source: 'FF 2026-11-20 in chat, relayed by Histone mark data agent presentation: "remove comma"; cell number follows: "no"'
+- text: Relative level vs distance from the centrosome-proximal nadir
+  source: FF 2026-11-20 decision page 11b (pick use)
 title_labels:
 - text: H3K27me3, Jurkat (1 of 2)
   source: in the deck FF reviewed 2026-11-19
@@ -161,3 +211,39 @@ title_labels:
   source: in the deck FF reviewed 2026-11-19 (table form of the date)
 - text: Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, 2026; N2 Jun 13, 2026)
   source: in the deck FF reviewed 2026-11-19 (table form of the date)
+- text: Jurkat H3K27me3, DMSO vs ciliobrevin
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jurkat H3K27me3, ciliobrevin
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jurkat H3K27me3, nocodazole
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jurkat H3K27me3
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jurkat H3K27me3, H2O vs DZNep
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jurkat H3K27me3, siCtrl vs siHMGA1
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jurkat H3K27me3, siCtrl vs siSUN1 / siSUN2
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jurkat H3K9me3
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jurkat H3K27ac
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Jurkat RNAP II
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: 3SI CTL H3K27me3
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: 3SI CTL H3K9me3
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: 3SI CTL H3K27ac
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: 3SI CTL RNAP II
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Naive CTL H3K27me3
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Naive CTL H3K9me3
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Naive CTL H3K27ac
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'
+- text: Naive CTL RNAP II
+  source: 'FF 2026-11-20, relayed by Histone mark data agent presentation: "dates need not be in title. they can be near bottom"; "date line should be italics. 18 pt"; "bottom left, small margin"'

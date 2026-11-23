@@ -528,6 +528,40 @@ slides:
     view: "Fig 3 experiment, untreated: inner 0.25 μm layer"   # PROPOSED (agent wording)
     images: ["11_mfi/fig3/in025_near_sub/IFNG.png", "11_mfi/fig3/in025_near_sub/TNF.png"]
     caption: "Median and quartiles; rank-sum test, 2 h vs 0 h"   # PROPOSED; tests: mfi_tests.csv (rank-sum vs 0 h, BH over the time points)
+  # Angle polars from background-subtracted signal: FF 2026-11-20 "what happened to our "angular" plots ... a version
+  # of it not based on spots but on ... bg subtracted signal"; "focus just on the cytoplasmic 0.5 region and on the
+  # inner regions"; "random placement not needed here"; titles in the images: FF "ok" 2026-11-20. Rendering session:
+  # invag_signal_2d.m 'extra_dir' + polarity_angle_polars.m 'signal_root' (run_signal_polars_20261120.m), figure-reviewer
+  # PASS. One page per experiment, time point and inner layer, never pooled. The geometry/DAPI control is left out
+  # (FF 2026-11-20: "leave out the check from main deck").
+  - kind: plots
+    review_id: spol_f3_in025_0h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 3 experiment, untreated, 0 h: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in025/D1C_0h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f3_in025_2h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 3 experiment, untreated, 2 h: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in025/through_focus_732_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f3_in05_0h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 3 experiment, untreated, 0 h: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in05/D1C_0h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f3_in05_2h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 3 experiment, untreated, 2 h: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in05/through_focus_732_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
 
   # FF 2026-11-19: "reuse table format of Histone mark data agent presentation": the table is an image rendered by
   # public_data/render_biad2255_level_table.py (Fig 6 table code, imported) from the rendering session's CSV
@@ -634,3 +668,94 @@ slides:
     view: "Fig 1 time course: inner 0.25 μm layer"   # PROPOSED (agent wording)
     images: ["11_mfi/timecourse/in025_near_sub/IFNG.png", "11_mfi/timecourse/in025_near_sub/TNF.png"]
     caption: "Median and quartiles; rank-sum test vs 0 h, BH-adjusted"   # PROPOSED; tests: mfi_tests.csv (rank-sum vs 0 h, BH over the time points)
+
+  # Angle polars from background-subtracted signal: FF 2026-11-20 "what happened to our "angular" plots ... a version
+  # of it not based on spots but on ... bg subtracted signal"; "focus just on the cytoplasmic 0.5 region and on the
+  # inner regions"; "random placement not needed here"; titles in the images: FF "ok" 2026-11-20. Rendering session:
+  # invag_signal_2d.m 'extra_dir' + polarity_angle_polars.m 'signal_root' (run_signal_polars_20261120.m), figure-reviewer
+  # PASS. One page per experiment, time point and inner layer, never pooled. The geometry/DAPI control is left out
+  # (FF 2026-11-20: "leave out the check from main deck").
+  - kind: plots
+    review_id: spol_f1_in025_0h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 0 h: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in025/D1F1_0h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in025_1h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 1 h: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in025/D1F1_1h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in025_2h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 2 h: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in025/D1F1_2h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in025_3h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 3 h: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in025/D1F1_3h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in025_4h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 4 h: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in025/D1F1_4h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in025_6h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 6 h: inner 0.25 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in025/D1F1_6h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in05_0h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 0 h: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in05/D1F1_0h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in05_1h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 1 h: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in05/D1F1_1h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in05_2h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 2 h: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in05/D1F1_2h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in05_3h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 3 h: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in05/D1F1_3h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in05_4h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 4 h: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in05/D1F1_4h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED
+  - kind: plots
+    review_id: spol_f1_in05_6h
+    draft: true
+    title: "Polarization directions"   # PROPOSED (agent wording)
+    view: "Fig 1 time course, 6 h: inner 0.5 μm layer"   # PROPOSED (agent wording)
+    images: ["12_signal_polars/in05/D1F1_6h_ws/angle_polars.png"]
+    caption: "Direction of background-subtracted signal about the nucleus center, whole region"   # PROPOSED

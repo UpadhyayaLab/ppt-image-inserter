@@ -7,7 +7,7 @@ title: "Fig 6 Deck Decisions"
 heading: "Fig 6 deck: decisions"
 lead: "Open decisions first, resolved ones after them. Each option shows every slide it changes, built by the deck's own pipeline from the deck as it now is. Click your pick, or write a change and click Save change; each save is kept at once and can be changed any time. Click a resolved line to open it again. Every proposed string is copied from Histone mark data's code-checked replies, unless its option gives another source."
 all_heading: "Fig 6 deck: all slides"
-all_lead: "Every slide of the deck as it now is, with your answers so far applied. Edit any line in the box under a slide and click Save slide change. Click a slide to enlarge it. The line under each slide gives its title's line count at the deck's fixed 36 pt, measured in PowerPoint; red marks 3 or more lines or a title whose letters run into the figure."
+all_lead: "Every slide of the deck as it now is, with your answers so far applied. Edit any line in the box under a slide and click Save slide change. Click a slide to enlarge it. The line under each slide gives its title's line count at the deck's fixed 32 pt, measured in PowerPoint; red marks 3 or more lines or a title whose letters run into the figure."
 collection: decisions
 slide_collection: slides
 deck:
@@ -127,13 +127,27 @@ items:
   - code: "11c"
     title: "DMSO vs ciliobrevin date, on every slide of that experiment"
     source: "Histone mark data's code-checked reply relayed 2026-11-19"
-    about: "Only the depth panels say N1 (Jun 12) and N2 (Jun 13). The whole-nucleus violin and profile labels and the near-centrosome labels say N1 and N2 without dates, so on those slides the title is the only place that ties N1 to Jun 12."
+    about: "Only the depth panels say N1 (Jun 12) and N2 (Jun 13). The whole-nucleus violin and profile labels and the near-centrosome labels say N1 and N2 without dates; the date line on those slides now reads \"N1 Jun 12, N2 Jun 13, 2026\"."
     options:
       - choice: "use"
         button: "Use this"
         text: "Jurkat H3K27me3, DMSO vs ciliobrevin (Jun 12 and 13, 2026)"
         replace:
           - {old: "Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, N2 Jun 13, 2026)", new: "Jurkat H3K27me3, DMSO vs ciliobrevin (Jun 12 and 13, 2026)", where: titles}
+
+  - code: "dates"
+    title: "Dates out of titles, onto a line at the bottom left"
+    source: "FF 2026-11-20, relayed by Histone mark data agent presentation"
+    dates_preview: true
+    keep: false
+    about:
+      - 'Your rule (2026-11-20): "titles sould never span 3 lines" and "dates need not be in title. they can be near bottom".'
+      - 'Your format (2026-11-20): "date line should be italics. 18 pt" and "bottom left, small margin"; titles at 32 pt ("make 32.").'
+      - "Shown: each title's date in parentheses moved, without the parentheses, to that line. Where a title or date line would touch the data, the figure is moved, and scaled only if it must be (last column of the table). The table lists every changed title and its date line, with the line counts PowerPoint gives (red: a title over 2 lines, or a date line that wraps, touches the figure or runs off the slide)."
+    options:
+      - choice: "move"
+        button: "Use this format"
+        label: "Dates on the bottom-left line, as shown"
 
   - code: "12a"
     title: 'Slide 2 "Nadir" row'
@@ -190,5 +204,5 @@ items:
   - code: "seen"
     title: "Seen while building the text check (no action proposed)"
     about:
-      - 'Table rows write two-date experiments as "(N1 Aug 3, 2023; N2 Sep 11, 2023)"; slide titles as "(N1 Aug 3, N2 Sep 11, 2023)".'
+      - 'Table rows write two-date experiments as "(N1 Aug 3, 2023; N2 Sep 11, 2023)"; date lines as "N1 Aug 3, N2 Sep 11, 2023".'
       - 'One arm in the Naive CTL RNAP II table is labeled "1-16".'

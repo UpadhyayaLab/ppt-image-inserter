@@ -64,7 +64,7 @@ STUB = r"""
     if (ACT && ACT.cycle && !phase) {
       const c = ACT.cycle;
       log.push('opens on: ' + (q('#view-all').hidden ? 'decisions' : 'all slides'));
-      item(c).querySelectorAll('.ans')[1].click(); await wait(150); log.push('after pick: ' + st(c));
+      { const a = item(c).querySelectorAll('.ans'); a[a.length - 1].click(); } await wait(150); log.push('after pick: ' + st(c));
       q('#note-' + CSS.escape(c)).value = 'Test change text'; item(c).querySelector('.savechg').click(); await wait(150);
       log.push('after change: ' + st(c));
       const t = deck2().querySelector('textarea'); t.value += '\nTEST SLIDE EDIT'; t.dispatchEvent(new Event('input', { bubbles: true }));
@@ -146,8 +146,31 @@ def run(spec_path, test_dir):
     print(f"resolution: {len(want)} items with a saved answer, {len(got)} shown as Resolved")
     if got != want:
         raise SystemExit(f"resolution FAILED: not resolved {sorted(want - got)}, resolved without an answer {sorted(got - want)}")
+    # db guard: the build must refuse a saved answer left unapplied, and a stale export (2026-11-20, v22)
+    import shutil
+    import os
+    applied = yaml.safe_load((Path(spec_path).parent / spec["applied"]).read_text(encoding="utf-8")) or []
+    in_spec = {str(it["code"]) for it in spec["items"]}
+    # A page's first build has no saved, applied answer to withhold: that half of the check needs one (2026-11-21).
+    code = next((c for c in sorted(saved) if c in in_spec and any(str(a.get("code")) == c for a in applied)), None)
+    g1 = bp.db_guard(spec_path, spec, [a for a in applied if str(a.get("code")) != code]) if code else []
+    old_exp = test_dir / "stale_export"
+    shutil.rmtree(old_exp, ignore_errors=True)
+    first = spec.get("first_build") and not list(exp.glob("*/*.json"))   # no db yet: nothing to go stale
+    if not first:
+        shutil.copytree(exp, old_exp)
+        for f in old_exp.glob("*/*.json"):
+            os.utime(f, (time.time() - 3600, time.time() - 3600))
+    g2 = ["skipped: first build, no db export (60 min old)"] if first else \
+        bp.db_guard(spec_path, dict(spec, db_export=str(old_exp)), applied)
+    ok = (code is None or any(code in e and "not applied" in e for e in g1)) and any("min old" in e for e in g2)
+    print(f"db guard: unapplied answer {code} refused: "
+          f"{'skipped, no saved answer yet' if code is None else any(code in e for e in g1)}; 60-min-old export refused: "
+          f"{'skipped, first build (no db yet)' if first else any('min old' in e for e in g2)}")
+    if not ok:
+        raise SystemExit(f"db guard FAILED: {g1} {g2}")
     t = time.perf_counter()
-    first = next(it["code"] for it in items if not it["resolved"] and it["code"] not in saved and len(it["options"]) > 1)
+    first = next(it["code"] for it in items if not it["resolved"] and it["code"] not in saved and len(it["options"]) >= 1)
     log = logged(page("test_cycle", {"cycle": first, "coll": spec.get("collection", "decisions"),
                                      "slcoll": spec.get("slide_collection", "slides")}))
     print(f"save test (decision {first}, slide 2):\n  " + log.replace("\n", "\n  "))

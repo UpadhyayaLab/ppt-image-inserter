@@ -35,7 +35,8 @@ from ppt_image_inserter.approved_text import deck_strings, load_approved, unappr
 
 FIGS = "Q:/FF/Nucleus_Data/3D_Nucleus/Fixed/fig6_metrics_page/figs_20261118"
 APPROVED = HERE / "approved_text.yaml"   # every string a slide may carry, with its source
-EXPECTED_S = {"tables": 15, "deck": 11, "check": 5, "export": 35, "measure": 30, "page": 40}
+# deck: 11 s before the text-off-data fix; 70-84 s with it (79 slides, 2026-11-20, three in-memory exports per slide)
+EXPECTED_S = {"tables": 15, "deck": 85, "check": 5, "export": 35, "measure": 60, "page": 40}
 STEPS = ["tables", "deck", "export", "page"]
 PAGE_W = 1400
 
@@ -118,8 +119,8 @@ def unapproved_text(cfg):
 
 def measure_titles(cfg):
     """Every title at the deck's fixed size, measured in PowerPoint; reports any title over 2 lines, running into the
-    figure, or a bottom line that wraps or overlaps (FF 2026-11-20: "titles sould never span 3 lines"). Reported,
-    never blocking."""
+    figure, or a bottom line that wraps or overlaps (FF 2026-11-20: "titles sould never span 3 lines"), and every title
+    or bottom line on the data (ppt_image_inserter.text_clear). Reported, never blocking."""
     sys.path.insert(0, str(EXAMPLES))
     from measure_title_lines import measure
     bad = []
@@ -133,6 +134,10 @@ def measure_titles(cfg):
                        + (", overlaps the figure" if m["bottom_overlaps_figure"] else "")
                        + (", off the slide" if m["bottom_off_slide"] else ""))
     print(f"titles: {len(bad)} problems" + (": " + "; ".join(bad) if bad else f" (all at most 2 lines at {cfg['title_size']} pt)"))
+    # FF 2026-11-20: "it cannot overlap with any data. this needs a hard coded tst (titles too)"
+    from ppt_image_inserter import text_clear
+    over = text_clear.report(text_clear.check(cfg["output_path"]))
+    print(f"text on data or data off the slide: {len(over)} problems" + (": " + "; ".join(over) if over else ""))
 
 
 def _embed(args):

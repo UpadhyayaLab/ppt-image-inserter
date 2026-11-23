@@ -1,0 +1,57 @@
+# Approved slide text for the 06/10/2026 Jurkat antibody-test decks (build_abtest_06102026_decks.py).
+# The build lists every slide line not in this file. Add a line ONLY with its source: FF's approval (date and his
+# words), a code-checked definitions entry, or "settled before <date>, not re-checked". Never agent wording.
+# Seeded 2026-11-21 with the results titles reused verbatim from the 10/29 Noco results deck; each was matched by
+# script against that deck's text. Everything new (title slide, mark titles, comparison subtitles, montage titles
+# and legends) waits for FF.
+exact:
+- text: Cell counts per QC filter
+  source: &s1029 settled before 2026-11-19 on "Effects of Noco, H3K27me3, 10292026.pptx", not re-checked
+- text: Deepest invagination volume
+  source: *s1029
+- text: 'Deepest invag: frac of convex hull volume'
+  source: *s1029
+- text: DNA levels near deepest invagination
+  source: *s1029
+- text: Density vs hull-boundary distance
+  source: *s1029
+- text: Per-cell correlation vs hull distance
+  source: *s1029
+- text: Density vs min curvature
+  source: *s1029
+- text: Nuclear aspect ratio
+  source: *s1029
+- text: Nuclear solidity
+  source: *s1029
+- text: Nuclear volume
+  source: *s1029
+- text: Nuclear surface area
+  source: *s1029
+- text: Synapse Area
+  source: *s1029
+- text: Actin MFI at synapse
+  source: *s1029
+- text: Actin inner/outer synapse ratio
+  source: *s1029
+- text: Density vs mean curvature
+  source: *s1029
+- text: Enrichment in deep invaginations (hull distance > 0.5 μm)
+  source: *s1029
+- text: Enrichment in deep invaginations (hull distance > 1.0 μm)
+  source: *s1029
+- text: Enrichment on concave surface (min curv < 0)
+  source: *s1029
+- text: Enrichment on strongly concave surface (min curv < −0.25)
+  source: *s1029
+- text: Enrichment on concave surface (mean curv < 0)
+  source: *s1029
+- text: Per-cell correlation vs min curvature
+  source: *s1029
+- text: Per-cell correlation vs mean curvature
+  source: *s1029
+- text: Density vs surface orientation
+  source: *s1029
+- text: H3K27me3 MFI
+  source: *s1029
+- text: H3K27me3 levels near deepest invagination
+  source: *s1029

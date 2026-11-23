@@ -23,7 +23,8 @@ title size) lives in the config, never on the page.
 ## Steps (one deck: Fig 6)
 
 1. **Export the db** right before a build: ArtifactData `list`, collections `decisions` and `slides`,
-   `out_dir` = the spec's `db_export`.
+   `out_dir` = the spec's `db_export`. The page build refuses an export older than 15 minutes, and refuses while any
+   saved answer in it is not yet applied (step 2), so no answer FF saved can be left off the page.
 2. **Apply answers**: `python decision_page/apply_answers.py <spec> <db export>` (dry run: prints every replacement,
    where it lands and the approved-text rows), then again with `--write`. It writes the deck config, the deck text
    file, `approved_text.yaml` (source "FF <date> decision page <code>") and the spec's applied list (shown as
@@ -32,7 +33,7 @@ title size) lives in the config, never on the page.
 3. **Previews**: `python fig6_metrics/fig6_decision_previews.py <spec>`. Two decks, each built, exported and measured
    once: the deck as it is (All slides view; built with the approved-text check on) and one options deck (only the
    slides each open option changes, one copy per option). Each slide's text comes from the sources, and each title's
-   line count at 36 pt from PowerPoint (`measure_title_lines.py`). Writes `page/page_data.json` and the PNGs; prints
+   line count at the config's title size (32 pt) from PowerPoint (`measure_title_lines.py`). Writes `page/page_data.json` and the PNGs; prints
    the time per step.
 4. **figure-reviewer** checks the slides before FF sees anything; its verdict blocks.
 5. **Build and test**: `python decision_page/build_decision_page.py <spec> <out.html> --test-dir <data>/tests`.

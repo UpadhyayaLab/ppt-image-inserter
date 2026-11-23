@@ -36,6 +36,7 @@ _COND_TAG = f"{{{P_NAMESPACE}}}cond"
 _CMEDIANODE_TAG = f"{{{P_NAMESPACE}}}cMediaNode"
 
 _ALIGN_MAP = {"left": 1, "center": 2, "right": 3, "justify": 4}
+_ANCHOR_MAP = {"top": 1, "middle": 3, "bottom": 4}   # MsoVerticalAnchor
 
 
 def make_run_scratch_dir(base_dir, max_age_s: float = 86400.0) -> str:
@@ -89,6 +90,12 @@ class TextboxSpec:
     # theme default (dark text). Use e.g. 0xFFFFFF (white) on dark slides.
     color_rgb: Optional[int] = None
     italic: bool = False
+    # Optional, default None = unchanged behavior (PowerPoint's auto-fit box, top-anchored).
+    # anchor "top" | "middle" | "bottom": the box keeps its given height (no auto-fit) and the text sits
+    # at that edge, as python-pptx vertical_anchor. space_after_pt: space after each paragraph
+    # (separate paragraphs in ``text`` with "\r").
+    anchor: Optional[str] = None
+    space_after_pt: Optional[float] = None
 
 
 @dataclass(frozen=True)
@@ -104,11 +111,23 @@ class MovieSpec:
 
 
 @dataclass(frozen=True)
+class PictureSpec:
+    """One still image (PNG/JPEG) on a slide, embedded in the deck. All measurements are in points."""
+
+    image_path: str
+    left_pt: float
+    top_pt: float
+    width_pt: float
+    height_pt: float
+
+
+@dataclass(frozen=True)
 class SlideSpec:
-    """One slide's textboxes and movies."""
+    """One slide's textboxes, movies and still pictures."""
 
     textboxes: Sequence[TextboxSpec] = field(default_factory=tuple)
     movies: Sequence[MovieSpec] = field(default_factory=tuple)
+    pictures: Sequence[PictureSpec] = field(default_factory=tuple)
 
 
 def build_movie_deck_via_com(
@@ -203,6 +222,8 @@ def _slide_to_manifest(slide: SlideSpec) -> dict:
                 "align": _ALIGN_MAP[tb.align.lower()],
                 "font_name": tb.font_name,
                 "color_rgb": tb.color_rgb,
+                "anchor": _ANCHOR_MAP[tb.anchor.lower()] if tb.anchor else None,
+                "space_after_pt": tb.space_after_pt,
             }
             for tb in slide.textboxes
         ],
@@ -216,6 +237,16 @@ def _slide_to_manifest(slide: SlideSpec) -> dict:
                 "height_pt": mv.height_pt,
             }
             for mv in slide.movies
+        ],
+        "pictures": [
+            {
+                "image_path": os.path.abspath(pic.image_path),
+                "left_pt": pic.left_pt,
+                "top_pt": pic.top_pt,
+                "width_pt": pic.width_pt,
+                "height_pt": pic.height_pt,
+            }
+            for pic in slide.pictures
         ],
     }
 
@@ -250,6 +281,17 @@ try {{
             if ($tb.italic) {{ $textRange.Font.Italic = -1 }} else {{ $textRange.Font.Italic = 0 }}
             $textRange.Font.Name = $tb.font_name
             if ($null -ne $tb.color_rgb) {{ $textRange.Font.Color.RGB = [int]$tb.color_rgb }}
+            if ($null -ne $tb.space_after_pt) {{
+                $textRange.ParagraphFormat.LineRuleAfter = 0
+                $textRange.ParagraphFormat.SpaceAfter = [single]$tb.space_after_pt
+            }}
+            if ($null -ne $tb.anchor) {{
+                $textShape.TextFrame.AutoSize = 0
+                $textShape.TextFrame.WordWrap = -1
+                $textShape.Top = [single]$tb.top_pt
+                $textShape.Height = [single]$tb.height_pt
+                $textShape.TextFrame.VerticalAnchor = [int]$tb.anchor
+            }}
         }}
         foreach ($mv in $slideSpec.movies) {{
             $mediaShape = $slide.Shapes.AddMediaObject2(
@@ -265,6 +307,13 @@ try {{
             # Add Media Play (effect 83) on the main sequence; force_autoplay_in_pptx
             # then flips the trigger from delay="indefinite" to delay="0" on disk.
             $slide.TimeLine.MainSequence.AddEffect($mediaShape, 83, 0, 2) | Out-Null
+        }}
+        foreach ($pic in $slideSpec.pictures) {{
+            # LinkToFile = msoFalse (0), SaveWithDocument = msoTrue (-1): the image is embedded in the deck
+            $slide.Shapes.AddPicture(
+                $pic.image_path, 0, -1,
+                [single]$pic.left_pt, [single]$pic.top_pt, [single]$pic.width_pt, [single]$pic.height_pt
+            ) | Out-Null
         }}
     }}
     $presentation.SaveAs($outputPath, 24)

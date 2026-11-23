@@ -39,7 +39,7 @@ UNLISTED = {"figure": "Labels inside the figure are not listed.",
             "table": "The numbers, experiment and arm names in the table are not listed.", "contents": "", "title": ""}
 
 
-DATE = re.compile(r" \(([^()]*\d{4})\)$")   # a title's trailing "(... 2026)"
+DATE = re.compile(r" \(([^()]*\d{4})\)$")   # a title's trailing "(... 2026)"
 
 
 def move_dates(cfg):
@@ -131,11 +131,22 @@ def build(cfg, entries, name, approved):
     if len(pngs) != len(entries) + 1:
         raise SystemExit(f"{name}: {len(pngs)} exported slides for {len(entries) + 1}")
     t = step(f"{name}: export", t)
-    meas = {m["slide"]: m for m in measure(str(deck))}
+    try:
+        res = measure(str(deck))
+    except Exception as e:   # PowerPoint COM now and then drops the call right after an export ("remote procedure
+        print(f"[{name}: measure failed once ({e}); retrying]")   # call failed"); a second try has worked each time
+        time.sleep(5)
+        res = measure(str(deck))
+    meas = {m["slide"]: m for m in res}
     step(f"{name}: measure titles", t)
     strings = {}
     for where, line in deck_strings(Presentation(str(deck))):
         strings.setdefault(int(where.split()[1]), []).append(line)
+    log = (OUT / f"build_{name}.log").read_text(encoding="utf-8")   # text_clear, run by batch_insert_images.py
+    for m in re.finditer(r"\[TEXT CLEAR\] slide (\d+): figure scale ([\d.]+|None), moved ([-\d.]+|None) in(?: \((.+)\))?", log):
+        meas[int(m.group(1))].update(moved=f"scale {m.group(2)}, moved {m.group(3)} in" + (f" ({m.group(4)})" if m.group(4) else ""))
+    for m in re.finditer(r"\[TEXT\] slide (\d+): the (title|bottom line) overlaps the data", log):
+        meas[int(m.group(1))].setdefault("on_data", []).append(m.group(2))
     return pngs, meas, strings
 
 
@@ -143,9 +154,12 @@ def fact(m, title, size):
     if m is None or m["title"] != title.strip():
         raise SystemExit(f"measured title {m and m['title']!r} is not {title!r}")
     k = m["lines"]
-    return {"lines": k, "warn": k >= 3 or m["runs_into_figure"],
+    on = m.get("on_data", [])
+    return {"lines": k, "warn": k >= 3 or m["runs_into_figure"] or bool(on),
             "text": f"Title: {k} line{'s' if k != 1 else ''} at {size} pt"
-                    + ("; it runs into the figure" if m["runs_into_figure"] else "")}
+                    + ("; it runs into the figure" if m["runs_into_figure"] else "")
+                    + "".join(f"; the {w} overlaps the data" for w in on)
+                    + (f"; figure {m['moved']}" if m.get("moved") else "")}
 
 
 def main(spec_path):
@@ -160,6 +174,7 @@ def main(spec_path):
     cent = tables.load_cent(FIGS)
     pages = tables.pages(data, cent)
     size = cfg["title_size"]
+    bsize = cfg.get("bottom_text_size", 16)
     page_dir = OUT / "page"
     shutil.rmtree(page_dir, ignore_errors=True)
     page_dir.mkdir(parents=True)
@@ -182,9 +197,11 @@ def main(spec_path):
     if len({x["id"] for x in deck}) != len(deck):
         raise SystemExit("two deck slides share an image name (the page keys slide edits by it)")
 
-    # one options deck: each open option's replacements, only the slides whose text changes
+    # one options deck: each open option's replacements, only the slides whose text changes; dates already moved to
+    # the bottom line (FF 2026-11-20), so each option's titles are measured as they would be
     t = time.perf_counter()
     entries, where, decisions = [], [], {}
+    base = slides(move_dates(cfg), text, pages, data, cent)
     for it in spec["items"]:
         code = str(it["code"])
         if code in applied or not it.get("options"):
@@ -194,8 +211,9 @@ def main(spec_path):
             if not o.get("replace"):
                 continue
             cfg2, text2, _ = text_map.apply(cfg, text, o["replace"])
+            cfg2 = move_dates(cfg2)
             new = slides(cfg2, text2, pages, data, cent)
-            changed = [s for s, b in zip(new, now) if s["lines"] != b["lines"]]
+            changed = [s for s, b in zip(new, base) if s["lines"] != b["lines"]]
             if not changed:
                 raise SystemExit(f"decision {code} option {o['choice']}: changes no slide")
             imgs2 = render_images(changed, cfg2, text2, pages, data, cent, OUT / "src" / f"{code}_{o['choice']}")
@@ -232,14 +250,16 @@ def main(spec_path):
             bad = m["bottom_lines"] != 1 or m["bottom_overlaps_figure"] or m["bottom_off_slide"]
             rows.append({"n": s["n"], "cells": [str(s["n"]), s["title"], s["bottom"], str(m["lines"]), str(m["bottom_lines"])
                                                 + ("; overlaps the figure" if m["bottom_overlaps_figure"] else "")
-                                                + ("; off the slide" if m["bottom_off_slide"] else "")],
-                         "warn": f["warn"] or bad})
+                                                + ("; off the slide" if m["bottom_off_slide"] else ""),
+                                                m.get("moved", "")], "warn": f["warn"] or bad})
         decisions[code] = {"applies": [s["n"] for s in show], "options": {str(di["options"][0]["choice"]): [
             {"n": s["n"], "png": f"opt_{code}_{s['n']:02d}.png", "lines": s["lines"],
              "fact": dict(fact(meas.get(s["n"]), s["title"], size),
                           text=fact(meas.get(s["n"]), s["title"], size)["text"]
-                          + f"; bottom line: {meas[s['n']]['bottom_lines']} at 16 pt")} for s in show]},
-            "table": {"head": ["Slide", "Title", "Bottom line", "Title lines (36 pt)", "Bottom lines (16 pt)"], "rows": rows}}
+                          + f"; date line: {meas[s['n']]['bottom_lines']} line at {bsize} pt"
+                          + ("; it touches the figure" if meas[s["n"]]["bottom_overlaps_figure"] else ""))} for s in show]},
+            "table": {"head": ["Slide", "Title", "Date line", f"Title lines ({size} pt)", f"Date lines ({bsize} pt)",
+                               "Figure moved to clear the text"], "rows": rows}}
         for s in show:
             shutil.copyfile(pngs[s["n"] - 1], page_dir / f"opt_{code}_{s['n']:02d}.png")
         nbad = sum(r["warn"] for r in rows)

@@ -1,0 +1,3 @@
+# Stand-in deck config for decision_page/text_map.py, which looks for slide titles under `images`. The TGT deck keeps
+# all its text in cat_fmc_all_days_deck.yaml (the spec's deck.text), so this list stays empty.
+images: []

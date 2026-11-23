@@ -36,7 +36,7 @@ def load(spec_path):
 
 def page_data(spec, applied, pd, png_dir):
     """The JSON the page draws from, and the list of failed checks."""
-    errors, images = [], {}
+    errors, warnings, images = [], [], {}
 
     def img(png):
         if png not in images:
@@ -54,9 +54,10 @@ def page_data(spec, applied, pd, png_dir):
     by_n = {s["n"]: s for s in deck}
     done = {str(a["code"]): a for a in applied if "code" in a}
 
-    def carrying(text):   # deck slides showing this line, as a whole line or a title's prefix or label
-        return [s["n"] for s in deck if any(ln == text or ln.startswith(text + ": ") or ln.endswith(": " + text)
-                                            for ln in s["lines"])]
+    def carrying(text):   # deck slides showing this line, as a whole line (a contents row without its slide range)
+        return [s["n"] for s in deck  # or a title's prefix or label
+                if any(t == text or t.startswith(text + ": ") or t.endswith(": " + text)
+                       for t in (re.sub(r"^\d+(?:–\d+)?\s{2,}", "", ln) for ln in s["lines"]))]
 
     items, codes = [], set()
     in_spec = {str(it["code"]) for it in spec["items"]}
@@ -77,6 +78,8 @@ def page_data(spec, applied, pd, png_dir):
         p = (pd["decisions"].get(code) or {})
         if res and res.get("rule"):   # settled by a general rule of FF's, not by a line on a slide
             applies = []
+        elif res and res["text"] == "Keep current":   # the lines its options would have changed
+            applies = sorted({n for o in it.get("options", []) for r in o.get("replace", []) for n in carrying(r["old"])})
         elif res:
             applies = carrying(res["text"])
         elif p:
@@ -119,6 +122,16 @@ def page_data(spec, applied, pd, png_dir):
             "coll": spec.get("collection", "decisions"), "slcoll": spec.get("slide_collection", "slides"),
             "scope": spec.get("change_scope_note", SCOPE), "deck": deck, "items": out, "images": images}
     shown = json.dumps({k: v for k, v in data.items() if k != "images"}, ensure_ascii=False)
+    # FF 2026-11-20: "it cannot overlap with any data" (text_clear, run by the deck builder; the facts carry what is left)
+    for s_ in deck:
+        if s_.get("fact") and "overlaps the data" in s_["fact"]["text"]:
+            warnings.append(f"deck slide {s_['n']}: {s_['fact']['text']}")
+    for it in out:
+        for o in it.get("options") or []:
+            for sl in o["slides"]:
+                if sl["fact"] and "overlaps the data" in sl["fact"]["text"]:
+                    warnings.append(f"item {it['code']} option {o['choice']} slide {sl['n']}: {sl['fact']['text']}")
+    data["warnings"] = warnings
     for ch, what in (("·", "middle dot"), ("µ", "micro sign (use Greek mu U+03BC)")):
         if ch in shown:
             errors.append(f"{what} in the page text")
@@ -128,9 +141,37 @@ def page_data(spec, applied, pd, png_dir):
     return data, errors
 
 
+MAX_EXPORT_AGE_MIN = 15
+
+
+def db_guard(spec_path, spec, applied):
+    """The page is built from the live db (2026-11-20: a stale export left 7 of FF's saved answers off v22): the export
+    must be at most MAX_EXPORT_AGE_MIN old, and every saved answer in it must already be applied (apply_answers.py
+    --write), so the deck sources and the Resolved list carry all of them."""
+    import time
+    sys.path.insert(0, str(HERE))
+    import apply_answers
+    exp = Path(spec["db_export"])
+    files = list(exp.glob("*/*.json"))
+    if not files and spec.get("first_build"):   # a page not yet published has no db to export (2026-11-22, TGT deck)
+        return []
+    if not files:
+        return [f"no db export in {exp}: export the page's db (ArtifactData list, out_dir) first"]
+    age = (time.time() - min(f.stat().st_mtime for f in files)) / 60
+    errs = []
+    if age > MAX_EXPORT_AGE_MIN:
+        errs.append(f"db export is {age:.0f} min old (limit {MAX_EXPORT_AGE_MIN}): export the live db again first")
+    pairs, records, _ = apply_answers.answers(spec, applied, exp)
+    if pairs or records:
+        left = sorted({str(r.get("code") or "slide " + r.get("slide", "")) for r in records})
+        errs.append(f"saved answers not applied yet: {left}: run apply_answers.py <spec> <export> --write first")
+    return errs
+
+
 def build(spec_path, test_js=""):
     spec, applied, pd, png_dir = load(spec_path)
     data, errors = page_data(spec, applied, pd, png_dir)
+    errors += db_guard(spec_path, spec, applied)
     if errors:
         raise SystemExit("build checks failed:\n  " + "\n  ".join(errors))
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
@@ -146,6 +187,8 @@ def main(argv):
     n_open = sum(1 for it in data["items"] if "options" in it and not it["resolved"])
     print(f"{argv[1]}: {len(data['deck'])} deck slides, {n_open} open decisions before saved picks, "
           f"{len(data['images'])} images, {mb:.1f} MB")
+    for w in data["warnings"]:
+        print(f"[WARNING] {w}")
     if mb > 15:
         raise SystemExit("page over 15 MB (artifact limit 16 MB): lower png_width")
     if "--test-dir" in argv:

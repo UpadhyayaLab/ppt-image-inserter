@@ -140,8 +140,11 @@ def plots_slide(prs, title, imgs, caption):
     CM.add_title(s, title)
     gap = 0.3
     col_w = (CM.IMG_W - gap * (len(imgs) - 1)) / len(imgs)
+    # the image box ends above the caption box (top CM.H - 0.44): reviewer 2026-11-20, a wide polar page reached
+    # 7.18 in and its last data line touched the caption
+    img_h = min(CM.IMG_H, CM.H - 0.44 - 0.05 - CM.IMG_TOP) if caption else CM.IMG_H
     for i, img in enumerate(imgs):
-        M.add_image_in_box(s, str(img), CM.MARGIN + i * (col_w + gap), CM.IMG_TOP, col_w, CM.IMG_H)
+        M.add_image_in_box(s, str(img), CM.MARGIN + i * (col_w + gap), CM.IMG_TOP, col_w, img_h)
     CM.add_footer(s, caption)
     return s
 

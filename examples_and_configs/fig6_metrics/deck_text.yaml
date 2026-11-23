@@ -7,19 +7,19 @@ contents:
   # One row per group of slides, in deck order. The slide range is computed from the deck config: the slides whose
   # title starts with `titles` (FF 2026-11-19: "keep labels concise, period"; "do not mention voxels").
   rows:
-    - text: "Nadir: surface point farthest from the hull boundary"
-      titles: "The regions measured"
+    - text: "Nadir: surface point farthest from the hull boundary (centrosome-proximal: within that region)"
+      titles: "Regions around the nadir of the centrosome-proximal region"
     - text: "Summary tables"
       titles: "Relative level near nadir, mean ± SEM"
     - text: "Relative level near the centrosome-proximal nadir"
       titles: "Relative level near the centrosome-proximal nadir"
     - text: "Relative level near nadir (full nucleus; no centrosome consideration)"
       titles: "Relative level near nadir"
-    - text: "Relative level vs distance from the nadir of the centrosome-proximal region"
-      titles: "Relative level vs distance from the nadir of the centrosome-proximal region"
+    - text: "Relative level vs distance from the centrosome-proximal nadir, along the surface"
+      titles: "Relative level vs distance from the centrosome-proximal nadir"
     - text: "Relative level vs distance from nadir (full nucleus; no centrosome consideration), along the surface"
       titles: "Relative level vs distance from nadir"
-    - text: "Relative level vs depth below convex hull, ÷ its 0–0.25 μm bin"
+    - text: "Relative level vs depth below convex hull"
       titles: "Relative level vs depth below convex hull"
   # Rows and notes from FF's saved slide 2 text on the decision page (db slides/contents_base, 2026-11-20T00:24Z).
   notes:
@@ -33,11 +33,11 @@ table:
   group_cent: "Near centrosome"
   group_level: "Relative level near nadir"
   # Key lines (fig6_definitions.yaml: relative_level_near_nadir_C, near_centrosome_value, table_statistics)
-  key_main: "Mean in the 0.25 μm layer near the nadir ÷ the same layer, whole nucleus (1 = no enrichment); mean ± SEM over cells"
+  key_main: "Mean in the 0.25 μm layer near the nadir ÷ the mean in the same layer over the full nucleus; mean ± SEM over cells"
   key_below: "below 1"
   key_above: "above 1"
   key_stats: "* <0.05, ** <0.01, *** <0.001 vs 1 (signed-rank, BH-adjusted); gray = n.s."
   key_na: "n/a = too few cells to test"
   # FF's decision 6 change (2026-11-20T00:06Z) with "; no test; blank = not analyzed" kept until he says otherwise
   # (Histone mark data agent presentation, 2026-11-19)
-  key_cent: "Near centrosome: region around the deepest point of the centrosome-proximal patch; no test; blank = not analyzed"
+  key_cent: "Near centrosome: region around the deepest point of the centrosome-proximal patch"

@@ -10,11 +10,15 @@ decision spec. For every decision FF answered that is not yet applied:
 Saved slide edits (All slides view, keyed by the slide's image name): each changed line becomes a replacement of that
 line. A slide edit that adds or removes lines is listed for a person.
 
+Answers FF gave in chat (relayed by another session) go in a relayed file, --relayed <file.yaml>: a list of
+{code, title, text, how, at, source, replace: [{old, new, where}]}; each is applied like a pick and replaces any
+earlier applied record of the same code.
+
 Dry run by default: prints each replacement, the places it changes, and the approved-text rows. With --write it writes
 the deck config, the deck text file, approved_text.yaml (source "FF <date> decision page <code>") and the applied list
 (the page shows those as Resolved, the previews skip them). Changes nothing FF did not answer.
 
-Usage:  python apply_answers.py <decision spec.yaml> <db export dir> [--write]
+Usage:  python apply_answers.py <decision spec.yaml> <db export dir> [--relayed <file.yaml>] [--write]
 """
 import json
 import re
@@ -100,7 +104,15 @@ def answers(spec, applied, export):
 def main(argv):
     spec, paths, applied = load(argv[0])
     write = "--write" in argv
-    pairs, records, manual = answers(spec, applied, argv[1])
+    relayed = []
+    if "--relayed" in argv:
+        relayed = yaml.safe_load(Path(argv[argv.index("--relayed") + 1]).read_text(encoding="utf-8")) or []
+        codes = {str(r["code"]) for r in relayed}
+        applied = [a for a in applied if str(a.get("code")) not in codes]
+    pairs, records, manual = answers(spec, applied + [{"code": r["code"]} for r in relayed], argv[1])
+    for r in relayed:
+        pairs += [dict(p, source=r["source"]) for p in r["replace"]]
+        records.append({k: r[k] for k in ("code", "title", "text", "how", "at")})
     cfg = yaml.safe_load(paths["config"].read_text(encoding="utf-8"))
     text = yaml.safe_load(paths["text"].read_text(encoding="utf-8"))
     cfg2, text2, hits = text_map.apply(cfg, text, pairs)

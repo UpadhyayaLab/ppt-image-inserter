@@ -1,0 +1,23 @@
+# Approved slide text for the TGT flagged-wells deck (cat_fmc_flagged_wells_deck.yaml), checked by
+# ppt_image_inserter.approved_text. Add a line ONLY with its source. Lines copied from the main deck's file
+# (cat_fmc_approved_text.yaml) keep their source there. The subtitle naming the wells is new and not here until FF
+# approves it.
+exact:
+- text: 'CAT and FMC CAR T Cells on 12 pN TGT Surfaces'
+  source: 'FF 2026-11-22 on the draft title page and details text: "ok thanks. slide 2 can actually be made into 2 slides"'
+- text: CAT
+  source: &settled 'settled before 2026-11-22 (on tgt_cat_fmc_test_slide.pptx, which FF reviewed), not re-checked'
+- text: FMC
+  source: *settled
+- text: '20260923 (slide 2 of 7)'
+  source: &slidexofy 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
+- text: '20260923 (slide 3 of 7)'
+  source: *slidexofy
+- text: '20260923 (slide 4 of 7)'
+  source: *slidexofy
+- text: '20260924 d4 (slide 5 of 7)'
+  source: *slidexofy
+- text: '20260924 d4 (slide 6 of 7)'
+  source: *slidexofy
+- text: '20260924 d4 (slide 7 of 7)'
+  source: *slidexofy

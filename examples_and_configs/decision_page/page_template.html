@@ -31,6 +31,9 @@ h2.res{font-size:20px;margin:36px 0 12px;padding-top:14px;border-top:2px solid v
 .applies{font-size:13.5px;font-weight:600;margin:6px 0}
 .applies a,.resline a{color:var(--accent)}
 .about{margin:6px 0 10px;max-width:90ch}.about li{margin:2px 0}
+.tblwrap{overflow-x:auto;margin:8px 0 14px;max-height:420px;overflow-y:auto;border:1px solid var(--line);border-radius:8px}
+.tbl{border-collapse:collapse;font-size:13.5px;width:100%}.tbl th,.tbl td{padding:4px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl th{position:sticky;top:0;background:var(--card)}.tbl tr.warn td{color:var(--err);font-weight:600}
 .answers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:10px;margin-top:10px}
 .opt{display:flex;flex-direction:column;gap:6px;min-width:0}
 .ans{flex:1;display:flex;flex-direction:column;gap:6px;text-align:left;font:inherit;color:var(--fg);background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:12px 14px;cursor:pointer}
@@ -118,6 +121,7 @@ $('#deck').innerHTML = D.deck.map(s => `<figure class="dslide" id="s-${s.n}" dat
 
 // ---- Decisions view: one card per decision (open first, resolved after), info items as plain notes
 $('#dec-h').textContent = D.heading; $('#dec-lead').textContent = D.lead;
+const tbl = t => `<div class="tblwrap"><table class="tbl"><thead><tr>${t.head.map(h => `<th>${E(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r => `<tr${r.warn ? ' class="warn"' : ''}>${r.cells.map(c => `<td>${E(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 const about = a => !a ? '' : Array.isArray(a) ? `<ul class="about">${a.map(x => `<li>${E(x)}</li>`).join('')}</ul>` : `<p class="about">${E(a)}</p>`;
 function card(it) {
   if (!it.options) return `<div class="info" data-item="${E(it.code)}"><h2>${E(it.title)}</h2>${about(it.about)}</div>`;
@@ -134,7 +138,7 @@ function card(it) {
       <span class="rt">Resolved:</span> <q class="rf"></q> <span class="rh"></span> <span class="rx"></span></button>
       ${it.applies.length ? `<span>${slideLinks(it.applies)}</span>` : ''}${it.resolved && it.resolved.note ? `<p class="resnote">${E(it.resolved.note)}</p>` : ''}</div>
     <div class="card" id="d-${E(it.code)}"><div class="chead"><h2><span class="code">${E(it.code)}</span>${E(it.title)}</h2><span class="state"></span></div>
-    ${it.applies.length ? `<p class="applies">Applies to slides ${range(it.applies)}: ${slideLinks(it.applies)}</p>` : ''}${about(it.about)}
+    ${it.applies.length ? `<p class="applies">Applies to slides ${range(it.applies)}: ${slideLinks(it.applies)}</p>` : ''}${about(it.about)}${it.table ? tbl(it.table) : ''}
     <div class="answers" role="group">${opts}</div>${cols ? `<div class="cols">${cols}</div>` : ''}
     <div class="chg"><label for="note-${E(it.code)}">Change: write what it should say</label><textarea id="note-${E(it.code)}" data-note="${E(it.code)}" rows="2"></textarea>
     <p class="scope">${E(D.scope)}</p><button type="button" class="big savechg" data-dec="${E(it.code)}" style="justify-self:start">Save change</button></div></div></div>`;

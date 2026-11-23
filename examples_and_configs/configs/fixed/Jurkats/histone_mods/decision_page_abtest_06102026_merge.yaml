@@ -1,0 +1,41 @@
+# Decision page: how to show H3K27me3 + H3K27ac together (well A1) in the 06/10/2026 antibody-test montage deck.
+# Previews: examples_and_configs/abtest_06102026/merge_previews.py (quick Python previews from the raw A1 crops, no
+# MATLAB, per the director's brief 2026-11-21). The picked options become the brief for the pipeline merge render.
+title: "H3K27me3 + H3K27ac merge choices"
+heading: "H3K27me3 + H3K27ac together: merge choices for the montage deck"
+lead: "Well A1 carries both marks. The pipeline draws each mark only with DNA, so the merge needs a new render. Pick one answer per question. Pictures are quick previews of 3 A1 cells from the raw data, not pipeline renders."
+all_heading: "Montage deck as built"
+all_lead: "The 12 slides of the montage deck. The merge slides would follow slide 12."
+collection: decisions
+slide_collection: slides
+applied: decision_page_abtest_06102026_merge_applied.yaml
+db_export: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods_RNAPII/H3K27_AbTest_20260610/merge_decision/db_export"
+page_data: "K:/FF/PPT/PPT_autogeneration/Fixed Jurkats, Miscellaneous/Histone Mods_RNAPII/H3K27_AbTest_20260610/merge_decision/page/page_data.json"
+png_width: 1100
+items:
+  - code: "colors"
+    title: "Merge colors"
+    source: "director brief 2026-11-21: merge colors are FF's choice"
+    about: "Shown with contrast per cell, merge only."
+    keep: false
+    options:
+      - {choice: "mg", button: "Magenta / green", label: "H3K27me3 magenta, H3K27ac green"}
+      - {choice: "gm", button: "Green / magenta", label: "H3K27me3 green, H3K27ac magenta"}
+      - {choice: "rc", button: "Red / cyan", label: "H3K27me3 red, H3K27ac cyan"}
+  - code: "contrast"
+    title: "Contrast"
+    source: "director brief 2026-11-21: per-cell or fixed contrast is FF's choice"
+    about: "Shown in magenta / green, merge only. Fixed: one range per mark for all A1 cells, so brightness compares across cells."
+    keep: false
+    options:
+      - {choice: "cell", button: "Per cell", label: "Each cell scaled to its own brightest pixels"}
+      - {choice: "fixed", button: "Fixed per mark", label: "One range per mark across the well"}
+  - code: "families"
+    title: "Which panels"
+    source: "director brief 2026-11-21: which families is FF's choice"
+    about: "Shown in magenta / green, contrast per cell. Single channels in gray."
+    keep: false
+    options:
+      - {choice: "merge", button: "Merge only", label: "Merge only"}
+      - {choice: "three", button: "3 panels", label: "H3K27me3 | H3K27ac | merge"}
+      - {choice: "four", button: "4 panels with DNA", label: "H3K27me3 | H3K27ac | DNA | merge with DNA in blue"}

@@ -245,6 +245,10 @@ def main(config_path):
     # Fixed title font size in pt; titles wrap to more lines (FF 2026-11-19: "titles should not be 1 line")
     title_size = config.get('title_size')
     title_size = int(title_size) if title_size else None
+    # bottom_text line style (per-entry bottom_text: "..."), e.g. FF 2026-11-20: "date line should be italics. 18 pt",
+    # "bottom left, small margin"; unset keys use workflow.BOTTOM_TEXT_STYLE
+    bottom_text_style = {"size": config.get('bottom_text_size'), "italic": config.get('bottom_text_italic'),
+                         "align": config.get('bottom_text_align'), "margin": config.get('bottom_text_margin')}
     # Delete the template slide(s) once the slides are built (default off): a template's
     # placeholder picture otherwise stays in the deck as a slide of its own
     remove_template_slide = bool(config.get('remove_template_slide', False))
@@ -507,6 +511,7 @@ def main(config_path):
                         title=slide_title,
                         subtitle=image_spec.get('subtitle'),
                         bottom_text=image_spec.get('bottom_text'),
+                        bottom_text_style=bottom_text_style,
                         label_side=label_side,
                         trim_whitespace=trim_whitespace,
                         title_fit=title_fit,
@@ -544,6 +549,7 @@ def main(config_path):
                         title=image_spec.get('title', None),
                         subtitle=image_spec.get('subtitle'),
                         bottom_text=image_spec.get('bottom_text'),
+                        bottom_text_style=bottom_text_style,
                         label_side=label_side,
                         trim_whitespace=trim_whitespace,
                         title_fit=title_fit,
@@ -597,6 +603,26 @@ def main(config_path):
         template_slides = sorted(template_slide_remap[idx] for idx in template_slide_indices)
         delete_slides(ppt_file, template_slides, backup_base=backup_dir, backup=False)
         print(f"Removed template slide(s): {template_slides}")
+
+    # Text never on the data, every deck (FF 2026-11-20: "it cannot overlap with any data. this needs a hard coded tst
+    # (titles too)"; "if it overlaps something needs to moved"): measured as PowerPoint renders each slide; overlapping
+    # pictures are moved, and scaled only if they must be, into the band between title and bottom line. Reported, never
+    # blocking. `text_clear: false` in the config turns it off.
+    if config.get('text_clear', True):
+        try:
+            from ppt_image_inserter import text_clear
+        except ImportError as e:
+            text_clear = None
+            print(f"[NOTE] text-off-data check skipped (needs PowerPoint on Windows): {e}")
+        if text_clear:
+            moved = text_clear.fix(ppt_file)
+            for m in moved:
+                print(f"[TEXT CLEAR] slide {m['slide']}: figure scale {m['scale']}, moved {m['moved_in']} in"
+                      + (f" ({m['flag']})" if m['flag'] else ""))
+            left = text_clear.check(ppt_file, [m['slide'] for m in moved]) if moved else []   # only moved slides changed
+            for line in text_clear.report(left):
+                print(f"[TEXT] {line}")
+            print(f"Text-off-data check: {len(moved)} slide(s) fixed, {len(left)} overlap(s) left")
 
     # Clean slide text, every deck (FF 2026-11-19: "no walls of text. no exceptions"). Text checks are reported and
     # never fail the build (FF 2026-11-19: "if I tell you to build it - you build it. period")

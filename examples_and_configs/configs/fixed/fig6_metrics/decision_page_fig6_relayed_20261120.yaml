@@ -1,0 +1,20 @@
+# Answers FF gave in chat on 2026-11-20, relayed by the "Histone mark data agent presentation" session; applied by
+# decision_page/apply_answers.py --relayed (each replaces any earlier applied record of its code).
+- code: '4'
+  title: "Slides 3–4: what they show and their title"
+  text: "Regions around the nadir of the centrosome-proximal region"
+  how: 'your answer in chat: "remove comma", and "no" to a cell number after it'
+  at: '2026-11-20T02:40:00.000Z'
+  source: 'FF 2026-11-20 in chat, relayed by Histone mark data agent presentation: "remove comma"; cell number follows: "no"'
+  replace:
+    - {old: "The regions measured, CD3 DMSO cell 10", new: "Regions around the nadir of the centrosome-proximal region", where: titles}
+    - {old: "The regions measured, CD3 DMSO cell 34", new: "Regions around the nadir of the centrosome-proximal region", where: titles}
+    - {old: "The regions measured", new: "Regions around the nadir of the centrosome-proximal region", where: titles}
+- code: '6'
+  title: "Table key, near-centrosome columns"
+  text: "Near centrosome: region around the deepest point of the centrosome-proximal patch"
+  how: 'your change; "no" in chat to keeping "; no test; blank = not analyzed" after it'
+  at: '2026-11-20T02:40:00.000Z'
+  source: 'FF 2026-11-20 decision page 6 (his change) and in chat, relayed by Histone mark data agent presentation: keep the tail: "no"'
+  replace:
+    - {old: "Near centrosome: region around the deepest point of the centrosome-proximal patch; no test; blank = not analyzed", new: "Near centrosome: region around the deepest point of the centrosome-proximal patch", where: lines}

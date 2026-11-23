@@ -19,7 +19,11 @@ position:
   width: 12.73
   height: 6.15
 trim_whitespace: true
-title_size: 36
+title_size: 32
+bottom_text_size: 18
+bottom_text_italic: true
+bottom_text_align: left
+bottom_text_margin: 0.15
 add_label: false
 remove_template_slide: true
 approved_text: ../../../fig6_metrics/approved_text.yaml
@@ -28,10 +32,10 @@ images:
 - path: K:/FF/PPT/PPT_autogeneration/Fig6_metrics_across_experiments/decision_previews/src/now/contents.png
   title: Contents
 - path: K:/FF/PPT/PPT_autogeneration/Fig6_metrics_across_experiments/definition_png/noco_20261029_deck_slide49.png
-  title: The regions measured, CD3 DMSO cell 10
+  title: Regions around the nadir of the centrosome-proximal region
   subtitle: Cyan = away. Bars = 5 μm.
 - path: K:/FF/PPT/PPT_autogeneration/Fig6_metrics_across_experiments/definition_png/noco_20261029_deck_slide50.png
-  title: The regions measured, CD3 DMSO cell 34
+  title: Regions around the nadir of the centrosome-proximal region
   subtitle: Cyan = away. Bars = 5 μm.
 - path: K:/FF/PPT/PPT_autogeneration/Fig6_metrics_across_experiments/decision_previews/src/now/table_1_k27me3_jurkat_1of2.png
   title: 'Relative level near nadir, mean ± SEM: H3K27me3, Jurkat (1 of 2)'
@@ -46,140 +50,209 @@ images:
 - path: K:/FF/PPT/PPT_autogeneration/Fig6_metrics_across_experiments/decision_previews/src/now/table_6_rnap2.png
   title: 'Relative level near nadir, mean ± SEM: RNAP II'
 - path: Ccent_cilio_jun_0.png
-  title: 'Relative level near the centrosome-proximal nadir: Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, N2 Jun 13, 2026)'
+  title: 'Relative level near the centrosome-proximal nadir: Jurkat H3K27me3, DMSO vs ciliobrevin'
+  bottom_text: N1 Jun 12, N2 Jun 13, 2026
 - path: Ccent_cilio_oct_0.png
-  title: 'Relative level near the centrosome-proximal nadir: Jurkat H3K27me3, ciliobrevin (Oct 29, 2026)'
+  title: 'Relative level near the centrosome-proximal nadir: Jurkat H3K27me3, ciliobrevin'
+  bottom_text: Oct 29, 2026
 - path: Ccent_noco_oct_0.png
-  title: 'Relative level near the centrosome-proximal nadir: Jurkat H3K27me3, nocodazole (Oct 29, 2026)'
+  title: 'Relative level near the centrosome-proximal nadir: Jurkat H3K27me3, nocodazole'
+  bottom_text: Oct 29, 2026
 - path: C_j_k27me3_0.png
-  title: 'Relative level near nadir: Jurkat H3K27me3 (N1 Aug 3, N2 Sep 11, 2023)'
+  title: 'Relative level near nadir: Jurkat H3K27me3'
+  bottom_text: N1 Aug 3, N2 Sep 11, 2023
 - path: C_cilio_jun_0.png
-  title: 'Relative level near nadir: Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, N2 Jun 13, 2026)'
+  title: 'Relative level near nadir: Jurkat H3K27me3, DMSO vs ciliobrevin'
+  bottom_text: N1 Jun 12, N2 Jun 13, 2026
 - path: C_cilio_oct_0.png
-  title: 'Relative level near nadir: Jurkat H3K27me3, ciliobrevin (Oct 29, 2026)'
+  title: 'Relative level near nadir: Jurkat H3K27me3, ciliobrevin'
+  bottom_text: Oct 29, 2026
 - path: C_noco_oct_0.png
-  title: 'Relative level near nadir: Jurkat H3K27me3, nocodazole (Oct 29, 2026)'
+  title: 'Relative level near nadir: Jurkat H3K27me3, nocodazole'
+  bottom_text: Oct 29, 2026
 - path: C_dznep_0.png
-  title: 'Relative level near nadir: Jurkat H3K27me3, H2O vs DZNep (Feb 23, 2023)'
+  title: 'Relative level near nadir: Jurkat H3K27me3, H2O vs DZNep'
+  bottom_text: Feb 23, 2023
 - path: C_hmga1_0.png
-  title: 'Relative level near nadir: Jurkat H3K27me3, siCtrl vs siHMGA1 (Jan 6, 2023)'
+  title: 'Relative level near nadir: Jurkat H3K27me3, siCtrl vs siHMGA1'
+  bottom_text: Jan 6, 2023
 - path: C_sisun_0.png
-  title: 'Relative level near nadir: Jurkat H3K27me3, siCtrl vs siSUN1 / siSUN2 (Sep 2023)'
+  title: 'Relative level near nadir: Jurkat H3K27me3, siCtrl vs siSUN1 / siSUN2'
+  bottom_text: Sep 2023
 - path: C_j_k9me3_0.png
-  title: 'Relative level near nadir: Jurkat H3K9me3 (Jun 17, 2024)'
+  title: 'Relative level near nadir: Jurkat H3K9me3'
+  bottom_text: Jun 17, 2024
 - path: C_j_k27ac_0.png
-  title: 'Relative level near nadir: Jurkat H3K27ac (Jun 17, 2024)'
+  title: 'Relative level near nadir: Jurkat H3K27ac'
+  bottom_text: Jun 17, 2024
 - path: C_rnp_jurkat_0.png
-  title: 'Relative level near nadir: Jurkat RNAP II (Nov 17, 2025)'
+  title: 'Relative level near nadir: Jurkat RNAP II'
+  bottom_text: Nov 17, 2025
 - path: C_k27me3_0.png
-  title: 'Relative level near nadir: 3SI CTL H3K27me3 (Mar 21, 2024)'
+  title: 'Relative level near nadir: 3SI CTL H3K27me3'
+  bottom_text: Mar 21, 2024
 - path: C_k9me3_0.png
-  title: 'Relative level near nadir: 3SI CTL H3K9me3 (Apr 24, 2024)'
+  title: 'Relative level near nadir: 3SI CTL H3K9me3'
+  bottom_text: Apr 24, 2024
 - path: C_k27ac_0.png
-  title: 'Relative level near nadir: 3SI CTL H3K27ac (May 31, 2024)'
+  title: 'Relative level near nadir: 3SI CTL H3K27ac'
+  bottom_text: May 31, 2024
 - path: C_rnp_3si_0.png
-  title: 'Relative level near nadir: 3SI CTL RNAP II (Nov 17, 2025)'
+  title: 'Relative level near nadir: 3SI CTL RNAP II'
+  bottom_text: Nov 17, 2025
 - path: C_n_k27me3_0219_0.png
-  title: 'Relative level near nadir: Naive CTL H3K27me3 (Feb 19, 2024)'
+  title: 'Relative level near nadir: Naive CTL H3K27me3'
+  bottom_text: Feb 19, 2024
 - path: C_n_k27me3_0318_0.png
-  title: 'Relative level near nadir: Naive CTL H3K27me3 (Mar 18, 2024)'
+  title: 'Relative level near nadir: Naive CTL H3K27me3'
+  bottom_text: Mar 18, 2024
 - path: C_n_k9me3_0422_0.png
-  title: 'Relative level near nadir: Naive CTL H3K9me3 (Apr 22, 2024)'
+  title: 'Relative level near nadir: Naive CTL H3K9me3'
+  bottom_text: Apr 22, 2024
 - path: C_n_k9me3_1211_0.png
-  title: 'Relative level near nadir: Naive CTL H3K9me3 (Dec 11, 2024)'
+  title: 'Relative level near nadir: Naive CTL H3K9me3'
+  bottom_text: Dec 11, 2024
 - path: C_n_k27ac_0708_0.png
-  title: 'Relative level near nadir: Naive CTL H3K27ac (Jul 8, 2024)'
+  title: 'Relative level near nadir: Naive CTL H3K27ac'
+  bottom_text: Jul 8, 2024
 - path: C_n_k27ac_0729_0.png
-  title: 'Relative level near nadir: Naive CTL H3K27ac (Jul 29, 2024)'
+  title: 'Relative level near nadir: Naive CTL H3K27ac'
+  bottom_text: Jul 29, 2024
 - path: C_rnp_naive_0.png
-  title: 'Relative level near nadir: Naive CTL RNAP II (Nov 17, 2025)'
+  title: 'Relative level near nadir: Naive CTL RNAP II'
+  bottom_text: Nov 17, 2025
 - path: Dcent_cilio_jun_0.png
-  title: 'Relative level vs distance from the nadir of the centrosome-proximal region: Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, N2 Jun 13, 2026)'
+  title: 'Relative level vs distance from the centrosome-proximal nadir: Jurkat H3K27me3, DMSO vs ciliobrevin'
+  bottom_text: N1 Jun 12, N2 Jun 13, 2026
 - path: Dcent_cilio_oct_0.png
-  title: 'Relative level vs distance from the nadir of the centrosome-proximal region: Jurkat H3K27me3, ciliobrevin (Oct 29, 2026)'
+  title: 'Relative level vs distance from the centrosome-proximal nadir: Jurkat H3K27me3, ciliobrevin'
+  bottom_text: Oct 29, 2026
 - path: Dcent_noco_oct_0.png
-  title: 'Relative level vs distance from the nadir of the centrosome-proximal region: Jurkat H3K27me3, nocodazole (Oct 29, 2026)'
+  title: 'Relative level vs distance from the centrosome-proximal nadir: Jurkat H3K27me3, nocodazole'
+  bottom_text: Oct 29, 2026
 - path: D_j_k27me3_0.png
-  title: 'Relative level vs distance from nadir: Jurkat H3K27me3 (N1 Aug 3, N2 Sep 11, 2023)'
+  title: 'Relative level vs distance from nadir: Jurkat H3K27me3'
+  bottom_text: N1 Aug 3, N2 Sep 11, 2023
 - path: D_cilio_jun_0.png
-  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, N2 Jun 13, 2026)'
+  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, DMSO vs ciliobrevin'
+  bottom_text: N1 Jun 12, N2 Jun 13, 2026
 - path: D_cilio_oct_0.png
-  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, ciliobrevin (Oct 29, 2026)'
+  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, ciliobrevin'
+  bottom_text: Oct 29, 2026
 - path: D_noco_oct_0.png
-  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, nocodazole (Oct 29, 2026)'
+  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, nocodazole'
+  bottom_text: Oct 29, 2026
 - path: D_dznep_0.png
-  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, H2O vs DZNep (Feb 23, 2023)'
+  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, H2O vs DZNep'
+  bottom_text: Feb 23, 2023
 - path: D_hmga1_0.png
-  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, siCtrl vs siHMGA1 (Jan 6, 2023)'
+  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, siCtrl vs siHMGA1'
+  bottom_text: Jan 6, 2023
 - path: D_sisun_0.png
-  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, siCtrl vs siSUN1 / siSUN2 (Sep 2023)'
+  title: 'Relative level vs distance from nadir: Jurkat H3K27me3, siCtrl vs siSUN1 / siSUN2'
+  bottom_text: Sep 2023
 - path: D_j_k9me3_0.png
-  title: 'Relative level vs distance from nadir: Jurkat H3K9me3 (Jun 17, 2024)'
+  title: 'Relative level vs distance from nadir: Jurkat H3K9me3'
+  bottom_text: Jun 17, 2024
 - path: D_j_k27ac_0.png
-  title: 'Relative level vs distance from nadir: Jurkat H3K27ac (Jun 17, 2024)'
+  title: 'Relative level vs distance from nadir: Jurkat H3K27ac'
+  bottom_text: Jun 17, 2024
 - path: D_rnp_jurkat_0.png
-  title: 'Relative level vs distance from nadir: Jurkat RNAP II (Nov 17, 2025)'
+  title: 'Relative level vs distance from nadir: Jurkat RNAP II'
+  bottom_text: Nov 17, 2025
 - path: D_k27me3_0.png
-  title: 'Relative level vs distance from nadir: 3SI CTL H3K27me3 (Mar 21, 2024)'
+  title: 'Relative level vs distance from nadir: 3SI CTL H3K27me3'
+  bottom_text: Mar 21, 2024
 - path: D_k9me3_0.png
-  title: 'Relative level vs distance from nadir: 3SI CTL H3K9me3 (Apr 24, 2024)'
+  title: 'Relative level vs distance from nadir: 3SI CTL H3K9me3'
+  bottom_text: Apr 24, 2024
 - path: D_k27ac_0.png
-  title: 'Relative level vs distance from nadir: 3SI CTL H3K27ac (May 31, 2024)'
+  title: 'Relative level vs distance from nadir: 3SI CTL H3K27ac'
+  bottom_text: May 31, 2024
 - path: D_rnp_3si_0.png
-  title: 'Relative level vs distance from nadir: 3SI CTL RNAP II (Nov 17, 2025)'
+  title: 'Relative level vs distance from nadir: 3SI CTL RNAP II'
+  bottom_text: Nov 17, 2025
 - path: D_n_k27me3_0219_0.png
-  title: 'Relative level vs distance from nadir: Naive CTL H3K27me3 (Feb 19, 2024)'
+  title: 'Relative level vs distance from nadir: Naive CTL H3K27me3'
+  bottom_text: Feb 19, 2024
 - path: D_n_k27me3_0318_0.png
-  title: 'Relative level vs distance from nadir: Naive CTL H3K27me3 (Mar 18, 2024)'
+  title: 'Relative level vs distance from nadir: Naive CTL H3K27me3'
+  bottom_text: Mar 18, 2024
 - path: D_n_k9me3_0422_0.png
-  title: 'Relative level vs distance from nadir: Naive CTL H3K9me3 (Apr 22, 2024)'
+  title: 'Relative level vs distance from nadir: Naive CTL H3K9me3'
+  bottom_text: Apr 22, 2024
 - path: D_n_k9me3_1211_0.png
-  title: 'Relative level vs distance from nadir: Naive CTL H3K9me3 (Dec 11, 2024)'
+  title: 'Relative level vs distance from nadir: Naive CTL H3K9me3'
+  bottom_text: Dec 11, 2024
 - path: D_n_k27ac_0708_0.png
-  title: 'Relative level vs distance from nadir: Naive CTL H3K27ac (Jul 8, 2024)'
+  title: 'Relative level vs distance from nadir: Naive CTL H3K27ac'
+  bottom_text: Jul 8, 2024
 - path: D_n_k27ac_0729_0.png
-  title: 'Relative level vs distance from nadir: Naive CTL H3K27ac (Jul 29, 2024)'
+  title: 'Relative level vs distance from nadir: Naive CTL H3K27ac'
+  bottom_text: Jul 29, 2024
 - path: D_rnp_naive_0.png
-  title: 'Relative level vs distance from nadir: Naive CTL RNAP II (Nov 17, 2025)'
+  title: 'Relative level vs distance from nadir: Naive CTL RNAP II'
+  bottom_text: Nov 17, 2025
 - path: F_j_k27me3_0.png
-  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3 (N1 Aug 3, N2 Sep 11, 2023)'
+  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3'
+  bottom_text: N1 Aug 3, N2 Sep 11, 2023
 - path: F_cilio_jun_0.png
-  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, DMSO vs ciliobrevin (N1 Jun 12, N2 Jun 13, 2026)'
+  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, DMSO vs ciliobrevin'
+  bottom_text: N1 Jun 12, N2 Jun 13, 2026
 - path: F_cilio_oct_0.png
-  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, ciliobrevin (Oct 29, 2026)'
+  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, ciliobrevin'
+  bottom_text: Oct 29, 2026
 - path: F_noco_oct_0.png
-  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, nocodazole (Oct 29, 2026)'
+  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, nocodazole'
+  bottom_text: Oct 29, 2026
 - path: F_dznep_0.png
-  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, H2O vs DZNep (Feb 23, 2023)'
+  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, H2O vs DZNep'
+  bottom_text: Feb 23, 2023
 - path: F_hmga1_0.png
-  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, siCtrl vs siHMGA1 (Jan 6, 2023)'
+  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, siCtrl vs siHMGA1'
+  bottom_text: Jan 6, 2023
 - path: F_sisun_0.png
-  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, siCtrl vs siSUN1 / siSUN2 (Sep 2023)'
+  title: 'Relative level vs depth below convex hull: Jurkat H3K27me3, siCtrl vs siSUN1 / siSUN2'
+  bottom_text: Sep 2023
 - path: F_j_k9me3_0.png
-  title: 'Relative level vs depth below convex hull: Jurkat H3K9me3 (Jun 17, 2024)'
+  title: 'Relative level vs depth below convex hull: Jurkat H3K9me3'
+  bottom_text: Jun 17, 2024
 - path: F_j_k27ac_0.png
-  title: 'Relative level vs depth below convex hull: Jurkat H3K27ac (Jun 17, 2024)'
+  title: 'Relative level vs depth below convex hull: Jurkat H3K27ac'
+  bottom_text: Jun 17, 2024
 - path: F_rnp_jurkat_0.png
-  title: 'Relative level vs depth below convex hull: Jurkat RNAP II (Nov 17, 2025)'
+  title: 'Relative level vs depth below convex hull: Jurkat RNAP II'
+  bottom_text: Nov 17, 2025
 - path: F_k27me3_0.png
-  title: 'Relative level vs depth below convex hull: 3SI CTL H3K27me3 (Mar 21, 2024)'
+  title: 'Relative level vs depth below convex hull: 3SI CTL H3K27me3'
+  bottom_text: Mar 21, 2024
 - path: F_k9me3_0.png
-  title: 'Relative level vs depth below convex hull: 3SI CTL H3K9me3 (Apr 24, 2024)'
+  title: 'Relative level vs depth below convex hull: 3SI CTL H3K9me3'
+  bottom_text: Apr 24, 2024
 - path: F_k27ac_0.png
-  title: 'Relative level vs depth below convex hull: 3SI CTL H3K27ac (May 31, 2024)'
+  title: 'Relative level vs depth below convex hull: 3SI CTL H3K27ac'
+  bottom_text: May 31, 2024
 - path: F_rnp_3si_0.png
-  title: 'Relative level vs depth below convex hull: 3SI CTL RNAP II (Nov 17, 2025)'
+  title: 'Relative level vs depth below convex hull: 3SI CTL RNAP II'
+  bottom_text: Nov 17, 2025
 - path: F_n_k27me3_0219_0.png
-  title: 'Relative level vs depth below convex hull: Naive CTL H3K27me3 (Feb 19, 2024)'
+  title: 'Relative level vs depth below convex hull: Naive CTL H3K27me3'
+  bottom_text: Feb 19, 2024
 - path: F_n_k27me3_0318_0.png
-  title: 'Relative level vs depth below convex hull: Naive CTL H3K27me3 (Mar 18, 2024)'
+  title: 'Relative level vs depth below convex hull: Naive CTL H3K27me3'
+  bottom_text: Mar 18, 2024
 - path: F_n_k9me3_0422_0.png
-  title: 'Relative level vs depth below convex hull: Naive CTL H3K9me3 (Apr 22, 2024)'
+  title: 'Relative level vs depth below convex hull: Naive CTL H3K9me3'
+  bottom_text: Apr 22, 2024
 - path: F_n_k9me3_1211_0.png
-  title: 'Relative level vs depth below convex hull: Naive CTL H3K9me3 (Dec 11, 2024)'
+  title: 'Relative level vs depth below convex hull: Naive CTL H3K9me3'
+  bottom_text: Dec 11, 2024
 - path: F_n_k27ac_0708_0.png
-  title: 'Relative level vs depth below convex hull: Naive CTL H3K27ac (Jul 8, 2024)'
+  title: 'Relative level vs depth below convex hull: Naive CTL H3K27ac'
+  bottom_text: Jul 8, 2024
 - path: F_n_k27ac_0729_0.png
-  title: 'Relative level vs depth below convex hull: Naive CTL H3K27ac (Jul 29, 2024)'
+  title: 'Relative level vs depth below convex hull: Naive CTL H3K27ac'
+  bottom_text: Jul 29, 2024
 - path: F_rnp_naive_0.png
-  title: 'Relative level vs depth below convex hull: Naive CTL RNAP II (Nov 17, 2025)'
+  title: 'Relative level vs depth below convex hull: Naive CTL RNAP II'
+  bottom_text: Nov 17, 2025
