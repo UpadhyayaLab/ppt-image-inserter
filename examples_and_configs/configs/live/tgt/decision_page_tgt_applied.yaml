@@ -1,3 +1,17 @@
 # Answers from the TGT decision page already applied to the deck (decision_page/apply_answers.py --write).
-# Empty until FF's first saved picks are applied.
-[]
+# The 3 slide edits FF saved on 2026-11-22 (db slides/slide_02..04) were applied to the deck config by hand (see its comments).
+- code: '1122a'
+  title: 'Your slide edit of 11-22: Experiment and Imaging'
+  text: Experiment and Imaging
+  how: your slide edit, in the deck
+  at: '2026-11-22T23:25:52Z'
+- code: '1122b'
+  title: 'Your slide edit of 11-22: How movies will be displayed in this PPT'
+  text: How movies will be displayed in this PPT
+  how: your slide edit, in the deck
+  at: '2026-11-22T23:29:57Z'
+- code: '1122c'
+  title: 'Your slide edit of 11-22: Segmenting the cells'
+  text: Segmenting the cells
+  how: your slide edit, in the deck
+  at: '2026-11-22T23:31:10Z'

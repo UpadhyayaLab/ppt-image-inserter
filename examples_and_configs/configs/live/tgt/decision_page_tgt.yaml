@@ -3,122 +3,22 @@
 # Page:     examples_and_configs/decision_page/build_decision_page.py <this file> <out.html> --test-dir <tests>
 # Layout options carry `layout:` (keys of the deck config's layout block); they are previewed by building the deck
 # with those values. A pick of one is applied by hand (it changes the deck config's layout, not a line of text).
-title: "TGT Movie Deck: Approve Slides"
-heading: "TGT movie deck: approve slides"
-lead: "One item per open question. Click an answer; it is saved and applied to the deck."
+title: "TGT Movie Deck: Edit Slide Text"
+heading: "TGT movie deck: edit slide text"
+lead: "Your earlier slide edits, already in the deck."
 all_heading: "All slides"
-all_lead: "Every slide of the deck as built now. Edit a slide's lines and save to change them."
+all_lead: "Every slide of the deck as built now. Edit a slide's lines and save. Movie slide titles, all text beside and under the movies, and text inside figures cannot be changed here."
 collection: decisions
 slide_collection: slides
 deck:
   config: decision_page_tgt_stub.yaml   # text_map needs a config with images (this deck has none)
-  text: cat_fmc_all_days_deck.yaml
+  text: cat_fmc_sept_2026_deck.yaml
   approved: cat_fmc_approved_text.yaml
 applied: decision_page_tgt_applied.yaml
 db_export: "K:/FF/PPT/PPT_autogeneration/TGT/decision_page/db_export"
 page_data: "K:/FF/PPT/PPT_autogeneration/TGT/decision_page/page/page_data.json"
 png_width: 900
-first_build: true   # no db yet: the db guard and its test are skipped until the page has a db export
 
-items:
-  - code: "s1"
-    title: "Slide 1: subtitle (new)"
-    about:
-      - "IRM and TGT Movies, 20260923 to 20260925 (Data from Kiet)"
-      - "You saw it with 20260925 d5 only; the dates now cover all three days."
-    applies: [1]
-    keep_label: "Approve as shown"
-    options:
-      - choice: "edit"
-        button: "Change it"
-        label: "Edit the line on the All slides tab"
-        request: "you"
-        not_rendered: "Edit the line on the All slides tab and save; the saved edit is applied to the deck."
-
-  - code: "s2"
-    title: "Slide 2: title and one bullet (new)"
-    about:
-      - "Title: Experiment and Imaging"
-      - "Fields of view (FOVs): 86 on 20260923, 70 on 20260924 d4, 43 on 20260925 d5"
-      - "You saw the bullet with the 20260925 d5 fields only."
-    applies: [2]
-    keep_label: "Approve as shown"
-    options:
-      - choice: "edit"
-        button: "Change it"
-        label: "Edit the lines on the All slides tab"
-        request: "you"
-        not_rendered: "Edit the lines on the All slides tab and save; the saved edit is applied to the deck."
-
-  - code: "s3"
-    title: "Slide 3: title and one bullet (new)"
-    about:
-      - "Title: Movie Details"
-      - "Only frames with IRM: every 4th frame, up to 8 per movie, ~4 min apart; 2 frames/s"
-      - "You saw \"8 per movie\"; 20260924 d4 CAT W2 movies have 5 frames and FMC W3 movies have 7."
-    applies: [3]
-    keep_label: "Approve as shown"
-    options:
-      - choice: "edit"
-        button: "Change it"
-        label: "Edit the lines on the All slides tab"
-        request: "you"
-        not_rendered: "Edit the lines on the All slides tab and save; the saved edit is applied to the deck."
-
-  - code: "s4"
-    title: "Slide 4: Cell Outlines (IRM), every line (new)"
-    about:
-      - "Title and all 6 bullets; you have not seen them on a slide."
-    applies: [4]
-    keep_label: "Approve as shown"
-    options:
-      - choice: "edit"
-        button: "Change it"
-        label: "Edit the lines on the All slides tab"
-        request: "you"
-        not_rendered: "Edit the lines on the All slides tab and save; the saved edit is applied to the deck."
-
-  - code: "A"
-    title: "Slides with FMC only: 4 per slide or 2 per slide"
-    about:
-      - "20260923: the 39 FMC fields after the last CAT field take 10 slides now, 20 with 2 per slide."
-      - "20260925 d5: the last slide (3 FMC fields) becomes 2 slides."
-      - "Deck: 55 slides now, 66 with 2 per slide. Below: the first 2 changed slides."
-    keep_label: "4 per slide, both columns (as built)"
-    max_slides: 2
-    options:
-      - choice: "right"
-        button: "2 per slide"
-        label: "2 FMC per slide in the right column, left column empty"
-        layout: {one_type: right_only}
-
-  - code: "B"
-    title: "A divider slide before each day"
-    keep_label: "No dividers (as built)"
-    applies: [5]
-    max_slides: 1
-    options:
-      - choice: "dividers"
-        button: "Add dividers"
-        label: "A slide with the day before each day's movies"
-        layout: {day_dividers: true}
-
-  - code: "C"
-    title: "Slides with FMC only: which column fills first"
-    keep_label: "Left column first (as built)"
-    max_slides: 3
-    options:
-      - choice: "right"
-        button: "Right column first"
-        label: "Right column first"
-        layout: {start: right}
-
-  - code: "D"
-    title: "Title size on slides 2 to 4"
-    keep_label: "32 pt (as built)"
-    max_slides: 3
-    options:
-      - choice: "40"
-        button: "40 pt"
-        label: "40 pt, as in the cytokine deck"
-        layout: {details_title_pt: 40}
+# FF 2026-11-23 (via the director): "what I want is a way to easily edit text of current build asap"; old items s1-s4
+# and A-D (55-slide deck) dropped; his 3 slide edits of 2026-11-22 are in the deck config (applied list).
+items: []

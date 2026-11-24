@@ -2,83 +2,84 @@
 # ppt_image_inserter.approved_text. Add a line ONLY with its source: FF's approval (date and his words), or "settled
 # before <date>, not re-checked". Never wording an agent wrote itself. FF's words here were relayed verbatim by the
 # session "TGT Sept EMCCD copy and first look".
+# FF's edits of slides 2-4 on the TGT decision page, 2026-11-22 (two typo fixes: "; " in the Left/right line,
+# "or less removed" for "or  lesremoved")
+# 2026-11-22 September 2026 deck, then named "all days" (cat_fmc_sept_2026_deck.yaml)
+# 2026-11-22 all-days deck v2 (4 text slides, 55 in all)
+# movie titles after the 4 metric slides (2026-11-22)
+# Renumbered for the 61-slide deck (2026-11-23 rebuild)
 exact:
 - text: '20260925 d5: W1 FOV1 and FOV2'
   source: 'FF 2026-11-22: "text looks ok"; "in slide titles specific fovs should be indicated"'
-- text: '20260925 d5 (slide 1 of 11)'
-  source: &slidexofy 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
-- text: '20260925 d5 (slide 2 of 11)'
-  source: *slidexofy
-- text: '20260925 d5 (slide 3 of 11)'
-  source: *slidexofy
-- text: '20260925 d5 (slide 4 of 11)'
-  source: *slidexofy
-- text: '20260925 d5 (slide 5 of 11)'
-  source: *slidexofy
-- text: '20260925 d5 (slide 6 of 11)'
-  source: *slidexofy
-- text: '20260925 d5 (slide 7 of 11)'
-  source: *slidexofy
-- text: '20260925 d5 (slide 8 of 11)'
-  source: *slidexofy
-- text: '20260925 d5 (slide 9 of 11)'
-  source: *slidexofy
-- text: '20260925 d5 (slide 10 of 11)'
-  source: *slidexofy
-- text: '20260925 d5 (slide 11 of 11)'
-  source: *slidexofy
+- text: 20260925 d5 (slide 1 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
+- text: 20260925 d5 (slide 2 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
+- text: 20260925 d5 (slide 3 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
+- text: 20260925 d5 (slide 4 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
+- text: 20260925 d5 (slide 5 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
+- text: 20260925 d5 (slide 6 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
+- text: 20260925 d5 (slide 7 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
+- text: 20260925 d5 (slide 8 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
+- text: 20260925 d5 (slide 9 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
+- text: 20260925 d5 (slide 10 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
+- text: 20260925 d5 (slide 11 of 11)
+  source: 'FF 2026-11-22: "keep well and fov number ok / in titles: just say (slide X of Y)"; exact text relayed'
 - text: CAT
-  source: 'settled before 2026-11-22 (on tgt_cat_fmc_test_slide.pptx, which FF reviewed), not re-checked'
+  source: settled before 2026-11-22 (on tgt_cat_fmc_test_slide.pptx, which FF reviewed), not re-checked
 - text: FMC
-  source: 'settled before 2026-11-22 (on tgt_cat_fmc_test_slide.pptx, which FF reviewed), not re-checked'
-# FF's edits of slides 2-4 on the TGT decision page, 2026-11-22 (two typo fixes: "; " in the Left/right line,
-# "or less removed" for "or  lesremoved")
-- text: 'Experiment and Imaging'
-  source: &pageedit 'FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)'
-- text: '• 12 pN TGT'
-  source: *pageedit
-- text: '• Fields of view (FOVs): 86 on 20260923, 70 on 20260924 d4, 43 on 20260925 d5'
-  source: *pageedit
-- text: 'How movies will be displayed in this PPT'
-  source: *pageedit
-- text: '• Cells segmented in IRM channel using Cellpose-SAM at 3 spatial scales. Objects < 500 px removed.'
-  source: *pageedit
+  source: settled before 2026-11-22 (on tgt_cat_fmc_test_slide.pptx, which FF reviewed), not re-checked
+- text: Experiment and Imaging
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
+- text: • 12 pN TGT
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
+- text: How movies will be displayed in this PPT
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
+- text: • Cells segmented in IRM channel using Cellpose-SAM at 3 spatial scales. Objects < 500 px removed.
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
 - text: '• Left: IRM with outlines; right: TGT'
-  source: *pageedit
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
 - text: '• Only frames with IRM displayed: every 4th frame, up to 8 per movie, ~4 min apart; 2 frames/s'
-  source: *pageedit
-- text: 'Segmenting the cells'
-  source: *pageedit
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
+- text: Segmenting the cells
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
 - text: '• Input: IRM frames only (every 4th frame of TGT)'
-  source: *pageedit
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
 - text: '• Model: Cellpose-SAM, pretrained, default settings'
-  source: *pageedit
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
 - text: '• Three passes: full, half and quarter image size'
-  source: *pageedit
-- text: '• The half- and quarter-size passes add only cells not already found (less than half overlap)'
-  source: *pageedit
-- text: '• Objects under 500 pixels in area (12.8 μm²) removed'
-  source: 'FF 2026-11-22, chat via TGT Sept EMCCD copy and first look'
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
+- text: • The half- and quarter-size passes add only cells not already found (less than half overlap)
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
+- text: • Objects under 500 pixels in area (12.8 μm²) removed
+  source: FF 2026-11-22, chat via TGT Sept EMCCD copy and first look
 - text: '• Reference: Pachitariu M, Rariden M, Stringer C. Cellpose-SAM: superhuman generalization for cellular segmentation. bioRxiv 2025. doi:10.1101/2025.04.28.651001'
-  source: *pageedit
-- text: 'Brightness, fixed for each movie'
-  source: &bright 'FF 2026-11-22, chat via TGT Sept EMCCD copy and first look'
+  source: FF 2026-11-22, his own edit saved on the TGT decision page (slides 2-4)
+- text: Brightness, fixed for each movie
+  source: FF 2026-11-22, chat via TGT Sept EMCCD copy and first look
 - text: '• TGT: dimmest 1% of the first frame shown black'
-  source: *bright
+  source: FF 2026-11-22, chat via TGT Sept EMCCD copy and first look
 - text: '• TGT: brightest 0.1% of all frames in the movie shown white'
-  source: *bright
+  source: FF 2026-11-22, chat via TGT Sept EMCCD copy and first look
 - text: '• IRM: dimmest 0.1% black, brightest 0.1% white, all frames in the movie'
-  source: *bright
-- text: '• Compare brightness within a movie, not between movies'
-  source: *bright
-# 2026-11-22 all-days deck (cat_fmc_all_days_deck.yaml)
-- text: 'CAT and FMC CAR T Cells on 12 pN TGT Surfaces'
+  source: FF 2026-11-22, chat via TGT Sept EMCCD copy and first look
+- text: • Compare brightness within a movie, not between movies
+  source: FF 2026-11-22, chat via TGT Sept EMCCD copy and first look
+- text: CAT and FMC CAR T Cells on 12 pN TGT Surfaces
   source: 'FF 2026-11-22 on the draft title page and details text: "ok thanks. slide 2 can actually be made into 2 slides"'
-- text: '• CAT (lower-affinity CAR) and FMC (FMC63) CAR T cells on nominal 12 pN TGT'
+- text: • CAT (lower-affinity CAR) and FMC (FMC63) CAR T cells on nominal 12 pN TGT
   source: 'FF 2026-11-22 on the draft title page and details text: "ok thanks. slide 2 can actually be made into 2 slides"'
 - text: '• TGT density higher in CAT wells: CAT vs FMC confounded with density'
   source: 'FF 2026-11-22 on the draft title page and details text: "ok thanks. slide 2 can actually be made into 2 slides"'
-- text: '• Andor EMCCD, 500 ms, EM gain 300, 0.16 μm pixels, 512 × 512'
+- text: • Andor EMCCD, 500 ms, EM gain 300, 0.16 μm pixels, 512 × 512
   source: 'FF 2026-11-22 on the draft title page and details text: "ok thanks. slide 2 can actually be made into 2 slides"'
 - text: '• TGT: lamp epi-illumination (X-Cite, TRITC filters)'
   source: 'FF 2026-11-22 on the draft title page and details text: "ok thanks. slide 2 can actually be made into 2 slides"'
@@ -88,345 +89,522 @@ exact:
   source: 'FF 2026-11-22 on the draft title page and details text: "ok thanks. slide 2 can actually be made into 2 slides"'
 - text: 'TGT: 1st percentile of first frame to 99.9th percentile of shown frames; IRM: 0.1th to 99.9th percentile'
   source: 'FF 2026-11-22 on the draft title page and details text: "ok thanks. slide 2 can actually be made into 2 slides"'
-- text: '20260923 (slide 4 of 54)'
+- text: 20260923 (slide 4 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 5 of 54)'
+- text: 20260923 (slide 5 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 6 of 54)'
+- text: 20260923 (slide 6 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 7 of 54)'
+- text: 20260923 (slide 7 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 8 of 54)'
+- text: 20260923 (slide 8 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 9 of 54)'
+- text: 20260923 (slide 9 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 10 of 54)'
+- text: 20260923 (slide 10 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 11 of 54)'
+- text: 20260923 (slide 11 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 12 of 54)'
+- text: 20260923 (slide 12 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 13 of 54)'
+- text: 20260923 (slide 13 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 14 of 54)'
+- text: 20260923 (slide 14 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 15 of 54)'
+- text: 20260923 (slide 15 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 16 of 54)'
+- text: 20260923 (slide 16 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 17 of 54)'
+- text: 20260923 (slide 17 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 18 of 54)'
+- text: 20260923 (slide 18 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 19 of 54)'
+- text: 20260923 (slide 19 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 20 of 54)'
+- text: 20260923 (slide 20 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 21 of 54)'
+- text: 20260923 (slide 21 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 22 of 54)'
+- text: 20260923 (slide 22 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 23 of 54)'
+- text: 20260923 (slide 23 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 24 of 54)'
+- text: 20260923 (slide 24 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 25 of 54)'
+- text: 20260923 (slide 25 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 26 of 54)'
+- text: 20260924 d4 (slide 26 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 27 of 54)'
+- text: 20260924 d4 (slide 27 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 28 of 54)'
+- text: 20260924 d4 (slide 28 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 29 of 54)'
+- text: 20260924 d4 (slide 29 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 30 of 54)'
+- text: 20260924 d4 (slide 30 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 31 of 54)'
+- text: 20260924 d4 (slide 31 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 32 of 54)'
+- text: 20260924 d4 (slide 32 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 33 of 54)'
+- text: 20260924 d4 (slide 33 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 34 of 54)'
+- text: 20260924 d4 (slide 34 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 35 of 54)'
+- text: 20260924 d4 (slide 35 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 36 of 54)'
+- text: 20260924 d4 (slide 36 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 37 of 54)'
+- text: 20260924 d4 (slide 37 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 38 of 54)'
+- text: 20260924 d4 (slide 38 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 39 of 54)'
+- text: 20260924 d4 (slide 39 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 40 of 54)'
+- text: 20260924 d4 (slide 40 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 41 of 54)'
+- text: 20260924 d4 (slide 41 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 42 of 54)'
+- text: 20260924 d4 (slide 42 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 43 of 54)'
+- text: 20260924 d4 (slide 43 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 44 of 54)'
+- text: 20260925 d5 (slide 44 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 45 of 54)'
+- text: 20260925 d5 (slide 45 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 46 of 54)'
+- text: 20260925 d5 (slide 46 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 47 of 54)'
+- text: 20260925 d5 (slide 47 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 48 of 54)'
+- text: 20260925 d5 (slide 48 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 49 of 54)'
+- text: 20260925 d5 (slide 49 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 50 of 54)'
+- text: 20260925 d5 (slide 50 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 51 of 54)'
+- text: 20260925 d5 (slide 51 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 52 of 54)'
+- text: 20260925 d5 (slide 52 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 53 of 54)'
+- text: 20260925 d5 (slide 53 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 54 of 54)'
+- text: 20260925 d5 (slide 54 of 54)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-# 2026-11-22 all-days deck v2 (4 text slides, 55 in all)
-- text: '20260923 (slide 5 of 55)'
+- text: 20260923 (slide 5 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 6 of 55)'
+- text: 20260923 (slide 6 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 7 of 55)'
+- text: 20260923 (slide 7 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 8 of 55)'
+- text: 20260923 (slide 8 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 9 of 55)'
+- text: 20260923 (slide 9 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 10 of 55)'
+- text: 20260923 (slide 10 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 11 of 55)'
+- text: 20260923 (slide 11 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 12 of 55)'
+- text: 20260923 (slide 12 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 13 of 55)'
+- text: 20260923 (slide 13 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 14 of 55)'
+- text: 20260923 (slide 14 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 15 of 55)'
+- text: 20260923 (slide 15 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 16 of 55)'
+- text: 20260923 (slide 16 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 17 of 55)'
+- text: 20260923 (slide 17 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 18 of 55)'
+- text: 20260923 (slide 18 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 19 of 55)'
+- text: 20260923 (slide 19 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 20 of 55)'
+- text: 20260923 (slide 20 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 21 of 55)'
+- text: 20260923 (slide 21 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 22 of 55)'
+- text: 20260923 (slide 22 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 23 of 55)'
+- text: 20260923 (slide 23 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 24 of 55)'
+- text: 20260923 (slide 24 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 25 of 55)'
+- text: 20260923 (slide 25 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260923 (slide 26 of 55)'
+- text: 20260923 (slide 26 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 27 of 55)'
+- text: 20260924 d4 (slide 27 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 28 of 55)'
+- text: 20260924 d4 (slide 28 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 29 of 55)'
+- text: 20260924 d4 (slide 29 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 30 of 55)'
+- text: 20260924 d4 (slide 30 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 31 of 55)'
+- text: 20260924 d4 (slide 31 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 32 of 55)'
+- text: 20260924 d4 (slide 32 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 33 of 55)'
+- text: 20260924 d4 (slide 33 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 34 of 55)'
+- text: 20260924 d4 (slide 34 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 35 of 55)'
+- text: 20260924 d4 (slide 35 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 36 of 55)'
+- text: 20260924 d4 (slide 36 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 37 of 55)'
+- text: 20260924 d4 (slide 37 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 38 of 55)'
+- text: 20260924 d4 (slide 38 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 39 of 55)'
+- text: 20260924 d4 (slide 39 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 40 of 55)'
+- text: 20260924 d4 (slide 40 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 41 of 55)'
+- text: 20260924 d4 (slide 41 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 42 of 55)'
+- text: 20260924 d4 (slide 42 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 43 of 55)'
+- text: 20260924 d4 (slide 43 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260924 d4 (slide 44 of 55)'
+- text: 20260924 d4 (slide 44 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 45 of 55)'
+- text: 20260925 d5 (slide 45 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 46 of 55)'
+- text: 20260925 d5 (slide 46 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 47 of 55)'
+- text: 20260925 d5 (slide 47 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 48 of 55)'
+- text: 20260925 d5 (slide 48 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 49 of 55)'
+- text: 20260925 d5 (slide 49 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 50 of 55)'
+- text: 20260925 d5 (slide 50 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 51 of 55)'
+- text: 20260925 d5 (slide 51 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 52 of 55)'
+- text: 20260925 d5 (slide 52 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 53 of 55)'
+- text: 20260925 d5 (slide 53 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 54 of 55)'
+- text: 20260925 d5 (slide 54 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-- text: '20260925 d5 (slide 55 of 55)'
+- text: 20260925 d5 (slide 55 of 55)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"'
-# movie titles after the 4 metric slides (2026-11-22)
-- text: '20260923 (slide 9 of 59)'
+- text: 20260923 (slide 9 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 10 of 59)'
+- text: 20260923 (slide 10 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 11 of 59)'
+- text: 20260923 (slide 11 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 12 of 59)'
+- text: 20260923 (slide 12 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 13 of 59)'
+- text: 20260923 (slide 13 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 14 of 59)'
+- text: 20260923 (slide 14 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 15 of 59)'
+- text: 20260923 (slide 15 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 16 of 59)'
+- text: 20260923 (slide 16 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 17 of 59)'
+- text: 20260923 (slide 17 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 18 of 59)'
+- text: 20260923 (slide 18 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 19 of 59)'
+- text: 20260923 (slide 19 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 20 of 59)'
+- text: 20260923 (slide 20 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 21 of 59)'
+- text: 20260923 (slide 21 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 22 of 59)'
+- text: 20260923 (slide 22 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 23 of 59)'
+- text: 20260923 (slide 23 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 24 of 59)'
+- text: 20260923 (slide 24 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 25 of 59)'
+- text: 20260923 (slide 25 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 26 of 59)'
+- text: 20260923 (slide 26 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 27 of 59)'
+- text: 20260923 (slide 27 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 28 of 59)'
+- text: 20260923 (slide 28 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 29 of 59)'
+- text: 20260923 (slide 29 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260923 (slide 30 of 59)'
+- text: 20260923 (slide 30 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 31 of 59)'
+- text: 20260924 d4 (slide 31 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 32 of 59)'
+- text: 20260924 d4 (slide 32 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 33 of 59)'
+- text: 20260924 d4 (slide 33 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 34 of 59)'
+- text: 20260924 d4 (slide 34 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 35 of 59)'
+- text: 20260924 d4 (slide 35 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 36 of 59)'
+- text: 20260924 d4 (slide 36 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 37 of 59)'
+- text: 20260924 d4 (slide 37 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 38 of 59)'
+- text: 20260924 d4 (slide 38 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 39 of 59)'
+- text: 20260924 d4 (slide 39 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 40 of 59)'
+- text: 20260924 d4 (slide 40 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 41 of 59)'
+- text: 20260924 d4 (slide 41 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 42 of 59)'
+- text: 20260924 d4 (slide 42 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 43 of 59)'
+- text: 20260924 d4 (slide 43 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 44 of 59)'
+- text: 20260924 d4 (slide 44 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 45 of 59)'
+- text: 20260924 d4 (slide 45 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 46 of 59)'
+- text: 20260924 d4 (slide 46 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 47 of 59)'
+- text: 20260924 d4 (slide 47 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260924 d4 (slide 48 of 59)'
+- text: 20260924 d4 (slide 48 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 49 of 59)'
+- text: 20260925 d5 (slide 49 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 50 of 59)'
+- text: 20260925 d5 (slide 50 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 51 of 59)'
+- text: 20260925 d5 (slide 51 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 52 of 59)'
+- text: 20260925 d5 (slide 52 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 53 of 59)'
+- text: 20260925 d5 (slide 53 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 54 of 59)'
+- text: 20260925 d5 (slide 54 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 55 of 59)'
+- text: 20260925 d5 (slide 55 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 56 of 59)'
+- text: 20260925 d5 (slide 56 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 57 of 59)'
+- text: 20260925 d5 (slide 57 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 58 of 59)'
+- text: 20260925 d5 (slide 58 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: '20260925 d5 (slide 59 of 59)'
+- text: 20260925 d5 (slide 59 of 59)
   source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; movie slides renumbered for the 4 metric slides'
-- text: 'Pachitariu et al., bioRxiv, 2025.'
+- text: Pachitariu et al., bioRxiv, 2025.
   source: 'FF 2026-11-23, this chat: "put in the bottom left corner Pachitariu et al., bioRxiv, 2025. in italics"'
-- text: '20260923 (slide 5 of 59)'
-  source: &endfig 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
-- text: '20260923 (slide 6 of 59)'
-  source: *endfig
-- text: '20260923 (slide 7 of 59)'
-  source: *endfig
-- text: '20260923 (slide 8 of 59)'
-  source: *endfig
-- text: '20260924 d4 (slide 27 of 59)'
-  source: *endfig
-- text: '20260924 d4 (slide 28 of 59)'
-  source: *endfig
-- text: '20260924 d4 (slide 29 of 59)'
-  source: *endfig
-- text: '20260924 d4 (slide 30 of 59)'
-  source: *endfig
-- text: '20260925 d5 (slide 45 of 59)'
-  source: *endfig
-- text: '20260925 d5 (slide 46 of 59)'
-  source: *endfig
-- text: '20260925 d5 (slide 47 of 59)'
-  source: *endfig
-- text: '20260925 d5 (slide 48 of 59)'
-  source: *endfig
-- text: 'Cell Area With Signal Well Below Glass Median'
-  source: &wellglass 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: ""Cell Area With Signal Well Below Glass Median" and Well Above Glass Median"'
-- text: 'Cell Area With Signal Well Above Glass Median'
-  source: *wellglass
-- text: 'TGT Signal Under Cells Relative To Glass'
-  source: &keeptitles 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, asked whether the metric titles should match the new axis labels: "Keep current titles"'
-- text: 'Variation Of TGT Signal Under Cells'
-  source: *keeptitles
+- text: 20260923 (slide 5 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260923 (slide 6 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260923 (slide 7 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260923 (slide 8 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260924 d4 (slide 27 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260924 d4 (slide 28 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260924 d4 (slide 29 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260924 d4 (slide 30 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260925 d5 (slide 45 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260925 d5 (slide 46 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260925 d5 (slide 47 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: 20260925 d5 (slide 48 of 59)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; "Deck slides, whole deck"; renumbered after FF 2026-11-23 "quant results should be moved to end"'
+- text: Cell Area With Signal Well Below Glass Median
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: ""Cell Area With Signal Well Below Glass Median" and Well Above Glass Median"'
+- text: Cell Area With Signal Well Above Glass Median
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: ""Cell Area With Signal Well Below Glass Median" and Well Above Glass Median"'
+- text: TGT Signal Under Cells Relative To Glass
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, asked whether the metric titles should match the new axis labels: "Keep current titles"'
+- text: Variation Of TGT Signal Under Cells
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, asked whether the metric titles should match the new axis labels: "Keep current titles"'
+- text: Defining Pixels Under Cells And Away From Cells
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: ("should be Defining "Pixels Under Cells And Away From Cells"")'
+- text: Fraction Of Cell Area With Low TGT Signal
+  source: 'FF 2026-11-23, relayed by TGT Sept EMCCD copy and first look: "sounds good"'
+- text: Fraction Of Cell Area With High TGT Signal
+  source: 'FF 2026-11-23, relayed by TGT Sept EMCCD copy and first look: "sounds good"'
+- text: 'Low: TGT < median − 3× MAD of TGT away from cells (MAD: median absolute deviation); Gaussian smoothing 1 pixel'
+  source: 'FF 2026-11-23 (relayed by TGT Sept EMCCD copy and first look): "just do 3 X median absolute deivation ... say 3X MAD and write out full form"; this exact note text relayed from the director as
+    the change'
+- text: 'High: TGT > median + 3× MAD of TGT away from cells (MAD: median absolute deviation); Gaussian smoothing 1 pixel'
+  source: 'FF 2026-11-23 (relayed by TGT Sept EMCCD copy and first look): "just do 3 X median absolute deivation ... say 3X MAD and write out full form"; this exact note text relayed from the director as
+    the change'
+- text: CAT and FMC CAR T Cells on 12 pN TGT Surfaces, September 2026
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "the title of our main deck is super misleading as it only covers sept 2026"; to this exact wording: "Use that"'
+- text: '• Cell: segmented object of 500 pixels or more, outlined on each IRM frame'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, on the definitions slide body: "ok for now. rebuild main"'
+- text: '• Under a cell: pixels inside that cell''s outline in that IRM frame'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, on the definitions slide body: "ok for now. rebuild main"'
+- text: '• Under cells, whole field: pixels inside a cell in every IRM frame of the movie'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, on the definitions slide body: "ok for now. rebuild main"'
+- text: '• Away from cells: pixels at least 0.5 μm from every object, of any size, in every IRM frame of the movie'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, on the definitions slide body: "ok for now. rebuild main"'
+- text: '• In neither group: pixels covered in only some frames; the 0.5 μm band around objects; objects under 500 pixels; the last 3 pixel columns'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, on the definitions slide body: "ok for now. rebuild main"'
+- text: '• Cells used: tracked through every IRM frame of the movie'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, on the definitions slide body: "ok for now. rebuild main"'
+- text: • Camera offset of 100 counts subtracted from all TGT values
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, on the definitions slide body: "ok for now. rebuild main"'
+- text: 'Iaway: last / first'
+  source: 'FF 2026-11-23, relayed by TGT Sept EMCCD copy and first look: "I_under / I_away (last frame)"; "(last frame) needs to be specified for labels 2-4"; "say 3X MAD and write out full form"; example
+    approved: "example slide looks good"'
+- text: Iunder / Iaway
+  source: 'FF 2026-11-23, relayed by TGT Sept EMCCD copy and first look: "I_under / I_away (last frame)"; "(last frame) needs to be specified for labels 2-4"; "say 3X MAD and write out full form"; example
+    approved: "example slide looks good"'
+- text: area with Iunder < Iaway − 3× MAD
+  source: 'FF 2026-11-23, relayed by TGT Sept EMCCD copy and first look: "I_under / I_away (last frame)"; "(last frame) needs to be specified for labels 2-4"; "say 3X MAD and write out full form"; example
+    approved: "example slide looks good"'
+- text: area with Iunder > Iaway + 3× MAD
+  source: 'FF 2026-11-23, relayed by TGT Sept EMCCD copy and first look: "I_under / I_away (last frame)"; "(last frame) needs to be specified for labels 2-4"; "say 3X MAD and write out full form"; example
+    approved: "example slide looks good"'
+- text: (last frame)
+  source: 'FF 2026-11-23, relayed by TGT Sept EMCCD copy and first look: "I_under / I_away (last frame)"; "(last frame) needs to be specified for labels 2-4"; "say 3X MAD and write out full form"; example
+    approved: "example slide looks good"'
+- text: 20260923 (slide 1 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 2 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 3 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 4 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 5 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 6 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 7 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 8 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 9 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 10 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 11 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 12 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 13 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 14 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 15 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 16 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 17 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 18 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 19 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 20 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 21 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260923 (slide 22 of 22)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 1 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 2 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 3 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 4 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 5 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 6 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 7 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 8 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 9 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 10 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 11 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 12 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 13 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 14 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 15 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 16 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 17 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 20260924 d4 (slide 18 of 18)
+  source: 'FF 2026-11-22: "in titles: just say (slide X of Y)"; FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the number of slides for that particular day"'
+- text: 'I: TGT signal. under: pixels inside a cell; away: pixels at least 0.5 μm from every object; both in every IRM frame.'
+  source: 'FF 2026-11-23, relayed by TGT Sept EMCCD copy and first look: "really redo both lines to make clearer and more concise"; "also use italics at ottom"; "ok to the two lines"'
+- text: 'Ratios: means of I. Areas: % of under pixels, with I smoothed (Gaussian, 1 pixel) and Iaway the median. MAD: median absolute deviation of I away.'
+  source: 'FF 2026-11-23, relayed by TGT Sept EMCCD copy and first look: "really redo both lines to make clearer and more concise"; "also use italics at ottom"; "ok to the two lines"'
+- text: Coefficient Of Variation Of TGT Signal Under Cells, Per Well
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "Variation Of TGT Signal Under Cells, Per Well should have Coefficient of at front"'
+- text: Summary
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • TGT signal away from cells rises during the movie
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: '• CAT wells: 2.2 to 3.4 times'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: '• FMC wells: 1.1 to 1.5 times'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • Under CAT cells, TGT ends below the signal away from cells
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • 71 of 74 FOVs, all 7 wells, all 3 days
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • 5 to 8% lower; about 20 to 30% of the cell area low
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • Under FMC cells, no consistent difference
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • 50 of 112 FOVs lower; 1 to 3% of the cell area low
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: '• Exception: 20260923 FMC W5 and W6 resemble CAT wells'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • High-TGT area under cells is larger for FMC on two of three days
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • 6 to 10% against 1 to 3%; no difference on 20260925 d5
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: Caveats And Questions For Kiet
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • Caveats
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • One plate; each cell type has its own wells
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • CAT wells had higher TGT density (Kiet)
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • 9 of 199 FOVs removed
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • Camera offset of 100 counts not verified
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • No systematic screen for image artifacts
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • Questions for Kiet
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: '• How the September plate was made: which strand carries the dye, which the quencher'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • TGT density per well
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • What differs in 20260923 FMC W5 and W6
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • When cells were added relative to the first frame
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'
+- text: • A few frames with the shutter closed (500 ms, EM gain 300)
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "insert the slides with that text and I''ll look into everything. rebuild and run independent check in the meanitme"'

@@ -1,0 +1,63 @@
+# TGT flagged fields, for FF's review: only the flagged fields, each with the reason for its flag on the slide.
+# FF 2026-11-23, relayed verbatim by "TGT Sept EMCCD copy and first look", on the first version (all 24 fields of the
+# two wells): "that's anawful ppt it should have only the flagged ones and include info on why they are flagged!".
+# Flags and reasons, checked by that session against docs\notes_2026-11-21_september_first_look.md (lines 100, 493) and
+# emccd_september\20260924_d4\FLAGS.txt. Wording below is the director's brief, being shown to FF (not approved yet).
+# Built by examples_and_configs/tgt/build_tgt_flagged_fields.py --config <this file>.
+# File renamed 2026-11-23 from tgt_flagged_wells.pptx (holds fields, not wells; all nine removed); name approved by FF 2026-11-23, relayed: "those names arefine".
+output: "K:/FF/PPT/PPT_autogeneration/TGT/tgt_removed_fovs_sept_2026.pptx"
+approved_text: "cat_fmc_flagged_wells_approved_text.yaml"
+
+title_page:
+  title: "CAT and FMC CAR T Cells on 12 pN TGT Surfaces, September 2026"   # FF 2026-11-23, relayed: "Use that"
+  subtitle: "Removed FOVs: 20260923 FMC W6 p07 to p12, FMC W1 p01, FMC W4 p01 and p04"   # FF 2026-11-23, relayed: "yes change the subtitle"
+
+# Slide 2: what is flagged and why, one line per section (FF 2026-11-23, relayed: ""Here is what is flagged and why."
+# it neds to be in ppt concisely. and the agent should verify it"). Wording: the director's brief. The builder checks
+# each line's positions against its section and, for a section with a medians table, that every flagged position
+# ends below its start and every unflagged one does not.
+summary_title: "What Is Flagged And Why"
+
+movie_dir: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/first_look/cat_fmc_0923_d4/movie"
+
+sections:
+  - title: "20260923 FMC W6: TGT Signal Lost Mid-Movie"
+    day: "20260923"
+    well: "FMC_W6"
+    positions: [7, 8, 9, 10, 11, 12]
+    summary: "20260923 FMC W6, positions 7 to 12: TGT signal lost mid-movie"
+    # one line under each movie: whole-field TGT median (raw counts) at the first and the last frame, from this table
+    medians_csv: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/measurements/20260923/tgt_counts_per_frame_20260923.csv"
+    caption: "p{pos:02d}: whole-FOV TGT median {first} to {last} counts"   # "field" -> "FOV", FF: "say FOVs never ay Fields of View" (relayed 2026-11-23)
+    # extra line on the first slide of the section; {lo} and {hi}: range of the last-frame medians of these positions
+    unflagged_positions: [1, 2, 3, 4, 5, 6]
+    lines:
+      - "Positions 1 to 6 of this well keep their signal: last-frame median {lo} to {hi} counts"
+  # FF 2026-11-23, relayed: "on the deck slides we need to highlight removed FOVs. this should be one of them" (the FOV
+  # he called "this curved boundary looks like an artifact"). Numbers: verified by "TGT Sept EMCCD copy and first look"
+  # by script (frame 1 TGT median 999 bright side, 509 dim side; edge in the same place at frame 31, overlap 0.94);
+  # not re-measured by this builder. Title, line and caption wording: director's proposal / this agent, not approved.
+  - title: "20260923 FMC W1: Fixed Edge In TGT Image"
+    day: "20260923"
+    well: "FMC_W1"
+    positions: [1]
+    summary: "20260923 FMC W1, position 1: fixed edge in TGT image"
+    captions:
+      1: "p01: frame 1 TGT median 999 on the bright side, 509 on the dim side; edge unchanged at the last frame"
+    lines:
+      - "Fixed curved edge in the TGT image, from frame 1"
+  # FF 2026-11-23, relayed: ""Two other fields you may want to look at." these need to be in the separate ppt"; then
+  # "ok everything in flagged ppt should be removed from analysis". Title and summary: the director's wording, relayed
+  # with that instruction; the "kept in analysis" line is removed (relayed). Captions: field-level ratio at the first
+  # and last time point, from the pooled_mean_ratio figure's own table; wording not approved.
+  # Reason: FF 2026-11-23, relayed: "not just outlier: thera ppears to be artifact"; wording the director's, unapproved.
+  - title: "20260923 FMC W4: Bright Artifact In TGT Image"
+    day: "20260923"
+    well: "FMC_W4"
+    positions: [1, 4]
+    summary: "20260923 FMC W4, positions 1 and 4: bright artifact in TGT image"
+    ratio_csv: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/pooled_mean_ratio/per_day_v1/field_lines.csv"
+    ratio_field: "FMC 20260923 FMC W4 p{pos:02d}"
+    caption: "p{pos:02d}: TGT under cells / away from cells {first:.3f} to {last:.3f}"
+# 20260924 d4 CAT W1 removed: flag cleared by FF 2026-11-23, relayed: "go with 1" (clear it, remove CAT W1 from this
+# deck, mark the flag resolved in the notes).

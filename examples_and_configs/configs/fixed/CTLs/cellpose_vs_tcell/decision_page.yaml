@@ -1,0 +1,68 @@
+# Decision page for the naive 0708 deck "TCell mask vs Cellpose 3" (decision_page/README.md; repo CLAUDE.md
+# "Decision pages"). Items as relayed by the session "Nucleus Cellpose PPT helper" on 2026-11-24; the Dice /
+# volume ratio / SPLIT item dropped (FF 2026-11-24: "forget abut Dice, volume ratio labels and such. just ignore").
+# Previews: examples_and_configs/ctl_nucleus/cellpose_vs_tcell_decision_previews.py <this file>
+# Page:     examples_and_configs/decision_page/build_decision_page.py <this file> <out.html> --test-dir <tests>
+title: "Cellpose vs TCell Deck: Slide Text"
+heading: "Naive 0708 nucleus segmentation deck: TCell mask vs Cellpose 3"
+lead: "Methods slides, one cell slide and the builder change, for your OK before the deck is built."
+all_heading: "All slides"
+all_lead: "The two methods slides and the first cell slide as they would be built. Edit a slide's lines and save. Text inside the sheets cannot be changed here."
+collection: decisions
+slide_collection: slides
+deck:
+  config: decision_page_stub.yaml
+  text: deck_text.yaml
+  approved: approved_text.yaml
+applied: decision_page_applied.yaml
+db_export: "K:/FF/PPT/PPT_autogeneration/CTL_Nucleus/cellpose_vs_tcell_naive_0708/decision_page/db_export"
+page_data: "K:/FF/PPT/PPT_autogeneration/CTL_Nucleus/cellpose_vs_tcell_naive_0708/decision_page/page/page_data.json"
+png_width: 1100
+first_build: true
+
+items:
+  - code: "m"
+    title: "Methods slides 1 and 2"
+    source: "method facts from Compare TCell vs Cellpose nucleus segmentation, relayed 2026-11-24"
+    about: "Drawn only from the method facts of the session Compare TCell vs Cellpose nucleus segmentation. Edit any line in the change box or on All slides."
+    applies: [1, 2]
+    keep: false
+    options:
+      - choice: "use"
+        button: "Use this text"
+        label: "Slides 1 and 2 as shown"
+  - code: "s"
+    title: "Cell slides: two cells per slide"
+    source: "sheets from the comparison page; title pattern proposed 2026-11-24"
+    about:
+      - "Title: condition. Above each sheet: its cell number. All 16 cell slides follow this one."
+      - "Each sheet carries its own panel titles, with middle dots, cyto3, cellprob +3, Current mask and SPLIT."
+    applies: [3]
+    keep: false
+    options:
+      - choice: "use"
+        button: "Use sheets as they are"
+        label: "Sheets as on the comparison page"
+      - choice: "rerender"
+        button: "Re-render sheets"
+        label: "Sheets re-rendered without that panel text"
+        request: "Compare TCell vs Cellpose nucleus segmentation"
+  - code: "b"
+    title: "Change the deck builder"
+    source: "open point, 2026-11-24"
+    about:
+      - "Slide order from the 0708 condition list; it now reads the 3SI list, which stops the build."
+      - "Methods slides from the approved text, in place of the old 3SI title slide."
+      - "Titles 32 pt; they are 24 pt now."
+      - "Black slides, bulleted methods, two cells per slide; now white slides, one cell per slide."
+      - "Slide text checks run on every build, with counts reported."
+    keep: false
+    options:
+      - choice: "yes"
+        button: "Yes, change it"
+        label: "Change the builder as listed"
+        not_rendered: "Code change, no slide change."
+      - choice: "no"
+        button: "No"
+        label: "Leave the builder as it is"
+        not_rendered: "No change."

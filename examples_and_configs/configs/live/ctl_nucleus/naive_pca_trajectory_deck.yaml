@@ -1,0 +1,38 @@
+# Naive CTL PCA trajectory deck: one slide per experiment, 2D panel (PC1 vs PC2) left, 3D panel right.
+# FF 2026-11-24: "1 slide per expt", "do not specify view".
+# Panels: chromatin-analysis cross-experiment naive compilation, pca_trajectory/ (re-rendered without view text).
+# Slide titles: "<date>, <mark> experiment" from chromatin-analysis scripts/datasets.py (FF 2026-11-24: "2024-01-29,
+# H3K27me3 experiment and such"); title slide text approved by FF 2026-11-24.
+# Check titles against the panel filenames after a build:
+#   python examples_and_configs/ctl_nucleus/check_pca_trajectory_titles.py examples_and_configs/configs/live/ctl_nucleus/naive_pca_trajectory_deck.yaml
+
+# Template: made by examples_and_configs/ctl_nucleus/make_naive_pca_trajectory_template.py from the Naive CTL summary
+# template: slide 1 = title slide, slide 2 = two picture boxes widened to fill the slide (FF 2026-11-24: "widen to
+# fill slide"). remove_template_slide drops slide 2 after the build.
+presentation: "K:/FF/PPT/PPT_autogeneration/CTL_Nucleus/naive_pca_trajectory/naive_pca_trajectory_template.pptx"
+output_path: "K:/FF/PPT/PPT_autogeneration/CTL_Nucleus/naive_pca_trajectory/naive_pca_trajectory.pptx"
+template_slide: 1
+preserve_slides: [0, 1]
+remove_template_slide: true
+title_slide_text: "Naive CTLs: PCA, 7 experiments"
+base_dir: "K:/FF/PPT/PPT_autogeneration/CTL_Nucleus/cross_experiment_naive/nucleus_morphology_naive_0129_0219_0318_0422_0708_0729_1211/pca_trajectory"
+auto_position: true
+add_label: false
+title_size: 32
+approved_text: "naive_pca_trajectory_approved_text.yaml"
+
+images:
+  - images: [row_pca_trajA_0129.png, row_pca_traj3dA_0129_v1.png]
+    title: "2024-01-29, H3K27me3 experiment"
+  - images: [row_pca_trajA_0219.png, row_pca_traj3dA_0219_v1.png]
+    title: "2024-02-19, H3K27me3 experiment"
+  - images: [row_pca_trajA_0318.png, row_pca_traj3dA_0318_v1.png]
+    title: "2024-03-18, H3K27me3 experiment"
+  - images: [row_pca_trajA_0422.png, row_pca_traj3dA_0422_v1.png]
+    title: "2024-04-22, H3K9me3 experiment"
+  - images: [row_pca_trajA_0708.png, row_pca_traj3dA_0708_v1.png]
+    title: "2024-07-08, H3K27ac experiment"
+  - images: [row_pca_trajA_0729.png, row_pca_traj3dA_0729_v1.png]
+    title: "2024-07-29, H3K27ac experiment"
+  - images: [row_pca_trajA_1211.png, row_pca_traj3dA_1211_v1.png]
+    title: "2024-12-11, H3K9me3 experiment"

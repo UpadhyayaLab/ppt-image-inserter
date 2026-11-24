@@ -1,9 +1,11 @@
 # TGT flagged wells, every field's movie, for FF's review (FF 2026-11-23, relayed verbatim by "TGT Sept EMCCD copy
 # and first look": ""Flagged wells are in the figures" you need to make separate ppt with flagged wells. I need to
-# revfiew them."). The main deck (cat_fmc_all_days_deck.yaml) is unchanged and keeps these wells.
+# revfiew them."). The main deck (cat_fmc_sept_2026_deck.yaml) is unchanged and keeps these wells.
 # Built by examples_and_configs/tgt/build_cat_fmc_slides.py --config <this file>: title page, then the movies of each
 # well in the main deck's movie-slide format (same movies, version "movie"), one well after the other.
-output: "K:/FF/PPT/PPT_autogeneration/TGT/tgt_flagged_wells.pptx"
+# Superseded by tgt_flagged_fields_deck.yaml (FF rejected this all-fields version); the deck file was renamed 2026-11-23.
+stop_build: "superseded by tgt_flagged_fields_deck.yaml (built by build_tgt_flagged_fields.py)"
+output: "K:/FF/PPT/PPT_autogeneration/TGT/tgt_removed_fovs_sept_2026.pptx"
 approved_text: "cat_fmc_flagged_wells_approved_text.yaml"
 
 title_page:

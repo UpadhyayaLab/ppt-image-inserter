@@ -96,6 +96,31 @@ class TextboxSpec:
     # (separate paragraphs in ``text`` with "\r").
     anchor: Optional[str] = None
     space_after_pt: Optional[float] = None
+    # Optional, default None = unchanged. Paragraphs that start with a typed bullet ("•") get a hanging indent of
+    # this many points, so a wrapped line starts under the text, not under the mark; other paragraphs stay flush left.
+    hanging_indent_pt: Optional[float] = None
+    # Optional sub-bullets (used only with hanging_indent_pt). para_levels: one level per paragraph of ``text``, 0 or
+    # 1; a level-1 paragraph is a sub-bullet, indented under the bullet text, with its own hanging indent
+    # (sub_indent_pt) and font size (sub_font_size_pt); a paragraph followed by a sub-bullet gets sub_space_after_pt
+    # after it. main_bold: when set, level-0 bullet paragraphs are bold (True) or not, and sub-bullets never bold
+    # (FF 2026-11-23: "bold stuff in main bllets -but not in subbelets"). Sub-bullets keep a bullet mark, never a dash
+    # (FF 2026-11-23: "use subbullets not -").
+    para_levels: Optional[Sequence[int]] = None
+    sub_indent_pt: Optional[float] = None
+    sub_font_size_pt: Optional[float] = None
+    sub_space_after_pt: Optional[float] = None
+    main_bold: Optional[bool] = None
+    # Optional, default None = PowerPoint's own inner margins (7.2 pt left/right). A number sets the left and right
+    # inner margins of the box, e.g. 0 for narrow number columns.
+    side_margin_pt: Optional[float] = None
+    # Optional, default None = PowerPoint's own inner margins (3.6 pt top/bottom). A number sets the top and bottom
+    # inner margins, e.g. 0 so a box is exactly its lines' height and stacked boxes can sit close without overlapping.
+    vert_margin_pt: Optional[float] = None
+    # Optional, default None = unchanged. subscripts: (start, length) character ranges of ``text`` (1-based, a "\r"
+    # paragraph break counts as one character) set as subscript, e.g. the "under" of I_under. line_spacing_pt: exact
+    # line pitch in points, so lines of side-by-side boxes stay level (subscripts can otherwise change a line's height).
+    subscripts: Optional[Sequence[Tuple[int, int]]] = None
+    line_spacing_pt: Optional[float] = None
 
 
 @dataclass(frozen=True)
@@ -136,8 +161,13 @@ def build_movie_deck_via_com(
     slide_width_pt: float,
     slide_height_pt: float,
     loop: bool = False,
+    restore_pictures: bool = False,
+    timer=None,
 ) -> int:
     """Build a PowerPoint deck of textboxes and embedded movies via COM.
+
+    To change a few slides of a deck built before, see :func:`ppt_image_inserter.incremental.update_deck`: it builds
+    only the changed slides with this function and splices them into the existing deck.
 
     Each slide gets its textboxes added via ``Shapes.AddTextbox`` and each
     movie inserted via ``Shapes.AddMediaObject2`` with a poster frame from
@@ -153,6 +183,10 @@ def build_movie_deck_via_com(
         slide_height_pt: Slide height in points (e.g. 7.5 in * 72 = 540).
         loop: If True, also mark every embedded movie to loop until stopped via
             :func:`force_loop_in_pptx`. Defaults to False (unchanged behavior).
+        restore_pictures: If True, put each still picture's source file bytes back into the deck after the save
+            (in the same single rewrite as the autoplay patch; PowerPoint downsamples some pictures). Defaults to False (unchanged).
+        timer: Optional :class:`ppt_image_inserter.stage_timer.StageTimer`; times the PowerPoint build and save and
+            each on-disk rewrite as stages.
 
     Returns:
         The number of slides whose autoplay trigger was rewritten on disk.
@@ -174,6 +208,8 @@ def build_movie_deck_via_com(
         json.dump(manifest, tmp)
         manifest_path = tmp.name
 
+    from contextlib import nullcontext
+    stage = timer.stage if timer else (lambda name: nullcontext())
     try:
         normalized_manifest_path = manifest_path.replace("'", "''")
         normalized_output_path = os.path.abspath(output_path).replace("'", "''")
@@ -183,12 +219,14 @@ def build_movie_deck_via_com(
         )
 
         try:
-            subprocess.run(
-                ["powershell", "-NoProfile", "-Command", powershell_script],
-                capture_output=True,
-                text=True,
-                check=True,
-            )
+            with stage(f"PowerPoint build and save ({sum(len(s.movies) for s in slides)} movies, "
+                       f"{len(slides)} slides)"):
+                subprocess.run(
+                    ["powershell", "-NoProfile", "-Command", powershell_script],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
         except subprocess.CalledProcessError as exc:
             raise RuntimeError(
                 "PowerPoint COM build failed.\n"
@@ -201,10 +239,68 @@ def build_movie_deck_via_com(
         except OSError:
             pass
 
-    rewritten = force_autoplay_in_pptx(output_path)
-    if loop:
-        force_loop_in_pptx(output_path)
+    restore = restore_pictures and any(s.pictures for s in slides)
+    with stage("autoplay" + (", loop" if loop else "") + (", source pictures" if restore else "")
+               + " (one rewrite of the file)"):
+        replace = _source_picture_members(output_path, slides) if restore else {}
+        rewritten = _rewrite_pptx_once(output_path, loop, replace)
+    if restore:
+        with stage("check source pictures"):
+            _check_source_pictures(output_path, slides)
     return rewritten
+
+
+_STORED_MEDIA_EXTS = (".mp4", ".m4v", ".mov", ".wmv", ".avi", ".mp3", ".m4a", ".jpeg", ".jpg", ".png", ".gif")
+
+
+def _rewrite_pptx_once(pptx_path: str, loop: bool, replace: dict) -> int:
+    """force_autoplay_in_pptx, force_loop_in_pptx (if loop) and replacing zip members by given bytes, in ONE rewrite
+    of the file; already-compressed media are stored, not deflated again (2026-11-23, 481 MB deck: three separate
+    rewrites took 71 s). Returns the number of slides whose autoplay trigger was rewritten."""
+    tmp_path = pptx_path + ".rewrite.tmp"
+    rewritten = 0
+    with zipfile.ZipFile(pptx_path, "r") as zin, zipfile.ZipFile(tmp_path, "w", zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            data = replace.get(item.filename)
+            if data is None:
+                data = zin.read(item.filename)
+            if _is_slide_xml(item.filename):
+                data, changed = _patch_slide_xml(data)
+                rewritten += bool(changed)
+                if loop:
+                    data, _ = _patch_slide_loop_xml(data)
+            stored = item.filename.lower().endswith(_STORED_MEDIA_EXTS)
+            zout.writestr(item.filename, data, compress_type=zipfile.ZIP_STORED if stored else zipfile.ZIP_DEFLATED)
+    os.replace(tmp_path, pptx_path)
+    return rewritten
+
+
+def _source_picture_members(pptx_path: str, slides: Sequence["SlideSpec"]) -> dict:
+    """{zip member name of each still picture's image part: its source file's bytes} (slide k = slides[k], pictures
+    matched in shape order), for _rewrite_pptx_once: PowerPoint downsamples some pictures on save."""
+    from pptx import Presentation
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
+    prs = Presentation(pptx_path)
+    out = {}
+    for k, spec in enumerate(slides):
+        pics = [s for s in prs.slides[k].shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
+        for shape, pic in zip(pics, spec.pictures):
+            with open(pic.image_path, "rb") as f:
+                out[prs.slides[k].part.related_part(shape._element.blip_rId).partname.membername] = f.read()
+    return out
+
+
+def _check_source_pictures(pptx_path: str, slides: Sequence["SlideSpec"]) -> None:
+    """Raise RuntimeError unless every still picture is byte-identical to its source file."""
+    from pptx import Presentation
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
+    prs = Presentation(pptx_path)
+    for k, spec in enumerate(slides):
+        pics = [s for s in prs.slides[k].shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
+        for shape, pic in zip(pics, spec.pictures):
+            with open(pic.image_path, "rb") as f:
+                if shape.image.blob != f.read():
+                    raise RuntimeError(f"slide {k + 1} picture is not byte-identical to {pic.image_path}")
 
 
 def _slide_to_manifest(slide: SlideSpec) -> dict:
@@ -224,6 +320,16 @@ def _slide_to_manifest(slide: SlideSpec) -> dict:
                 "color_rgb": tb.color_rgb,
                 "anchor": _ANCHOR_MAP[tb.anchor.lower()] if tb.anchor else None,
                 "space_after_pt": tb.space_after_pt,
+                "hanging_indent_pt": tb.hanging_indent_pt,
+                "sub_indent_pt": tb.sub_indent_pt,
+                "sub_font_size_pt": tb.sub_font_size_pt,
+                "sub_space_after_pt": tb.sub_space_after_pt,
+                "para_levels": list(tb.para_levels) if tb.para_levels is not None else None,
+                "main_bold": tb.main_bold,
+                "side_margin_pt": tb.side_margin_pt,
+                "vert_margin_pt": tb.vert_margin_pt,
+                "subscripts": [list(s) for s in tb.subscripts] if tb.subscripts else None,
+                "line_spacing_pt": tb.line_spacing_pt,
             }
             for tb in slide.textboxes
         ],
@@ -273,6 +379,14 @@ try {{
                 [single]$tb.width_pt,
                 [single]$tb.height_pt
             )
+            if ($null -ne $tb.side_margin_pt) {{
+                $textShape.TextFrame.MarginLeft = [single]$tb.side_margin_pt
+                $textShape.TextFrame.MarginRight = [single]$tb.side_margin_pt
+            }}
+            if ($null -ne $tb.vert_margin_pt) {{
+                $textShape.TextFrame.MarginTop = [single]$tb.vert_margin_pt
+                $textShape.TextFrame.MarginBottom = [single]$tb.vert_margin_pt
+            }}
             $textRange = $textShape.TextFrame.TextRange
             $textRange.Text = $tb.text
             $textRange.ParagraphFormat.Alignment = [int]$tb.align
@@ -281,9 +395,44 @@ try {{
             if ($tb.italic) {{ $textRange.Font.Italic = -1 }} else {{ $textRange.Font.Italic = 0 }}
             $textRange.Font.Name = $tb.font_name
             if ($null -ne $tb.color_rgb) {{ $textRange.Font.Color.RGB = [int]$tb.color_rgb }}
+            if ($null -ne $tb.line_spacing_pt) {{
+                $textRange.ParagraphFormat.LineRuleWithin = 0
+                $textRange.ParagraphFormat.SpaceWithin = [single]$tb.line_spacing_pt
+            }}
+            if ($null -ne $tb.subscripts) {{
+                foreach ($sub in $tb.subscripts) {{
+                    $textRange.Characters([int]$sub[0], [int]$sub[1]).Font.Subscript = -1
+                }}
+            }}
             if ($null -ne $tb.space_after_pt) {{
                 $textRange.ParagraphFormat.LineRuleAfter = 0
                 $textRange.ParagraphFormat.SpaceAfter = [single]$tb.space_after_pt
+            }}
+            if ($null -ne $tb.hanging_indent_pt) {{
+                $tr2 = $textShape.TextFrame2.TextRange
+                $nPara = $tr2.Paragraphs().Count
+                $levels = $tb.para_levels
+                if (($null -ne $levels) -and ($levels.Count -ne $nPara)) {{
+                    throw "para_levels has $($levels.Count) entries, text has $nPara paragraphs"
+                }}
+                for ($ip = 1; $ip -le $nPara; $ip++) {{
+                    $para = $tr2.Paragraphs($ip, 1)
+                    $lvl = 0; if ($null -ne $levels) {{ $lvl = [int]$levels[$ip - 1] }}
+                    if (($lvl -eq 1) -and ($null -ne $tb.sub_indent_pt)) {{
+                        $para.ParagraphFormat.LeftIndent = [single]$tb.hanging_indent_pt + [single]$tb.sub_indent_pt
+                        $para.ParagraphFormat.FirstLineIndent = -[single]$tb.sub_indent_pt
+                        if ($null -ne $tb.sub_font_size_pt) {{ $para.Font.Size = [single]$tb.sub_font_size_pt }}
+                        if ($null -ne $tb.main_bold) {{ $para.Font.Bold = 0 }}
+                    }} elseif ($para.Text.StartsWith([string][char]0x2022)) {{
+                        $para.ParagraphFormat.LeftIndent = [single]$tb.hanging_indent_pt
+                        $para.ParagraphFormat.FirstLineIndent = -[single]$tb.hanging_indent_pt
+                        if ($null -ne $tb.main_bold) {{ if ($tb.main_bold) {{ $para.Font.Bold = -1 }} else {{ $para.Font.Bold = 0 }} }}
+                    }}
+                    if (($null -ne $tb.sub_space_after_pt) -and ($null -ne $levels) -and ($ip -lt $nPara) -and
+                        ([int]$levels[$ip] -eq 1)) {{
+                        $para.ParagraphFormat.SpaceAfter = [single]$tb.sub_space_after_pt
+                    }}
+                }}
             }}
             if ($null -ne $tb.anchor) {{
                 $textShape.TextFrame.AutoSize = 0
@@ -310,10 +459,12 @@ try {{
         }}
         foreach ($pic in $slideSpec.pictures) {{
             # LinkToFile = msoFalse (0), SaveWithDocument = msoTrue (-1): the image is embedded in the deck
-            $slide.Shapes.AddPicture(
+            $picShape = $slide.Shapes.AddPicture(
                 $pic.image_path, 0, -1,
                 [single]$pic.left_pt, [single]$pic.top_pt, [single]$pic.width_pt, [single]$pic.height_pt
-            ) | Out-Null
+            )
+            # msoSendToBack (1): text boxes placed over a picture (e.g. legend labels) stay visible
+            $picShape.ZOrder(1) | Out-Null
         }}
     }}
     $presentation.SaveAs($outputPath, 24)

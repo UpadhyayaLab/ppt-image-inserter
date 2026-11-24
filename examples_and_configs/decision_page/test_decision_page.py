@@ -61,12 +61,12 @@ STUB = r"""
       out.textContent = 'LOG\n' + blocks.map(x => x.textContent.replace(/\s+/g, ' ').trim()).join('\n') + '\nEND'; return; }
     if (ACT === 'resolution') { out.textContent = 'LOG\n' + errs() + '\nresolved: ' + document.body.dataset.resolved + '\nEND'; return; }
     if (ACT && ACT.view) { window.jumpTo(ACT.view); return; }
-    if (ACT && ACT.cycle && !phase) {
+    if (ACT && ACT.cycle !== undefined && !phase) {   // cycle '' = no open decision: the slide edit only
       const c = ACT.cycle;
       log.push('opens on: ' + (q('#view-all').hidden ? 'decisions' : 'all slides'));
-      { const a = item(c).querySelectorAll('.ans'); a[a.length - 1].click(); } await wait(150); log.push('after pick: ' + st(c));
+      if (c) { const a = item(c).querySelectorAll('.ans'); a[a.length - 1].click(); await wait(150); log.push('after pick: ' + st(c));
       q('#note-' + CSS.escape(c)).value = 'Test change text'; item(c).querySelector('.savechg').click(); await wait(150);
-      log.push('after change: ' + st(c));
+      log.push('after change: ' + st(c)); }
       const t = deck2().querySelector('textarea'); t.value += '\nTEST SLIDE EDIT'; t.dispatchEvent(new Event('input', { bubbles: true }));
       deck2().querySelector('.slsave').click(); await wait(150);
       log.push('before reload ' + errs());
@@ -74,13 +74,13 @@ STUB = r"""
       sessionStorage.setItem(KEY + '_log', JSON.stringify(log)); sessionStorage.setItem(KEY + '_phase', '1');
       await wait(200); location.reload(); return;
     }
-    if (ACT && ACT.cycle) {
+    if (ACT && ACT.cycle !== undefined) {
       const c = ACT.cycle;
-      log.push('after reload: ' + st(c));
-      log.push('stored decision: ' + JSON.stringify(load(ACT.coll)[c]));
+      if (c) { log.push('after reload: ' + st(c));
+      log.push('stored decision: ' + JSON.stringify(load(ACT.coll)[c])); }
       log.push('slide after reload: ' + (deck2().classList.contains('changed') ? 'changed' : 'not changed') + ' | box has edit ' +
         deck2().querySelector('textarea').value.includes('TEST SLIDE EDIT'));
-      item(c).querySelector('.resbtn').click(); await wait(100); log.push('after reopen: ' + st(c));
+      if (c) { item(c).querySelector('.resbtn').click(); await wait(100); log.push('after reopen: ' + st(c)); }
       deck2().querySelector('.slclear').click(); await wait(150);
       log.push('slide after remove: ' + (deck2().classList.contains('changed') ? 'changed' : 'not changed') + ' | stored ' +
         JSON.stringify((load(ACT.slcoll)[deck2().dataset.slide] || {}).status));
@@ -170,7 +170,7 @@ def run(spec_path, test_dir):
     if not ok:
         raise SystemExit(f"db guard FAILED: {g1} {g2}")
     t = time.perf_counter()
-    first = next(it["code"] for it in items if not it["resolved"] and it["code"] not in saved and len(it["options"]) >= 1)
+    first = next((it["code"] for it in items if not it["resolved"] and it["code"] not in saved and len(it["options"]) >= 1), "")
     log = logged(page("test_cycle", {"cycle": first, "coll": spec.get("collection", "decisions"),
                                      "slcoll": spec.get("slide_collection", "slides")}))
     print(f"save test (decision {first}, slide 2):\n  " + log.replace("\n", "\n  "))
@@ -180,6 +180,8 @@ def run(spec_path, test_dir):
               r'stored decision: .*"status":"change".*"note":"Test change text"',
               r"slide after reload: changed \| box has edit true", r"after reopen: amber \| card shown \| in resolved",
               r'slide after remove: not changed \| stored "cleared"']
+    if not first:   # no open decision (2026-11-23, TGT page with slide editing only): the slide checks alone
+        expect = [x for x in expect if "slide" in x or "errors" in x or "opens on" in x]
     bad = [x for x in expect if not re.search(x, log)]
     if bad:
         raise SystemExit(f"save test FAILED: no match for {bad}")

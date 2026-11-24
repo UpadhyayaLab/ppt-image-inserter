@@ -1,0 +1,247 @@
+# TGT CAT/FMC movie deck, all three days in one deck (FF 2026-11-22: "one deck total").
+# Built by examples_and_configs/tgt/build_cat_fmc_slides.py --config <this file>.
+# Text: every line is checked against approved_text (lines not in it are reported, never block the build).
+# Layout of title page and details slides copies the BIAD2255 cytokine deck (FF: "ppt agent should base these on
+# our recent cytokine ppt"): big bold title over a grey subtitle; details = title, one-line bullets, grey caption.
+# Facts were relayed by the session "TGT Sept EMCCD copy and first look" (verified there for 20260925_d5).
+
+# FF 2026-11-22: "do not name things like v3" (no version suffixes); on rebuilds: "overwrite" (back up the old deck to
+# backups/ first; the builder itself stops when the output exists, so the swap is done by hand after the build).
+# File renamed 2026-11-23 (FF: "how was tgt_cat_fmc_all_days not renamed????"); name approved by FF 2026-11-23, relayed: "those names arefine".
+output: "K:/FF/PPT/PPT_autogeneration/TGT/tgt_cat_fmc_sept_2026.pptx"
+approved_text: "cat_fmc_approved_text.yaml"
+
+# FF 2026-11-23, relayed: "example slide looks good. standing go for remaing full ppt"; the director: build only with
+# the 3x MAD outputs ("Do not build with the provisional values or the old low/high figures").
+
+# Each movie slide carries each FOV's four values beside its movie (fov_numbers.py; layout FF approved 2026-11-23 as
+# review/fov_numbers_example_v7). columns: the csv columns of FF's four labels, in label order. csv v3: the 3x MAD
+# threshold (relayed 2026-11-23 from "TGT per-cell measurement (implementer)", figure review PASS).
+fov_numbers:
+  csv: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/measurements/fov_slide_numbers/v3/fov_slide_numbers.csv"
+  columns: [away_rise, ratio_last, low_last_pooled, high_last_pooled]
+
+title_page:
+  title: "CAT and FMC CAR T Cells on 12 pN TGT Surfaces, September 2026"   # FF 2026-11-23, relayed: "Use that"
+  # FF saw "IRM and TGT Movies, 20260925 d5 (Data from Kiet)"; dates widened for the three-day deck (not yet seen)
+  # FF 2026-11-23, relayed: "remove (Data from Kiet)"
+  subtitle: "IRM and TGT Movies, 20260923 to 20260925"
+
+details:
+  # "Summary" slide removed: FF 2026-11-23, relayed: "ok thanks for now just remove theslide."
+  # Slides 2-4 started from FF's own edits saved on the decision page 2026-11-22 (db docs slide_02..04) and slide 3's
+  # brightness lines from FF's chat wording 2026-11-22; slides 2 and 3 were regrouped 2026-11-23 (comments below).
+  - title: "Experiment and Imaging"
+    # Slides 2 and 3 regrouped into bullets with sub-bullets: FF 2026-11-23, relayed: "we need cleaner formatting in
+    # slides 2-3: subbullets. less flat". Same facts, regrouped; headings and regrouped wording by the director, not
+    # approved. Sources of the facts: camera through IRM, FF 2026-11-23 relayed "we should include camera settings as
+    # there" (Kiet's slide 2), checked by "TGT Sept EMCCD copy and first look" against acquisition_settings_per_fov.csv,
+    # objective name "TIRF oil immersion" not checked; W4 at 100%: FF "Yes, state it"; removed FOVs: FF "ok everything
+    # in flagged ppt should be removed from analysis".
+    bullets:
+      - "Surface: 12 pN TGT"
+      - text: "Camera: Andor DU-897 EMCCD"
+        sub: ["EM gain 300", "0.16 μm pixels, 512 × 512"]
+      - "Objective: 100x TIRF oil immersion"
+      - text: "Channels"
+        sub:
+          - "TGT (RFP): 50%, 500 ms, every 1 min (20260923 FMC W4: 100%)"
+          - "IRM: 15%, 100 ms, every 4 min"
+      - text: "FOVs"   # FF 2026-11-23, relayed: always "FOVs", never the words spelled out
+        sub:
+          - "86 on 20260923, 70 on 20260924 d4, 43 on 20260925 d5"
+          - "9 removed from analysis: 20260923 FMC W6 FOV7 to FOV12, FMC W1 FOV1, FMC W4 FOV1 and FOV4"   # FF 2026-11-23, relayed: "fix 1." (FOV numbers, as the marks); wording unapproved
+  - title: "How movies will be displayed in this PPT"
+    # "at 3 spatial scales" kept from the earlier slide 3 line (the director's rule: keep a current fact under the
+    # heading it fits). The director's list also had "Compare brightness within a movie, not between movies"; left
+    # out, because FF told this session directly on 2026-11-23: "remove • Compare brightness within a movie, not
+    # between movies".
+    bullets:
+      - text: "Layout"
+        sub:
+          - "Left: IRM with cell outlines"
+          - "Right: TGT"
+          - "Outlines: Cellpose-SAM segmentation of IRM at 3 spatial scales, objects under 500 px removed"
+      - text: "Frames"
+        sub:
+          - "Only frames with IRM: every 4th frame, up to 8 per movie, ~4 min apart"
+          - "Played at 2 frames/s"
+      - text: "Brightness, fixed for each movie"
+        sub:
+          - "TGT black: dimmest 1% of the first frame"
+          - "TGT white: brightest 0.1% of all frames in the movie"
+          - "IRM: dimmest 0.1% black, brightest 0.1% white, all frames in the movie"
+      - "Removed FOVs: marked in red under the movie"
+      # FF 2026-11-23: "remove • Compare brightness within a movie, not between movies"
+    # Movie-pairs deck only (--pairs): this slide is split in two, slide 3 without the Brightness block, then a
+    # brightness slide describing both rows. FF 2026-11-23, relayed: "yes, slide 3 should describe both rows", then
+    # (the text did not fit one slide) "Split into two". Bullet wording by the director, checked against
+    # render_cat_fmc_movies.py; title "How movie brightness is set" is the director's candidate, not FF's wording.
+    pairs_split:
+      - title: "How movies will be displayed in this PPT"
+        bullets:
+          - text: "Layout"
+            sub:
+              - "Left: IRM with cell outlines"
+              - "Right: TGT"
+              - "Outlines: Cellpose-SAM segmentation of IRM at 3 spatial scales, objects under 500 px removed"
+          - text: "Frames"
+            sub:
+              - "Only frames with IRM: every 4th frame, up to 8 per movie, ~4 min apart"
+              - "Played at 2 frames/s"
+          - "Removed FOVs: marked in red under the movie"
+      - title: "How movie brightness is set"
+        bullets:
+          - text: "Top row: TGT per-movie scaling"
+            sub:
+              - "TGT black: dimmest 1% of the first frame"
+              - "TGT white: brightest 0.1% of all frames in the movie"
+          - text: "Bottom row: same two FOVs, TGT per-frame scaling"
+            sub:
+              - "TGT black: dimmest 1% of each frame"
+              - "TGT white: brightest 0.1% of each frame"
+          - "IRM, both rows: dimmest 0.1% black, brightest 0.1% white, all frames in the movie"
+  - title: "Segmenting the cells"
+    bullets:
+      - "Input: IRM frames only (every 4th frame of TGT)"
+      - "Model: Cellpose-SAM, pretrained, default settings"
+      - "Three passes: full, half and quarter image size"
+      - "The half- and quarter-size passes add only cells not already found (less than half overlap)"
+      - "Objects under 500 pixels in area (12.8 μm²) removed"   # FF 2026-11-22, chat via TGT Sept EMCCD copy and first look
+    # FF 2026-11-23: instead of the full reference bullet, "put in the bottom left corner Pachitariu et al., bioRxiv,
+    # 2025. in italics"
+    reference: "Pachitariu et al., bioRxiv, 2025."
+
+# Metric slides at the end of the deck, after the movies (FF 2026-11-23: "quant results should be moved to end").
+# Added under FF 2026-11-22 standing go: "the various agents need to add this stuff to the ppt period"; relayed by
+# "TGT Sept EMCCD copy and first look". Figures from "TGT per-cell measurement (implementer)",
+# figure review passed there (2026-11-23: no legend in the figures; FF: "I do not want 2 pixel smoothing anywhere",
+# so the low/high figures are the 1-pixel smoothing ones). The v6 figures (2026-11-23, relayed) leave out all 9 removed fields
+# (scripts\measure\excluded_fields.json in TGT_analysis).
+# Order and titles: FF 2026-11-23, relayed. No "Glass" in any title or note (FF: "our reference to Glass everywhere is
+# just horrible. everything is one glass").
+# Legend: FF 2026-11-23, relayed: "legend should be in colored text in ppt not part of figure (it can go where there
+# is space in figs not below figures - I can move it)". "CAT" and "FMC" text boxes, side by side, left edge and top at
+# these fractions of the picture: the empty top of the 20260925_d5 panel in every figure.
+# note: one line under the picture, the cytokine deck's 18 pt grey caption box; the picture shrinks to end above it.
+# An entry with bullets instead of png is a text slide (details layout); bullets: null = body not approved, the build
+# stops.
+# Per-well slides, each directly after the per-day slide of the same measure: FF 2026-11-23, relayed: "you can have
+# agent compile per-well results and add to ppt" (the go for this rebuild). The build stops until the paths are in.
+figure_labels_at: [0.70, 0.10]
+figures:
+  - title: "Defining Pixels Under Cells And Away From Cells"   # FF: "should be Defining "Pixels Under Cells And Away From Cells""
+    # body: FF 2026-11-23, relayed: "ok for now. rebuild main"
+    bullets:
+      - "Cell: segmented object of 500 pixels or more, outlined on each IRM frame"
+      - "Under a cell: pixels inside that cell's outline in that IRM frame"
+      - "Under cells, whole FOV: pixels inside a cell in every IRM frame of the movie"   # "field" -> "FOV", FF: "say FOVs never ay Fields of View" (relayed 2026-11-23)
+      - "Away from cells: pixels at least 0.5 μm from every object, of any size, in every IRM frame of the movie"
+      - "In neither group: pixels covered in only some frames; the 0.5 μm band around objects; objects under 500 pixels; the last 3 pixel columns"
+      - "Cells used: tracked through every IRM frame of the movie"
+      - "Camera offset of 100 counts subtracted from all TGT values"
+  # Rise of TGT away from cells, first among the metric slides: FF 2026-11-23, relayed: "I agree with 1-3. add".
+  # Figures from "TGT per-cell measurement (implementer)", paths to be relayed (png: null, the build stops). Titles
+  # and notes: the director's wording, not approved.
+  - title: "TGT Signal Away From Cells Relative To First Frame"
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/away_rise/per_day_v1/per_day_away_rise.png"   # relayed by the director 2026-11-23, released after figure review
+    note: "Mean TGT over pixels away from cells, each frame / first frame; one line per FOV"
+  - title: "TGT Signal Away From Cells Relative To First Frame, Per Well"
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/per_well/v4_away_rise/away_rise/per_well_away_rise.png"   # relayed by the director 2026-11-23, released after figure review
+    labels_at: [0.785, 0.10]   # as the other per-well figures; re-check on the new figure
+    note:
+      - "One dot per FOV at its last frame; line: median of the well"
+      - "20260924 d4 CAT W2: 20 frames, last frame at 19 min"   # FF 2026-11-23 (via the director): "(A) keep it and add a slide note saying so"; wording the director's, unapproved
+  - title: "TGT Under Cells / Away From Cells (Mean Of Pixels)"   # not approved yet
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/pooled_mean_ratio/per_day_v6/per_day_pooled_mean_ratio.png"
+    note: "Pixels under a cell in every IRM frame, pooled; one line per FOV"   # director's draft, not approved
+  - title: "TGT Under Cells / Away From Cells (Mean Of Pixels), Per Well"   # director's wording, not approved
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/per_well/v2/pooled_mean_ratio/per_well_pooled_mean_ratio.png"   # figure review PASS ("TGT per-cell measurement (implementer)"), relayed 2026-11-23
+    labels_at: [0.785, 0.10]   # the empty top of the 20260925_d5 panel (checked on all five figures)
+    note:   # director's wording, not approved
+      - "One dot per FOV at its last frame; line: median of the well"
+      - "20260924 d4 CAT W2: 20 frames, last frame at 19 min"   # FF 2026-11-23 (via the director): "(A) keep it and add a slide note saying so"; wording the director's, unapproved
+  - title: "TGT Under Cells / Away From Cells (Mean Of Cells)"   # not approved yet
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/cell_over_glass/per_day_v6_mean/per_day_cell_over_glass_mean.png"
+    note: "Ratio per cell, then mean of the FOV's cells; one line per FOV"   # director's wording (FF: "say FOVs never ay Fields of View"), not approved
+  - title: "TGT Under Cells / Away From Cells (Mean Of Cells), Per Well"   # director's wording, not approved
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/per_well/v2/per_cell_mean_ratio/per_well_per_cell_mean_ratio.png"   # figure review PASS ("TGT per-cell measurement (implementer)"), relayed 2026-11-23
+    labels_at: [0.785, 0.10]   # the empty top of the 20260925_d5 panel (checked on all five figures)
+    note:   # director's wording, not approved
+      - "One dot per FOV at its last frame; line: median of the well"
+      - "20260924 d4 CAT W2: 20 frames, last frame at 19 min"   # FF 2026-11-23 (via the director): "(A) keep it and add a slide note saying so"; wording the director's, unapproved
+  - title: "Fraction Of Cell Area With Low TGT Signal"   # FF: "sounds good"
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/dark_share/per_day_v7_mad3/per_day_low_area_mad3.png"   # 3x MAD, figure review PASS ("TGT per-cell measurement (implementer)"), relayed 2026-11-23
+    note:
+      - "Low: TGT < median − 3× MAD of TGT away from cells (MAD: median absolute deviation); Gaussian smoothing 1 pixel"
+      - "Per cell, whole outline. The numbers beside the movies use only pixels under a cell in every IRM frame."   # fix 5, FF: "ok on 5 and 6"; this line the director's wording, unapproved
+  - title: "Fraction Of Cell Area With Low TGT Signal, Per Well"   # director's wording, not approved
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/per_well/v3_mad3/low_area_mad3/per_well_low_area_mad3.png"   # 3x MAD, figure review PASS ("TGT per-cell measurement (implementer)"), relayed 2026-11-23
+    labels_at: [0.785, 0.10]   # the empty top of the 20260925_d5 panel (checked on all five figures)
+    note:   # first line: director's wording, not approved
+      - "One dot per FOV at its last frame; line: median of the well"
+      - "Per cell, whole outline. The numbers beside the movies use only pixels under a cell in every IRM frame."   # fix 5, FF: "ok on 5 and 6"; this line the director's wording, unapproved
+      - "20260924 d4 CAT W2: 20 frames, last frame at 19 min"   # FF 2026-11-23 (via the director): "(A) keep it and add a slide note saying so"; wording the director's, unapproved
+  - title: "Fraction Of Cell Area With High TGT Signal"   # FF: "sounds good"
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/bright_share/per_day_v7_mad3/per_day_high_area_mad3.png"   # 3x MAD, figure review PASS ("TGT per-cell measurement (implementer)"), relayed 2026-11-23
+    note:
+      - "High: TGT > median + 3× MAD of TGT away from cells (MAD: median absolute deviation); Gaussian smoothing 1 pixel"
+      - "Per cell, whole outline. The numbers beside the movies use only pixels under a cell in every IRM frame."   # fix 5, FF: "ok on 5 and 6"; this line the director's wording, unapproved
+  - title: "Fraction Of Cell Area With High TGT Signal, Per Well"   # director's wording, not approved
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/per_well/v3_mad3/high_area_mad3/per_well_high_area_mad3.png"   # 3x MAD, figure review PASS ("TGT per-cell measurement (implementer)"), relayed 2026-11-23
+    labels_at: [0.785, 0.10]   # the empty top of the 20260925_d5 panel (checked on all five figures)
+    note:   # first line: director's wording, not approved
+      - "One dot per FOV at its last frame; line: median of the well"
+      - "Per cell, whole outline. The numbers beside the movies use only pixels under a cell in every IRM frame."   # fix 5, FF: "ok on 5 and 6"; this line the director's wording, unapproved
+      - "20260924 d4 CAT W2: 20 frames, last frame at 19 min"   # FF 2026-11-23 (via the director): "(A) keep it and add a slide note saying so"; wording the director's, unapproved
+  - title: "Coefficient Of Variation Of TGT Signal Under Cells"   # the director's, to match the per-well title; not approved
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/cv_under_cells/per_day_v6/per_day_cv.png"
+    note: "SD / mean of TGT over pixels under cells in every IRM frame; one line per FOV"   # director's draft, not approved
+  - title: "Coefficient Of Variation Of TGT Signal Under Cells, Per Well"   # FF 2026-11-23, relayed: "should have Coefficient of at front"
+    png: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/figures/three_days/per_well/v2/cv_under_cells/per_well_cv_under_cells.png"   # figure review PASS ("TGT per-cell measurement (implementer)"), relayed 2026-11-23
+    labels_at: [0.785, 0.10]   # the empty top of the 20260925_d5 panel (checked on all five figures)
+    note:   # director's wording, not approved
+      - "One dot per FOV at its last frame; line: median of the well"
+      - "20260924 d4 CAT W2: 20 frames, last frame at 19 min"   # FF 2026-11-23 (via the director): "(A) keep it and add a slide note saying so"; wording the director's, unapproved
+  # "Caveats And Questions For Kiet" slide removed: FF 2026-11-23, relayed: "remove Caveats And Questions For Kiet slide this is not good"
+
+# Removed FOVs, marked on their movie slides (FF 2026-11-23, relayed: "on the deck slides we need to highlight removed
+# FOVs. this should be one of them"). The mark (a red line under the movie) and its wording are the director's
+# proposal, shown to FF as an example slide; not picked yet, applied on FF's "rebuild main" (2026-11-23), unapproved.
+# The build checks that exactly these movies carry it. {fov}: the FOV named as its movie caption writes it ("FMC W1 FOV1");
+# FF 2026-11-23, relayed: "it is not clear which fov is removed". Naming wording: the director's, unapproved; the
+# build checks each mark starts with the name of the movie directly above it.
+removed_fovs:
+  - day: "20260923"
+    well: "FMC_W4"
+    positions: [1, 4]
+    # FF 2026-11-23, relayed: "1. should be fixed" (a reason for these two marks). Wording: the director's, unapproved.
+    # FF 2026-11-23, relayed: "this and other in slide are not just outlier: thera ppears to be artifact". Wording:
+    # the director's, unapproved.
+    mark: "{fov} removed from analysis: bright artifact in TGT image"
+  - day: "20260923"
+    well: "FMC_W6"
+    positions: [7, 8, 9, 10, 11, 12]
+    mark: "{fov} removed from analysis: TGT signal lost mid-movie"
+  - day: "20260923"
+    well: "FMC_W1"
+    positions: [1]
+    mark: "{fov} removed from analysis: fixed edge in TGT image"
+
+# One grey line on the movie slides of a day that show a FOV of that cell type, in the red-mark slot under the bottom
+# movie of the left column (build_cat_fmc_slides.movie_note_box). FF 2026-11-23, relayed: "'20260924 d4' the cat fov
+# here look very weird lots of punctate tgt. this needs to be noted"; place picked by FF: "On d4 movie slides".
+# Wording: the director's, shown to FF, who did not object; not approved verbatim.
+movie_notes:
+  - day: "20260924_d4"
+    ctype: "CAT"
+    text: "20260924 d4 CAT FOVs: lots of punctate TGT signal"
+
+# In deck order. movies_root/movie/<day>/<day>_<CAT|FMC>_W<n>_pNN.mp4
+days:
+  - day: "20260923"
+    movies_root: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/first_look/cat_fmc_0923_d4"
+  - day: "20260924_d4"
+    movies_root: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/first_look/cat_fmc_0923_d4"
+  - day: "20260925_d5"
+    movies_root: "Y:/User_data/Kiet/TGT experiment 2026/TGT_analysis/first_look/cat_fmc_20260925_d5"

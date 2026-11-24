@@ -47,7 +47,7 @@ def build_and_export(entries, name, approved, png_dir):
     """Build one deck from entries, export every slide; returns (png paths, per-slide text lines)."""
     deck = OUT / f"{name}.pptx"
     deck.unlink(missing_ok=True)   # this script's own preview deck from its last run
-    prs = B.build_entries(entries, deck, approved)
+    prs, _ = B.build_entries(entries, deck, approved)
     lines = {}
     for n, slide in enumerate(prs.slides, 1):
         ls = []

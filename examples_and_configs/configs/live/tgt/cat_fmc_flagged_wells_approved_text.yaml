@@ -21,3 +21,7 @@ exact:
   source: *slidexofy
 - text: '20260924 d4 (slide 7 of 7)'
   source: *slidexofy
+- text: 'CAT and FMC CAR T Cells on 12 pN TGT Surfaces, September 2026'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look: "the title of our main deck is super misleading as it only covers sept 2026"; to this exact wording: "Use that"'
+- text: 'Removed FOVs: 20260923 FMC W6 p07 to p12, FMC W1 p01, FMC W4 p01 and p04'
+  source: 'FF 2026-11-23, relayed verbatim by TGT Sept EMCCD copy and first look, asked to change the subtitle to this exact text: "yes change the subtitle"'

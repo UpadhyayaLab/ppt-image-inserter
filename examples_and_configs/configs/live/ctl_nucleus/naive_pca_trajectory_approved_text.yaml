@@ -1,0 +1,22 @@
+# Approved slide text for the naive PCA trajectory deck (naive_pca_trajectory_deck.yaml), checked by
+# ppt_image_inserter.approved_text. Add a line ONLY with its source: FF's approval (date and his words).
+# Titles: date and mark per experiment from chromatin-analysis scripts/datasets.py, wording by FF.
+exact:
+  - text: "Naive CTLs: PCA, 7 experiments"
+    source: "FF 2026-11-24, title slide: 'add one reading \"Naive CTLs: PCA, 7 experiments\"'"
+  - text: "2024-01-29, H3K27me3 experiment"
+    source: "FF 2026-11-24: '2024-01-29, H3K27me3 experiment and such'"
+  - text: "2024-02-19, H3K27me3 experiment"
+    source: "FF 2026-11-24: '2024-01-29, H3K27me3 experiment and such'"
+  - text: "2024-03-18, H3K27me3 experiment"
+    source: "FF 2026-11-24: '2024-01-29, H3K27me3 experiment and such'"
+  - text: "2024-04-22, H3K9me3 experiment"
+    source: "FF 2026-11-24: '2024-01-29, H3K27me3 experiment and such'"
+  - text: "2024-07-08, H3K27ac experiment"
+    source: "FF 2026-11-24: '2024-01-29, H3K27me3 experiment and such'"
+  - text: "2024-07-29, H3K27ac experiment"
+    source: "FF 2026-11-24: '2024-01-29, H3K27me3 experiment and such'"
+  - text: "2024-12-11, H3K9me3 experiment"
+    source: "FF 2026-11-24: '2024-01-29, H3K27me3 experiment and such'"
+title_prefixes: []
+title_labels: []
