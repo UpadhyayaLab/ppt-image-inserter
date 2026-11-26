@@ -1,2 +1,13 @@
 # Answers already applied (decision_page/apply_answers.py writes this list).
-[]
+- code: s
+  title: Sheet panel text
+  at: '2026-11-24T13:57:21.610Z'
+  text: Sheets re-rendered without that panel text
+  how: your pick (request)
+- slide: slide_02
+  at: '2026-11-24T18:52:37.923Z'
+  how: your slide edit
+- slide: slide_01
+  at: '2026-11-24T18:52:03.479Z'
+  how: your slide edit
+  note: line 'Nucleus kept: label nearest crop center in xy' removed by hand (apply_answers cannot remove lines)

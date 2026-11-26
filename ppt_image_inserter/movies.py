@@ -275,29 +275,44 @@ def _rewrite_pptx_once(pptx_path: str, loop: bool, replace: dict) -> int:
     return rewritten
 
 
+def _matched_pictures(slide, spec: "SlideSpec", k: int) -> list:
+    """[(picture shape, PictureSpec)] of one slide, each shape matched to the spec placed at its position (within
+    1 pt). Not shape order: PowerPoint lists the pictures of a slide in another order than they were inserted
+    (2026-11-24, a two-picture slide got its two source images swapped). Raises RuntimeError when a spec has no
+    picture at its position or two specs share one."""
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
+    shapes = [s for s in slide.shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
+    pairs, used = [], set()
+    for pic in spec.pictures:
+        want = [round(v * 12700) for v in (pic.left_pt, pic.top_pt, pic.width_pt, pic.height_pt)]
+        hits = [i for i, s in enumerate(shapes)
+                if all(abs(a - b) <= 12700 for a, b in zip((s.left, s.top, s.width, s.height), want))]
+        if len(hits) != 1 or hits[0] in used:
+            raise RuntimeError(f"slide {k + 1}: {len(hits)} picture(s) at the place of {pic.image_path}")
+        used.add(hits[0])
+        pairs.append((shapes[hits[0]], pic))
+    return pairs
+
+
 def _source_picture_members(pptx_path: str, slides: Sequence["SlideSpec"]) -> dict:
     """{zip member name of each still picture's image part: its source file's bytes} (slide k = slides[k], pictures
-    matched in shape order), for _rewrite_pptx_once: PowerPoint downsamples some pictures on save."""
+    matched by position, _matched_pictures), for _rewrite_pptx_once: PowerPoint downsamples some pictures on save."""
     from pptx import Presentation
-    from pptx.enum.shapes import MSO_SHAPE_TYPE
     prs = Presentation(pptx_path)
     out = {}
     for k, spec in enumerate(slides):
-        pics = [s for s in prs.slides[k].shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
-        for shape, pic in zip(pics, spec.pictures):
+        for shape, pic in _matched_pictures(prs.slides[k], spec, k):
             with open(pic.image_path, "rb") as f:
                 out[prs.slides[k].part.related_part(shape._element.blip_rId).partname.membername] = f.read()
     return out
 
 
 def _check_source_pictures(pptx_path: str, slides: Sequence["SlideSpec"]) -> None:
-    """Raise RuntimeError unless every still picture is byte-identical to its source file."""
+    """Raise RuntimeError unless every still picture is byte-identical to the source file of the spec at its place."""
     from pptx import Presentation
-    from pptx.enum.shapes import MSO_SHAPE_TYPE
     prs = Presentation(pptx_path)
     for k, spec in enumerate(slides):
-        pics = [s for s in prs.slides[k].shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
-        for shape, pic in zip(pics, spec.pictures):
+        for shape, pic in _matched_pictures(prs.slides[k], spec, k):
             with open(pic.image_path, "rb") as f:
                 if shape.image.blob != f.read():
                     raise RuntimeError(f"slide {k + 1} picture is not byte-identical to {pic.image_path}")

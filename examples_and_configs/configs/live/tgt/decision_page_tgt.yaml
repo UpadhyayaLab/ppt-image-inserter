@@ -14,6 +14,10 @@ deck:
   config: decision_page_tgt_stub.yaml   # text_map needs a config with images (this deck has none)
   text: cat_fmc_sept_2026_deck.yaml
   approved: cat_fmc_approved_text.yaml
+  # FF 2026-11-24 (via the director): "but movie-pairs is main one! other one is retired (keep it around though)";
+  # "yes switch edit page to movie-pairs deck". The page shows the live deck (checked to be this config's build).
+  live: "K:/FF/PPT/PPT_autogeneration/TGT/tgt_cat_fmc_sept_2026_movie_pairs.pptx"
+  pairs: true
 applied: decision_page_tgt_applied.yaml
 db_export: "K:/FF/PPT/PPT_autogeneration/TGT/decision_page/db_export"
 page_data: "K:/FF/PPT/PPT_autogeneration/TGT/decision_page/page/page_data.json"

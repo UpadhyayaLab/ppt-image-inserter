@@ -18,5 +18,7 @@ exact:
     source: "FF 2026-11-24: '2024-01-29, H3K27me3 experiment and such'"
   - text: "2024-12-11, H3K9me3 experiment"
     source: "FF 2026-11-24: '2024-01-29, H3K27me3 experiment and such'"
+  - text: "Large markers: condition medians"
+    source: "FF 2026-11-24 (relayed by Nucleus Cellpose segmentation setup): 'do big points on pca plots represent medians? that should be stated in each slide if so'; 'it should be in upper right hand of each slide. just a brief note'"
 title_prefixes: []
 title_labels: []

@@ -1,7 +1,7 @@
 # Slide text for the naive 0708 deck "TCell mask vs Cellpose 3 nucleus segmentation" (methods slides, then two
 # sheets per slide). Every line was proposed on 2026-11-24 from the method facts of the session "Compare TCell vs
-# Cellpose nucleus segmentation"; NONE is approved yet (approved_text.yaml stays empty until FF's OK on the decision
-# page). Previews: examples_and_configs/ctl_nucleus/cellpose_vs_tcell_decision_previews.py
+# Cellpose nucleus segmentation". FF edited and saved slides 1 and 2 on the decision page on 2026-11-24 (applied here;
+# his lines are in approved_text.yaml) and approved the row labels in chat. Previews: examples_and_configs/ctl_nucleus/cellpose_vs_tcell_decision_previews.py
 # Each line is a bullet; a line with `sub` gets those lines as sub-bullets (FF 2026-11-24: "we need bullets. apply
 # standard formatting, subbullets in sensible locations"). Slides are black (FF 2026-11-24: "use black bg").
 methods:
@@ -16,19 +16,31 @@ methods:
       - text: "Input: Hoechst channel, same cell crop as reference"
         sub:
           - "Sampling 0.065 x 0.065 x 0.3 μm, z resampled to 0.065 μm"
-      - "Nucleus kept: label nearest crop center in xy"
       - "Cleanup same as reference: largest piece, holes filled, quality checks"
   - title: "Dataset and display"
     lines:
       - text: "Naive CTLs, H3K27ac, acquired 2024-07-08"
         sub:
-          - "1,101 nuclei segmented per diameter"
-          - "Shown: 32 nuclei, 4 per condition"
-      - text: "Rows: reference, then Cellpose 60, 80, 100, 150 px"
+          - "1,101 nuclei segmented in total"
+          - "Shown: 160 nuclei, 20 random per condition"
+      - text: "Rows: watershed reference, then Cellpose 60, 80, 100, 150 px"
         sub:
           - "Left: XY, XZ, YZ maximum projections"
-          - "Right: XY, XZ, YZ center slices"
+          - "Right: XY, XZ, YZ slices through reference centroid"
 # Cell slides, two sheets per slide (FF 2026-11-24: "2 cells per slide I guess"): the slide title is the condition
-# label (0708 config condition_labels), and each sheet has its cell number above it.
-cell_title: "{condition}"
-cell_label: "Cell {cell}"
+# label (0708 config condition_labels) and the slide number within the condition; first no cell labels ("no need to label cells. you need to label
+# method though"), later cell labels (below); one method label beside each sheet row (FF 2026-11-24 approved the five labels). Sheets: the 160-cell no-text
+# render (20 random per condition, FF via "Compare TCell vs Cellpose nucleus segmentation", 2026-11-24). Scale-bar
+# label on each cell slide (FF 2026-11-24, relayed: "5 μm scalebar text can be on each slide").
+# Cell labels and slide numbers by order within each condition (FF 2026-11-24: "we do oneed cell titles. title Cell 1
+# Cell 2 by order of appearence within condition"; "'1.5 kPa 27hr (Slide 1)'? yes").
+cell_title: "{condition} (Slide {slide})"
+cell_label: "Cell {n}"
+row_labels: ["Watershed reference", "Cellpose 60 px", "Cellpose 80 px", "Cellpose 100 px", "Cellpose 150 px"]
+scale_label: "Scale bars 5 μm"
+# Every view named on every cell slide (FF 2026-11-24: "you need to say what each view is on every single slide";
+# "MIP"; "ok to Slice through reference centroid"): a group label over each triplet, a view label over each column.
+# The slices are planes through the 3D centroid of the watershed reference mask, the same planes in all rows
+# (chromatin-analysis scripts/cellpose3/seg_compare_montage.m:157-158, 187-189).
+view_groups: ["MIP", "Slice through reference centroid"]
+view_labels: ["XY", "XZ", "YZ"]

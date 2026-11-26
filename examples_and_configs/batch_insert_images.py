@@ -20,6 +20,8 @@ import os
 import yaml
 from pptx import Presentation
 from pptx.oxml.ns import qn
+from pptx.enum.text import PP_ALIGN
+from pptx.util import Inches, Pt
 from pathlib import Path
 
 
@@ -220,6 +222,31 @@ def set_title_slide_text(ppt_file, text):
         anchor = new_run
     prs.save(ppt_file)
     print(f"Title slide: {text}")
+
+
+def add_corner_note(ppt_file, text, size_pt=16, top_in=0.75, margin_in=0.15):
+    """One short bold Calibri line at the upper right of every slide but the title slide (config: corner_note,
+    corner_note_size, corner_note_top; FF 2026-11-24: "it should be in upper right hand of each slide. just a brief
+    note"). Right-aligned, margin_in from the right edge, its top top_in below the slide top: under the title's
+    letters and above the panels on the naive PCA trajectory deck. Check the exported slides that it touches nothing."""
+    prs = Presentation(ppt_file)
+    w_in = prs.slide_width.inches
+    width_in, height_in = w_in / 2, size_pt / 72 * 1.5
+    for slide in list(prs.slides)[1:]:
+        box = slide.shapes.add_textbox(Inches(w_in - margin_in - width_in), Inches(top_in),
+                                       Inches(width_in), Inches(height_in))
+        box.name = "Corner note"
+        tf = box.text_frame
+        tf.word_wrap = True
+        tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+        tf.text = text
+        para = tf.paragraphs[0]
+        para.alignment = PP_ALIGN.RIGHT
+        para.font.size = Pt(size_pt)
+        para.font.bold = True
+        para.font.name = "Calibri"
+    prs.save(ppt_file)
+    print(f"Corner note on {len(prs.slides) - 1} slide(s): {text}")
 
 
 def main(config_path):
@@ -603,6 +630,11 @@ def main(config_path):
         template_slides = sorted(template_slide_remap[idx] for idx in template_slide_indices)
         delete_slides(ppt_file, template_slides, backup_base=backup_dir, backup=False)
         print(f"Removed template slide(s): {template_slides}")
+
+    corner_note = config.get('corner_note')
+    if corner_note and error_count == 0:
+        add_corner_note(ppt_file, corner_note, size_pt=config.get('corner_note_size', 16),
+                        top_in=config.get('corner_note_top', 0.75))
 
     # Text never on the data, every deck (FF 2026-11-20: "it cannot overlap with any data. this needs a hard coded tst
     # (titles too)"; "if it overlaps something needs to moved"): measured as PowerPoint renders each slide; overlapping

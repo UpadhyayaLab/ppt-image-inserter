@@ -194,6 +194,83 @@ def figure_slide(title, png, title_pt=TITLE_PT, labels_at=None, note=""):
     return SlideSpec(boxes, [], [pic])
 
 
+PAIR_FIG_GAP = 24.0   # pt between the two pictures of an example slide
+PAIR_LABEL_H = 38.0   # pt for its labels: PowerPoint grows a 32 pt box to 36.4 pt for one 24 pt line (2026-11-24)
+
+
+def example_pair_slide(title, pics, note, title_pt=TITLE_PT):
+    """An example slide (peak-to-mean, director 2026-11-24): two figures side by side at the same physical scale (one
+    pt-per-pixel factor for both, so their widths keep the ratio of their pixel widths, aspect kept), as large as fits
+    between the title band and the note; a colored label over each (the movie headers' 24 pt bold, CAT / FMC color).
+    pics: [{png, label, ctype}, {...}]. note: lines in the figure slides' grey caption box, growing upward one caption
+    height per line; a line that would wrap stops the build."""
+    lines = [note] if isinstance(note, str) else [ln for ln in note if ln]
+    for ln in lines:
+        if wrapped_lines(ln, CAP_PT, DT_W) > 1:
+            sys.exit(f"STOP: note line wraps at {CAP_PT:g} pt: {ln!r}")
+    if len(pics) != 2:
+        sys.exit(f"STOP: example slide '{title}' needs 2 figures, has {len(pics)}")
+    sizes = []
+    for p in pics:
+        if not Path(p["png"]).is_file():
+            sys.exit(f"STOP: figure {p['png']} not found")
+        if p["ctype"] not in CELL_TYPES:
+            sys.exit(f"STOP: example slide '{title}': ctype {p['ctype']!r} is not one of {CELL_TYPES}")
+        with Image.open(p["png"]) as im:
+            sizes.append(im.size)
+    note_top = CAP_TOP - CAP_H * (len(lines) - 1) if lines else SLIDE_H - FIG_MARGIN
+    top = DT_TITLE_TOP + DT_TITLE_H
+    room_w, room_h = SLIDE_W - 2 * FIG_MARGIN - PAIR_FIG_GAP, note_top - top - PAIR_LABEL_H
+    scale = min(room_w / sum(w for w, _ in sizes), room_h / max(h for _, h in sizes))   # pt per pixel, both figures
+    widths = [w * scale for w, _ in sizes]
+    left = (SLIDE_W - sum(widths) - PAIR_FIG_GAP) / 2
+    boxes = [TextboxSpec(title, DT_LEFT, DT_TITLE_TOP, DT_W, DT_TITLE_H, title_pt, align="center", anchor="middle",
+                         font_name=FONT)]
+    pictures = []
+    for p, (w_px, h_px), w in zip(pics, sizes, widths):
+        pictures.append(PictureSpec(str(p["png"]), left, top + PAIR_LABEL_H, w, h_px * scale))
+        boxes.append(TextboxSpec(p["label"], left, top, w, PAIR_LABEL_H, HEAD_PT, align="center",
+                                 color_rgb=COLOR_BGR[p["ctype"]], font_name=FONT))
+        left += w + PAIR_FIG_GAP
+    if lines:
+        boxes.append(TextboxSpec("\r".join(lines), DT_LEFT, note_top, DT_W, CAP_H * len(lines), CAP_PT, bold=False,
+                                 align="right", color_rgb=GREY_BGR, font_name=FONT))
+    return SlideSpec(boxes, [], pictures)
+
+
+def check_example_pair_slide(prs, i, pics):
+    """The example slide at 0-based index i: two pictures, same pt per pixel (within 0.5%), side by side, not
+    overlapping each other, the labels or the note; each label above its picture, its text and color as configured.
+    One line per problem."""
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
+    shapes = list(prs.slides[i].shapes)
+    ps = sorted([s for s in shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE], key=lambda s: s.left)
+    if len(ps) != 2:
+        return [f"slide {i + 1}: {len(ps)} pictures, expected 2"]
+    problems = [f"slide {i + 1}: the picture under '{p['label']}' is not {Path(p['png']).name}"
+                for s, p in zip(ps, pics) if s.image.blob != Path(p["png"]).read_bytes()]
+    px = [s.image.size for s in ps]   # the embedded images' pixel sizes
+    sx =[s.width / w for s, (w, _) in zip(ps, px)] + [s.height / h for s, (_, h) in zip(ps, px)]
+    if max(sx) / min(sx) > 1.005:
+        problems.append(f"slide {i + 1}: pictures not at one scale (EMU per pixel {[round(x) for x in sx]})")
+    if ps[0].left + ps[0].width > ps[1].left:
+        problems.append(f"slide {i + 1}: the two pictures overlap")
+    for s, p in zip(ps, pics):
+        hits = [b for b in shapes if b.has_text_frame and b.text_frame.text == p["label"]]
+        if len(hits) != 1:
+            problems.append(f"slide {i + 1}: {len(hits)} '{p['label']}' boxes, expected 1")
+            continue
+        b, want = hits[0], COLOR_BGR[p["ctype"]]
+        rgb = b.text_frame.paragraphs[0].runs[0].font.color.rgb
+        if (rgb[2] << 16 | rgb[1] << 8 | rgb[0]) != want or b.top + b.height > s.top or b.left < s.left - 1 or \
+                b.left + b.width > s.left + s.width + 1:
+            problems.append(f"slide {i + 1}: label '{p['label']}' not above its picture in its color")
+    for b in shapes:
+        if b.has_text_frame and b.top > ps[0].top and any(b.top < s.top + s.height for s in ps):
+            problems.append(f"slide {i + 1}: note '{b.text_frame.text[:30]}' overlaps a picture")
+    return problems
+
+
 def divider_slide(text):
     """A day divider (FF's open choice B): the day, 54 pt bold, centered on a plain slide."""
     return SlideSpec([TextboxSpec(text, TP_LEFT, 0, TP_W, SLIDE_H, TP_TITLE_PT, align="center", anchor="middle",
@@ -284,6 +361,18 @@ def deck_bullet_pt(details):
         if all(bullets_height(d["bullets"], pt) <= BUL_H for d in details):
             return pt
     sys.exit("STOP: details bullets do not fit their box even at 24 pt")
+
+
+def own_fit_pt(entry, deck_pt, floor=14.0):
+    """The largest whole-pt size, from the deck's bullet size down to floor, at which the entry's bullets fit the box;
+    STOP below floor. Printed, so the build log says the size."""
+    pt = float(deck_pt)
+    while pt >= floor:
+        if bullets_height(entry["bullets"], pt) <= BUL_H:
+            print(f"text slide '{entry['title']}': bullets {pt:g} pt, sized on its own (deck {deck_pt:g} pt)")
+            return pt
+        pt -= 1.0
+    sys.exit(f"STOP: text slide '{entry['title']}' does not fit its box at {floor:g} pt")
 
 
 def details_slide(title, bullets, caption="", pt=BUL_PT, title_pt=TITLE_PT, reference=""):
@@ -690,12 +779,15 @@ def config_plan(cfg, version="movie", pairs=False):
             sys.exit(f"STOP: metric slide {f.get('png', '')} has no title yet (FF picks it)")
         if "png" in f and not f["png"]:
             sys.exit(f"STOP: metric slide '{f['title']}' has no figure path yet")
-        if "png" not in f and not f.get("bullets"):
+        if "png" not in f and "pair" not in f and not f.get("bullets"):
             sys.exit(f"STOP: text slide '{f['title']}' has no approved body yet")
     for d in cfg["details"]:
         if not d.get("bullets"):
             sys.exit(f"STOP: text slide '{d['title']}' has no approved body yet")
-    bullet_pt = deck_bullet_pt(list(cfg["details"]) + [f for f in figs if "png" not in f])
+    # own_bullet_pt: true on a text entry among the figures = sized on its own (own_fit_pt), so that one slide's longer
+    # text leaves every other text slide's size alone (the director 2026-11-25, slide 107: "reduce the body text of
+    # slide 107 uniformly to the largest size that fits ... if that would go below 14 pt, stop").
+    bullet_pt = deck_bullet_pt(list(cfg["details"]) + [f for f in figs if "bullets" in f and not f.get("own_bullet_pt")])
     print(f"details bullets {bullet_pt:g} pt (reference deck 26 pt)")
     details = cfg["details"]
     if pairs:   # movie-pairs deck: a details entry with pairs_split becomes those slides, at the deck's bullet size
@@ -715,13 +807,16 @@ def config_plan(cfg, version="movie", pairs=False):
         entries = [x for e in entries for x in ([e] if e[0] != "movie" else pair_entries(e))]
         entries = repair_one_type(entries)
     for f in figs:   # metric slides at the end (FF 2026-11-23: "quant results ... moved to end")
-        if "png" in f:
+        if "pair" in f:   # an example slide: two figures at one scale, a label over each
+            entries.append(("slide", example_pair_slide(f["title"], f["pair"], f.get("note", ""))))
+        elif "png" in f:
             # labels_at per figure (e.g. the per-well figures, laid out unlike the per-day ones), else the deck's
             entries.append(("slide", figure_slide(f["title"], f["png"],
                                                   labels_at=f.get("labels_at", cfg.get("figure_labels_at")),
                                                   note=f.get("note", ""))))
         else:   # a text slide among the metric slides (e.g. the definitions slide)
-            entries.append(("slide", details_slide(f["title"], f["bullets"], f.get("caption", ""), bullet_pt,
+            pt = own_fit_pt(f, bullet_pt, float(f.get("min_bullet_pt", 14))) if f.get("own_bullet_pt") else bullet_pt
+            entries.append(("slide", details_slide(f["title"], f["bullets"], f.get("caption", ""), pt,
                                                    layout.get("details_title_pt", TITLE_PT), f.get("reference", ""))))
     # Movie titles count that day's movie slides (FF 2026-11-23, relayed: "it should be (slide X of Y) where Y is the
     # number of slides for that particular day"), as the d5 deck read on 11-22: "20260925 d5 (slide 1 of 11)".
@@ -860,11 +955,10 @@ def check_source_images(out, slides):
     """Every figure picture in the deck byte-identical to its source PNG (PowerPoint downsamples some on save;
     build_movie_deck_via_com(restore_pictures=True) puts the source bytes back). Stops on a mismatch."""
     from pptx import Presentation
-    from pptx.enum.shapes import MSO_SHAPE_TYPE
+    from ppt_image_inserter.movies import _matched_pictures
     prs = Presentation(str(out))
     for k, spec in enumerate(slides):
-        pics = [s for s in prs.slides[k].shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
-        for shape, pic in zip(pics, spec.pictures):
+        for shape, pic in _matched_pictures(prs.slides[k], spec, k):   # by place, not shape order
             if shape.image.blob != Path(pic.image_path).read_bytes():
                 sys.exit(f"CHECK FAIL: slide {k + 1} picture is not byte-identical to {pic.image_path}")
 
@@ -1088,6 +1182,11 @@ def main():
         label_problems = check_figure_labels(prs, pic_slides)
         print(f"CHECK CAT/FMC labels and notes on {len(pic_slides)} figure slide(s): "
               + ("PASS" if not label_problems else "FAIL" + "".join(f"\n  {p}" for p in label_problems)))
+    for i, f in (zip(fig_slides, cfg.get("figures") or []) if args.config else []):
+        if "pair" in f:
+            pp = check_example_pair_slide(prs, i, f["pair"])
+            print(f"CHECK example slide {i + 1}: two figures at one scale, labels over them in their colors, note clear "
+                  "of them: " + ("PASS" if not pp else "FAIL" + "".join(f"\n  {p}" for p in pp)))
     checks.__exit__(None, None, None)
     print(f"deck size {out.stat().st_size / 2**20:.1f} MB")
     timer.report()

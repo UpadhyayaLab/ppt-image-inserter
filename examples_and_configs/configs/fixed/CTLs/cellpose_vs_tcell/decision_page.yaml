@@ -24,20 +24,20 @@ items:
   - code: "m"
     title: "Methods slides 1 and 2"
     source: "method facts from Compare TCell vs Cellpose nucleus segmentation, relayed 2026-11-24"
-    about: "Drawn only from the method facts of the session Compare TCell vs Cellpose nucleus segmentation. Edit any line in the change box or on All slides."
+    about: "Drawn only from the data owner's method facts. Edit any line in the change box or on All slides."
     applies: [1, 2]
     keep: false
     options:
       - choice: "use"
         button: "Use this text"
         label: "Slides 1 and 2 as shown"
-  - code: "s"
-    title: "Cell slides: two cells per slide"
-    source: "sheets from the comparison page; title pattern proposed 2026-11-24"
-    about:
-      - "Title: condition. Above each sheet: its cell number. All 16 cell slides follow this one."
-      - "Each sheet carries its own panel titles, with middle dots, cyto3, cellprob +3, Current mask and SPLIT."
+  # item c (cellprob explanation lines) dropped: FF 2026-11-24 "leave ut" (leave out)
+  - code: "s"   # answered by FF 2026-11-24 (rerender); done: 160-cell no-text sheets
+    title: "Sheet panel text"
+    source: "sheets from the comparison page, 2026-11-24"
+    about: "The first sheets carried their own panel titles, with middle dots, cyto3, cellprob +3, Current mask and SPLIT."
     applies: [3]
+    slides: ["slide_03"]   # request item: the cell slide, now with the re-rendered sheets
     keep: false
     options:
       - choice: "use"
@@ -47,11 +47,24 @@ items:
         button: "Re-render sheets"
         label: "Sheets re-rendered without that panel text"
         request: "Compare TCell vs Cellpose nucleus segmentation"
+        not_rendered: "Done 2026-11-24: all 160 sheets re-rendered without text."
+  - code: "s2"
+    title: "Cell slides: two cells per slide"
+    source: "160-cell no-text sheets from Compare TCell vs Cellpose nucleus segmentation, 2026-11-24; title pattern proposed 2026-11-24"
+    about:
+      - "Title: condition. Above each sheet: its cell number. Top right: scale bar length. All 80 cell slides follow this one."
+      - "Sheets carry no text. Every bar is 5 μm; the XZ and YZ views are drawn smaller than XY, so their bars are shorter."
+    applies: [3]
+    keep: false
+    options:
+      - choice: "use"
+        button: "Use this layout"
+        label: "Slide 3 as shown"
   - code: "b"
     title: "Change the deck builder"
     source: "open point, 2026-11-24"
     about:
-      - "Slide order from the 0708 condition list; it now reads the 3SI list, which stops the build."
+      - "Slide order from the 0708 condition list; it now reads the condition list of the earlier dataset, so the build stops."
       - "Methods slides from the approved text, in place of the old 3SI title slide."
       - "Titles 32 pt; they are 24 pt now."
       - "Black slides, bulleted methods, two cells per slide; now white slides, one cell per slide."

@@ -2,7 +2,9 @@
 (build_cat_fmc_slides.py: config_plan, build_entries) and export_deck_slides.py.
 
 Two decks, each built and exported once:
-- "now": the whole deck as the config builds it today, for the All slides view (text check on);
+- "now": the whole deck as the config builds it today, for the All slides view (text check on). When the spec's deck
+  names `live: <deck>` (and `pairs: true` for the movie-pairs deck), that deck is exported instead of a new build, after
+  a check that it is the config's build (its sidecar's slide hashes, incremental.py); it is only read;
 - "options": for every open decision with layout options, the slides that option changes (the config's `layout`
   with the option's values), up to `max_slides` per option, titles numbered as in that option's deck.
 Each slide's lines come from the built deck's own text (python-pptx); a bullet's "• " is dropped so a line matches the
@@ -43,11 +45,8 @@ def signature(e):
     return ("movie", e[3], B.describe(e[2], e[3]))
 
 
-def build_and_export(entries, name, approved, png_dir):
-    """Build one deck from entries, export every slide; returns (png paths, per-slide text lines)."""
-    deck = OUT / f"{name}.pptx"
-    deck.unlink(missing_ok=True)   # this script's own preview deck from its last run
-    prs, _ = B.build_entries(entries, deck, approved)
+def slide_lines(prs):
+    """Per-slide text lines (1-based slide number -> lines), a bullet's "• " dropped."""
     lines = {}
     for n, slide in enumerate(prs.slides, 1):
         ls = []
@@ -58,13 +57,48 @@ def build_and_export(entries, name, approved, png_dir):
                     if t:
                         ls.append(t[2:] if t.startswith("\u2022 ") else t)
         lines[n] = ls
+    return lines
+
+
+def export(deck, name, n_expected):
+    """Export every slide of deck through PowerPoint; returns the PNG paths in slide order."""
     src = OUT / "src" / name
     shutil.rmtree(src, ignore_errors=True)
     subprocess.run([str(BASE_PYTHON), str(EXPORT), str(deck), str(src), "1600"], check=True)
-    pngs = sorted(src.glob("slide_*.png"))
-    if len(pngs) != len(entries):
-        raise SystemExit(f"{name}: exported {len(pngs)} slides, expected {len(entries)}")
-    return pngs, lines
+    pngs = sorted(src.glob("slide_*.png"), key=lambda p: int(p.stem.split("_")[1]))   # slide_100 after slide_99
+    if len(pngs) != n_expected:
+        raise SystemExit(f"{name}: exported {len(pngs)} slides, expected {n_expected}")
+    return pngs
+
+
+def build_and_export(entries, name, approved, png_dir, pairs=False):
+    """Build one deck from entries, export every slide; returns (png paths, per-slide text lines)."""
+    deck = OUT / f"{name}.pptx"
+    deck.unlink(missing_ok=True)   # this script's own preview deck from its last run
+    prs, _ = B.build_entries(entries, deck, approved, pairs=pairs)
+    return export(deck, name, len(entries)), slide_lines(prs)
+
+
+def live_deck(entries, cfg, live, pairs):
+    """The live deck instead of a fresh build: it must be the config's build today (its sidecar's slide hashes equal
+    the hashes of the slides the config makes, and the deck is unchanged since the sidecar was written, md5).
+    Nothing is built and the deck is only read. Returns (png paths, per-slide text lines)."""
+    from pptx import Presentation
+    scratch = Path(B.make_run_scratch_dir(Path(B.tempfile.gettempdir()) / "tgt_cat_fmc_posters"))
+    try:   # deck_specs names the posters only; it writes none
+        slides, _ = B.deck_specs(entries, B.MovieSlideMaker(scratch, B.removed_marks(cfg)), B.removed_marks(cfg),
+                                 cfg.get("fov_numbers"), cfg.get("movie_notes"), pairs)
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+    want = [B.incremental.spec_hash(s, B.SLIDE_W, B.SLIDE_H, True, B.POSTER_RULE, True) for s in slides]
+    have = B.incremental.read_sidecar(str(live))   # stops if the deck changed since its sidecar
+    if have != want:
+        bad = [k + 1 for k in range(max(len(have), len(want)))
+               if k >= len(have) or k >= len(want) or have[k] != want[k]]
+        raise SystemExit(f"STOP: {live} is not the config's build ({len(have)} slides in the deck, {len(want)} from "
+                         f"the config; slides that differ: {bad[:20]}): build the deck first")
+    print(f"CHECK {live.name} is the config's build ({len(want)} slides, sidecar hashes and md5): PASS", flush=True)
+    return export(live, "live", len(entries)), slide_lines(Presentation(str(live)))
 
 
 def main(spec_path):
@@ -82,16 +116,21 @@ def main(spec_path):
     page_dir.mkdir(parents=True)
     t = step("load", t0)
 
-    # the deck as it is
-    base = B.config_plan(cfg)
-    pngs, lines = build_and_export(base, "now", approved, page_dir)
+    # the deck as it is: the live deck when the spec names one (checked to be the config's build), else a fresh build
+    pairs = bool(spec["deck"].get("pairs"))
+    base = B.config_plan(cfg, pairs=pairs)
+    live = spec["deck"].get("live")
+    if live and any(o.get("layout") for it in spec["items"] for o in it.get("options", [])):
+        raise SystemExit("STOP: layout options need fresh builds; drop deck.live from the spec for them")
+    pngs, lines = (live_deck(base, cfg, Path(live), pairs) if live
+                   else build_and_export(base, "now", approved, page_dir, pairs))
     deck = []
     for n, e in enumerate(base, 1):
         png = f"deck_{n:02d}.png"
         shutil.copyfile(pngs[n - 1], page_dir / png)
         deck.append({"n": n, "id": f"slide_{n:02d}", "png": png, "lines": lines[n],
                      "unlisted": MOVIE_NOTE if e[0] == "movie" else "", "fact": None})
-    t = step(f"now: {len(base)} slides built and exported", t)
+    t = step(f"now: {len(base)} slides {'read from the live deck' if live else 'built'} and exported", t)
 
     # one options deck: each open layout option's changed slides
     base_sigs = [signature(e) for e in base]
@@ -120,7 +159,7 @@ def main(spec_path):
                 entries.append(e)
                 where.append((code, str(o["choice"]), n))
     if entries:
-        pngs, lines = build_and_export(entries, "options", approved, page_dir)
+        pngs, lines = build_and_export(entries, "options", approved, page_dir, pairs)
         for k, (code, choice, n) in enumerate(where, 1):
             png = f"opt_{code}_{choice}_{n:02d}.png"
             shutil.copyfile(pngs[k - 1], page_dir / png)

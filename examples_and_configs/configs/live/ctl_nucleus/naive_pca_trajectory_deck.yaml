@@ -20,6 +20,9 @@ auto_position: true
 add_label: false
 title_size: 32
 approved_text: "naive_pca_trajectory_approved_text.yaml"
+# FF 2026-11-24 (relayed): "do big points on pca plots represent medians? that should be stated in each slide if so";
+# "it should be in upper right hand of each slide. just a brief note". Every experiment slide, not the title slide.
+corner_note: "Large markers: condition medians"
 
 images:
   - images: [row_pca_trajA_0129.png, row_pca_traj3dA_0129_v1.png]

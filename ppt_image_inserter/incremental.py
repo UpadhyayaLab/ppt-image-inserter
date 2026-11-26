@@ -351,9 +351,9 @@ def check_deck_matches_specs(prs, specs: Sequence[SlideSpec]) -> List[str]:
             if not near(sh, mv.left_pt, mv.top_pt, mv.width_pt, mv.height_pt) or \
                     _h.md5(part.blob).hexdigest() != fmd5(os.path.abspath(mv.movie_path)):
                 problems.append(f"slide {k}: movie {os.path.basename(mv.movie_path)} differs from its spec")
-        for sh, pic in zip(pics, spec.pictures):
-            if not near(sh, pic.left_pt, pic.top_pt, pic.width_pt, pic.height_pt) or \
-                    _h.md5(sh.image.blob).hexdigest() != fmd5(os.path.abspath(pic.image_path)):
+        for pic in spec.pictures:   # matched by place: PowerPoint lists a slide's pictures in its own order
+            hits = [sh for sh in pics if near(sh, pic.left_pt, pic.top_pt, pic.width_pt, pic.height_pt)]
+            if len(hits) != 1 or _h.md5(hits[0].image.blob).hexdigest() != fmd5(os.path.abspath(pic.image_path)):
                 problems.append(f"slide {k}: picture {os.path.basename(pic.image_path)} differs from its spec")
     return problems
 
